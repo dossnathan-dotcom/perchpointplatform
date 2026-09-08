@@ -1,0 +1,247 @@
+{
+  "brand": {
+    "name": "HawkVision Homes",
+    "tagline": "Architectural Prestige Across Cincinnati's Seven Hills",
+    "location": "Cincinnati, OH",
+    "target_audience": "Discerning home buyers, luxury estate investors, and high-value sellers in Cincinnati premier enclaves (Mount Adams, Hyde Park, Indian Hill, Over-The-Rhine, Walnut Hills)",
+    "aesthetic_archetype": "Architectural Precision & Warm Terracotta Estate (Warm Off-Black Obsidian #0B0E14, Cream Linen #FAF8F5, Warm Amber Gold #D97706, Burnished Copper #C25E2B)",
+    "value_proposition": "Hawk-eye valuation accuracy, predictive ChatGPT AI neighborhood intelligence, and Cincinnati's most coveted private estates."
+  },
+  "fonts": {
+    "heading_font": "Playfair Display, serif",
+    "body_font": "IBM Plex Sans, sans-serif",
+    "accent_mono_font": "JetBrains Mono, monospace",
+    "google_font_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap",
+    "text_sizes": {
+      "hero_h1": "text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight leading-[1.08]",
+      "section_h2": "text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight",
+      "sub_h3": "text-xl sm:text-2xl font-serif font-semibold",
+      "card_h4": "text-lg sm:text-xl font-sans font-semibold tracking-tight",
+      "body": "text-base text-stone-600 dark:text-stone-300 font-sans leading-relaxed",
+      "eyebrow": "text-xs uppercase font-mono tracking-[0.25em] text-amber-700 dark:text-amber-400 font-medium"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary_accent": "#C25E2B",
+      "primary_accent_hover": "#A94F23",
+      "gold_accent": "#D97706",
+      "gold_accent_subtle": "#FDE68A",
+      "dark_bg": "#0D1117",
+      "dark_card": "#161B22",
+      "dark_border": "#30363D",
+      "light_bg": "#FAF8F5",
+      "light_card": "#FFFFFF",
+      "light_card_secondary": "#F3EFEA",
+      "light_border": "#E5E0D8",
+      "dark_text_main": "#1A1918",
+      "light_text_main": "#F0F6FC"
+    },
+    "guidelines": "Always ensure contrast ratios > 4.5:1. Use soft warm backgrounds instead of harsh pure whites. Give buttons tactile high-contrast borders and active states."
+  },
+  "creative_features_and_motion": {
+    "kinetic_heading_transitions": {
+      "description": "Creative morphing/cycle between high-impact headlines using Framer Motion AnimatePresence with split-line vertical drift and blur-in effects.",
+      "headline_modes": [
+        {
+          "tag": "PERSPECTIVE",
+          "title": "Look Beyond The Ordinary Skyline.",
+          "subtitle": "Curated Cincinnati residential gems from Mount Adams bluff views to Indian Hill equestrian sanctuaries."
+        },
+        {
+          "tag": "INTELLIGENCE",
+          "title": "Powered by HawkVision AI & ChatGPT.",
+          "subtitle": "Real-time micro-market valuation, tax delta simulations, and architectural comps tailored to your exact lifestyle."
+        },
+        {
+          "tag": "SECLUSION",
+          "title": "Private Portfolios Before They Hit The MLS.",
+          "subtitle": "Discreet pocket listings in historic Over-The-Rhine and modern Hyde Park architectural estates."
+        }
+      ],
+      "motion_settings": {
+        "initial": { "opacity": 0, "y": 20, "filter": "blur(4px)" },
+        "animate": { "opacity": 1, "y": 0, "filter": "blur(0px)" },
+        "exit": { "opacity": 0, "y": -20, "filter": "blur(4px)" },
+        "transition": { "duration": 0.55, "ease": [0.16, 1, 0.3, 1] }
+      }
+    },
+    "chatgpt_integration": {
+      "title": "HawkVision Concierge — ChatGPT AI Property Copilot",
+      "backend_endpoint": "/api/chat",
+      "features": [
+        "Model selector (e.g. gpt-4o, gpt-4o-mini, gpt-3.5-turbo)",
+        "Curated prompts: 'Find homes near Ault Park with historic character under $1.5M', 'Compare Hyde Park vs Indian Hill property taxes', 'Investment upside in Walnut Hills multi-family'",
+        "Live intelligent property recommendation cards that link straight to inquiry and scheduling",
+        "Clear fallback responses when OpenAI API key is not configured, with realistic Cincinnati real estate knowledge"
+      ]
+    },
+    "mock_login_modal_and_dashboard": {
+      "trigger": "Client Portal / Sign In button in navigation and throughout CTAs",
+      "mock_accounts": [
+        {
+          "email": "investor@hawkvision.com",
+          "role": "VIP Private Buyer",
+          "name": "Julian Vance",
+          "saved_properties_count": 4,
+          "market_watchlist": "Indian Hill & Hyde Park",
+          "preapproval_limit": "$2,850,000"
+        },
+        {
+          "email": "cincinnati.seller@gmail.com",
+          "role": "Exclusive Seller",
+          "name": "Elena Rostova",
+          "saved_properties_count": 1,
+          "market_watchlist": "Mount Adams Bluff",
+          "valuation_estimate": "$1,420,000"
+        }
+      ],
+      "dashboard_view": "Floating side drawer or full modal showing saved listings, instant tour booking requests, ChatGPT search history, and direct agent connection."
+    }
+  },
+  "layout_and_sections": [
+    {
+      "order": 1,
+      "name": "Sticky Architectural Navigation",
+      "description": "High-contrast crystal glass header with brand logo, Cincinnati weather/market ticker indicator, interactive navigation links (Properties, Neighborhoods, AI Concierge, Valuation), and prominent 'Client Portal (Mock Login)' and 'Schedule Private Tour' CTAs."
+    },
+    {
+      "order": 2,
+      "name": "Hero Section with Kinetic Heading Cycle & Instant Search",
+      "description": "High visual drama. Features dynamic Cincinnati riverfront skyline backdrop with subtle grain overlay, kinetic morphing headings with progress pill triggers, rapid filter bar (Beds, Neighborhood, Price Range, Estate Type), and dual conversion CTAs: 'Explore Private Portfolio' and 'Ask ChatGPT Concierge'."
+    },
+    {
+      "order": 3,
+      "name": "Cincinnati Micro-Market Quick Metrics",
+      "description": "Asymmetric bento grid showing real-time Cincinnati market telemetry: Average Days on Market (18 days), Median Hyde Park PSF ($342), Private Off-Market Volume ($84M), and HawkVision proprietary valuation delta."
+    },
+    {
+      "order": 4,
+      "name": "Featured Curated Residences (Tetris Bento Grid)",
+      "description": "Dynamic filterable showcase of Cincinnati homes with tags (Mount Adams View, Indian Hill Sanctuary, OTR Historic Penthouse, Hyde Park Mid-Century). Interactive quick-view modal, image carousel, ChatGPT 'Analyze Property' quick button, and direct tour booking form."
+    },
+    {
+      "order": 5,
+      "name": "Interactive ChatGPT Real Estate Copilot",
+      "description": "Dedicated conversion engine. Users test ChatGPT AI models for property searches, school district ratings, investment forecasts in Cincinnati, and can instantly generate custom property dossiers."
+    },
+    {
+      "order": 6,
+      "name": "Cincinnati Neighborhoods Navigator",
+      "description": "Visual exploration of Cincinnati's iconic pockets: Mount Adams, Hyde Park Square, Over-The-Rhine, Indian Hill, and Walnut Hills with architectural heritage notes and lifestyle scores."
+    },
+    {
+      "order": 7,
+      "name": "High-Converting Valuation & Lead Capture Drawer/Form",
+      "description": "'What is Your Cincinnati Home Worth?' instant valuation estimator step-through, capturing property address, bed/bath count, renovation state, and offering instant AI estimate + private broker consultation."
+    },
+    {
+      "order": 8,
+      "name": "Prestige Testimonials & Trust Pillars",
+      "description": "Editorial client reviews from local Cincinnati business leaders, physicians, and relocators with verified transaction stats and Cincinnati location tags."
+    },
+    {
+      "order": 9,
+      "name": "Bold Editorial Footer",
+      "description": "Deep obsidian footer with large brand signature 'HAWKVISION CINCINNATI', quick links, Ohio broker compliance disclosures, office address in Over-The-Rhine (Vine St), and emergency agent hotline."
+    }
+  ],
+  "image_urls": {
+    "cincinnati_hero_skyline": {
+      "url": "https://images.unsplash.com/photo-1695782142250-963d4067ead8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwyfHxjaW5jaW5uYXRpJTIwc2t5bGluZSUyMG1vZGVybiUyMGVzdGF0ZXxlbnwwfHx8fDE3ODg5MDQ1MDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Panoramic view of Cincinnati skyline and Ohio riverfront with glowing golden-hour architecture",
+      "category": "hero_background"
+    },
+    "cincinnati_riverfront_alt": {
+      "url": "https://images.unsplash.com/photo-1592159784618-f1f74127d773?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHw0fHxjaW5jaW5uYXRpJTIwc2t5bGluZSUyMG1vZGVybiUyMGVzdGF0ZXxlbnwwfHx8fDE3ODg5MDQ1MDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Cincinnati Mount Adams hillside and downtown urban architecture aerial view",
+      "category": "neighborhoods"
+    },
+    "cincinnati_park_skyline": {
+      "url": "https://images.unsplash.com/photo-1663031065897-bd372ff85f75?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwzfHxjaW5jaW5uYXRpJTIwc2t5bGluZSUyMG1vZGVybiUyMGVzdGF0ZXxlbnwwfHx8fDE3ODg5MDQ1MDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Eden Park overlook showing green trees and Cincinnati downtown profile",
+      "category": "lifestyle"
+    },
+    "luxury_residence_exterior": {
+      "url": "https://images.unsplash.com/photo-1781264896316-f47aef24272d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBjaW5jaW5uYXRpJTIwYXJjaGl0ZWN0dXJlJTIwbW9kZXJuJTIwaG9tZXxlbnwwfHx8fDE3ODg5MDQ1MDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Multi-story luxury residence with contemporary architectural finishes and landscaping",
+      "category": "property_listings"
+    },
+    "luxury_interior_grand_living": {
+      "url": "https://images.unsplash.com/photo-1642976975710-1d8890dbf5ab?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBsdXh1cnklMjB2aWxsYSUyMGxpdmluZyUyMHJvb218ZW58MHx8fHwxNzg4OTA0NTA1fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Double-height luxury living salon with designer pendant lighting and warm hardwood",
+      "category": "property_interior"
+    },
+    "luxury_interior_minimalist_lounge": {
+      "url": "https://images.unsplash.com/photo-1724582586495-d050726cf354?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBsdXh1cnklMjB2aWxsYSUyMGxpdmluZyUyMHJvb218ZW58MHx8fHwxNzg4OTA0NTA1fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Sleek low-profile modern living lounge with panoramic natural lighting",
+      "category": "property_interior"
+    },
+    "luxury_patio_oasis": {
+      "url": "https://images.unsplash.com/photo-1777003589733-91fe81465228?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBjaW5jaW5uYXRpJTIwYXJjaGl0ZWN0dXJlJTIwbW9kZXJuJTIwaG9tZXxlbnwwfHx8fDE3ODg5MDQ1MDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Artisan stone patio terrace with custom mosaic pool and wooden pergola",
+      "category": "property_amenities"
+    }
+  },
+  "testing_attributes": {
+    "rule": "Every button, input, tab, dialog, modal trigger, card, and key text element MUST include explicit kebab-case data-testid attributes.",
+    "mandatory_ids": [
+      "navbar-brand-logo",
+      "navbar-nav-links",
+      "navbar-login-btn",
+      "navbar-schedule-tour-btn",
+      "hero-heading-cycle-container",
+      "hero-active-heading",
+      "hero-heading-prev-btn",
+      "hero-heading-next-btn",
+      "hero-heading-indicator-0",
+      "hero-heading-indicator-1",
+      "hero-heading-indicator-2",
+      "hero-search-neighborhood-select",
+      "hero-search-price-select",
+      "hero-search-type-select",
+      "hero-search-submit-btn",
+      "login-modal-dialog",
+      "login-modal-email-input",
+      "login-modal-password-input",
+      "login-modal-submit-btn",
+      "login-modal-quick-fill-buyer",
+      "login-modal-quick-fill-seller",
+      "client-dashboard-panel",
+      "client-dashboard-logout-btn",
+      "client-dashboard-saved-listings",
+      "chatgpt-model-select",
+      "chatgpt-prompt-input",
+      "chatgpt-send-btn",
+      "chatgpt-quick-prompt-0",
+      "chatgpt-quick-prompt-1",
+      "chatgpt-quick-prompt-2",
+      "chatgpt-chat-response",
+      "listings-filter-all",
+      "listings-filter-hyde-park",
+      "listings-filter-indian-hill",
+      "listings-filter-mount-adams",
+      "property-card-1",
+      "property-card-1-tour-btn",
+      "property-card-1-analyze-ai-btn",
+      "tour-modal-dialog",
+      "tour-modal-date-picker",
+      "tour-modal-name-input",
+      "tour-modal-email-input",
+      "tour-modal-submit-btn",
+      "valuation-address-input",
+      "valuation-property-type-select",
+      "valuation-estimate-btn",
+      "valuation-result-card"
+    ]
+  },
+  "universal_guidelines_for_main_agent": [
+    "Never use generic flat gradients across the full screen. Use warm obsidian (#0D1117) or cream linen (#FAF8F5) with rich textures and 1px crisp borders.",
+    "Do NOT use Inter for main titles. Use Google Font Playfair Display for headers and IBM Plex Sans for body.",
+    "Make the kinetic heading transitions distinctly smooth, interactive, and visually striking. Include manual dot/tab switches as well as an automatic 5-second interval.",
+    "The Mock Login flow MUST feel real: clicking login shows a polished modal with quick-fill test credentials ('VIP Buyer' or 'Luxury Seller') and immediately opens a sleek client portal overview with their saved Cincinnati homes, portfolio value, and direct contact options.",
+    "ChatGPT AI integration must be fully operational on both frontend and backend. Ensure the backend `/api/chat` route supports selecting OpenAI models (gpt-4o, gpt-4o-mini, gpt-3.5-turbo), responds intelligently to Cincinnati queries, and includes a well-crafted local Cincinnati real estate prompt context with mock fallback if the API key is not yet set in environment variables.",
+    "All interactive elements MUST have data-testid attributes exactly as specified.",
+    "Keep CTA buttons crisp, high contrast, and accessible with explicit hover states."
+  ]
+}

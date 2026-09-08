@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 33% 97%;
+    --foreground: 220 20% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 7%;
+    --primary: 22 64% 46%;
+    --primary-foreground: 36 33% 97%;
+    --secondary: 35 28% 92%;
+    --secondary-foreground: 220 20% 7%;
+    --muted: 35 22% 91%;
+    --muted-foreground: 25 10% 40%;
+    --accent: 36 88% 45%;
+    --accent-foreground: 220 20% 7%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 36 33% 97%;
+    --border: 34 18% 84%;
+    --input: 34 18% 84%;
+    --ring: 22 64% 46%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  ::selection {
+    background: #c25e2b;
+    color: #faf8f5;
+  }
+}
+
+@layer base {
+  [data-debug-wrapper="true"] {
+    display: contents !important;
+  }
+
+  [data-debug-wrapper="true"] > * {
+    margin-left: inherit;
+    margin-right: inherit;
+    margin-top: inherit;
+    margin-bottom: inherit;
+    padding-left: inherit;
+    padding-right: inherit;
+    padding-top: inherit;
+    padding-bottom: inherit;
+    column-gap: inherit;
+    row-gap: inherit;
+    gap: inherit;
+    border-width: inherit;
+    border-style: inherit;
+    border-color: inherit;
+  }
+}
