@@ -28,20 +28,25 @@ Follow-up direction: the requested ChatGPT AI Models integration was explicitly 
 - Private tour modal connected to `POST /api/leads` and persisted to MongoDB.
 - Instant home valuation form connected to `POST /api/valuation`; returns a preliminary range and persists requests.
 - Testimonials/trust section and editorial footer with consultation CTA.
+- Full listing detail routes with cinematic property heroes, photo galleries, feature lists, pricing history, taxes, HOA context, OpenStreetMap neighborhood maps, save buttons, and property-specific tour scheduling.
+- Saved Homes Sync using localStorage, so anonymous visitors can save homes and have them merged into the mock client portal on login.
+- Agent Story section with a local Cincinnati advisor profile, proof stats, expertise pillars, and direct consultation CTA.
+- Buyer Readiness Quiz with four interactive questions, progress feedback, personalized recommendation, restart, and consultation CTA.
+- Consultation intent support in the shared booking modal and lead endpoint submissions.
 - Backend health, properties, lead, and valuation endpoints.
 - Comprehensive data-testid coverage for key interactive elements.
 
 ## Current Status
-- P0 remaining: none for the requested MVP.
-- P1 remaining: listing detail pages, saved-home interactions before login, expanded neighborhood guides.
-- P2 remaining: analytics/events, SEO content expansion, real brokerage content and imagery, production auth if the demo becomes a real portal.
+- P0 remaining: none for the requested feature set.
+- P1 remaining: richer listing media, conversion analytics, expanded Cincinnati content.
+- P2 remaining: real brokerage imagery/content, MLS-connected inventory, SEO expansion, production auth if the demo becomes a real portal.
 
 ## Prioritized Backlog
-1. Add full listing detail pages with galleries, maps, property history, and inquiry forms.
-2. Let anonymous visitors save homes and carry those saves into the mock portal.
-3. Add deeper Cincinnati neighborhood guides with commute, school, and lifestyle context.
-4. Add agent profile and consultation scheduling experience.
-5. Add conversion analytics for CTA, valuation, tour, and filter interactions.
+1. Add video tours, floor plans, downloadable property dossiers, and richer image galleries.
+2. Add conversion analytics for CTA, valuation, tour, quiz, save, and listing-detail interactions.
+3. Expand neighborhood guides with commute, school, lifestyle, and pricing trend content.
+4. Add SEO landing pages for priority Cincinnati neighborhoods.
+5. Connect real MLS or brokerage inventory when production data access is available.
 
 ## Verification Completed
 - `GET /api`, `GET /api/health`, `GET /api/properties`, `POST /api/leads`, and `POST /api/valuation` returned expected responses.

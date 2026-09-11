@@ -9,15 +9,21 @@ import { Textarea } from "@/components/ui/textarea";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-export const TourModal = ({ property, open, onOpenChange }) => {
+export const TourModal = ({ property, intent = "private_tour", open, onOpenChange }) => {
   const [form, setForm] = useState({ name: "", email: "", date: "", message: "" });
   const [loading, setLoading] = useState(false);
+  const isConsultation = intent === "consultation";
 
   useEffect(() => {
-    if (open && property) {
-      setForm((current) => ({ ...current, message: `I would like a private tour of ${property.title}.` }));
+    if (open) {
+      setForm((current) => ({
+        ...current,
+        message: isConsultation
+          ? "I would like a private consultation about my Cincinnati move."
+          : `I would like a private tour of ${property?.title || "a Cincinnati home"}.`,
+      }));
     }
-  }, [open, property]);
+  }, [open, property, isConsultation]);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -28,14 +34,14 @@ export const TourModal = ({ property, open, onOpenChange }) => {
         email: form.email,
         preferred_date: form.date,
         message: form.message,
-        intent: "private_tour",
-        property_id: property?.id,
+        intent,
+        property_id: isConsultation ? undefined : property?.id,
       });
-      toast.success("Tour request received. A HawkVision advisor will confirm shortly.");
+      toast.success(isConsultation ? "Consultation request received." : "Tour request received. A HawkVision advisor will confirm shortly.");
       onOpenChange(false);
       setForm({ name: "", email: "", date: "", message: "" });
     } catch (error) {
-      toast.error("Please complete the tour request details.");
+      toast.error("Please complete the request details.");
     } finally {
       setLoading(false);
     }
@@ -49,9 +55,9 @@ export const TourModal = ({ property, open, onOpenChange }) => {
             <CalendarCheck className="h-5 w-5" />
           </div>
           <DialogHeader>
-            <DialogTitle className="font-heading text-3xl">Schedule a private tour</DialogTitle>
+            <DialogTitle className="font-heading text-3xl">{isConsultation ? "Book a private consultation" : "Schedule a private tour"}</DialogTitle>
             <DialogDescription className="text-stone-600">
-              {property ? property.title : "Tell us what Cincinnati home you want to see."}
+              {isConsultation ? "Tell us when to connect about your Cincinnati move." : property ? property.title : "Tell us what Cincinnati home you want to see."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -76,7 +82,7 @@ export const TourModal = ({ property, open, onOpenChange }) => {
           </label>
           <Button disabled={loading} className="h-12 rounded-full bg-obsidian text-linen hover:bg-copper" data-testid="tour-modal-submit-btn">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CalendarCheck className="h-4 w-4" />}
-            Request Tour
+            {isConsultation ? "Request Consultation" : "Request Tour"}
           </Button>
         </form>
       </DialogContent>

@@ -5,9 +5,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-export const ClientDashboard = ({ user, open, onOpenChange, onLogout, onSchedule }) => {
+export const ClientDashboard = ({ user, savedIds = [], open, onOpenChange, onLogout, onSchedule }) => {
   if (!user) return null;
-  const saved = LISTINGS.filter((item) => user.savedIds.includes(item.id));
+  const mergedSavedIds = [...new Set([...user.savedIds, ...savedIds])];
+  const saved = LISTINGS.filter((item) => mergedSavedIds.includes(item.id));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,7 +48,10 @@ export const ClientDashboard = ({ user, open, onOpenChange, onLogout, onSchedule
         </div>
 
         <div className="px-7 pb-8 sm:px-9" data-testid="client-dashboard-saved-listings">
-          <h3 className="mb-5 font-heading text-2xl font-bold">Saved Cincinnati homes</h3>
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <h3 className="font-heading text-2xl font-bold">Saved Cincinnati homes</h3>
+            <span className="font-mono text-xs uppercase tracking-[0.22em] text-gold" data-testid="client-dashboard-saved-count">{saved.length} saved</span>
+          </div>
           <div className="grid gap-4 md:grid-cols-3">
             {saved.map((item) => (
               <article key={item.id} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.06]">
