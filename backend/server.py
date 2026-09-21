@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException, Response
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr, Field
 from starlette.middleware.cors import CORSMiddleware
@@ -12,6 +12,7 @@ from starlette.middleware.cors import CORSMiddleware
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
+from foundation.routes import checked_fixture, mark_synthetic
 from foundation.routes import router as foundation_router
 from foundation.seeds import portfolio
 
@@ -76,9 +77,10 @@ async def get_properties():
     return {"properties": [p.model_dump(mode="json") for p in portfolio().properties] if os.environ["PHASE0_ENABLED"] == "true" else [], "data_status": "demonstration_phase_0"}
 
 
-@api_router.get("/rentals")
-async def get_rentals():
-    return {"units": [u.model_dump(mode="json") for u in portfolio().units] if os.environ["PHASE0_ENABLED"] == "true" else [], "data_status": "demonstration_phase_0"}
+@api_router.get("/rentals", description="Intentionally public synthetic unit fixtures only. Disabled mode returns an empty catalog, not live inventory.")
+async def get_rentals(response: Response):
+    mark_synthetic(response)
+    return checked_fixture({"units": [u.model_dump(mode="json") for u in portfolio().units] if os.environ.get("PHASE0_ENABLED") == "true" else [], "data_status": "demonstration_phase_0"})
 
 
 @api_router.post("/leads", response_model=InquiryResponse)

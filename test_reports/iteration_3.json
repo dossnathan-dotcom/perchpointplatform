@@ -1,0 +1,59 @@
+{
+  "summary": "Phase 0 routing/API remediation verification executed on external preview and isolated backend harness. Eight-role portal routing behavior passed in browser checks; backend API matrix and guard tests passed; frontend Jest router regression test is currently blocked by react-router-dom module resolution in this Jest environment.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Frontend Jest router regression harness",
+        "issue": "`src/App.routing.test.js` fails before execution: Cannot find module `react-router-dom` from `src/App.js` under `craco test --watchAll=false`.",
+        "affected_selectors": [
+          "N/A (test bootstrap/module resolution failure)"
+        ]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase0_public_api_matrix.py",
+    "/app/backend/tests/test_phase0_isolated_guards.py",
+    "/app/frontend/src/App.routing.test.js",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/routing-remediation/backend-pytest-final.log",
+    "/app/test_reports/routing-remediation/frontend-jest-final.log",
+    "/app/test_reports/routing-remediation/root-eslint-final.log",
+    "/app/test_reports/routing-remediation/frontend-eslint-final.log",
+    "/app/test_reports/routing-remediation/ruff-final-after-fix.log",
+    "/app/test_reports/routing-remediation/mypy-final.log",
+    "/app/test_reports/routing-remediation/tsc-contracts-final.log",
+    "/app/test_reports/routing-remediation/frontend-build-final.log",
+    "/app/test_reports/routing-remediation/foundation-export-check-final.log",
+    "/app/test_reports/routing-remediation/foundation-export-types-check-final.log"
+  ],
+  "action_items": [
+    "Fix Jest resolver/runtime compatibility for `react-router-dom` so App-level routing regressions can run in CI (currently browser automation covers this scope).",
+    "Address existing Ruff issues in backend tests (`test_foundation_contracts.py`, `test_perchpoint_api.py`) to restore full lint green status."
+  ],
+  "critical_code_review_comments": [
+    "Portal route remount-by-location-key behavior appears to clear stale toolbar/policy/modal state on role/view transitions in live checks.",
+    "Phase 0 API synthetic guards are fail-closed under malicious injected fixtures in isolated TestClient tests (503 generic detail, no secret echo)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase0_public_api_matrix.py",
+    "/app/backend/tests/test_phase0_isolated_guards.py",
+    "/app/frontend/src/App.routing.test.js",
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {
+    "backend": "100% (52/52 pytest passed)",
+    "frontend": "Browser matrix passed for required role/routing flows; Jest suite failed (1 failed suite due module resolution)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Eight-role browser matrix was executed with gate->modal->workspace transitions, direct URL, refresh, back/forward, tab navigation, unknown route controls, and owner->leasing stale-overlay checks. All passed in browser automation. Re-run only after Jest react-router-dom resolution is fixed to make durable frontend unit/router regression green.",
+  "rca of the issue": "RCA (frontend test infra): router regression test imports App/AppContent, but Jest runtime (craco+react-scripts) cannot resolve `react-router-dom` module despite app build/runtime working. Reproduction: run `cd /app/frontend && yarn test --watchAll=false` with `src/App.routing.test.js` present -> immediate module resolution error before test execution. Mitigation: align Jest resolver/transpile config with installed react-router-dom package format/version or pin compatible test runtime strategy; browser verification currently provides functional coverage until fixed. API/routing product behavior itself was not reproduced as broken in live browser checks."
+}

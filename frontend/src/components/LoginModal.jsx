@@ -22,7 +22,7 @@ export const LoginModal = ({ open, onOpenChange, onSuccess, initialRole = 'resid
           </select>
         </label>
         <p className="border-l-2 border-copper pl-4 text-sm leading-7 text-stone-600" data-testid="perchpoint-role-scope">{account.scope}</p>
-        <Button className="h-12 bg-obsidian text-linen hover:bg-copper" data-testid="perchpoint-login-submit-btn" onClick={() => { onSuccess(account); onOpenChange(false); }}>Enter seeded workspace <ArrowRight className="h-4 w-4" /></Button>
+        <Button className="h-12 bg-obsidian text-linen hover:bg-copper" data-testid="perchpoint-login-submit-btn" onClick={() => { onOpenChange(false); onSuccess(account); }}>Enter seeded workspace <ArrowRight className="h-4 w-4" /></Button>
       </> : <p data-testid="preview-disabled-message">Workspace previews are disabled. No production account can be created here.</p>}
     </DialogContent>
   </Dialog>;

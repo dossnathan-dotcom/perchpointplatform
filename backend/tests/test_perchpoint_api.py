@@ -1,12 +1,10 @@
 """PerchPoint API smoke and integration tests for Phase 0 demo flows."""
 
 import os
-from pathlib import Path
 
 import pytest
 import requests
 from dotenv import load_dotenv
-
 
 load_dotenv("/app/frontend/.env")
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL")

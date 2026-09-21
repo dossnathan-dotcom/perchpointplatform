@@ -16,7 +16,7 @@ export const PerchPointPortal = () => {
   const navigate = useNavigate();
   const role = ROLE_ACCOUNTS.find((r) => r.id === roleId);
   const view = role && PORTAL_VIEWS[role.id];
-  const tab = view?.tabs.find((t) => slug(t) === viewId) || view?.tabs[0];
+  const tab = viewId ? view?.tabs.find((t) => slug(t) === viewId) : view?.tabs[0];
   const [search,setSearch] = useState('');
   const [context,setContext] = useState('all');
   const [state,setState] = useState('seeded');
@@ -24,7 +24,7 @@ export const PerchPointPortal = () => {
   const [policy,setPolicy] = useState(false);
   const [selected,setSelected] = useState(null);
   useEffect(() => {setSearch('');setContext('all');setState('seeded');setSelected(null);setMenu(false);},[roleId,viewId]);
-  if (!role || !PHASE0.seedsEnabled) return <main className="min-h-screen bg-obsidian px-6 py-24 text-linen" data-testid="workspace-unavailable"><h1 className="font-heading text-4xl">Workspace preview unavailable</h1><Link className="mt-6 block underline" to="/" data-testid="workspace-unavailable-home">Return to HawkVision</Link></main>;
+  if (!role || !tab || !PHASE0.seedsEnabled) return <main className="min-h-screen bg-obsidian px-6 py-24 text-linen" data-testid="workspace-unavailable"><h1 className="font-heading text-4xl">Workspace preview unavailable</h1><Link className="mt-6 block underline" to="/" data-testid="workspace-unavailable-home">Return to HawkVision</Link></main>;
   const records = previewRecords(role.id,tab).filter((r) => (context==='all'||r.propertyId===context) && `${r.title} ${r.detail} ${r.status}`.toLowerCase().includes(search.toLowerCase()));
   return <main className="min-h-screen bg-[#090d12] text-linen" data-testid="perchpoint-portal-page"><div className="flex min-h-screen">
     {menu && <button className="fixed inset-0 z-40 bg-black/70 lg:hidden" aria-label="Close workspace navigation" onClick={() => setMenu(false)} data-testid="portal-nav-backdrop" />}

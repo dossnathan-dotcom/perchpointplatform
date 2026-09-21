@@ -1,0 +1,55 @@
+{
+  "summary": "Final targeted Phase 0 retest completed. Required command matrix, live eight-role routing matrix, and public API matrix all passed with fresh agent-run evidence.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/frontend/src/App.routing.test.js",
+    "/app/backend/tests/test_phase0_public_api_matrix.py",
+    "/app/backend/tests/test_phase0_isolated_guards.py",
+    "/app/test_reports/routing-remediation/navigation-matrix.json",
+    "/app/test_reports/routing-remediation/api-matrix.json",
+    "/app/test_reports/routing-remediation/iter4-jest-routing-full.log",
+    "/app/test_reports/routing-remediation/iter4-jest-flags-full.log",
+    "/app/test_reports/routing-remediation/iter4-backend-pytest-full.log",
+    "/app/test_reports/routing-remediation/iter4-ruff-full.log",
+    "/app/test_reports/routing-remediation/iter4-frontend-eslint-full.log",
+    "/app/test_reports/routing-remediation/iter4-root-eslint-full.log",
+    "/app/test_reports/routing-remediation/iter4-mypy-full.log",
+    "/app/test_reports/routing-remediation/iter4-tsc-contracts-full.log",
+    "/app/test_reports/routing-remediation/iter4-frontend-build-full.log",
+    "/app/test_reports/routing-remediation/iter4-foundation-export-check-full.log",
+    "/app/test_reports/routing-remediation/iter4-generate-contract-types-check-full.log",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional hardening: migrate FastAPI @app.on_event('shutdown') to lifespan handler to remove deprecation warnings."
+  ],
+  "critical_code_review_comments": [
+    "No production-auth/data escalation found; role previews and public contracts remain explicitly synthetic and disconnected.",
+    "Original indefinite gate stall was not reproduced in this run; verified behavior is immediate modal-close + correct workspace render without reload for all 8 roles.",
+    "Backend warnings indicate upcoming FastAPI lifecycle API migration need (non-blocking for current Phase 0 scope)."
+  ],
+  "updated_files": [
+    "/app/frontend/src/App.routing.test.js",
+    "/app/test_reports/routing-remediation/navigation-matrix.json",
+    "/app/test_reports/routing-remediation/api-matrix.json",
+    "/app/test_reports/iteration_4.json"
+  ],
+  "success_rate": {
+    "backend": "100% (52/52 pytest passed)",
+    "frontend": "100% (Jest routing 20/20, flags 2/2, live 8-role navigation matrix pass)"
+  },
+  "seed_data_creation": "None. Used existing Phase 0 synthetic fixtures and seeded role previews.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Durable router regression coverage expanded to 20 tests (direct nested role routes, browser history back/forward, stale state reset on role switch for policy/account/record/search/context/state). Live browser matrix confirms every requested role cell and controlled unknown routes. API matrix retained with public synthetic-only and contamination guard expectations.",
+  "rca of the issue": "Reproduction status: initial user-reported indefinite gate stall still not reproducible in this environment. Evidence supports prior state-lifetime defects were addressed: login modal now scoped to history entry, closed before navigate, and portal remount keyed by location.key clears stale descendant state (panel/modal/dialog/search/context). Also verified /perchpoint/leasing is accepted as valid complete route; no race assertion made from animation timing.",
+  "mocked_api_notice": "MOCKED: role workspaces are presentation-only preview (not auth). MOCKED: /api/rentals and /api/foundation* are synthetic deterministic public fixtures with disconnected providers."
+}

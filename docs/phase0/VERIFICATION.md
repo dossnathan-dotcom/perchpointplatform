@@ -1,5 +1,20 @@
 # Verification — 2026-09-21
 
+## Latest narrowly scoped remediation
+The later live review exposed a role-navigation concern not established by the earlier broad verification. The original report below remains historical evidence, not a guarantee against that finding.
+
+See [Routing/API remediation](ROUTING-REMEDIATION.md) for the root-cause evidence and limits, exact fix, changed files, eight-role matrix and four-endpoint API matrix.
+Independent final report: `test_reports/iteration_4.json` — all required current routing/API checks passed, `retest_needed=false`.
+- Real App/BrowserRouter Jest suite: **20/20 passed**; feature-flag suite: **2/2 passed**.
+- Complete backend suite: **52 passed, 6 deprecation warnings in 2.15s**.
+- Root/frontend ESLint, full backend Ruff, Mypy (**15 files**), TypeScript contracts and optimized build passed.
+- **67** generated artifacts unchanged; actual TypeScript generator repeatability check passed.
+- All eight roles passed no-refresh modal entry, correct URL/render, modal close, direct entry, refresh, back/forward, switching/stale-state and nested-route checks. Invalid roles/views/paths are controlled.
+- Four APIs are verified public **synthetic-only** endpoints; 200 JSON shape/header checks, disabled/missing/invalid flag behavior, 405/404 errors and generic 503 contamination rejection passed.
+- Initial remediation Jest/lint failures are retained in `iteration_3.json` and were corrected before the final agent retest. No original transient-race cause is asserted without reproduction.
+
+No further phase work started. Awaiting review.
+
 ## Exact final results
 | Check | Result | Retained evidence |
 |---|---|---|

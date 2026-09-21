@@ -9,6 +9,8 @@ HawkVision Homes is a rental and property-operations company for residential, co
 - No buyer/seller brokerage, valuation, private-portfolio positioning, fictional testimonials/history/advisors/statistics, or reintroduced AI/chat.
 
 ## Active user request and governing boundary
+Latest request: **narrow Phase 0 remediation only** for seeded role navigation (URL changed while gate/modal appeared stale), all-eight-role history/direct/nested navigation checks, four public synthetic API boundaries, and exact regression evidence. No features, schema expansion, visual redesign or later-phase work. Stop after remediation and await review.
+
 The user requested a **controlled Phase 0 foundation refinement**, not production screening, payment processing, lease execution, authentication, messaging, Twilio routing, document storage or tenant-account creation. Preserve public IA and the premium design, refine accessibility/content, implement canonical schemas and synthetic scenarios, formalize access/delegation/identity/integration/migration/audit/retention/jurisdiction contracts, create actual role-preview shells, document and verify everything. Do not automatically move to a later phase.
 
 Public IA: Available Rentals, Properties, How to Apply, Resident Resources, Maintenance, About, Contact HawkVision, Sign in to PerchPoint.
@@ -85,6 +87,18 @@ Future inventory: leasing agent, property manager, maintenance coordinator, vend
 - POST `/api/leads`, `/api/maintenance-requests` retained synthetic capture. No auth/provider execution endpoints.
 
 ## Verification and evidence
+### Latest remediation verification — independent iteration 4
+- Original indefinite leasing-gate stall did not reproduce in the current environment; no unique race/animation cause is claimed. Found and corrected route-independent modal ownership, reused portal descendant state, and missing invalid-view/path handling.
+- One stable Routes tree; one location-key-scoped modal closed before navigate; portal subtree keyed by history entry; controlled unknown role/view/excess path. No forced reloads, timers or router downgrade.
+- All eight roles independently passed entry without refresh, modal close, correct route/render, direct/refresh, back/forward, switching, stale-state clearance and nested navigation.
+- Four public APIs remain deterministic synthetic builders only. Added no-store/phase0 headers, explicit public fixture documentation and fail-closed contamination rejection. Missing/invalid flags also disable preview data. No production source or authorization introduced.
+- Final independent results: **20 routing tests + 2 flags tests passed; 52 backend tests passed (6 non-blocking deprecation warnings)**. Full Ruff/root+frontend ESLint, Mypy15files, TypeScript/build, 67-artifact repeatability and actual generated-TypeScript repeatability passed.
+- Test-only CRA/Jest resolver/jsdom setup fixed the initial routing-test bootstrap blocker. Existing test imports cleaned; no assertions weakened.
+- Reports: `test_reports/iteration_3.json` (initial automation failures retained), `test_reports/iteration_4.json` (final pass), `test_reports/routing-remediation/{navigation-matrix,api-matrix}.json`.
+- Exact changed files, root-cause limits, commands/results and remaining warnings: `docs/phase0/ROUTING-REMEDIATION.md`. Phase 0 verification report updated.
+- No environments, credentials, schema sources, seed sources, styling, dependencies or later-phase workflows changed. Public synthetic fixture guards are NOT a production serializer/auth/PII-security boundary.
+
+### Previous foundation refinement evidence (historical)
 - Final backend pytest: **26 passed in 1.68s**.
 - Frontend Jest: **2 passed**, one suite.
 - Frontend optimized build succeeds; ESLint, Ruff, Python compilation, TypeScript boundary checks pass.
@@ -120,4 +134,4 @@ Canonical persistence and DB migrations; real auth/MFA/RLS; applicant screening/
 Verified published inventory, approved analytics/notifications, multi-jurisdiction live policy rollout, company-controlled provider activation and evidence-based cutover.
 
 ## Next action
-Farouk reviews `docs/phase0/SCOPE-AND-DECISIONS.md` and the Foundation review screens. No automatic phase advancement. A potential next Phase 0 improvement is a review-only decision register with attributable approval evidence, separately scoped before implementation.
+Stop and await user review of `docs/phase0/ROUTING-REMEDIATION.md`. Do not begin additional features, lifecycle cleanups or another phase. Existing Farouk/legal/architecture approvals remain deferred review items, not permission for implementation.

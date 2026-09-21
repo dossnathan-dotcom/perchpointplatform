@@ -70,6 +70,25 @@ if (config.enableHealthCheck) {
 }
 
 let webpackConfig = {
+  jest: {
+    configure: (jestConfig) => {
+      // CRA's Jest 27 resolver cannot follow React Router 7's package exports.
+      // Use the installed CommonJS entries (including dom's own router version), not mocks.
+      const domDirectory = path.dirname(require.resolve('react-router-dom/package.json'));
+      const routerDirectory = path.dirname(require.resolve('react-router/package.json', { paths: [domDirectory] }));
+      return {
+        ...jestConfig,
+        moduleNameMapper: {
+          ...jestConfig.moduleNameMapper,
+          '^@/(.*)$': '<rootDir>/src/$1',
+          '^react-router-dom$': path.join(domDirectory, 'dist/index.js'),
+          '^react-router$': path.join(routerDirectory, 'dist/development/index.js'),
+          '^react-router/dom$': path.join(routerDirectory, 'dist/development/dom-export.js'),
+          '^axios$': require.resolve('axios'),
+        },
+      };
+    },
+  },
   eslint: {
     configure: {
       extends: ["plugin:react-hooks/recommended"],

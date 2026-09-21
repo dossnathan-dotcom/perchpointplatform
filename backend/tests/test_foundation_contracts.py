@@ -2,7 +2,6 @@
 
 import csv
 import json
-import os
 import sys
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -19,11 +18,16 @@ from foundation.delegation import ApprovalDecision, evaluate_delegation
 from foundation.integrations import AdapterCommand, DisconnectedAdapter
 from foundation.migration import validate_import
 from foundation.people import PeopleGraph
-from foundation.permissions import Action, PermissionContext, Role, evaluate_permission, permission_matrix
+from foundation.permissions import (
+    Action,
+    PermissionContext,
+    Role,
+    evaluate_permission,
+    permission_matrix,
+)
 from foundation.property import Portfolio, Unit
 from foundation.seeds import money, people_graph, portfolio, sid
 from foundation.workflows import PaymentMethodReference, ScreeningRecord
-
 
 ROOT = Path("/app")
 

@@ -1,0 +1,106 @@
+{
+  "tested_at": "2026-09-21",
+  "base_url": "https://hawk-listings-cin.preview.emergentagent.com",
+  "public_intent": "MOCKED synthetic-only read endpoints; no auth and no production connectors",
+  "evidence": {
+    "external_public_matrix_test": "/app/backend/tests/test_phase0_public_api_matrix.py",
+    "isolated_guard_matrix_test": "/app/backend/tests/test_phase0_isolated_guards.py",
+    "pytest_log": "/app/test_reports/routing-remediation/iter4-backend-pytest.log"
+  },
+  "public_get_endpoints": [
+    {
+      "endpoint": "/api/rentals",
+      "status": 200,
+      "content_type_contains": "application/json",
+      "cache_control_contains": "no-store",
+      "phase0_header": "synthetic-phase-0",
+      "required_top_level_keys": ["units", "data_status"],
+      "synthetic_assertions": [
+        "data_status == demonstration_phase_0",
+        "units is list",
+        "all units synthetic == true"
+      ]
+    },
+    {
+      "endpoint": "/api/foundation",
+      "status": 200,
+      "content_type_contains": "application/json",
+      "cache_control_contains": "no-store",
+      "phase0_header": "synthetic-phase-0",
+      "required_top_level_keys": [
+        "version",
+        "data_status",
+        "production_authentication",
+        "provider_execution",
+        "canonical_persistence"
+      ],
+      "synthetic_assertions": [
+        "data_status == synthetic_contracts_only",
+        "production_authentication == false",
+        "provider_execution == false",
+        "canonical_persistence == false"
+      ]
+    },
+    {
+      "endpoint": "/api/foundation/portfolio",
+      "status": 200,
+      "content_type_contains": "application/json",
+      "cache_control_contains": "no-store",
+      "phase0_header": "synthetic-phase-0",
+      "required_top_level_keys": [
+        "organizations",
+        "ownership_entities",
+        "properties",
+        "buildings",
+        "units",
+        "shared_spaces",
+        "assets"
+      ],
+      "synthetic_assertions": [
+        "fixture-only deterministic synthetic portfolio"
+      ]
+    },
+    {
+      "endpoint": "/api/foundation/contracts",
+      "status": 200,
+      "content_type_contains": "application/json",
+      "cache_control_contains": "no-store",
+      "phase0_header": "synthetic-phase-0",
+      "required_top_level_keys": [
+        "version",
+        "data_status",
+        "portfolio",
+        "people",
+        "permissions",
+        "delegation",
+        "integrations",
+        "identity",
+        "retention",
+        "scenarios",
+        "migration"
+      ],
+      "synthetic_assertions": [
+        "all integrations environment == synthetic",
+        "all integrations connection_status == disconnected",
+        "all integrations credential_reference == null"
+      ]
+    }
+  ],
+  "negative_and_guard_matrix": {
+    "phase0_disabled_or_invalid": {
+      "rentals": "200 with empty units[]",
+      "foundation_summary": "404 Seeded contract previews disabled",
+      "foundation_portfolio": "404 Seeded contract previews disabled",
+      "foundation_contracts": "404 Seeded contract previews disabled"
+    },
+    "unsupported_methods": "405 JSON detail on tested POST/PUT routes",
+    "unknown_subpaths": "404 JSON detail on tested unknown API paths",
+    "query_or_body_cannot_grant_permissions": true,
+    "contamination_guard": {
+      "malicious_fixture_result": 503,
+      "detail": "Synthetic preview unavailable",
+      "secret_echo_blocked": true
+    },
+    "public_no_auth_required": true
+  }
+}

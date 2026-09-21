@@ -1,0 +1,128 @@
+{
+  "tested_at": "2026-09-21",
+  "base_url": "https://hawk-listings-cin.preview.emergentagent.com",
+  "evidence": {
+    "live_browser_run": "/app/test_reports/routing-remediation/ui_iter4_matrix",
+    "router_regression_suite": "/app/frontend/src/App.routing.test.js"
+  },
+  "roles": [
+    {
+      "role": "owner",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "super-admin",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "leasing",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "accounting",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "maintenance",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "subcontractor",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "resident",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    },
+    {
+      "role": "applicant",
+      "modal_entry_no_refresh": true,
+      "modal_close": true,
+      "url_render_match": true,
+      "direct_load": true,
+      "refresh": true,
+      "back": true,
+      "forward": true,
+      "role_switch": true,
+      "stale_state_clearance": true,
+      "nested_direct": true,
+      "nested_client": true
+    }
+  ],
+  "public_header_entry": true,
+  "controlled_unknowns": {
+    "unknown_role_controlled": true,
+    "unknown_view_controlled": true,
+    "excess_path_controlled": true
+  }
+}
