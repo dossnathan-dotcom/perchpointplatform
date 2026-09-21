@@ -1,0 +1,164 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "approved_rule_document_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Approved Rule Document Id"
+    },
+    "conflict_resolution": {
+      "const": "qualified_review_required",
+      "title": "Conflict Resolution",
+      "type": "string"
+    },
+    "country": {
+      "title": "Country",
+      "type": "string"
+    },
+    "county": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "County"
+    },
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expires At"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "lease_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Lease Type"
+    },
+    "municipality": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Municipality"
+    },
+    "policy_area": {
+      "enum": [
+        "application_disclosures",
+        "screening",
+        "fees",
+        "notices",
+        "deposits",
+        "late_payment",
+        "maintenance",
+        "retention",
+        "lease_templates",
+        "emergency_instructions"
+      ],
+      "title": "Policy Area",
+      "type": "string"
+    },
+    "property_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Property Id"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "State"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "unit_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Unit Type"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "country",
+    "state",
+    "county",
+    "municipality",
+    "property_id",
+    "unit_type",
+    "lease_type",
+    "effective_at",
+    "expires_at",
+    "policy_area",
+    "approved_rule_document_id",
+    "conflict_resolution"
+  ],
+  "title": "JurisdictionPolicy",
+  "type": "object"
+}

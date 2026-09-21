@@ -1,0 +1,92 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "approval_status": {
+      "const": "pending_farouk_and_security_review",
+      "title": "Approval Status",
+      "type": "string"
+    },
+    "implemented": {
+      "const": false,
+      "default": false,
+      "title": "Implemented",
+      "type": "boolean"
+    },
+    "operation": {
+      "enum": [
+        "invitation",
+        "registration",
+        "email_verification",
+        "password_reset",
+        "mfa_enrollment",
+        "mfa_recovery",
+        "session_duration",
+        "session_revocation",
+        "device_session_visibility",
+        "privileged_reauthentication",
+        "staff_termination",
+        "subcontractor_expiration",
+        "resident_activation",
+        "applicant_resident_conversion",
+        "lockout_abuse",
+        "technical_admin_access",
+        "emergency_support_access",
+        "impersonation"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "preconditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Preconditions",
+      "type": "array"
+    },
+    "required_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Evidence",
+      "type": "array"
+    },
+    "resulting_events": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Resulting Events",
+      "type": "array"
+    },
+    "revocation_behavior": {
+      "title": "Revocation Behavior",
+      "type": "string"
+    },
+    "ttl_seconds": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ttl Seconds"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "operation",
+    "preconditions",
+    "required_evidence",
+    "resulting_events",
+    "revocation_behavior",
+    "ttl_seconds",
+    "approval_status"
+  ],
+  "title": "IdentityLifecycleContract",
+  "type": "object"
+}

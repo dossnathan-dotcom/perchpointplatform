@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "owner_reserved": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Owner Reserved",
+      "type": "array"
+    },
+    "parts_limit": {
+      "$ref": "#/$defs/Money"
+    },
+    "repair_rent_multiplier": {
+      "exclusiveMinimum": 0,
+      "title": "Repair Rent Multiplier",
+      "type": "number"
+    },
+    "staff_limit": {
+      "$ref": "#/$defs/Money"
+    },
+    "status": {
+      "const": "seeded_pending_farouk",
+      "default": "seeded_pending_farouk",
+      "title": "Status",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "staff_limit",
+    "parts_limit",
+    "repair_rent_multiplier",
+    "owner_reserved",
+    "effective_at",
+    "expires_at"
+  ],
+  "title": "DelegationPolicy",
+  "type": "object"
+}

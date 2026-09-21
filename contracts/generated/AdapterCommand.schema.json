@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "format": "uuid",
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "canonical_record_id": {
+      "format": "uuid",
+      "title": "Canonical Record Id",
+      "type": "string"
+    },
+    "correlation_id": {
+      "format": "uuid",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "maxLength": 200,
+      "minLength": 8,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "operation": {
+      "title": "Operation",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "organization_id",
+    "actor_id",
+    "correlation_id",
+    "operation",
+    "canonical_record_id",
+    "idempotency_key"
+  ],
+  "title": "AdapterCommand",
+  "type": "object"
+}

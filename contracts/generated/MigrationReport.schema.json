@@ -1,0 +1,257 @@
+{
+  "$defs": {
+    "Reconciliation": {
+      "additionalProperties": false,
+      "properties": {
+        "conflict_rows": {
+          "title": "Conflict Rows",
+          "type": "integer"
+        },
+        "document_count_difference": {
+          "title": "Document Count Difference",
+          "type": "integer"
+        },
+        "document_reconciliation": {
+          "enum": [
+            "review_required",
+            "matched"
+          ],
+          "title": "Document Reconciliation",
+          "type": "string"
+        },
+        "duplicate_rows": {
+          "title": "Duplicate Rows",
+          "type": "integer"
+        },
+        "expected_rows": {
+          "title": "Expected Rows",
+          "type": "integer"
+        },
+        "financial_difference_minor": {
+          "title": "Financial Difference Minor",
+          "type": "integer"
+        },
+        "financial_reconciliation": {
+          "enum": [
+            "review_required",
+            "matched"
+          ],
+          "title": "Financial Reconciliation",
+          "type": "string"
+        },
+        "observed_rows": {
+          "title": "Observed Rows",
+          "type": "integer"
+        },
+        "rejected_rows": {
+          "title": "Rejected Rows",
+          "type": "integer"
+        },
+        "source_document_count": {
+          "title": "Source Document Count",
+          "type": "integer"
+        },
+        "source_financial_total_minor": {
+          "title": "Source Financial Total Minor",
+          "type": "integer"
+        },
+        "staged_document_count": {
+          "title": "Staged Document Count",
+          "type": "integer"
+        },
+        "staged_valid_total_minor": {
+          "title": "Staged Valid Total Minor",
+          "type": "integer"
+        },
+        "valid_rows": {
+          "title": "Valid Rows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_rows",
+        "observed_rows",
+        "valid_rows",
+        "rejected_rows",
+        "duplicate_rows",
+        "conflict_rows",
+        "source_financial_total_minor",
+        "staged_valid_total_minor",
+        "financial_difference_minor",
+        "source_document_count",
+        "staged_document_count",
+        "document_count_difference",
+        "financial_reconciliation",
+        "document_reconciliation"
+      ],
+      "title": "Reconciliation",
+      "type": "object"
+    },
+    "StagingRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Approval Id"
+        },
+        "conflict": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Conflict"
+        },
+        "correction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Correction"
+        },
+        "duplicate_candidate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Duplicate Candidate"
+        },
+        "imported_canonical_record_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Imported Canonical Record Id"
+        },
+        "issues": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "mapped_fields": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Mapped Fields",
+          "type": "object"
+        },
+        "rejected": {
+          "title": "Rejected",
+          "type": "boolean"
+        },
+        "row_number": {
+          "minimum": 2,
+          "title": "Row Number",
+          "type": "integer"
+        },
+        "source_file": {
+          "title": "Source File",
+          "type": "string"
+        },
+        "source_record_identifier": {
+          "title": "Source Record Identifier",
+          "type": "string"
+        },
+        "source_system": {
+          "title": "Source System",
+          "type": "string"
+        },
+        "validation_result": {
+          "enum": [
+            "valid",
+            "invalid",
+            "duplicate",
+            "conflict"
+          ],
+          "title": "Validation Result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "row_number",
+        "source_record_identifier",
+        "source_system",
+        "source_file",
+        "mapped_fields",
+        "validation_result",
+        "issues",
+        "duplicate_candidate",
+        "conflict",
+        "correction",
+        "approval_id",
+        "imported_canonical_record_id",
+        "rejected"
+      ],
+      "title": "StagingRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "control_totals": {
+      "$ref": "#/$defs/Reconciliation"
+    },
+    "mapping_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Mapping Version",
+      "type": "string"
+    },
+    "report_checksum": {
+      "title": "Report Checksum",
+      "type": "string"
+    },
+    "rollback_strategy": {
+      "const": "batch-scoped reversible mappings; compensating financial entries; never erase audits",
+      "default": "batch-scoped reversible mappings; compensating financial entries; never erase audits",
+      "title": "Rollback Strategy",
+      "type": "string"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/StagingRecord"
+      },
+      "title": "Rows",
+      "type": "array"
+    },
+    "writes_performed": {
+      "const": 0,
+      "default": 0,
+      "title": "Writes Performed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "rows",
+    "control_totals",
+    "report_checksum"
+  ],
+  "title": "MigrationReport",
+  "type": "object"
+}

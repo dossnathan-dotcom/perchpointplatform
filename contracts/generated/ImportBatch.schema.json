@@ -1,0 +1,102 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "approval_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Approval Id"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "immutable_report_checksum": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Immutable Report Checksum"
+    },
+    "mapping_version": {
+      "title": "Mapping Version",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "rollback_batch_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Rollback Batch Id"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_checksum": {
+      "title": "Source Checksum",
+      "type": "string"
+    },
+    "source_file": {
+      "title": "Source File",
+      "type": "string"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "staging",
+        "review",
+        "approved",
+        "imported",
+        "rolled_back"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "source_system",
+    "source_file",
+    "source_checksum",
+    "organization_id",
+    "mapping_version",
+    "status",
+    "approval_id",
+    "rollback_batch_id",
+    "immutable_report_checksum"
+  ],
+  "title": "ImportBatch",
+  "type": "object"
+}

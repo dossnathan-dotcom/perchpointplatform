@@ -1,0 +1,245 @@
+{
+  "$defs": {
+    "CommercialTerms": {
+      "additionalProperties": false,
+      "properties": {
+        "base_rent": {
+          "$ref": "#/$defs/Money"
+        },
+        "build_out_status": {
+          "title": "Build Out Status",
+          "type": "string"
+        },
+        "cam_nnn_terms": {
+          "title": "Cam Nnn Terms",
+          "type": "string"
+        },
+        "deposit": {
+          "$ref": "#/$defs/Money"
+        },
+        "intended_use": {
+          "title": "Intended Use",
+          "type": "string"
+        },
+        "lease_type": {
+          "title": "Lease Type",
+          "type": "string"
+        },
+        "loading_access": {
+          "title": "Loading Access",
+          "type": "string"
+        },
+        "parking": {
+          "title": "Parking",
+          "type": "string"
+        },
+        "rent_period": {
+          "enum": [
+            "month",
+            "year"
+          ],
+          "title": "Rent Period",
+          "type": "string"
+        },
+        "utility_responsibility": {
+          "title": "Utility Responsibility",
+          "type": "string"
+        },
+        "zoning_notes": {
+          "title": "Zoning Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "intended_use",
+        "base_rent",
+        "rent_period",
+        "deposit",
+        "lease_type",
+        "cam_nnn_terms",
+        "utility_responsibility",
+        "zoning_notes",
+        "loading_access",
+        "parking",
+        "build_out_status"
+      ],
+      "title": "CommercialTerms",
+      "type": "object"
+    },
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    },
+    "ResidentialTerms": {
+      "additionalProperties": false,
+      "properties": {
+        "application_fee": {
+          "$ref": "#/$defs/Money"
+        },
+        "bathrooms": {
+          "minimum": 0,
+          "title": "Bathrooms",
+          "type": "number"
+        },
+        "bedrooms": {
+          "minimum": 0,
+          "title": "Bedrooms",
+          "type": "integer"
+        },
+        "monthly_rent": {
+          "$ref": "#/$defs/Money"
+        },
+        "pet_policy": {
+          "title": "Pet Policy",
+          "type": "string"
+        },
+        "security_deposit": {
+          "$ref": "#/$defs/Money"
+        },
+        "utilities": {
+          "title": "Utilities",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bedrooms",
+        "bathrooms",
+        "monthly_rent",
+        "security_deposit",
+        "application_fee",
+        "utilities",
+        "pet_policy"
+      ],
+      "title": "ResidentialTerms",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "available_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Available Date"
+    },
+    "building_id": {
+      "format": "uuid",
+      "title": "Building Id",
+      "type": "string"
+    },
+    "commercial": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CommercialTerms"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "image_key": {
+      "title": "Image Key",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "property_id": {
+      "format": "uuid",
+      "title": "Property Id",
+      "type": "string"
+    },
+    "residential": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResidentialTerms"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "square_feet": {
+      "exclusiveMinimum": 0,
+      "title": "Square Feet",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "available",
+        "occupied",
+        "unavailable"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "use": {
+      "enum": [
+        "residential",
+        "commercial"
+      ],
+      "title": "Use",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "organization_id",
+    "property_id",
+    "building_id",
+    "label",
+    "use",
+    "square_feet",
+    "status",
+    "image_key"
+  ],
+  "title": "Unit",
+  "type": "object"
+}

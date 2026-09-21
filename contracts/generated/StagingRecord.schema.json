@@ -1,0 +1,124 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "approval_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Approval Id"
+    },
+    "conflict": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Conflict"
+    },
+    "correction": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Correction"
+    },
+    "duplicate_candidate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Duplicate Candidate"
+    },
+    "imported_canonical_record_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Imported Canonical Record Id"
+    },
+    "issues": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "mapped_fields": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Mapped Fields",
+      "type": "object"
+    },
+    "rejected": {
+      "title": "Rejected",
+      "type": "boolean"
+    },
+    "row_number": {
+      "minimum": 2,
+      "title": "Row Number",
+      "type": "integer"
+    },
+    "source_file": {
+      "title": "Source File",
+      "type": "string"
+    },
+    "source_record_identifier": {
+      "title": "Source Record Identifier",
+      "type": "string"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "validation_result": {
+      "enum": [
+        "valid",
+        "invalid",
+        "duplicate",
+        "conflict"
+      ],
+      "title": "Validation Result",
+      "type": "string"
+    }
+  },
+  "required": [
+    "row_number",
+    "source_record_identifier",
+    "source_system",
+    "source_file",
+    "mapped_fields",
+    "validation_result",
+    "issues",
+    "duplicate_candidate",
+    "conflict",
+    "correction",
+    "approval_id",
+    "imported_canonical_record_id",
+    "rejected"
+  ],
+  "title": "StagingRecord",
+  "type": "object"
+}

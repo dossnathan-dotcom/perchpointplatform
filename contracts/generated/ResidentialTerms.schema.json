@@ -1,0 +1,66 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "application_fee": {
+      "$ref": "#/$defs/Money"
+    },
+    "bathrooms": {
+      "minimum": 0,
+      "title": "Bathrooms",
+      "type": "number"
+    },
+    "bedrooms": {
+      "minimum": 0,
+      "title": "Bedrooms",
+      "type": "integer"
+    },
+    "monthly_rent": {
+      "$ref": "#/$defs/Money"
+    },
+    "pet_policy": {
+      "title": "Pet Policy",
+      "type": "string"
+    },
+    "security_deposit": {
+      "$ref": "#/$defs/Money"
+    },
+    "utilities": {
+      "title": "Utilities",
+      "type": "string"
+    }
+  },
+  "required": [
+    "bedrooms",
+    "bathrooms",
+    "monthly_rent",
+    "security_deposit",
+    "application_fee",
+    "utilities",
+    "pet_policy"
+  ],
+  "title": "ResidentialTerms",
+  "type": "object"
+}

@@ -1,206 +1,123 @@
-# PerchPoint by HawkVision Homes — Product Requirements
+# HawkVision Homes / PerchPoint — Current Product Requirements
 
-## Product Identity
+## Identity and original direction
+HawkVision Homes is a rental and property-operations company for residential, commercial and mixed-use real estate. PerchPoint is its operating platform.
+- Public: **HawkVision Homes**, **Powered by PerchPoint** / **Connected by PerchPoint**.
+- Internal: **PerchPoint — HawkVision Homes Property Operations**.
+- Initial operating region: Greater Cincinnati. No schema or policy assumes Ohio is the only jurisdiction.
+- Approved premium design: charcoal/black, warm copper-orange, Playfair Display / IBM Plex Sans, Cincinnati imagery, generous public spacing, denser internal operations.
+- No buyer/seller brokerage, valuation, private-portfolio positioning, fictional testimonials/history/advisors/statistics, or reintroduced AI/chat.
 
-**PerchPoint** is the property operations platform by **HawkVision Homes**.
+## Active user request and governing boundary
+The user requested a **controlled Phase 0 foundation refinement**, not production screening, payment processing, lease execution, authentication, messaging, Twilio routing, document storage or tenant-account creation. Preserve public IA and the premium design, refine accessibility/content, implement canonical schemas and synthetic scenarios, formalize access/delegation/identity/integration/migration/audit/retention/jurisdiction contracts, create actual role-preview shells, document and verify everything. Do not automatically move to a later phase.
 
-- Public brand: HawkVision Homes
-- Operating system: PerchPoint
-- Internal subtitle: HawkVision Homes Property Operations
-- Resident language: Your PerchPoint Resident Portal
-- Initial market: Greater Cincinnati, with a model that can expand to other municipalities and states
+Public IA: Available Rentals, Properties, How to Apply, Resident Resources, Maintenance, About, Contact HawkVision, Sign in to PerchPoint.
 
-## Governing Product Direction
+## Current architecture
+- React 19 / CRA / CRACO / Tailwind / Shadcn UI, React Router. Legacy JSX remains JavaScript; generated TypeScript contracts and typed API boundary added.
+- FastAPI / Pydantic v2 contracts in `backend/foundation/`.
+- Existing MongoDB retains only synthetic inquiry and maintenance captures; canonical models remain validated fixtures, not production persistence.
+- Required configuration: `REACT_APP_BACKEND_URL`; backend `MONGO_URL`, `DB_NAME`, `CORS_ORIGINS`. Protected values unchanged.
+- Required new flags: frontend `REACT_APP_SHOW_DEMO_LABELS`, `REACT_APP_ENABLE_SEEDED_PREVIEWS`; backend `PHASE0_ENABLED`.
+- Future PostgreSQL row-level security and server authorization are documented requirements, **not implemented or tested production controls**.
+- Stable PerchPoint UUIDs; provider IDs only in external-reference records. One graph for all role shells, no portal-specific databases.
 
-The original HawkVision prototype was visually strong but incorrectly positioned as a luxury home-sales brokerage. The product has been repositioned as a rental and property-operations platform while preserving its charcoal foundation, burnt-copper accent, premium typography, Cincinnati imagery, refined spacing, and high-trust presentation.
+## Canonical real-estate model
+Organization → OwnershipEntity → Property → Building → Unit.
+SharedSpace belongs to property/building; Asset belongs to property/building/unit/shared location as appropriate.
 
-The active direction is:
+Definitions and constraints are executable in `property.py`: same-org ownership, valid property/building/unit links, exclusive residential/commercial terms, allowed use, unique IDs, appropriate shared/asset links, complete single-family/duplex/triplex shapes. Multi-building and third-party-managed properties supported.
 
-- Build iteratively internally and present comprehensively externally.
-- Use internal release gates without presenting incomplete client deliverables.
-- Avoid deep production functionality until Phase 0 legal, identity, payment, screening, data-retention, and operating contracts are finalized.
-- Clearly label seeded rental, portal, financial, and performance information as demonstration data.
-- Do not reintroduce AI/chat unless explicitly requested.
+Residential terms: beds, baths, area, monthly rent, deposit, application fee, availability, utilities, pets.
+Commercial terms: intended use, area, base rent/period, deposit, lease type, CAM/NNN, utilities, zoning/use notes, loading/access, parking, build-out, available date. No residential fields shown on commercial units.
 
-## Primary Users
+## Person and household model
+Person, UserAccount, Household, BusinessParty and time-bounded PersonRelationship are distinct.
+Relationships include applicant/co-applicant, primary holder, adult signer, occupant/minor, guarantor, resident/former resident, business applicant/tenant, emergency contact, staff, maintenance employee, subcontractor/vendor contact.
+One active primary holder per household. Adult signers/attributable access retain individual account references. Occupants need not have accounts. No passwords shared. Multiple historical relationships reuse one person.
 
-### Public and household users
-- Prospective residential renter
-- Prospective commercial tenant
-- Applicant
-- Primary resident household account holder
-- Adult co-tenant who needs attributable signatures, notices, consent, or document access
+## Phase 0 roles and boundaries
+1. Farouk — Owner / Asset Principal: broad business access, owner-reserved applicant/lease/legal approvals; no automatic infrastructure/secrets/database/deployment/migration/RLS/developer controls or audit deletion.
+2. Nathan — Platform Super Administrator: technical/configuration/integration/security/environment/development contracts; separate business/support purpose; no unrestricted impersonation.
+3. Leasing / Project Manager: portfolio operations, tenants/applicants/showings/leasing/communication/maintenance, not unrestricted screening, financial adjustment or owner authority.
+4. Accounting Contractor: authorized financial/reconciliation/reporting/document records, relationship-restricted.
+5. Maintenance Employee: assigned work and necessary context.
+6. Subcontractor: one seeded assignment only, no broad resident/applicant/financial/portfolio visibility.
+7. Primary Resident: household records only, individual restricted records protected conceptually.
+8. Applicant: own application/household relationships and allowed disclosures.
 
-### Business and operating users
-- Farouk — Owner / Asset Principal
-- Nathan — Platform Super Administrator
-- Leasing / Project Manager
-- Accounting contractor
-- Maintenance employee
-- Subcontractor
+Future inventory: leasing agent, property manager, maintenance coordinator, vendor administrator, auditor, legal/compliance reviewer, additional household signer. No implicit grants.
 
-## Core Public Requirements
-
-- Available residential, commercial, and mixed-use rentals
-- Cincinnati-area neighborhood context
-- Clear monthly rent, deposits, fees, utility responsibility, pet terms, and qualification guidance
-- Showing scheduling
-- Application initiation
-- Resident resources
-- Non-emergency maintenance reporting
-- High-visibility emergency-maintenance instructions
-- HawkVision property-management standards
-- No fictional principals, advisors, testimonials, transaction claims, or unlabeled statistics
-- Public header emphasizes HawkVision Homes; sign-in directs users to PerchPoint
-
-## Property Domain Model
-
-```text
-Organization
-└── Ownership entity
-    └── Property
-        ├── Building
-        │   └── Unit
-        └── Shared spaces/assets
-```
-
-Supported property shapes:
-
-- Single-family houses
-- Duplexes
-- Triplexes
-- Larger multifamily properties
-- Commercial properties
-- Mixed-use properties
-- Buildings with both residential and commercial units
-
-Each unit is intended to maintain independent leases, occupants, rent, ledger, documents, maintenance, utilities, and access instructions.
-
-## Household Identity Contract
-
-- One resident is the primary household account holder.
-- Other occupants may be listed without full accounts.
-- Adults receive individual accounts when signatures, regulated consent, notices, or document access require attribution.
-- Household members never share one password.
-
-## Role and Access Contract
-
-### Farouk — Owner
-Can access all business operations, properties, units, residents, applicants, maintenance, financials, vendors, documents, communications, reserved approvals, business policies, delegations, audits, and performance reporting.
-
-Does not automatically receive database administration, production secrets, source code, deployment controls, migrations, row-level security policy changes, audit deletion, developer feature flags, or integration-secret rotation.
-
-### Nathan — Platform Super Administrator
-Owns application configuration, integrations, security, development controls, infrastructure, role-policy implementation, and protected technical administration.
-
-### Leasing / Project Manager
-Portfolio-wide applicant, showing, leasing, communication, turnover, and maintenance-coordination visibility.
-
-### Accounting contractor
-Financial reconciliation, unit ledgers, approved documents, vendor invoices, and property reporting.
-
-### Maintenance employee
-Assigned work, required property/resident context, access instructions, estimates, evidence, and schedules.
-
-### Subcontractor
-Assigned jobs only, necessary access details, job communication, estimates, evidence, and invoices.
-
-### Primary resident
-Household lease, balance, payments, documents, communication, access information, and maintenance.
-
-### Applicant
-Only their application, documents, screening consent, status, communication, and lease process.
-
-Sensitive screening and identity access must eventually create a reasoned, timestamped audit event.
-
-## Delegation Policy Contract
-
-Approvals must support combinations of:
-
-- Dollar amount
-- Property and unit
-- Expense category and decision type
-- Budget availability
-- Tenant monthly rent
-- Emergency status
-- Requesting employee and vendor
-- Time period and active delegation
-- Prior spending on the same issue
-
-Reserved owner authority includes final applicant approval, lease approval, legal matters, spending outside policy, and repair totals above configurable rules. Emergency authority may act to protect life or property but requires immediate notification and retrospective review. Exact thresholds remain configurable until Farouk approves them.
-
-## Implemented — 2026-09-21
-
+## Implemented — 2026-09-21 refinement
 ### Public experience
-- Rebranded the product as PerchPoint by HawkVision Homes.
-- Rebuilt navigation around rentals, properties, applications, resident resources, maintenance, company approach, and PerchPoint sign-in.
-- Preserved the cinematic Cincinnati hero and kinetic heading transitions with rental/property-operations messaging.
-- Added seeded residential, commercial, duplex, triplex, and mixed-use rental cards.
-- Added transparent example rent, deposit, utility, pet, application, and qualification terms.
-- Added rental-type filtering and complete rental detail routes.
-- Added showing requests and application-interest capture through `POST /api/leads`.
-- Added a property hierarchy explorer with organization, ownership entity, property, building, residential units, commercial unit, and shared assets.
-- Added a four-step application explanation.
-- Added resident resources, household identity guidance, emergency instructions, and non-emergency maintenance reporting.
-- Added HawkVision operating standards without fictional staff profiles or testimonials.
-- Added responsive public navigation and mobile layouts.
+- Stronger readable header/hero/body/eyebrow/button palette; carousel pause and reduced-motion behavior; stable slide composition.
+- Correct singular/plural unit grammar and separate commercial terms.
+- Functional location/use search and filters; canonical UUID unit detail routes; six-property selector and actual building/unit/shared-space/asset hierarchy.
+- All addresses and entities explicitly fictional. Illustrative photography is not claimed to depict verified units.
+- Feature flags suppress seeded surfaces when labels are removed; no unlabeled synthetic availability.
+- Mobile navigation, safe modal bounds, explicit form labels, visible focus and unique interactive test IDs.
+- Synthetic-only intake with reserved example email domains and truthful “no notification/dispatch/application created” confirmations.
+- Page title and metadata now identify HawkVision / PerchPoint.
 
-### PerchPoint operating shell
-- Added eight seeded role previews: Owner, Platform Super Administrator, Leasing, Accounting, Maintenance, Subcontractor, Primary Resident, and Applicant.
-- Added role-specific workspace navigation, metrics, queues, access boundaries, and responsive internal layouts.
-- Added visible separation between owner business authority and super-administrator infrastructure authority.
-- Added a multidimensional delegation-policy matrix preview for Owner and Platform Super Administrator roles.
-- Added explicit Phase 0 and demonstration-data disclosures.
-- Removed all sales-era buyer, seller, valuation, saved-home, luxury advisor, buyer quiz, and testimonial modules.
+### Meaningful role shells
+- Owner Command Center; Platform Administration; Leasing Operations; Accounting; Maintenance Operations; Subcontractor Assignments; Resident Portal; Applicant Portal.
+- Deep role/view routes, navigation, scoped search/context, notification/account menus, record preview modals, disabled later-phase actions, empty/loading/error/denied state previews.
+- Leasing Operations Console includes operational inbox, pipeline, showing/application queues, tenant directory, maintenance coordination, payment exceptions, approvals, documents/expirations, tasks, communication and system exceptions.
+- Removed fake password authentication. Explicit role selector opens a real preview shell. No real accounts or credentials.
 
-### Backend
-- Renamed the API service to PerchPoint.
-- Replaced sales inventory with seeded rental/unit records at `GET /api/properties`.
-- Retained inquiry capture at `POST /api/leads` for showing, application-interest, and contact requests.
-- Added `POST /api/maintenance-requests` with validation and MongoDB persistence.
-- Uses `MONGO_URL`, `DB_NAME`, and `CORS_ORIGINS` from the backend environment.
+### Foundation implementation
+- 59 JSON Schemas and generated TypeScript definitions; 67 deterministic schema/fixture/matrix artifacts from the Python source.
+- 5,624 versioned deny/conditional-grant matrix rows: 8 roles × 37 resources × 19 actions.
+- Pure permission/delegation evaluators: simulated outcomes only, no production authority or execution.
+- Configurable seeded $250 staff/$500 parts/1× rent policies pending Farouk. Scope/expiry/value/self-approval/material revision/policy/concurrency context guards and emergency review flags.
+- 18 identity lifecycle contracts, 10 disconnected provider types, payment/screening/document/retention/jurisdiction/audit/event/outbox/inbox/migration contracts.
+- Synthetic portfolio: 1 organization, 2 ownership entities, 6 properties, 7 buildings, 15 units, 35 shared spaces, 21 assets across OH/KY/PA. Multi-building and fictional bakery included.
+- 9 people, 7 synthetic account references, 2 households, business tenant and historical relationships.
+- Synthetic Innago staging: 5 rows = 1 valid, 1 duplicate, 2 invalid, 1 canonical conflict; reconciliation review and zero writes.
+- Comprehensive repository docs under `docs/phase0/`; old design guidance replaced to remove contradictory policies and fake biographies.
 
-## Current Authentication Status
+## Routes
+- `/`, `/rentals/:unitId`; legacy `/property/:propertyId` accepts a canonical unit UUID, old slugs show unavailable.
+- `/perchpoint` preview selection; `/perchpoint/:roleId/:viewId?` eight shells.
+- `/foundation/:sectionId?` contract review surface.
+- GET `/api/health`, `/api/properties` (actual property records), `/api/rentals` (unit records).
+- GET `/api/foundation`, `/api/foundation/portfolio`, `/api/foundation/contracts` read-only fixtures.
+- POST `/api/leads`, `/api/maintenance-requests` retained synthetic capture. No auth/provider execution endpoints.
 
-**MOCKED:** all eight role profiles are frontend-only seeded demonstrations. No production authentication, authorization enforcement, MFA, password storage, refresh tokens, screening access, or protected financial access is active.
+## Verification and evidence
+- Final backend pytest: **26 passed in 1.68s**.
+- Frontend Jest: **2 passed**, one suite.
+- Frontend optimized build succeeds; ESLint, Ruff, Python compilation, TypeScript boundary checks pass.
+- Mypy: no issues in 14 foundation source files.
+- 59 generated schemas valid Draft 2020-12; 67 fixture/schema artifacts repeat exactly; TypeScript regeneration matches.
+- Disabled backend flags tested: empty feeds, 404 foundation, 503 intake, no writes. Frontend flags tested for suppressing seed surfaces and missing/invalid config rejection.
+- Testing agent reports public responsiveness at 320/768/1024/1440, mobile/hero/filter/detail/hierarchy/forms, all eight role routes/tabs, state previews, foundation sections/fallback and interactive-ID checks passed.
+- Initial serious footer contrast failure fixed. Retest: zero axe violations on all three homepage slides, leasing, resident and foundation permissions.
+- One automated homepage accessibility rule remains incomplete; manual photograph/assistive-tech/zoom review is still a publication gate. No WCAG certification claim.
+- Evidence: `test_reports/iteration_2.json`, `test_reports/foundation/`, `docs/phase0/VERIFICATION.md`.
+- Final metadata rebuild and backend compilation/export checks passed. Local environment files are ignored and untracked; protected configuration remains unchanged.
+- Handoff lint-gate correction: added root `eslint.config.cjs` forwarding the same frontend rules; both system and project ESLint pass from `/app` as well as the frontend directory. No rules weakened.
+- Measured essential contrast pairs: 5.42:1 copper/linen, 9.93:1 light copper/charcoal, 17.85:1 body/charcoal, 12.24:1 muted/charcoal, 7.91:1 footer-region label. Complete changed-file list: `docs/phase0/CHANGED-FILES.md`.
 
-Production JWT/session implementation is intentionally deferred until Phase 0 identity, MFA, audit, retention, and authorization contracts are approved. Current test credentials are documented in `/app/memory/test_credentials.md`.
+## Important limitations — explicit, not hidden
+**MOCKED** role previews, provider adapters and queues. No production auth, MFA, authorization, PostgreSQL/RLS, financial ledger posting, money movement, screening/decisions/adverse action, lease signing, messaging or file storage. No durable policy/approval/audit/outbox/rollback enforcement. No automatic PII detection in free-text demo fields. No verified property inventory or approved legal policy.
+Frozen models/checksums do not provide immutable storage. Future transactions must enforce approvals, audit and outbox atomically. Legacy JSX is built/linted, not fully statically typed.
 
-## Verification
+## Prioritized remaining work
+### P0 — Farouk and qualified review, not more production code
+1. Review this foundation and the unchanged Phase 0 boundary.
+2. Approve real company/entity/property/unit data, imagery and terms before replacing any seeds.
+3. Approve role matrix, owner-reserved decisions, delegation dimensions/thresholds and emergency authority.
+4. Approve identity/MFA/recovery/session/termination contracts and company account ownership.
+5. Obtain qualified legal review for jurisdiction policies, disclosures/screening/adverse-action, deposit/fees/notices, retention and legal holds.
+6. Cursor/Nathan review: PostgreSQL target, foreign keys/RLS, temporal person identity, atomic ledger/approval/audit/outbox, migration/currency/reconciliation/cutover strategy.
+7. Complete human accessibility review of image-composited text, assistive technology and zoom.
 
-- Production frontend build passes.
-- Backend Python compilation passes.
-- Automated backend suite passes 6/6 tests.
-- `GET /api/health` returns the PerchPoint service.
-- `GET /api/properties` returns seeded Phase 0 rental data.
-- Showing and application-interest requests persist through `POST /api/leads`.
-- Maintenance requests persist through `POST /api/maintenance-requests`.
-- Browser testing passed public copy guards, navigation, responsive behavior, filters, details, map, request flows, hierarchy, resident resources, owner login, all eight role shells, delegation access, and mobile overflow checks.
-- Full report: `/app/test_reports/iteration_1.json`.
+### P1 — Deferred; explicit new authorization required
+Canonical persistence and DB migrations; real auth/MFA/RLS; applicant screening/human decisions; resident ledger/payments; documents/signatures; work-order/vendor lifecycle; approvals and notifications; durable audits/outbox; validated Innago import and retirement.
 
-## Prioritized Roadmap
+### P2 — Deferred
+Verified published inventory, approved analytics/notifications, multi-jurisdiction live policy rollout, company-controlled provider activation and evidence-based cutover.
 
-### P0 — Phase 0 contracts and source-of-truth decisions
-1. Confirm HawkVision legal entity, property ownership entities, verified properties, units, addresses, rents, deposits, fees, utility allocations, pet policies, and qualification criteria.
-2. Approve role-permission matrix, reserved decisions, delegation dimensions, initial thresholds, emergency authority, and audit requirements.
-3. Approve household identity, co-tenant, screening-data, identity-document, notice, signature, and retention rules.
-4. Confirm company-controlled domain, technical address, MFA recovery ownership, password manager, billing ownership, and account-provisioning checklist.
-5. Select production identity, payment, screening, document storage/signature, messaging, and accounting integrations only when required.
-
-### P1 — Internal vertical releases
-1. Persist organization, ownership entity, property, building, unit, shared asset, household, lease, and occupant models.
-2. Implement production authentication, MFA, session handling, RBAC/policy enforcement, and immutable sensitive-access events.
-3. Build applicant intake, consent, document collection, screening handoff, approval, lease preparation, and status workflow.
-4. Build resident ledger, payments, documents, notices, household access, and maintenance lifecycle.
-5. Build work orders, vendor assignments, estimates, evidence, invoices, budgets, approvals, and delegation enforcement.
-6. Build accounting reconciliation and property/unit reporting.
-
-### P2 — External readiness and growth
-1. Replace all seeded rental data with verified HawkVision inventory and approved imagery.
-2. Add real tenant and business testimonials only after written approval.
-3. Add production notifications, analytics, audit exports, accessibility verification, SEO, and performance monitoring.
-4. Expand jurisdiction-aware configuration for additional municipalities and states.
-
-## Immediate Next Action
-
-Finalize the Phase 0 source-of-truth contracts before converting any seeded portal shell into production identity, financial, screening, payment, or legally attributable workflow functionality.
+## Next action
+Farouk reviews `docs/phase0/SCOPE-AND-DECISIONS.md` and the Foundation review screens. No automatic phase advancement. A potential next Phase 0 improvement is a review-only decision register with attributable approval evidence, separately scoped before implementation.

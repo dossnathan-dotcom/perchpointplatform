@@ -1,0 +1,150 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "view_list",
+        "view_detail",
+        "view_sensitive_detail",
+        "create",
+        "edit",
+        "submit",
+        "approve",
+        "reject",
+        "assign",
+        "reassign",
+        "export",
+        "upload",
+        "download",
+        "delete_or_archive",
+        "restore",
+        "adjust_financial_record",
+        "execute_integration_action",
+        "configure_policy",
+        "administer_permissions"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "Role": {
+      "enum": [
+        "owner",
+        "super-admin",
+        "leasing",
+        "accounting",
+        "maintenance",
+        "subcontractor",
+        "resident",
+        "applicant"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/Action"
+    },
+    "approval_required": {
+      "default": false,
+      "title": "Approval Required",
+      "type": "boolean"
+    },
+    "assignment_scope": {
+      "default": "not_required",
+      "enum": [
+        "assigned",
+        "not_required"
+      ],
+      "title": "Assignment Scope",
+      "type": "string"
+    },
+    "audit_required": {
+      "default": true,
+      "title": "Audit Required",
+      "type": "boolean"
+    },
+    "building_scope": {
+      "const": "authorized",
+      "default": "authorized",
+      "title": "Building Scope",
+      "type": "string"
+    },
+    "delegation_eligible": {
+      "default": false,
+      "title": "Delegation Eligible",
+      "type": "boolean"
+    },
+    "household_scope": {
+      "default": "not_required",
+      "enum": [
+        "related",
+        "not_required"
+      ],
+      "title": "Household Scope",
+      "type": "string"
+    },
+    "organization_scope": {
+      "const": "same",
+      "default": "same",
+      "title": "Organization Scope",
+      "type": "string"
+    },
+    "ownership_entity_scope": {
+      "const": "authorized",
+      "default": "authorized",
+      "title": "Ownership Entity Scope",
+      "type": "string"
+    },
+    "property_scope": {
+      "const": "authorized",
+      "default": "authorized",
+      "title": "Property Scope",
+      "type": "string"
+    },
+    "reason_required": {
+      "default": false,
+      "title": "Reason Required",
+      "type": "boolean"
+    },
+    "record_relationship_required": {
+      "default": false,
+      "title": "Record Relationship Required",
+      "type": "boolean"
+    },
+    "record_sensitivity": {
+      "items": {
+        "enum": [
+          "public",
+          "internal",
+          "confidential",
+          "restricted"
+        ],
+        "type": "string"
+      },
+      "title": "Record Sensitivity",
+      "type": "array"
+    },
+    "resource": {
+      "title": "Resource",
+      "type": "string"
+    },
+    "role": {
+      "$ref": "#/$defs/Role"
+    },
+    "unit_scope": {
+      "const": "authorized",
+      "default": "authorized",
+      "title": "Unit Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "resource",
+    "action",
+    "role",
+    "record_sensitivity"
+  ],
+  "title": "PermissionRule",
+  "type": "object"
+}

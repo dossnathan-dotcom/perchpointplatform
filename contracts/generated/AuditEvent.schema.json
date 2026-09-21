@@ -1,0 +1,306 @@
+{
+  "$defs": {
+    "Scope": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "building_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building Id"
+        },
+        "household_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Household Id"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "ownership_entity_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ownership Entity Id"
+        },
+        "property_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Id"
+        },
+        "unit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Id"
+        }
+      },
+      "required": [
+        "organization_id"
+      ],
+      "title": "Scope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "title": "Action",
+      "type": "string"
+    },
+    "actor_id": {
+      "format": "uuid",
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "correlation_id": {
+      "format": "uuid",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "delegated_authority_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Delegated Authority Id"
+    },
+    "effective_role": {
+      "title": "Effective Role",
+      "type": "string"
+    },
+    "event_hash": {
+      "title": "Event Hash",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "ip_device_metadata": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Ip Device Metadata",
+      "type": "object"
+    },
+    "material_after": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Material After",
+      "type": "object"
+    },
+    "material_before": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Material Before",
+      "type": "object"
+    },
+    "previous_event_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Previous Event Hash"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reason"
+    },
+    "related_approval_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Related Approval Id"
+    },
+    "related_provider_event_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Related Provider Event Id"
+    },
+    "resource_id": {
+      "format": "uuid",
+      "title": "Resource Id",
+      "type": "string"
+    },
+    "resource_type": {
+      "title": "Resource Type",
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "allowed",
+        "denied",
+        "failed",
+        "simulated"
+      ],
+      "title": "Result",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/Scope"
+    },
+    "source_channel": {
+      "enum": [
+        "web",
+        "api",
+        "worker",
+        "migration",
+        "support",
+        "synthetic"
+      ],
+      "title": "Source Channel",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "actor_id",
+    "effective_role",
+    "delegated_authority_id",
+    "action",
+    "resource_type",
+    "resource_id",
+    "scope",
+    "timestamp",
+    "source_channel",
+    "correlation_id",
+    "reason",
+    "material_before",
+    "material_after",
+    "ip_device_metadata",
+    "result",
+    "related_approval_id",
+    "related_provider_event_id",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "title": "AuditEvent",
+  "type": "object"
+}

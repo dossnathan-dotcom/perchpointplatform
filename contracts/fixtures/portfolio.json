@@ -1,0 +1,1367 @@
+{
+  "assets": [
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "551f6482-2280-5d9d-899f-3a19d7c35b3b",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "shared_space_id": "26ab4776-1928-55e0-8105-c4e2a93d59ff",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "da4d36b7-e98c-5d20-bc15-4396b0778093",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "shared_space_id": "e52db054-3fa2-55be-9899-3d5fc785013b",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "cdd45c4d-d026-59a9-9129-ad0703613da1",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "shared_space_id": "093b3f4b-d368-5493-bed2-5978e4ea0fe2",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "da3f8b8a-a256-584a-9354-63d007b12fae",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "shared_space_id": "40e72e0a-6063-5d9f-a270-144d18e57966",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "ec2053ae-6123-5ae0-b8a1-090a52e4963e",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "shared_space_id": "b3ed0b0b-550b-5e2a-bb65-a6cc45d22cea",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "e1d19825-f39c-575e-8938-22a5dba3d727",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "shared_space_id": "adbc13d1-c8e2-5bba-b91a-6297e8b4535b",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "d995cfba-c008-5fbf-beaf-5ba07fee46c9",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "shared_space_id": "78b234c9-923f-50db-b310-788bdda1f9be",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "573837d2-1964-52a3-8735-248f69ea73b4",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "shared_space_id": "e7722788-be3f-52f2-8907-4d298ea13259",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "9a856403-c809-50e2-b91e-d4355fceb828",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "shared_space_id": "8ec883b0-b4f7-50ce-977e-7a73056deca6",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "bdbba438-0f3e-5024-96c5-26f853606c98",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "shared_space_id": "87ab5427-2299-5cb4-854a-b82dac0404ef",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "e862b769-fdc4-5785-b296-85d1555e02bd",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "shared_space_id": "9caf4189-319c-55ad-824c-eee7134fcf12",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "a869c620-8554-54a5-94c3-3c46e8f8bae4",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "shared_space_id": "577b1e6b-1c3d-56fb-8666-bc5d095ece9c",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "853134fe-46cb-51c7-85eb-b884669852f0",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "shared_space_id": "0b0aba80-8223-5778-b1ed-d5f464971021",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "4511190c-9346-592b-ba4b-9edbaa4f052d",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "shared_space_id": "d11dca34-9898-5cca-9e70-9730e8265284",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "22915013-4044-5151-99d3-25ae7bca7fd8",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "shared_space_id": "41cfa7d7-2cdb-5309-8adb-c606a5a51f66",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "7ebb1c4f-7fea-5fb1-918d-8c52a69e1091",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "910ea545-c249-57d1-94cc-6c25c21d2cb6",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "a055efa6-d0db-573b-8802-4718e5e8fba1",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "4b4ebcdc-0802-57e7-a8a2-800afadeeb3c",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "c795d05c-2896-50e7-9a01-1a545441d6cc",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "f95a3e45-25a8-5ea7-86ee-3a1c16da646f",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "e858d528-009d-5c48-9b2e-7a7496888069",
+      "kind": "access",
+      "name": "Example access control",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "4bf7e3ca-82a6-5b15-84f2-deb3a18bdf06",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "a1e8d085-3c41-50e5-a707-db514980d36b",
+      "kind": "hvac",
+      "name": "Example HVAC system",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "cce125c6-e8fd-59ef-b994-8ea3fe187307",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "5f5e5be9-f890-584b-b508-1ca5b7cf9af3",
+      "kind": "meter",
+      "name": "Example meter bank",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "shared_space_id": "674c47bf-3a56-57f8-b674-2dfb9f23f8bd",
+      "synthetic": true,
+      "unit_id": null
+    }
+  ],
+  "buildings": [
+    {
+      "allowed_uses": [
+        "residential",
+        "commercial"
+      ],
+      "id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "residential"
+      ],
+      "id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "residential"
+      ],
+      "id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "residential"
+      ],
+      "id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "commercial"
+      ],
+      "id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "residential"
+      ],
+      "id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "name": "Building 1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "allowed_uses": [
+        "residential"
+      ],
+      "id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "name": "Building 2",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "organizations": [
+    {
+      "id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "name": "HawkVision Homes \u2014 synthetic organization",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "ownership_entities": [
+    {
+      "entity_type": "llc",
+      "id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "legal_name": "EXAMPLE ONLY \u2014 Demo Ownership LLC (fictional)",
+      "management_relationship": "owned",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "entity_type": "trust",
+      "id": "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+      "legal_name": "EXAMPLE ONLY \u2014 Demo Client Trust (fictional)",
+      "management_relationship": "third_party_managed",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "properties": [
+    {
+      "address": {
+        "country": "US",
+        "county": "Hamilton",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example Elm Court (not a deliverable address)",
+        "municipality": "Cincinnati",
+        "postal_code": "EXAMPLE",
+        "state": "OH"
+      },
+      "id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "name": "Example Elm Court",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "parcel_references": [],
+      "property_type": "mixed_use",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "address": {
+        "country": "US",
+        "county": "Hamilton",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example Clifton Duplex (not a deliverable address)",
+        "municipality": "Cincinnati",
+        "postal_code": "EXAMPLE",
+        "state": "OH"
+      },
+      "id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "name": "Example Clifton Duplex",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "parcel_references": [],
+      "property_type": "duplex",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "address": {
+        "country": "US",
+        "county": "Hamilton",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example Heritage Triplex (not a deliverable address)",
+        "municipality": "Cincinnati",
+        "postal_code": "EXAMPLE",
+        "state": "OH"
+      },
+      "id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "name": "Example Heritage Triplex",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "parcel_references": [],
+      "property_type": "triplex",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "address": {
+        "country": "US",
+        "county": "Hamilton",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example Garden House (not a deliverable address)",
+        "municipality": "Cincinnati",
+        "postal_code": "EXAMPLE",
+        "state": "OH"
+      },
+      "id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "name": "Example Garden House",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "parcel_references": [],
+      "property_type": "single_family",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "address": {
+        "country": "US",
+        "county": "Kenton",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example Commerce Site (not a deliverable address)",
+        "municipality": "Covington",
+        "postal_code": "EXAMPLE",
+        "state": "KY"
+      },
+      "id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "name": "Example Commerce Site",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+      "parcel_references": [],
+      "property_type": "commercial",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "address": {
+        "country": "US",
+        "county": "Allegheny",
+        "is_example": true,
+        "line1": "EXAMPLE ONLY \u2014 Example River Campus (not a deliverable address)",
+        "municipality": "Pittsburgh",
+        "postal_code": "EXAMPLE",
+        "state": "PA"
+      },
+      "id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "name": "Example River Campus",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "ownership_entity_id": "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+      "parcel_references": [],
+      "property_type": "multifamily",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "shared_spaces": [
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "26ab4776-1928-55e0-8105-c4e2a93d59ff",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "c6f49055-81ac-582a-acbf-ace3144b9b74",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "e52db054-3fa2-55be-9899-3d5fc785013b",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "id": "093b3f4b-d368-5493-bed2-5978e4ea0fe2",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "51e6f35c-b02c-5a59-9642-d74cd8f2ffbc",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "40e72e0a-6063-5d9f-a270-144d18e57966",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "4b130f24-20ee-5090-8387-642bee554c32",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "b3ed0b0b-550b-5e2a-bb65-a6cc45d22cea",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "id": "adbc13d1-c8e2-5bba-b91a-6297e8b4535b",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "10f0a952-2a07-5ff9-a564-f8569f1f0778",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "78b234c9-923f-50db-b310-788bdda1f9be",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "df672e0e-e01a-5ada-9241-8038cbc1eb11",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "e7722788-be3f-52f2-8907-4d298ea13259",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "id": "8ec883b0-b4f7-50ce-977e-7a73056deca6",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "873c8d77-c0f2-5539-9efd-952cb9a3fc1e",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "87ab5427-2299-5cb4-854a-b82dac0404ef",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "8792ccc9-2a13-5e8e-b369-c8c54a2e8b92",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "9caf4189-319c-55ad-824c-eee7134fcf12",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "id": "577b1e6b-1c3d-56fb-8666-bc5d095ece9c",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "9dd855ad-91dc-5de3-8fb8-e6739c193d6a",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "0b0aba80-8223-5778-b1ed-d5f464971021",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "f66dd934-40cc-5493-9fde-9991023790c0",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "d11dca34-9898-5cca-9e70-9730e8265284",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "id": "41cfa7d7-2cdb-5309-8adb-c606a5a51f66",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "170d4b23-fe06-5358-8237-0d79097e1a60",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "910ea545-c249-57d1-94cc-6c25c21d2cb6",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "aac66724-6048-569e-9513-3cccd5846b29",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "4b4ebcdc-0802-57e7-a8a2-800afadeeb3c",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "id": "f95a3e45-25a8-5ea7-86ee-3a1c16da646f",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "4adbc52f-c877-545e-8f7e-45a784ff6c57",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "4bf7e3ca-82a6-5b15-84f2-deb3a18bdf06",
+      "kind": "entry",
+      "name": "Example entry",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "d6b0ac47-e840-586c-afaa-ad197de339fb",
+      "kind": "parking",
+      "name": "Example parking",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "cce125c6-e8fd-59ef-b994-8ea3fe187307",
+      "kind": "roof",
+      "name": "Example roof",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "id": "674c47bf-3a56-57f8-b674-2dfb9f23f8bd",
+      "kind": "utility_room",
+      "name": "Example utility room",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "building_id": null,
+      "id": "5e9b235e-a526-59e8-aced-394f062310a2",
+      "kind": "exterior",
+      "name": "Example exterior",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    }
+  ],
+  "units": [
+    {
+      "available_date": "2027-01-15",
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "commercial": null,
+      "id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee",
+      "image_key": "mixedUse",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "commercial": null,
+      "id": "febe2e2c-8103-5ec0-b41a-d3887e776f56",
+      "image_key": "mixedUse",
+      "label": "1B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+      "commercial": {
+        "base_rent": {
+          "amount_minor": 380000,
+          "currency": "USD"
+        },
+        "build_out_status": "Illustrative food-service fit-out",
+        "cam_nnn_terms": "Tenant share of CAM, taxes and insurance; amounts unapproved",
+        "deposit": {
+          "amount_minor": 760000,
+          "currency": "USD"
+        },
+        "intended_use": "Bakery / retail",
+        "lease_type": "NNN \u2014 example only",
+        "loading_access": "Example rear service entry",
+        "parking": "Example shared parking; allocation unverified",
+        "rent_period": "month",
+        "utility_responsibility": "Separately metered electric and gas; allocation pending review",
+        "zoning_notes": "Intended use only; zoning and permits NOT verified"
+      },
+      "id": "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7",
+      "image_key": "bakery",
+      "label": "Bakery C1",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "residential": null,
+      "schema_version": "0.1.0",
+      "square_feet": 1850,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "commercial"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "commercial": null,
+      "id": "49f5553b-5cc3-5e99-8376-9ceaa72cb327",
+      "image_key": "duplex",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 1.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 165000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 165000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "2efaa250-cc43-58b1-ab9b-9df70988ab03",
+      "commercial": null,
+      "id": "230bfe94-aafd-5ba4-937c-feda7a54e678",
+      "image_key": "duplex",
+      "label": "1B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 1.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 165000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 165000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "commercial": null,
+      "id": "7de82635-6b6c-5486-b46b-0da8fdcef3ed",
+      "image_key": "triplex",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 1.0,
+        "bedrooms": 1,
+        "monthly_rent": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 840,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "commercial": null,
+      "id": "e3d0dcfa-833b-5106-b37e-ea16a376aa2c",
+      "image_key": "triplex",
+      "label": "1B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 1.0,
+        "bedrooms": 1,
+        "monthly_rent": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 840,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "0b2d15e7-2aeb-5ecc-808a-51b68162fcd0",
+      "commercial": null,
+      "id": "4d9291ce-b90e-5093-b8eb-35a0c332a3e5",
+      "image_key": "triplex",
+      "label": "1C",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 1.0,
+        "bedrooms": 1,
+        "monthly_rent": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 195000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 840,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "9af03ccd-d14d-52a0-8f40-cdc7a8b00dc0",
+      "commercial": null,
+      "id": "fa21d8b5-ed53-5148-ab97-4aa5ec463dcf",
+      "image_key": "duplex",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "commercial": {
+        "base_rent": {
+          "amount_minor": 380000,
+          "currency": "USD"
+        },
+        "build_out_status": "Illustrative shell condition",
+        "cam_nnn_terms": "Tenant share of CAM, taxes and insurance; amounts unapproved",
+        "deposit": {
+          "amount_minor": 760000,
+          "currency": "USD"
+        },
+        "intended_use": "Retail / office",
+        "lease_type": "NNN \u2014 example only",
+        "loading_access": "Example rear service entry",
+        "parking": "Example shared parking; allocation unverified",
+        "rent_period": "month",
+        "utility_responsibility": "Separately metered electric and gas; allocation pending review",
+        "zoning_notes": "Intended use only; zoning and permits NOT verified"
+      },
+      "id": "1eec88e8-21bf-54b5-b31a-63af49fa360b",
+      "image_key": "storefront",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "residential": null,
+      "schema_version": "0.1.0",
+      "square_feet": 1850,
+      "status": "available",
+      "synthetic": true,
+      "use": "commercial"
+    },
+    {
+      "available_date": null,
+      "building_id": "f5112ed7-43f5-5614-8f50-497462d6ee68",
+      "commercial": {
+        "base_rent": {
+          "amount_minor": 380000,
+          "currency": "USD"
+        },
+        "build_out_status": "Illustrative shell condition",
+        "cam_nnn_terms": "Tenant share of CAM, taxes and insurance; amounts unapproved",
+        "deposit": {
+          "amount_minor": 760000,
+          "currency": "USD"
+        },
+        "intended_use": "Retail / office",
+        "lease_type": "NNN \u2014 example only",
+        "loading_access": "Example rear service entry",
+        "parking": "Example shared parking; allocation unverified",
+        "rent_period": "month",
+        "utility_responsibility": "Separately metered electric and gas; allocation pending review",
+        "zoning_notes": "Intended use only; zoning and permits NOT verified"
+      },
+      "id": "a2b305c4-8ca0-52a6-8f35-87fab5eafc14",
+      "image_key": "storefront",
+      "label": "1B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "residential": null,
+      "schema_version": "0.1.0",
+      "square_feet": 1850,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "commercial"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "commercial": null,
+      "id": "15ae8868-2471-52d5-9313-93a6861f2596",
+      "image_key": "triplex",
+      "label": "1A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "c788bbe9-9263-5e94-91d2-a97ddfaf3184",
+      "commercial": null,
+      "id": "12b1044b-977d-5606-9a14-7828357787d7",
+      "image_key": "triplex",
+      "label": "1B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": "2027-01-15",
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "commercial": null,
+      "id": "f55b9361-44c5-5643-85f3-db77cb06c894",
+      "image_key": "triplex",
+      "label": "2A",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "available",
+      "synthetic": true,
+      "use": "residential"
+    },
+    {
+      "available_date": null,
+      "building_id": "b88a9df4-cbc2-5ac9-bd41-12f298b3c543",
+      "commercial": null,
+      "id": "76204732-be06-57ce-9c3b-2992480fae2f",
+      "image_key": "triplex",
+      "label": "2B",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "residential": {
+        "application_fee": {
+          "amount_minor": 4500,
+          "currency": "USD"
+        },
+        "bathrooms": 2.0,
+        "bedrooms": 2,
+        "monthly_rent": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "pet_policy": "Example pet terms awaiting approval; no verified policy",
+        "security_deposit": {
+          "amount_minor": 225000,
+          "currency": "USD"
+        },
+        "utilities": "Example: separately metered gas/electric; water allocation pending approval"
+      },
+      "schema_version": "0.1.0",
+      "square_feet": 1120,
+      "status": "occupied",
+      "synthetic": true,
+      "use": "residential"
+    }
+  ]
+}

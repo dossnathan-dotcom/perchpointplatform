@@ -1,17 +1,19 @@
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Optional
 import os
 import uuid
+from datetime import datetime, timezone
+from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, FastAPI, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr, Field
 from starlette.middleware.cors import CORSMiddleware
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
+
+from foundation.routes import router as foundation_router
+from foundation.seeds import portfolio
 
 client = AsyncIOMotorClient(os.environ["MONGO_URL"])
 db = client[os.environ["DB_NAME"]]
@@ -25,8 +27,9 @@ class InquiryCreate(BaseModel):
     email: EmailStr
     intent: str = Field(min_length=2, max_length=80)
     message: str = Field(default="", max_length=1600)
-    property_id: Optional[str] = None
-    preferred_date: Optional[str] = None
+    property_id: str | None = None
+    unit_id: str | None = None
+    preferred_date: str | None = None
 
 
 class InquiryResponse(BaseModel):
@@ -51,12 +54,11 @@ class MaintenanceResponse(BaseModel):
     message: str
 
 
-RENTALS = [
-    {"id": "412-elm-unit-a", "property_id": "412-elm", "unit": "412-A", "type": "mixed_use", "use": "residential", "rent": 2250, "deposit": 2250, "status": "available_now"},
-    {"id": "clifton-duplex-unit-b", "property_id": "clifton-avenue-duplex", "unit": "Residence B", "type": "duplex", "use": "residential", "rent": 1650, "deposit": 1650, "status": "available_soon"},
-    {"id": "otr-triplex-unit-3", "property_id": "otr-heritage-triplex", "unit": "Unit 3", "type": "triplex", "use": "residential", "rent": 1950, "deposit": 1950, "status": "available_soon"},
-    {"id": "412-elm-commercial-c1", "property_id": "412-elm", "unit": "412-C1", "type": "mixed_use", "use": "commercial", "rent": 3800, "deposit": 7600, "status": "future_availability"},
-]
+def require_demo_submission(email: str):
+    if os.environ["PHASE0_ENABLED"] != "true":
+        raise HTTPException(503, "Production intake is not implemented")
+    if email.rsplit("@", 1)[-1].lower() not in {"example.com", "example.org", "example.net"}:
+        raise HTTPException(422, "Synthetic requests only. Use an example.com email and fictional details.")
 
 
 @api_router.get("/")
@@ -71,28 +73,40 @@ async def health():
 
 @api_router.get("/properties")
 async def get_properties():
-    return {"properties": RENTALS, "data_status": "demonstration_phase_0"}
+    return {"properties": [p.model_dump(mode="json") for p in portfolio().properties] if os.environ["PHASE0_ENABLED"] == "true" else [], "data_status": "demonstration_phase_0"}
+
+
+@api_router.get("/rentals")
+async def get_rentals():
+    return {"units": [u.model_dump(mode="json") for u in portfolio().units] if os.environ["PHASE0_ENABLED"] == "true" else [], "data_status": "demonstration_phase_0"}
 
 
 @api_router.post("/leads", response_model=InquiryResponse)
 async def create_inquiry(payload: InquiryCreate):
+    require_demo_submission(str(payload.email))
+    if payload.unit_id:
+        unit = next((u for u in portfolio().units if str(u.id) == payload.unit_id), None)
+        if not unit or str(unit.property_id) != payload.property_id:
+            raise HTTPException(422, "Unit must belong to the referenced canonical property")
     inquiry_id = str(uuid.uuid4())
     document = payload.model_dump()
-    document.update({"id": inquiry_id, "email": str(payload.email), "status": "received", "created_at": datetime.now(timezone.utc).isoformat()})
+    document.update({"id": inquiry_id, "email": str(payload.email), "status": "received", "synthetic": True, "created_at": datetime.now(timezone.utc).isoformat()})
     await db.inquiries.insert_one(document)
-    return InquiryResponse(id=inquiry_id, status="received", message="Your request is in. HawkVision will follow up with the next step.")
+    return InquiryResponse(id=inquiry_id, status="received", message="Synthetic request recorded. No showing, application, or notification was created.")
 
 
 @api_router.post("/maintenance-requests", response_model=MaintenanceResponse)
 async def create_maintenance_request(payload: MaintenanceCreate):
+    require_demo_submission(str(payload.email))
     request_id = f"PP-{uuid.uuid4().hex[:8].upper()}"
     document = payload.model_dump()
-    document.update({"id": request_id, "email": str(payload.email), "status": "submitted", "created_at": datetime.now(timezone.utc).isoformat()})
+    document.update({"id": request_id, "email": str(payload.email), "status": "submitted", "synthetic": True, "created_at": datetime.now(timezone.utc).isoformat()})
     await db.maintenance_requests.insert_one(document)
-    return MaintenanceResponse(id=request_id, status="submitted", message="Your maintenance request has been recorded for review.")
+    return MaintenanceResponse(id=request_id, status="submitted", message="Synthetic maintenance request recorded. No dispatch or notification was sent.")
 
 
 app.include_router(api_router)
+app.include_router(foundation_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

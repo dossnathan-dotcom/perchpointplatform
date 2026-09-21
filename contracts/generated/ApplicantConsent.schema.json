@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "disclosure_version": {
+      "title": "Disclosure Version",
+      "type": "string"
+    },
+    "evidence_document_id": {
+      "format": "uuid",
+      "title": "Evidence Document Id",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "person_id": {
+      "format": "uuid",
+      "title": "Person Id",
+      "type": "string"
+    },
+    "purpose": {
+      "title": "Purpose",
+      "type": "string"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "title": "Recorded At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "withdrawn_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Withdrawn At"
+    }
+  },
+  "required": [
+    "id",
+    "person_id",
+    "disclosure_version",
+    "purpose",
+    "recorded_at",
+    "evidence_document_id",
+    "withdrawn_at"
+  ],
+  "title": "ApplicantConsent",
+  "type": "object"
+}

@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expires At"
+    }
+  },
+  "required": [
+    "effective_at"
+  ],
+  "title": "Period",
+  "type": "object"
+}

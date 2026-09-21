@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "age_class": {
+      "enum": [
+        "adult",
+        "minor",
+        "unknown"
+      ],
+      "title": "Age Class",
+      "type": "string"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "identity_status": {
+      "enum": [
+        "unverified",
+        "verified",
+        "synthetic"
+      ],
+      "title": "Identity Status",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "display_name",
+    "age_class",
+    "identity_status"
+  ],
+  "title": "Person",
+  "type": "object"
+}

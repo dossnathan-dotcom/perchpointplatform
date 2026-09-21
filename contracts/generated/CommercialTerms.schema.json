@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "base_rent": {
+      "$ref": "#/$defs/Money"
+    },
+    "build_out_status": {
+      "title": "Build Out Status",
+      "type": "string"
+    },
+    "cam_nnn_terms": {
+      "title": "Cam Nnn Terms",
+      "type": "string"
+    },
+    "deposit": {
+      "$ref": "#/$defs/Money"
+    },
+    "intended_use": {
+      "title": "Intended Use",
+      "type": "string"
+    },
+    "lease_type": {
+      "title": "Lease Type",
+      "type": "string"
+    },
+    "loading_access": {
+      "title": "Loading Access",
+      "type": "string"
+    },
+    "parking": {
+      "title": "Parking",
+      "type": "string"
+    },
+    "rent_period": {
+      "enum": [
+        "month",
+        "year"
+      ],
+      "title": "Rent Period",
+      "type": "string"
+    },
+    "utility_responsibility": {
+      "title": "Utility Responsibility",
+      "type": "string"
+    },
+    "zoning_notes": {
+      "title": "Zoning Notes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "intended_use",
+    "base_rent",
+    "rent_period",
+    "deposit",
+    "lease_type",
+    "cam_nnn_terms",
+    "utility_responsibility",
+    "zoning_notes",
+    "loading_access",
+    "parking",
+    "build_out_status"
+  ],
+  "title": "CommercialTerms",
+  "type": "object"
+}

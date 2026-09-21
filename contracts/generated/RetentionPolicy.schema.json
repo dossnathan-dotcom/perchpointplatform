@@ -1,0 +1,104 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "deletion_without_review": {
+      "const": false,
+      "default": false,
+      "title": "Deletion Without Review",
+      "type": "boolean"
+    },
+    "document_class": {
+      "enum": [
+        "application_document",
+        "identity_document",
+        "screening_document",
+        "lease",
+        "addendum",
+        "notice",
+        "payment_evidence",
+        "maintenance_media",
+        "estimate",
+        "invoice",
+        "insurance_policy",
+        "vendor_credential",
+        "inspection",
+        "property_record",
+        "legal_document",
+        "communication_attachment",
+        "migration_archive"
+      ],
+      "title": "Document Class",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "jurisdiction_policy_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Jurisdiction Policy Id"
+    },
+    "legal_hold_overrides_deletion": {
+      "const": true,
+      "default": true,
+      "title": "Legal Hold Overrides Deletion",
+      "type": "boolean"
+    },
+    "legal_review_status": {
+      "const": "qualified_review_required",
+      "title": "Legal Review Status",
+      "type": "string"
+    },
+    "retention_days": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retention Days"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "trigger_event": {
+      "title": "Trigger Event",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "document_class",
+    "jurisdiction_policy_id",
+    "trigger_event",
+    "retention_days",
+    "legal_review_status"
+  ],
+  "title": "RetentionPolicy",
+  "type": "object"
+}

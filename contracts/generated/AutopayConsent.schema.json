@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "amount_limit": {
+      "$ref": "#/$defs/Money"
+    },
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "evidence_document_id": {
+      "format": "uuid",
+      "title": "Evidence Document Id",
+      "type": "string"
+    },
+    "frequency": {
+      "title": "Frequency",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "payment_method_reference_id": {
+      "format": "uuid",
+      "title": "Payment Method Reference Id",
+      "type": "string"
+    },
+    "person_id": {
+      "format": "uuid",
+      "title": "Person Id",
+      "type": "string"
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Revoked At"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "terms_version": {
+      "title": "Terms Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "person_id",
+    "payment_method_reference_id",
+    "terms_version",
+    "amount_limit",
+    "frequency",
+    "effective_at",
+    "revoked_at",
+    "evidence_document_id"
+  ],
+  "title": "AutopayConsent",
+  "type": "object"
+}

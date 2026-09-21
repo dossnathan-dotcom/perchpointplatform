@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "format": "uuid",
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "decided_at": {
+      "format": "date-time",
+      "title": "Decided At",
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "approve",
+        "reject"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "expected_version": {
+      "title": "Expected Version",
+      "type": "integer"
+    },
+    "policy_version": {
+      "title": "Policy Version",
+      "type": "string"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    },
+    "request_fingerprint": {
+      "title": "Request Fingerprint",
+      "type": "string"
+    },
+    "request_id": {
+      "format": "uuid",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_revision": {
+      "title": "Request Revision",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_revision",
+    "request_fingerprint",
+    "policy_version",
+    "actor_id",
+    "decision",
+    "expected_version",
+    "decided_at",
+    "reason"
+  ],
+  "title": "ApprovalDecision",
+  "type": "object"
+}

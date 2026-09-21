@@ -1,0 +1,162 @@
+{
+  "control_totals": {
+    "conflict_rows": 1,
+    "document_count_difference": 6,
+    "document_reconciliation": "review_required",
+    "duplicate_rows": 1,
+    "expected_rows": 5,
+    "financial_difference_minor": 445000,
+    "financial_reconciliation": "review_required",
+    "observed_rows": 5,
+    "rejected_rows": 4,
+    "source_document_count": 8,
+    "source_financial_total_minor": 565000,
+    "staged_document_count": 2,
+    "staged_valid_total_minor": 120000,
+    "valid_rows": 1
+  },
+  "mapping_version": "0.1.0",
+  "report_checksum": "f660ff92a0466e9fdd4e5d927f8fd112ea21754798ea2e512c715bd4c995b4c7",
+  "rollback_strategy": "batch-scoped reversible mappings; compensating financial entries; never erase audits",
+  "rows": [
+    {
+      "approval_id": null,
+      "conflict": null,
+      "correction": null,
+      "duplicate_candidate": null,
+      "imported_canonical_record_id": null,
+      "issues": [],
+      "mapped_fields": {
+        "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+        "currency": "USD",
+        "document_count": "2",
+        "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+        "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "rent_minor": "120000",
+        "source_record_id": "SRC-001",
+        "source_system": "Innago-synthetic",
+        "unit_label": "EXAMPLE-NEW",
+        "use": "residential"
+      },
+      "rejected": false,
+      "row_number": 2,
+      "source_file": "synthetic-innago.csv",
+      "source_record_identifier": "SRC-001",
+      "source_system": "Innago-synthetic",
+      "validation_result": "valid"
+    },
+    {
+      "approval_id": null,
+      "conflict": null,
+      "correction": null,
+      "duplicate_candidate": "Innago-synthetic:SRC-001",
+      "imported_canonical_record_id": null,
+      "issues": [
+        "Repeated source or natural key; manual merge review"
+      ],
+      "mapped_fields": {
+        "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+        "currency": "USD",
+        "document_count": "2",
+        "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+        "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "rent_minor": "120000",
+        "source_record_id": "SRC-001",
+        "source_system": "Innago-synthetic",
+        "unit_label": "EXAMPLE-NEW",
+        "use": "residential"
+      },
+      "rejected": true,
+      "row_number": 3,
+      "source_file": "synthetic-innago.csv",
+      "source_record_identifier": "SRC-001",
+      "source_system": "Innago-synthetic",
+      "validation_result": "duplicate"
+    },
+    {
+      "approval_id": null,
+      "conflict": null,
+      "correction": null,
+      "duplicate_candidate": null,
+      "imported_canonical_record_id": null,
+      "issues": [
+        "Invalid nonnegative rent/document count"
+      ],
+      "mapped_fields": {
+        "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+        "currency": "USD",
+        "document_count": "0",
+        "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+        "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "rent_minor": "-1",
+        "source_record_id": "SRC-002",
+        "source_system": "Innago-synthetic",
+        "unit_label": "INVALID",
+        "use": "residential"
+      },
+      "rejected": true,
+      "row_number": 4,
+      "source_file": "synthetic-innago.csv",
+      "source_record_identifier": "SRC-002",
+      "source_system": "Innago-synthetic",
+      "validation_result": "invalid"
+    },
+    {
+      "approval_id": null,
+      "conflict": null,
+      "correction": null,
+      "duplicate_candidate": null,
+      "imported_canonical_record_id": null,
+      "issues": [
+        "Invalid organization/property/building chain"
+      ],
+      "mapped_fields": {
+        "building_id": "828d8656-91a1-5e51-8f2a-e20a2ed9cc21",
+        "currency": "USD",
+        "document_count": "1",
+        "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+        "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "rent_minor": "100000",
+        "source_record_id": "SRC-003",
+        "source_system": "Innago-synthetic",
+        "unit_label": "BAD-CHAIN",
+        "use": "residential"
+      },
+      "rejected": true,
+      "row_number": 5,
+      "source_file": "synthetic-innago.csv",
+      "source_record_identifier": "SRC-003",
+      "source_system": "Innago-synthetic",
+      "validation_result": "invalid"
+    },
+    {
+      "approval_id": null,
+      "conflict": "6f8eb20a-b203-54e7-84ba-8b36c68108ee",
+      "correction": null,
+      "duplicate_candidate": null,
+      "imported_canonical_record_id": null,
+      "issues": [
+        "Matches existing canonical unit; explicit correction/approval required"
+      ],
+      "mapped_fields": {
+        "building_id": "c1258d4c-cefe-575c-a398-4d4d3f0d3870",
+        "currency": "USD",
+        "document_count": "3",
+        "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+        "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "rent_minor": "225000",
+        "source_record_id": "SRC-004",
+        "source_system": "Innago-synthetic",
+        "unit_label": "1A",
+        "use": "residential"
+      },
+      "rejected": true,
+      "row_number": 6,
+      "source_file": "synthetic-innago.csv",
+      "source_record_identifier": "SRC-004",
+      "source_system": "Innago-synthetic",
+      "validation_result": "conflict"
+    }
+  ],
+  "writes_performed": 0
+}

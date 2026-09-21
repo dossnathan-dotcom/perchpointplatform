@@ -1,0 +1,87 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "conflict_rows": {
+      "title": "Conflict Rows",
+      "type": "integer"
+    },
+    "document_count_difference": {
+      "title": "Document Count Difference",
+      "type": "integer"
+    },
+    "document_reconciliation": {
+      "enum": [
+        "review_required",
+        "matched"
+      ],
+      "title": "Document Reconciliation",
+      "type": "string"
+    },
+    "duplicate_rows": {
+      "title": "Duplicate Rows",
+      "type": "integer"
+    },
+    "expected_rows": {
+      "title": "Expected Rows",
+      "type": "integer"
+    },
+    "financial_difference_minor": {
+      "title": "Financial Difference Minor",
+      "type": "integer"
+    },
+    "financial_reconciliation": {
+      "enum": [
+        "review_required",
+        "matched"
+      ],
+      "title": "Financial Reconciliation",
+      "type": "string"
+    },
+    "observed_rows": {
+      "title": "Observed Rows",
+      "type": "integer"
+    },
+    "rejected_rows": {
+      "title": "Rejected Rows",
+      "type": "integer"
+    },
+    "source_document_count": {
+      "title": "Source Document Count",
+      "type": "integer"
+    },
+    "source_financial_total_minor": {
+      "title": "Source Financial Total Minor",
+      "type": "integer"
+    },
+    "staged_document_count": {
+      "title": "Staged Document Count",
+      "type": "integer"
+    },
+    "staged_valid_total_minor": {
+      "title": "Staged Valid Total Minor",
+      "type": "integer"
+    },
+    "valid_rows": {
+      "title": "Valid Rows",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "expected_rows",
+    "observed_rows",
+    "valid_rows",
+    "rejected_rows",
+    "duplicate_rows",
+    "conflict_rows",
+    "source_financial_total_minor",
+    "staged_valid_total_minor",
+    "financial_difference_minor",
+    "source_document_count",
+    "staged_document_count",
+    "document_count_difference",
+    "financial_reconciliation",
+    "document_reconciliation"
+  ],
+  "title": "Reconciliation",
+  "type": "object"
+}

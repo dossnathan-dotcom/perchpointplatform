@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "amount": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Money"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "failure",
+        "ach_return",
+        "refund",
+        "dispute",
+        "reconciliation"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "payment_id": {
+      "format": "uuid",
+      "title": "Payment Id",
+      "type": "string"
+    },
+    "provider_event_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Provider Event Id"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "reviewer_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reviewer Id"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "review",
+        "resolved"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "payment_id",
+    "kind",
+    "amount",
+    "provider_event_id",
+    "status",
+    "reason",
+    "reviewer_id"
+  ],
+  "title": "PaymentException",
+  "type": "object"
+}

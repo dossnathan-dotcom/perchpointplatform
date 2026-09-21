@@ -1,0 +1,394 @@
+{
+  "accounts": [
+    {
+      "id": "69858859-c04b-52b5-82a0-58be4e0af3c8",
+      "identity_provider_reference": null,
+      "person_id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "5c7813f5-4749-5597-b000-649a5ceb78ab",
+      "identity_provider_reference": null,
+      "person_id": "d24994cc-342d-54c7-9dd7-c1a6a9cbb678",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "ab8e1800-ad81-5445-b1ba-5f9a33bdae1f",
+      "identity_provider_reference": null,
+      "person_id": "a02441f3-2367-5364-a29b-e8a18bcb2d70",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "4103251a-5e50-50fc-afec-fd6eb9de8c08",
+      "identity_provider_reference": null,
+      "person_id": "b1c8256f-5305-527f-9f98-74da2b7bcc04",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "4af1a49b-be91-5e6c-8b60-67bd8e0932f4",
+      "identity_provider_reference": null,
+      "person_id": "52d69dea-9f50-5d6c-8250-9e6523032136",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "7ad7bcd3-45aa-58db-b391-b64332a0739f",
+      "identity_provider_reference": null,
+      "person_id": "181d201c-19ca-588f-80f2-005f76531570",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    },
+    {
+      "id": "06326b45-4842-5658-a9f8-bfc891e42163",
+      "identity_provider_reference": null,
+      "person_id": "8a41c711-05ea-5064-8ebf-d7592d7d93a6",
+      "schema_version": "0.1.0",
+      "status": "synthetic",
+      "synthetic": true
+    }
+  ],
+  "businesses": [
+    {
+      "id": "1b1601a9-43d7-57e2-868b-8a79c867a7c0",
+      "kind": "tenant",
+      "legal_name": "EXAMPLE ONLY \u2014 Synthetic Bakery LLC",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "households": [
+    {
+      "id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "label": "Example resident household",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.1.0",
+      "status": "resident",
+      "synthetic": true
+    },
+    {
+      "id": "cf3843b2-803c-54fb-ba25-369e2297878e",
+      "label": "Example applicant household",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.1.0",
+      "status": "applicant",
+      "synthetic": true
+    }
+  ],
+  "organization_ids": [
+    "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3"
+  ],
+  "people": [
+    {
+      "age_class": "adult",
+      "display_name": "Primary Resident Example",
+      "id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Adult Co-signer Example",
+      "id": "d24994cc-342d-54c7-9dd7-c1a6a9cbb678",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "minor",
+      "display_name": "Minor Occupant Example",
+      "id": "9c426e97-485b-5717-8f6a-3a40fe67c116",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Applicant One Example",
+      "id": "a02441f3-2367-5364-a29b-e8a18bcb2d70",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Applicant Two Example",
+      "id": "b1c8256f-5305-527f-9f98-74da2b7bcc04",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Maintenance Employee Example",
+      "id": "52d69dea-9f50-5d6c-8250-9e6523032136",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Subcontractor Example",
+      "id": "181d201c-19ca-588f-80f2-005f76531570",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Guarantor Example",
+      "id": "8a41c711-05ea-5064-8ebf-d7592d7d93a6",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    },
+    {
+      "age_class": "adult",
+      "display_name": "Emergency Contact Example",
+      "id": "3192318d-1fc2-58a6-8ca7-cacdbaba2f2c",
+      "identity_status": "synthetic",
+      "schema_version": "0.1.0",
+      "synthetic": true
+    }
+  ],
+  "relationships": [
+    {
+      "account_id": "69858859-c04b-52b5-82a0-58be4e0af3c8",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "e3f5c323-62cb-5d75-9e8c-4ecf79b7a575",
+      "kind": "primary_holder",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56"
+    },
+    {
+      "account_id": "69858859-c04b-52b5-82a0-58be4e0af3c8",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "3a5edec0-f519-5905-a38c-ad8259f106eb",
+      "kind": "resident",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56"
+    },
+    {
+      "account_id": "5c7813f5-4749-5597-b000-649a5ceb78ab",
+      "attributable_access_required": true,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "6a1c86e6-eb84-5c64-94a7-fe979ec68456",
+      "kind": "adult_signer",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "d24994cc-342d-54c7-9dd7-c1a6a9cbb678",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56"
+    },
+    {
+      "account_id": null,
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "0f52bebc-a71e-5f89-95e9-dc2c8333a080",
+      "kind": "minor_occupant",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "9c426e97-485b-5717-8f6a-3a40fe67c116",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56"
+    },
+    {
+      "account_id": "ab8e1800-ad81-5445-b1ba-5f9a33bdae1f",
+      "attributable_access_required": true,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "cf3843b2-803c-54fb-ba25-369e2297878e",
+      "id": "2ba17099-f596-55da-b2dd-29f02e636d06",
+      "kind": "applicant",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "a02441f3-2367-5364-a29b-e8a18bcb2d70",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee"
+    },
+    {
+      "account_id": "4103251a-5e50-50fc-afec-fd6eb9de8c08",
+      "attributable_access_required": true,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "cf3843b2-803c-54fb-ba25-369e2297878e",
+      "id": "0af074bc-4007-5645-9ee4-4ffbdac8e4f0",
+      "kind": "co_applicant",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "b1c8256f-5305-527f-9f98-74da2b7bcc04",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee"
+    },
+    {
+      "account_id": "4af1a49b-be91-5e6c-8b60-67bd8e0932f4",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": null,
+      "id": "c7488c69-c4e0-568e-a8fe-6c9c855a9601",
+      "kind": "maintenance_employee",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "52d69dea-9f50-5d6c-8250-9e6523032136",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "account_id": "7ad7bcd3-45aa-58db-b391-b64332a0739f",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": null,
+      "id": "abfbf8ff-f082-5d6f-8375-df33af686a5e",
+      "kind": "subcontractor",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "181d201c-19ca-588f-80f2-005f76531570",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "account_id": "06326b45-4842-5658-a9f8-bfc891e42163",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "cf3843b2-803c-54fb-ba25-369e2297878e",
+      "id": "a16996d2-462d-5603-b2b5-d127681f74c3",
+      "kind": "guarantor",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "8a41c711-05ea-5064-8ebf-d7592d7d93a6",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee"
+    },
+    {
+      "account_id": null,
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "d7fb5df3-bd6b-5083-b97a-9298cd43b114",
+      "kind": "emergency_contact",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "3192318d-1fc2-58a6-8ca7-cacdbaba2f2c",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56"
+    },
+    {
+      "account_id": "69858859-c04b-52b5-82a0-58be4e0af3c8",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": "2026-10-01T00:00:00Z",
+      "household_id": null,
+      "id": "2027507b-fba3-53f5-92c5-374560949d05",
+      "kind": "former_resident",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "account_id": "4af1a49b-be91-5e6c-8b60-67bd8e0932f4",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": null,
+      "id": "226efc12-8bc8-58d4-b926-c1482508b0e0",
+      "kind": "staff",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "52d69dea-9f50-5d6c-8250-9e6523032136",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "account_id": "7ad7bcd3-45aa-58db-b391-b64332a0739f",
+      "attributable_access_required": false,
+      "business_party_id": null,
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": null,
+      "id": "d1dbda61-9d40-5341-8a60-4aaf53eb3dd3",
+      "kind": "vendor_contact",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "181d201c-19ca-588f-80f2-005f76531570",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": null
+    },
+    {
+      "account_id": null,
+      "attributable_access_required": false,
+      "business_party_id": "1b1601a9-43d7-57e2-868b-8a79c867a7c0",
+      "effective_at": "2026-09-21T00:00:00Z",
+      "ended_at": null,
+      "household_id": null,
+      "id": "9f2e7ffc-a6c5-5f76-b233-b5013d248de4",
+      "kind": "business_tenant",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "d24994cc-342d-54c7-9dd7-c1a6a9cbb678",
+      "schema_version": "0.1.0",
+      "synthetic": true,
+      "unit_id": "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7"
+    }
+  ],
+  "unit_organizations": {
+    "12b1044b-977d-5606-9a14-7828357787d7": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "15ae8868-2471-52d5-9313-93a6861f2596": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "1eec88e8-21bf-54b5-b31a-63af49fa360b": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "230bfe94-aafd-5ba4-937c-feda7a54e678": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "49f5553b-5cc3-5e99-8376-9ceaa72cb327": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "4d9291ce-b90e-5093-b8eb-35a0c332a3e5": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "6f8eb20a-b203-54e7-84ba-8b36c68108ee": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "76204732-be06-57ce-9c3b-2992480fae2f": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "7de82635-6b6c-5486-b46b-0da8fdcef3ed": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "a2b305c4-8ca0-52a6-8f35-87fab5eafc14": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "e3d0dcfa-833b-5106-b37e-ea16a376aa2c": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "f55b9361-44c5-5643-85f3-db77cb06c894": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "fa21d8b5-ed53-5148-ab97-4aa5ec463dcf": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "febe2e2c-8103-5ec0-b41a-d3887e776f56": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3"
+  }
+}

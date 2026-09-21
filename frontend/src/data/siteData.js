@@ -1,144 +1,63 @@
-export const DEMO_NOTICE = "Demonstration Portfolio Data • Phase 0 Staging";
+import foundation from './generated/foundation.json';
+import { PHASE0 } from '@/config/phase0';
 
+export const DEMO_NOTICE = 'Seeded demonstration data · not verified availability';
+export const FOUNDATION = foundation;
 export const IMAGES = {
-  hero: "https://images.unsplash.com/photo-1709755813430-5dbd547214df?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85",
-  skyline: "https://images.pexels.com/photos/33303158/pexels-photo-33303158.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1440",
-  mixedUse: "https://images.unsplash.com/photo-1691902588772-c93ed83b7f38?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85",
-  duplex: "https://images.unsplash.com/photo-1646909458037-41fc0f106cb5?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85",
-  triplex: "https://images.pexels.com/photos/28949071/pexels-photo-28949071.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200",
-  bakery: "https://images.unsplash.com/photo-1511018556340-d16986a1c194?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85",
-  storefront: "https://images.unsplash.com/photo-1601205741712-b261aff33a7d?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85",
+  hero: 'https://images.unsplash.com/photo-1709755813430-5dbd547214df?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
+  skyline: 'https://images.pexels.com/photos/33303158/pexels-photo-33303158.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1440',
+  mixedUse: 'https://images.unsplash.com/photo-1691902588772-c93ed83b7f38?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
+  duplex: 'https://images.unsplash.com/photo-1646909458037-41fc0f106cb5?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
+  triplex: 'https://images.pexels.com/photos/28949071/pexels-photo-28949071.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200',
+  bakery: 'https://images.unsplash.com/photo-1511018556340-d16986a1c194?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
+  storefront: 'https://images.unsplash.com/photo-1601205741712-b261aff33a7d?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
 };
 
 export const HEADLINES = [
-  {
-    tag: "Available now",
-    title: "A better place to rent. A clearer way to live.",
-    subtitle: "Explore well-operated residential and commercial spaces across Greater Cincinnati with terms you can understand before you apply.",
-  },
-  {
-    tag: "Resident care",
-    title: "One reliable point for rent, repairs, and records.",
-    subtitle: "PerchPoint connects residents with their lease, balance, documents, communication, and maintenance history.",
-  },
-  {
-    tag: "Property operations",
-    title: "Local stewardship, organized down to every unit.",
-    subtitle: "HawkVision manages houses, multifamily buildings, storefronts, and mixed-use properties through one accountable operating system.",
-  },
+  { tag: 'Homes & spaces', title: 'A better place to rent. A clearer way to live.', subtitle: 'Residential, commercial, and mixed-use spaces. A considered approach to property care, beginning in Greater Cincinnati.' },
+  { tag: 'Resident care', title: 'A thoughtful home. A connected community.', subtitle: 'Clear terms, individual identities, and a more considered resident experience. Connected by PerchPoint.' },
+  { tag: 'Property operations', title: 'Local stewardship, down to every unit.', subtitle: 'HawkVision Homes brings houses, multifamily buildings, and commercial spaces into one property-operations vision.' },
 ];
 
-export const RENTALS = [
-  {
-    id: "412-elm-unit-a",
-    propertyId: "412-elm",
-    title: "412 Elm · Residence A",
-    address: "412 Elm Street, Cincinnati, OH 45202",
-    neighborhood: "Downtown / OTR",
-    type: "Mixed-use",
-    use: "Residential",
-    unit: "412-A",
-    rent: 2250,
-    deposit: 2250,
-    beds: 2,
-    baths: 2,
-    sqft: 1120,
-    available: "Available now",
-    image: IMAGES.mixedUse,
-    utilities: "Resident pays electric and gas; water allocation disclosed in lease",
-    petPolicy: "Cats and dogs considered · $300 pet deposit",
-    applicationFee: "$45 per adult applicant",
-    qualification: "Income guideline: 3× monthly rent · screening criteria disclosed before payment",
-    note: "Upper-floor residence in a professionally operated mixed-use building with secure entry and a ground-floor bakery.",
-  },
-  {
-    id: "clifton-duplex-unit-b",
-    propertyId: "clifton-avenue-duplex",
-    title: "Clifton Avenue · Residence B",
-    address: "Clifton Avenue, Cincinnati, OH",
-    neighborhood: "Clifton",
-    type: "Duplex",
-    use: "Residential",
-    unit: "Residence B",
-    rent: 1650,
-    deposit: 1650,
-    beds: 2,
-    baths: 1,
-    sqft: 980,
-    available: "Available soon",
-    image: IMAGES.duplex,
-    utilities: "Resident pays separately metered gas and electric",
-    petPolicy: "One pet considered · terms vary by animal",
-    applicationFee: "$45 per adult applicant",
-    qualification: "Income guideline: 3× monthly rent · rental history reviewed",
-    note: "A bright second-floor home in a classic Cincinnati duplex near neighborhood services and transit.",
-  },
-  {
-    id: "otr-triplex-unit-3",
-    propertyId: "otr-heritage-triplex",
-    title: "Heritage Triplex · Unit 3",
-    address: "Over-the-Rhine, Cincinnati, OH",
-    neighborhood: "Over-the-Rhine",
-    type: "Triplex",
-    use: "Residential",
-    unit: "Unit 3",
-    rent: 1950,
-    deposit: 1950,
-    beds: 1,
-    baths: 1,
-    sqft: 840,
-    available: "Available July 15",
-    image: IMAGES.triplex,
-    utilities: "Resident pays electric; water and trash included",
-    petPolicy: "Pet-friendly subject to screening",
-    applicationFee: "$45 per adult applicant",
-    qualification: "Income guideline: 3× monthly rent · identity and rental verification required",
-    note: "Top-floor apartment with preserved brick detail, modern systems, and walkable access to OTR businesses.",
-  },
-  {
-    id: "412-elm-commercial-c1",
-    propertyId: "412-elm",
-    title: "412 Elm · Commercial C1",
-    address: "412 Elm Street, Cincinnati, OH 45202",
-    neighborhood: "Downtown / OTR",
-    type: "Mixed-use",
-    use: "Commercial",
-    unit: "412-C1",
-    rent: 3800,
-    deposit: 7600,
-    beds: null,
-    baths: 1,
-    sqft: 1850,
-    available: "Future commercial availability",
-    image: IMAGES.bakery,
-    utilities: "NNN structure · separately metered utilities",
-    petPolicy: "Not applicable",
-    applicationFee: "Business qualification package required",
-    qualification: "Use, financial capacity, insurance, and guaranty reviewed",
-    note: "Ground-floor retail suite configured for food service with grease trap, three-phase power, and rear loading access.",
-  },
-];
+export const PORTFOLIO = foundation.portfolio;
+export const money = (amount, currency = 'USD') => new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount);
+export const plural = (count, noun) => `${count} ${noun}${count === 1 ? '' : 's'}`;
+export const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const displayUnit = (unit) => {
+  const property = PORTFOLIO.properties.find((p) => p.id === unit.property_id);
+  const residential = unit.residential;
+  const commercial = unit.commercial;
+  return {
+    ...unit, propertyId: property.id, buildingId: unit.building_id, propertyName: property.name,
+    title: `${property.name} · ${unit.label}`, unit: unit.label,
+    address: property.address.line1,
+    neighborhood: `${property.address.municipality}, ${property.address.state}`,
+    type: property.property_type.replaceAll('_', '-').replace(/^./, (s) => s.toUpperCase()),
+    use: unit.use === 'commercial' ? 'Commercial' : 'Residential',
+    rent: (residential?.monthly_rent || commercial.base_rent).amount_minor / 100,
+    deposit: (residential?.security_deposit || commercial.deposit).amount_minor / 100,
+    currency: (residential?.monthly_rent || commercial.base_rent).currency,
+    beds: residential?.bedrooms, baths: residential?.bathrooms, sqft: unit.square_feet,
+    available: `Example: ${unit.status === 'available' ? 'available' : 'occupied'}`,
+    image: IMAGES[unit.image_key],
+    utilities: residential?.utilities || commercial.utility_responsibility,
+    petPolicy: residential?.pet_policy,
+    applicationFee: residential ? `${money(residential.application_fee.amount_minor / 100)} per adult · example` : undefined,
+    note: commercial ? commercial.intended_use + ' — synthetic commercial terms; use and permits are not verified.' : 'An illustrative residential unit with its own household, lease, utilities and maintenance context.',
+  };
+};
+export const ALL_UNITS = PHASE0.seedsEnabled ? PORTFOLIO.units.map(displayUnit) : [];
+export const RENTALS = PHASE0.seedsEnabled ? PORTFOLIO.properties.flatMap((p) => ALL_UNITS.filter((u) => u.propertyId === p.id).slice(0, 1)) : [];
+export const BAKERY = ALL_UNITS.find((u) => u.unit === 'Bakery C1');
 
 export const ROLE_ACCOUNTS = [
-  { id: "owner", name: "Farouk", role: "Owner / Asset Principal", email: "owner.demo@perchpoint.local", password: "owner-phase0", scope: "All business operations and reserved approvals; development infrastructure excluded." },
-  { id: "super-admin", name: "Nathan", role: "Platform Super Administrator", email: "admin.demo@perchpoint.local", password: "admin-phase0", scope: "Application configuration, integrations, security controls, and infrastructure administration." },
-  { id: "leasing", name: "Leasing Team Preview", role: "Leasing / Project Manager", email: "leasing.demo@perchpoint.local", password: "leasing-phase0", scope: "Portfolio-wide applicants, leasing, communication, showing, and maintenance coordination." },
-  { id: "accounting", name: "Accounting Preview", role: "Accounting Contractor", email: "accounting.demo@perchpoint.local", password: "accounting-phase0", scope: "Reconciliation, ledgers, approved documents, and property reporting." },
-  { id: "maintenance", name: "Maintenance Preview", role: "Maintenance Employee", email: "maintenance.demo@perchpoint.local", password: "maintenance-phase0", scope: "Assigned work, access instructions, estimates, evidence, and schedules." },
-  { id: "subcontractor", name: "Vendor Preview", role: "Subcontractor", email: "vendor.demo@perchpoint.local", password: "vendor-phase0", scope: "Assigned jobs only, with necessary access details, estimates, evidence, and invoices." },
-  { id: "resident", name: "Resident Household Preview", role: "Primary Resident", email: "resident.demo@perchpoint.local", password: "resident-phase0", scope: "Household lease, balance, payments, documents, communication, and maintenance." },
-  { id: "applicant", name: "Applicant Preview", role: "Applicant", email: "applicant.demo@perchpoint.local", password: "applicant-phase0", scope: "Personal application, consent, documents, status, and lease process only." },
+  { id: 'owner', name: 'Farouk', role: 'Owner / Asset Principal', scope: 'Business and operational oversight. Infrastructure, secrets, deployment and audit deletion are excluded.' },
+  { id: 'super-admin', name: 'Nathan', role: 'Platform Super Administrator', scope: 'Technical administration is distinct from business actions, development and emergency support. No impersonation is available.' },
+  { id: 'leasing', name: 'Leasing Preview', role: 'Leasing / Project Manager', scope: 'Portfolio-wide operations. No unrestricted screening, privileged financial adjustments or owner-reserved decisions.' },
+  { id: 'accounting', name: 'Accounting Preview', role: 'Accounting Contractor', scope: 'Authorized financial records, reconciliation, reports and approved documents only.' },
+  { id: 'maintenance', name: 'Maintenance Preview', role: 'Maintenance Employee', scope: 'Assigned work and the minimum property, access, scheduling and coordination context.' },
+  { id: 'subcontractor', name: 'Subcontractor Preview', role: 'Subcontractor', scope: 'One synthetic assignment only. No broad tenant, applicant, financial or portfolio access.' },
+  { id: 'resident', name: 'Household Preview', role: 'Primary Resident', scope: 'Own household records only. Adult signers retain separate individual identities.' },
+  { id: 'applicant', name: 'Applicant Preview', role: 'Applicant', scope: 'Own application relationships and allowed disclosures only. No screening has been ordered.' },
 ];
-
-export const PROPERTY_TREE = {
-  organization: "HawkVision Homes",
-  entity: "HVH Queen City Holdings LLC",
-  property: "412 Elm Mixed-Use Building",
-  building: "Main Building",
-  units: [
-    { id: "412-A", label: "Residence A", type: "Residential", detail: "2 bed · 2 bath · 1,120 sq ft", status: "Available now" },
-    { id: "412-B", label: "Residence B", type: "Residential", detail: "1 bed · 1.5 bath · 890 sq ft", status: "Occupied" },
-    { id: "412-C1", label: "Bakery Suite", type: "Commercial", detail: "Retail · 1,850 sq ft · NNN", status: "Occupied" },
-  ],
-  assets: ["Secure common entry", "Utility meter bank", "Rear loading alley", "Roof HVAC infrastructure"],
-};

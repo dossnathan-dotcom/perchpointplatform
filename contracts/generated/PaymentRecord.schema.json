@@ -1,0 +1,353 @@
+{
+  "$defs": {
+    "Allocation": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/Money"
+        },
+        "charge_id": {
+          "format": "uuid",
+          "title": "Charge Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "charge_id",
+        "amount"
+      ],
+      "title": "Allocation",
+      "type": "object"
+    },
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    },
+    "Scope": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "building_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building Id"
+        },
+        "household_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Household Id"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "ownership_entity_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ownership Entity Id"
+        },
+        "property_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Id"
+        },
+        "unit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Id"
+        }
+      },
+      "required": [
+        "organization_id"
+      ],
+      "title": "Scope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ach_return_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ach Return Code"
+    },
+    "allocations": {
+      "items": {
+        "$ref": "#/$defs/Allocation"
+      },
+      "title": "Allocations",
+      "type": "array"
+    },
+    "attempt_number": {
+      "minimum": 0,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "autopay_consent_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Autopay Consent Id"
+    },
+    "browser_success_is_posting": {
+      "const": false,
+      "default": false,
+      "title": "Browser Success Is Posting",
+      "type": "boolean"
+    },
+    "charge_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Charge Ids",
+      "type": "array"
+    },
+    "dispute_record_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Dispute Record Ids",
+      "type": "array"
+    },
+    "failure_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure Code"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "minLength": 8,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "ledger_posting_status": {
+      "enum": [
+        "not_posted",
+        "pending",
+        "posted",
+        "exception",
+        "reversed"
+      ],
+      "title": "Ledger Posting Status",
+      "type": "string"
+    },
+    "method_reference_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Method Reference Id"
+    },
+    "processor_status": {
+      "enum": [
+        "not_started",
+        "pending",
+        "succeeded",
+        "failed",
+        "returned",
+        "refunded",
+        "disputed"
+      ],
+      "title": "Processor Status",
+      "type": "string"
+    },
+    "provider_event_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Provider Event Ids",
+      "type": "array"
+    },
+    "receipt_document_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Receipt Document Id"
+    },
+    "reconciliation_exception_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reconciliation Exception Id"
+    },
+    "refund_record_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Refund Record Ids",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/Scope"
+    },
+    "settled_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Settled At"
+    },
+    "settlement_status": {
+      "enum": [
+        "not_settled",
+        "pending",
+        "settled",
+        "returned"
+      ],
+      "title": "Settlement Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "scope",
+    "method_reference_id",
+    "charge_ids",
+    "allocations",
+    "attempt_number",
+    "processor_status",
+    "ledger_posting_status",
+    "settlement_status",
+    "settled_at",
+    "failure_code",
+    "ach_return_code",
+    "refund_record_ids",
+    "dispute_record_ids",
+    "receipt_document_id",
+    "autopay_consent_id",
+    "reconciliation_exception_id",
+    "idempotency_key",
+    "provider_event_ids"
+  ],
+  "title": "PaymentRecord",
+  "type": "object"
+}

@@ -1,0 +1,182 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "activation_checklist": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Activation Checklist",
+      "type": "array"
+    },
+    "configuration_status": {
+      "enum": [
+        "not_configured",
+        "incomplete",
+        "validated"
+      ],
+      "title": "Configuration Status",
+      "type": "string"
+    },
+    "connection_status": {
+      "enum": [
+        "disconnected",
+        "pending",
+        "connected",
+        "failed",
+        "disabled"
+      ],
+      "title": "Connection Status",
+      "type": "string"
+    },
+    "credential_reference": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Credential Reference"
+    },
+    "data_ownership": {
+      "title": "Data Ownership",
+      "type": "string"
+    },
+    "deactivation_procedure": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Deactivation Procedure",
+      "type": "array"
+    },
+    "environment": {
+      "enum": [
+        "sandbox",
+        "production",
+        "synthetic"
+      ],
+      "title": "Environment",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "last_failure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Failure"
+    },
+    "last_successful_sync": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Successful Sync"
+    },
+    "mapping_record_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Mapping Record Ids",
+      "type": "array"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "provider_name": {
+      "title": "Provider Name",
+      "type": "string"
+    },
+    "provider_type": {
+      "enum": [
+        "payments",
+        "screening",
+        "e_signature",
+        "voice_sms",
+        "transactional_email",
+        "calendar",
+        "listing_distribution",
+        "accounting_banking",
+        "file_storage",
+        "ai_models"
+      ],
+      "title": "Provider Type",
+      "type": "string"
+    },
+    "replacement_procedure": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Replacement Procedure",
+      "type": "array"
+    },
+    "required_webhooks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Webhooks",
+      "type": "array"
+    },
+    "retry_exception_state": {
+      "title": "Retry Exception State",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "supported_capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Capabilities",
+      "type": "array"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "organization_id",
+    "provider_type",
+    "provider_name",
+    "environment",
+    "connection_status",
+    "configuration_status",
+    "credential_reference",
+    "supported_capabilities",
+    "required_webhooks",
+    "last_successful_sync",
+    "last_failure",
+    "retry_exception_state",
+    "data_ownership",
+    "mapping_record_ids",
+    "activation_checklist",
+    "deactivation_procedure",
+    "replacement_procedure"
+  ],
+  "title": "IntegrationRecord",
+  "type": "object"
+}

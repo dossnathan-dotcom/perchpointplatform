@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "Address": {
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "minLength": 2,
+          "title": "Country",
+          "type": "string"
+        },
+        "county": {
+          "title": "County",
+          "type": "string"
+        },
+        "is_example": {
+          "title": "Is Example",
+          "type": "boolean"
+        },
+        "line1": {
+          "title": "Line1",
+          "type": "string"
+        },
+        "municipality": {
+          "title": "Municipality",
+          "type": "string"
+        },
+        "postal_code": {
+          "title": "Postal Code",
+          "type": "string"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line1",
+        "country",
+        "state",
+        "county",
+        "municipality",
+        "postal_code",
+        "is_example"
+      ],
+      "title": "Address",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "address": {
+      "$ref": "#/$defs/Address"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "ownership_entity_id": {
+      "format": "uuid",
+      "title": "Ownership Entity Id",
+      "type": "string"
+    },
+    "parcel_references": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parcel References",
+      "type": "array"
+    },
+    "property_type": {
+      "enum": [
+        "single_family",
+        "duplex",
+        "triplex",
+        "multifamily",
+        "commercial",
+        "mixed_use"
+      ],
+      "title": "Property Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "organization_id",
+    "ownership_entity_id",
+    "name",
+    "property_type",
+    "address"
+  ],
+  "title": "Property",
+  "type": "object"
+}

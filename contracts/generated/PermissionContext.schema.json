@@ -1,0 +1,207 @@
+{
+  "$defs": {
+    "Role": {
+      "enum": [
+        "owner",
+        "super-admin",
+        "leasing",
+        "accounting",
+        "maintenance",
+        "subcontractor",
+        "resident",
+        "applicant"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "Scope": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "building_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building Id"
+        },
+        "household_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Household Id"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "ownership_entity_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ownership Entity Id"
+        },
+        "property_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Id"
+        },
+        "unit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Id"
+        }
+      },
+      "required": [
+        "organization_id"
+      ],
+      "title": "Scope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "active": {
+      "title": "Active",
+      "type": "boolean"
+    },
+    "actor_organization_id": {
+      "format": "uuid",
+      "title": "Actor Organization Id",
+      "type": "string"
+    },
+    "approval_present": {
+      "default": false,
+      "title": "Approval Present",
+      "type": "boolean"
+    },
+    "assignment_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Assignment Ids",
+      "type": "array"
+    },
+    "authorized_scopes": {
+      "additionalProperties": {
+        "items": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Authorized Scopes",
+      "type": "object"
+    },
+    "delegated": {
+      "default": false,
+      "title": "Delegated",
+      "type": "boolean"
+    },
+    "organization_wide": {
+      "default": false,
+      "title": "Organization Wide",
+      "type": "boolean"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    },
+    "record_scope": {
+      "$ref": "#/$defs/Scope"
+    },
+    "related_household_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Related Household Ids",
+      "type": "array"
+    },
+    "related_record": {
+      "default": false,
+      "title": "Related Record",
+      "type": "boolean"
+    },
+    "role": {
+      "$ref": "#/$defs/Role"
+    },
+    "sensitivity": {
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ],
+      "title": "Sensitivity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "actor_organization_id",
+    "record_scope",
+    "sensitivity",
+    "active"
+  ],
+  "title": "PermissionContext",
+  "type": "object"
+}

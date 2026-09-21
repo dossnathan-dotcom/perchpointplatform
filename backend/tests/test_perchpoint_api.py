@@ -35,7 +35,7 @@ def test_health_endpoint(api_client, api_base_url):
     assert data["service"] == "perchpoint"
 
 
-# public properties feed returns seeded rental demonstration data
+# public properties feed returns canonical property records
 def test_properties_endpoint(api_client, api_base_url):
     response = api_client.get(f"{api_base_url}/api/properties", timeout=20)
     assert response.status_code == 200
@@ -45,8 +45,8 @@ def test_properties_endpoint(api_client, api_base_url):
     assert len(data["properties"]) >= 4
     first = data["properties"][0]
     assert "id" in first and isinstance(first["id"], str)
-    assert isinstance(first["rent"], int)
-    assert isinstance(first["deposit"], int)
+    assert "ownership_entity_id" in first
+    assert "property_type" in first
 
 
 # showing/application lead capture endpoint
@@ -63,7 +63,7 @@ def test_create_showing_lead(api_client, api_base_url):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "received"
-    assert data["message"] == "Your request is in. HawkVision will follow up with the next step."
+    assert data["message"] == "Synthetic request recorded. No showing, application, or notification was created."
     assert isinstance(data["id"], str) and len(data["id"]) > 10
 
 
@@ -81,6 +81,7 @@ def test_create_application_interest_lead(api_client, api_base_url):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "received"
+    assert data["message"] == "Synthetic request recorded. No showing, application, or notification was created."
     assert isinstance(data["id"], str) and len(data["id"]) > 10
 
 
@@ -99,8 +100,54 @@ def test_create_maintenance_request(api_client, api_base_url):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "submitted"
-    assert data["message"] == "Your maintenance request has been recorded for review."
+    assert data["message"] == "Synthetic maintenance request recorded. No dispatch or notification was sent."
     assert isinstance(data["id"], str) and data["id"].startswith("PP-")
+
+
+# canonical unit/property mismatch should be rejected
+def test_create_lead_rejects_unit_property_mismatch(api_client, api_base_url):
+    rentals = api_client.get(f"{api_base_url}/api/rentals", timeout=20)
+    assert rentals.status_code == 200
+    units = rentals.json()["units"]
+    target_unit = next((u for u in units if u.get("property_id") and u.get("id")), None)
+    wrong_property = next((u["property_id"] for u in units if u["property_id"] != target_unit["property_id"]), None)
+    assert target_unit is not None and wrong_property is not None
+
+    payload = {
+        "name": "TEST_QA Mismatch",
+        "email": "qa.tester+mismatch@example.com",
+        "intent": "showing",
+        "message": "Testing canonical mismatch guard",
+        "property_id": wrong_property,
+        "unit_id": target_unit["id"],
+    }
+    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    assert response.status_code == 422
+    assert "Unit must belong to the referenced canonical property" in response.json()["detail"]
+
+
+# synthetic-only domain validation for public forms
+def test_lead_rejects_non_example_domain(api_client, api_base_url):
+    payload = {
+        "name": "TEST_QA Domain Guard",
+        "email": "qa.real@gmail.com",
+        "intent": "application",
+        "message": "Should fail synthetic domain rule",
+        "property_id": "412-elm-unit-a",
+    }
+    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    assert response.status_code == 422
+    assert "Synthetic requests only" in response.json()["detail"]
+
+
+# auth endpoint is intentionally absent in phase 0
+def test_auth_endpoint_absent_by_design(api_client, api_base_url):
+    response = api_client.post(
+        f"{api_base_url}/api/auth/login",
+        json={"email": "any@example.com", "password": "unused"},
+        timeout=20,
+    )
+    assert response.status_code == 404
 
 
 # validation handling for incomplete maintenance payload

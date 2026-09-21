@@ -1,0 +1,1 @@
+"""Phase 0 contracts and deterministic synthetic fixtures. Not production security."""

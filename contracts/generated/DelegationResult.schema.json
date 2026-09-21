@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "executed": {
+      "const": false,
+      "default": false,
+      "title": "Executed",
+      "type": "boolean"
+    },
+    "notification_required": {
+      "default": false,
+      "title": "Notification Required",
+      "type": "boolean"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "result": {
+      "enum": [
+        "eligible",
+        "owner_required",
+        "manager_required",
+        "denied",
+        "emergency_exception"
+      ],
+      "title": "Result",
+      "type": "string"
+    },
+    "retrospective_review_required": {
+      "default": false,
+      "title": "Retrospective Review Required",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "result",
+    "reasons"
+  ],
+  "title": "DelegationResult",
+  "type": "object"
+}

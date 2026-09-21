@@ -1,0 +1,333 @@
+{
+  "$defs": {
+    "Scope": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "building_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building Id"
+        },
+        "household_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Household Id"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "ownership_entity_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ownership Entity Id"
+        },
+        "property_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Property Id"
+        },
+        "unit_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Id"
+        }
+      },
+      "required": [
+        "organization_id"
+      ],
+      "title": "Scope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adverse_action_case_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Adverse Action Case Id"
+    },
+    "applicant_person_id": {
+      "format": "uuid",
+      "title": "Applicant Person Id",
+      "type": "string"
+    },
+    "autonomous_decision": {
+      "const": false,
+      "default": false,
+      "title": "Autonomous Decision",
+      "type": "boolean"
+    },
+    "consent_record_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Consent Record Id"
+    },
+    "criteria_version": {
+      "title": "Criteria Version",
+      "type": "string"
+    },
+    "disclosure_version": {
+      "title": "Disclosure Version",
+      "type": "string"
+    },
+    "dispute_case_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Dispute Case Id"
+    },
+    "failure_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure Code"
+    },
+    "farouk_final_decision_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Farouk Final Decision Id"
+    },
+    "human_reviewer_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Human Reviewer Id"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "minimal_normalized_result": {
+      "enum": [
+        "not_requested",
+        "human_review_required",
+        "provider_unavailable"
+      ],
+      "title": "Minimal Normalized Result",
+      "type": "string"
+    },
+    "order_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Order Id"
+    },
+    "permissible_purpose": {
+      "title": "Permissible Purpose",
+      "type": "string"
+    },
+    "provider_callback_event_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Provider Callback Event Id"
+    },
+    "provider_reference_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Provider Reference Id"
+    },
+    "recommendation_record_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recommendation Record Id"
+    },
+    "restricted_access_policy_version": {
+      "title": "Restricted Access Policy Version",
+      "type": "string"
+    },
+    "restricted_report_document_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Restricted Report Document Id"
+    },
+    "retention_policy_version": {
+      "title": "Retention Policy Version",
+      "type": "string"
+    },
+    "retry_state": {
+      "title": "Retry State",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/Scope"
+    },
+    "status": {
+      "enum": [
+        "not_ordered",
+        "consent_pending",
+        "pending",
+        "review_required",
+        "failed",
+        "disputed",
+        "closed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "scope",
+    "applicant_person_id",
+    "permissible_purpose",
+    "disclosure_version",
+    "consent_record_id",
+    "order_id",
+    "provider_reference_id",
+    "status",
+    "minimal_normalized_result",
+    "restricted_report_document_id",
+    "restricted_access_policy_version",
+    "criteria_version",
+    "human_reviewer_id",
+    "recommendation_record_id",
+    "farouk_final_decision_id",
+    "adverse_action_case_id",
+    "dispute_case_id",
+    "retention_policy_version",
+    "provider_callback_event_id",
+    "failure_code",
+    "retry_state"
+  ],
+  "title": "ScreeningRecord",
+  "type": "object"
+}

@@ -1,82 +1,43 @@
-import { useState } from "react";
-import { ArrowLeft, Bell, Building2, ChevronRight, GitBranch, LogOut, Menu, Shield, X } from "lucide-react";
-import { ROLE_ACCOUNTS, DEMO_NOTICE } from "@/data/siteData";
-import { PORTAL_VIEWS } from "@/data/portalData";
-import { Button } from "@/components/ui/button";
-import { DelegationPolicyModal } from "@/components/DelegationPolicyModal";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowUpRight, Building2, FileLock2, GitBranch, X } from 'lucide-react';
+import { ROLE_ACCOUNTS, slug } from '@/data/siteData';
+import { PORTAL_VIEWS, previewRecords } from '@/data/portalData';
+import { PHASE0 } from '@/config/phase0';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DelegationPolicyModal } from './DelegationPolicyModal';
+import { DemoNotice } from './DemoNotice';
+import { PortalToolbar } from './portal/PortalToolbar';
+import { PreviewState } from './portal/PreviewState';
 
-const statusColor = (status) => status.includes("Emergency") ? "text-red-300 bg-red-500/10" : status.includes("Complete") || status.includes("Approved") ? "text-emerald-300 bg-emerald-500/10" : "text-gold bg-gold/10";
-
-export const PerchPointPortal = ({ user, onRoleChange, onLogout, onReturn }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [policyOpen, setPolicyOpen] = useState(false);
-  const [mobileNav, setMobileNav] = useState(false);
-  const view = PORTAL_VIEWS[user.id];
-
-  const changeRole = (event) => {
-    const account = ROLE_ACCOUNTS.find((item) => item.id === event.target.value);
-    setActiveTab(0);
-    onRoleChange(account);
-  };
-
-  return (
-    <main className="min-h-screen bg-[#090d12] text-linen" data-testid="perchpoint-portal-page">
-      <div className="flex min-h-screen">
-        <aside className={`${mobileNav ? "fixed inset-y-0 left-0 z-50 flex" : "hidden"} w-[280px] shrink-0 flex-col border-r border-white/10 bg-obsidian p-5 lg:sticky lg:top-0 lg:flex lg:h-screen`} data-testid="perchpoint-sidebar">
-          <div className="flex items-start justify-between">
-            <button onClick={onReturn} className="flex items-center gap-3 text-left" data-testid="portal-brand-home-btn"><span className="flex h-10 w-10 items-center justify-center bg-copper text-white"><Building2 className="h-5 w-5" /></span><span><span className="block font-heading text-xl font-bold">PerchPoint</span><span className="font-mono text-[8px] uppercase tracking-[0.17em] text-linen/45">HawkVision Property Operations</span></span></button>
-            <button className="p-2 lg:hidden" onClick={() => setMobileNav(false)} data-testid="portal-close-mobile-nav-btn"><X className="h-5 w-5" /></button>
-          </div>
-          <div className="mt-10">
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-linen/35">Workspace</p>
-            <p className="mt-2 text-sm font-bold">{view.label}</p>
-          </div>
-          <nav className="mt-7 grid gap-1" data-testid="portal-workspace-navigation">
-            {view.tabs.map((tab, index) => <button key={tab} onClick={() => { setActiveTab(index); setMobileNav(false); }} className={`flex items-center justify-between px-3 py-3 text-left text-sm transition-colors ${activeTab === index ? "bg-copper text-white" : "text-linen/55 hover:bg-white/5 hover:text-linen"}`} data-testid={`portal-tab-${user.id}-${index}`}><span>{tab}</span><ChevronRight className="h-4 w-4" /></button>)}
-          </nav>
-          {(user.id === "owner" || user.id === "super-admin") && <button onClick={() => setPolicyOpen(true)} className="mt-6 flex items-center gap-3 border border-gold/20 bg-gold/10 px-4 py-3 text-left text-sm font-semibold text-gold" data-testid="delegation-policy-trigger-btn"><GitBranch className="h-4 w-4" /> View delegation matrix</button>}
-          <div className="mt-auto border-t border-white/10 pt-5">
-            <button onClick={onLogout} className="flex w-full items-center gap-3 px-3 py-3 text-sm text-linen/50 hover:text-linen" data-testid="portal-logout-btn"><LogOut className="h-4 w-4" /> Sign out of preview</button>
-          </div>
-        </aside>
-
-        <section className="min-w-0 flex-1">
-          <header className="sticky top-0 z-30 flex min-h-20 items-center justify-between gap-4 border-b border-white/10 bg-[#090d12]/95 px-5 backdrop-blur-xl sm:px-8">
-            <div className="flex min-w-0 items-center gap-3">
-              <button className="p-2 lg:hidden" onClick={() => setMobileNav(true)} data-testid="portal-open-mobile-nav-btn"><Menu className="h-5 w-5" /></button>
-              <div className="min-w-0"><p className="truncate font-heading text-xl font-bold sm:text-2xl">{view.tabs[activeTab]}</p><p className="truncate text-xs text-linen/40">{user.role}</p></div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="relative flex h-10 w-10 items-center justify-center border border-white/10 bg-white/[0.04]" aria-label="Notifications" data-testid="portal-notifications-btn"><Bell className="h-4 w-4" /><span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-copper" /></button>
-              <select value={user.id} onChange={changeRole} className="h-10 max-w-[180px] border border-white/10 bg-white/[0.04] px-3 text-xs text-linen outline-none" data-testid="portal-role-switcher">
-                {ROLE_ACCOUNTS.map((account) => <option key={account.id} value={account.id} className="bg-obsidian">{account.role}</option>)}
-              </select>
-            </div>
-          </header>
-
-          <div className="mx-auto max-w-[1500px] p-5 sm:p-8">
-            <div className="flex flex-col justify-between gap-6 border-b border-white/10 pb-8 lg:flex-row lg:items-end">
-              <div><p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold" data-testid="portal-demo-notice">{DEMO_NOTICE}</p><h1 className="mt-4 font-heading text-4xl font-bold sm:text-5xl">Good morning, {user.name}.</h1><p className="mt-4 max-w-3xl leading-7 text-linen/55" data-testid="portal-role-scope">{user.scope}</p></div>
-              <Button variant="outline" className="self-start border-white/15 bg-white/[0.04] text-linen hover:bg-white/10 hover:text-linen" onClick={onReturn} data-testid="portal-return-public-btn"><ArrowLeft className="h-4 w-4" /> Public site</Button>
-            </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {view.metrics.map(([label, value], index) => <article key={label} className="border border-white/10 bg-[#11161d] p-5" data-testid={`portal-metric-${index}`}><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-linen/35">{label}</p><p className="mt-5 font-heading text-3xl font-bold">{value}</p><div className="mt-5 h-px bg-gradient-to-r from-copper to-transparent" /></article>)}
-            </div>
-
-            <div className="mt-8 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-              <section className="border border-white/10 bg-[#11161d]" data-testid="portal-work-queue">
-                <div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-heading text-xl font-bold">Active work</p><p className="mt-1 text-xs text-linen/40">Role-filtered operational queue</p></div><span className="font-mono text-[9px] uppercase tracking-[0.16em] text-linen/35">Seeded preview</span></div>
-                <div>{view.tasks.map(([type, detail, status], index) => <button key={`${type}-${detail}`} className="grid w-full gap-3 border-b border-white/10 px-5 py-5 text-left transition-colors hover:bg-white/[0.03] sm:grid-cols-[0.7fr_1.6fr_auto] sm:items-center" data-testid={`portal-task-${index}`}><span className="text-sm font-bold">{type}</span><span className="text-sm text-linen/55">{detail}</span><span className={`w-fit px-2 py-1 text-xs ${statusColor(status)}`}>{status}</span></button>)}</div>
-              </section>
-              <aside className="border border-white/10 bg-[#11161d] p-6" data-testid="portal-access-boundary-card">
-                <Shield className="h-5 w-5 text-gold" /><p className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] text-gold">Access boundary</p><h2 className="mt-3 font-heading text-2xl font-bold">Only what this role needs.</h2><p className="mt-4 text-sm leading-7 text-linen/55">Sensitive identity or screening access is intended to create a reasoned, timestamped audit event. Production permissions remain unimplemented until Phase 0 contracts are approved.</p>
-              </aside>
-            </div>
-          </div>
-        </section>
+export const PerchPointPortal = () => {
+  const { roleId, viewId } = useParams();
+  const navigate = useNavigate();
+  const role = ROLE_ACCOUNTS.find((r) => r.id === roleId);
+  const view = role && PORTAL_VIEWS[role.id];
+  const tab = view?.tabs.find((t) => slug(t) === viewId) || view?.tabs[0];
+  const [search,setSearch] = useState('');
+  const [context,setContext] = useState('all');
+  const [state,setState] = useState('seeded');
+  const [menu,setMenu] = useState(false);
+  const [policy,setPolicy] = useState(false);
+  const [selected,setSelected] = useState(null);
+  useEffect(() => {setSearch('');setContext('all');setState('seeded');setSelected(null);setMenu(false);},[roleId,viewId]);
+  if (!role || !PHASE0.seedsEnabled) return <main className="min-h-screen bg-obsidian px-6 py-24 text-linen" data-testid="workspace-unavailable"><h1 className="font-heading text-4xl">Workspace preview unavailable</h1><Link className="mt-6 block underline" to="/" data-testid="workspace-unavailable-home">Return to HawkVision</Link></main>;
+  const records = previewRecords(role.id,tab).filter((r) => (context==='all'||r.propertyId===context) && `${r.title} ${r.detail} ${r.status}`.toLowerCase().includes(search.toLowerCase()));
+  return <main className="min-h-screen bg-[#090d12] text-linen" data-testid="perchpoint-portal-page"><div className="flex min-h-screen">
+    {menu && <button className="fixed inset-0 z-40 bg-black/70 lg:hidden" aria-label="Close workspace navigation" onClick={() => setMenu(false)} data-testid="portal-nav-backdrop" />}
+    <aside className={`${menu?'fixed inset-y-0 left-0 z-50 flex':'hidden'} w-[min(280px,90vw)] shrink-0 flex-col border-r border-white/20 bg-obsidian p-5 lg:sticky lg:top-0 lg:flex lg:h-screen`} data-testid="perchpoint-sidebar"><div className="flex items-start justify-between gap-2"><Link className="flex items-center gap-3" to="/" data-testid="portal-brand-home-btn"><Building2 className="h-7 w-7 text-gold" /><span className="font-heading text-2xl font-bold">PerchPoint</span></Link><button className="portal-icon lg:hidden" aria-label="Close navigation" onClick={() => setMenu(false)} data-testid="portal-close-mobile-nav-btn"><X size={18} /></button></div><p className="mt-3 text-xs leading-5 text-linen/75">HawkVision Homes Property Operations</p><p className="mb-3 mt-8 text-xs font-semibold text-gold" data-testid="portal-workspace-label">{view.label}</p>
+      <nav className="grid gap-1 overflow-y-auto" aria-label="Workspace" data-testid="portal-workspace-navigation">{view.tabs.map((t,i) => <Link key={t} to={`/perchpoint/${role.id}/${slug(t)}`} aria-current={t===tab?'page':undefined} className={`border-l-2 px-3 py-3 text-sm transition-colors ${t===tab?'border-gold bg-white/10 text-white':'border-transparent text-linen/75 hover:bg-white/5'}`} data-testid={`portal-tab-${role.id}-${i}`}>{t}</Link>)}</nav>
+      <div className="mt-auto grid gap-2 border-t border-white/20 pt-5">{['owner','super-admin'].includes(role.id) && <button className="flex min-h-11 items-center gap-2 text-left text-sm text-gold" onClick={() => setPolicy(true)} data-testid="delegation-policy-trigger-btn"><GitBranch size={16} />Delegation policy</button>}<Link className="flex min-h-11 items-center gap-2 text-sm text-linen/75" to="/foundation" data-testid="portal-foundation-link"><FileLock2 size={16} />Foundation contracts</Link><Link className="flex min-h-11 items-center gap-2 text-sm text-linen/75" to="/" data-testid="portal-logout-btn"><ArrowLeft size={16} />Leave preview</Link></div>
+    </aside>
+    <section className="min-w-0 flex-1"><PortalToolbar role={role} onRoleChange={(id) => navigate(`/perchpoint/${id}`)} onMenu={() => setMenu(true)} search={search} onSearch={setSearch} context={context} onContext={setContext} onLogout={() => navigate('/')} />
+      <div className="mx-auto max-w-[1400px] p-5 sm:p-8"><DemoNotice id="portal-demo-notice" className="text-xs text-gold">Seeded workspace · no production authentication or live operations</DemoNotice><div className="mt-5 flex flex-wrap items-end justify-between gap-5"><div><p className="text-sm text-linen/75" data-testid="portal-role-label">{role.role}</p><h1 className="mt-3 font-heading text-4xl font-bold sm:text-5xl" data-testid="portal-active-page-title">{tab}</h1></div><label className="grid gap-2 text-xs text-linen/75">State preview<select className="h-10 border border-white/40 bg-obsidian px-3 text-linen" value={state} onChange={(e) => setState(e.target.value)} data-testid="portal-state-select">{['seeded','empty','loading','error','denied'].map((s) => <option key={s} value={s}>{s}</option>)}</select></label></div><p className="mt-5 max-w-3xl text-sm leading-7 text-linen/75" data-testid="portal-role-scope">{role.scope}</p>
+        <div className="my-7 flex flex-wrap gap-6 border-y border-white/20 py-4 text-xs"><span data-testid="portal-record-count">{records.length} synthetic {records.length===1?'record':'records'}</span><span data-testid="portal-provider-status" className="text-gold">Providers disconnected</span><span data-testid="portal-security-status" className="text-linen/75">Permissions: contract simulation only</span></div>
+        {state!=='seeded' || records.length===0 ? <PreviewState state={state==='seeded'?'empty':state} onReset={() => {setState('seeded');setSearch('');setContext('all');}} /> : <div className={role.id==='leasing'&&tab==='Operations Console'?'grid gap-x-8 md:grid-cols-2':'divide-y divide-white/20'} data-testid="portal-work-queue">{records.map((r,i) => <button key={r.id} className="group flex w-full items-start justify-between gap-4 border-b border-white/20 py-5 text-left transition-colors hover:bg-white/5" onClick={() => setSelected(r)} data-testid={`portal-task-${i}`}><span><span className="block text-sm font-semibold">{r.title}</span><span className="mt-2 block text-sm leading-6 text-linen/75">{r.detail}</span><span className="mt-3 block text-xs text-gold" data-testid={`portal-task-status-${i}`}>{r.status}</span></span><ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-linen/75 group-hover:text-gold" /></button>)}</div>}
+        <div className="mt-10 border-l-2 border-copper pl-5" data-testid="portal-access-boundary-card"><h2 className="font-heading text-lg">Access is a relationship, not just a role.</h2><p className="mt-3 max-w-3xl text-sm leading-7 text-linen/75">Organization, property, assignment, household, sensitivity, action and current status must all be evaluated by the future server. This preview does not protect production records.</p></div>
       </div>
-      <DelegationPolicyModal open={policyOpen} onOpenChange={setPolicyOpen} />
-    </main>
-  );
+    </section>
+  </div><DelegationPolicyModal open={policy} onOpenChange={setPolicy} /><Dialog open={!!selected} onOpenChange={(open) => {if(!open)setSelected(null);}}><DialogContent className="border-white/30 bg-obsidian text-linen" data-testid="portal-record-dialog"><DialogHeader><DialogTitle className="font-heading text-2xl">{selected?.title}</DialogTitle><DialogDescription className="text-linen/75">{selected?.detail}</DialogDescription></DialogHeader><p className="text-sm text-gold" data-testid="portal-record-disclosure">Synthetic preview only. No real workflow is started.</p><Button disabled className="bg-white/10 text-linen" data-testid="portal-record-planned-action">Workflow planned · unavailable in Phase 0</Button></DialogContent></Dialog></main>;
 };

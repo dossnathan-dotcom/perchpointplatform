@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted": {
+      "title": "Accepted",
+      "type": "boolean"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Error Code"
+    },
+    "side_effects": {
+      "const": false,
+      "default": false,
+      "title": "Side Effects",
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "disconnected",
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "accepted",
+    "status",
+    "error_code"
+  ],
+  "title": "AdapterResult",
+  "type": "object"
+}

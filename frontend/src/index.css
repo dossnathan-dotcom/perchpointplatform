@@ -12,7 +12,7 @@
     --card-foreground: 220 20% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 7%;
-    --primary: 22 64% 46%;
+    --primary: 18 65% 39%;
     --primary-foreground: 36 33% 97%;
     --secondary: 35 28% 92%;
     --secondary-foreground: 220 20% 7%;
@@ -38,14 +38,30 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    overflow-x: hidden;
   }
 
   ::selection {
-    background: #c25e2b;
+    background: #a64b23;
     color: #faf8f5;
   }
 }
+
+/* Contrast pairs are measured in contracts/verification; imagery always has a scrim. */
+:root { --ink: #0d1117; --paper: #faf8f5; --copper: #a64b23; --copper-light: #f2ad78; }
+* { letter-spacing: 0 !important; }
+section[id], footer[id] { scroll-margin-top: 6rem; }
+button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
+button, a, input, select, textarea { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+:focus-visible { outline: 3px solid #f2ad78 !important; outline-offset: 3px; box-shadow: 0 0 0 5px #0d1117; }
+button:disabled, select:disabled { cursor: not-allowed; }
+.portal-icon { display: inline-flex; height: 44px; width: 44px; flex-shrink: 0; align-items: center; justify-content: center; border: 1px solid #8e9195; }
+.portal-icon:hover { background: #25282d; }
+.demo-notice { line-height: 1.6; }
+[class*="text-linen/35"], [class*="text-linen/40"], [class*="text-linen/45"], [class*="text-linen/50"], [class*="text-linen/55"], [class*="text-linen/60"], [class*="text-linen/65"] { color: #ced0d2; }
+.text-stone-400, .text-stone-500 { color: #655e58; }
+input:not([type="checkbox"]), textarea { border-color: #817a73 !important; }
+input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; } }
 
 @layer base {
   [data-debug-wrapper="true"] {

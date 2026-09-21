@@ -1,0 +1,6 @@
+source_system,source_record_id,organization_id,property_id,building_id,unit_label,use,rent_minor,currency,document_count
+Innago-synthetic,SRC-001,d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3,9960c7ea-3d4b-5fd7-90b3-6360439a6875,c1258d4c-cefe-575c-a398-4d4d3f0d3870,EXAMPLE-NEW,residential,120000,USD,2
+Innago-synthetic,SRC-001,d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3,9960c7ea-3d4b-5fd7-90b3-6360439a6875,c1258d4c-cefe-575c-a398-4d4d3f0d3870,EXAMPLE-NEW,residential,120000,USD,2
+Innago-synthetic,SRC-002,d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3,9960c7ea-3d4b-5fd7-90b3-6360439a6875,c1258d4c-cefe-575c-a398-4d4d3f0d3870,INVALID,residential,-1,USD,0
+Innago-synthetic,SRC-003,d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3,9960c7ea-3d4b-5fd7-90b3-6360439a6875,828d8656-91a1-5e51-8f2a-e20a2ed9cc21,BAD-CHAIN,residential,100000,USD,1
+Innago-synthetic,SRC-004,d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3,9960c7ea-3d4b-5fd7-90b3-6360439a6875,c1258d4c-cefe-575c-a398-4d4d3f0d3870,1A,residential,225000,USD,3

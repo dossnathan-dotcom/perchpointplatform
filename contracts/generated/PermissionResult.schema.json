@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "allowed_in_simulation": {
+      "title": "Allowed In Simulation",
+      "type": "boolean"
+    },
+    "audit_required": {
+      "default": true,
+      "title": "Audit Required",
+      "type": "boolean"
+    },
+    "production_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Production Authorized",
+      "type": "boolean"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "allowed_in_simulation",
+    "reason"
+  ],
+  "title": "PermissionResult",
+  "type": "object"
+}

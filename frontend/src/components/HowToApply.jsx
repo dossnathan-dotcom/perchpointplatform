@@ -14,7 +14,7 @@ export const HowToApply = ({ onApply }) => (
       <div className="max-w-3xl">
         <p className="kicker-line font-mono text-xs uppercase tracking-[0.28em] text-copper">A transparent path home</p>
         <h2 className="mt-5 font-heading text-4xl font-bold leading-tight sm:text-5xl">Know the steps before you start.</h2>
-        <p className="mt-5 leading-7 text-stone-600">No hidden brokerage fees. Screening criteria and required documents are presented before an application payment is requested.</p>
+        <p className="mt-5 leading-7 text-stone-600" data-testid="application-planned-disclosure">The intended application path is outlined below. Applications, screening, payments and lease signing are not active. Only synthetic interest requests can be previewed.</p>
       </div>
       <div className="mt-12 grid border-y border-stone-200 md:grid-cols-2 xl:grid-cols-4">
         {steps.map(([Icon, number, title, copy], index) => (
@@ -25,7 +25,7 @@ export const HowToApply = ({ onApply }) => (
           </article>
         ))}
       </div>
-      <Button className="mt-8 bg-obsidian text-linen hover:bg-copper" onClick={onApply} data-testid="how-to-apply-start-btn">Start an application</Button>
+      <Button className="mt-8 bg-obsidian text-linen hover:bg-copper" onClick={onApply} data-testid="how-to-apply-start-btn">Preview application interest</Button>
     </div>
   </section>
 );

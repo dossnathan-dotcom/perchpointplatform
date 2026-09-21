@@ -1,0 +1,193 @@
+{
+  "$defs": {
+    "DomainEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregate_id": {
+          "format": "uuid",
+          "title": "Aggregate Id",
+          "type": "string"
+        },
+        "aggregate_version": {
+          "minimum": 1,
+          "title": "Aggregate Version",
+          "type": "integer"
+        },
+        "causation_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Causation Id"
+        },
+        "correlation_id": {
+          "format": "uuid",
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "domain": {
+          "enum": [
+            "payment",
+            "screening",
+            "lease",
+            "showing",
+            "communication",
+            "maintenance",
+            "approval",
+            "document",
+            "migration",
+            "account_lifecycle"
+          ],
+          "title": "Domain",
+          "type": "string"
+        },
+        "event_type": {
+          "title": "Event Type",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "payload_record_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Payload Record Ids",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "domain",
+        "event_type",
+        "aggregate_id",
+        "aggregate_version",
+        "organization_id",
+        "occurred_at",
+        "correlation_id",
+        "causation_id",
+        "payload_record_ids"
+      ],
+      "title": "DomainEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attempts": {
+      "minimum": 0,
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "claim_expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Claim Expires At"
+    },
+    "event": {
+      "$ref": "#/$defs/DomainEvent"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "last_error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Error"
+    },
+    "next_attempt_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Attempt At"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "claimed",
+        "delivered",
+        "failed",
+        "dead_letter"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "event",
+    "idempotency_key",
+    "state",
+    "attempts",
+    "next_attempt_at",
+    "claim_expires_at",
+    "last_error"
+  ],
+  "title": "OutboxRecord",
+  "type": "object"
+}

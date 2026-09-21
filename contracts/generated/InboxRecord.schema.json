@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "ProviderEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_event_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Canonical Event Id"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "integration_id": {
+          "format": "uuid",
+          "title": "Integration Id",
+          "type": "string"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "payload_checksum": {
+          "title": "Payload Checksum",
+          "type": "string"
+        },
+        "provider_event_id": {
+          "title": "Provider Event Id",
+          "type": "string"
+        },
+        "received_at": {
+          "format": "date-time",
+          "title": "Received At",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_verified": {
+          "title": "Signature Verified",
+          "type": "boolean"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "integration_id",
+        "organization_id",
+        "provider_event_id",
+        "received_at",
+        "signature_verified",
+        "payload_checksum",
+        "canonical_event_id"
+      ],
+      "title": "ProviderEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "deduplication_key": {
+      "title": "Deduplication Key",
+      "type": "string"
+    },
+    "failure_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure Code"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "processed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Processed At"
+    },
+    "provider_event": {
+      "$ref": "#/$defs/ProviderEvent"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "received",
+        "validated",
+        "processed",
+        "rejected",
+        "failed"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "provider_event",
+    "deduplication_key",
+    "state",
+    "processed_at",
+    "failure_code"
+  ],
+  "title": "InboxRecord",
+  "type": "object"
+}

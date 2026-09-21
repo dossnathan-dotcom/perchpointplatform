@@ -1,0 +1,38 @@
+[
+  {
+    "pair": "primary button",
+    "foreground": "#FAF8F5",
+    "background": "#A64B23",
+    "ratio": 5.42
+  },
+  {
+    "pair": "copper on linen",
+    "foreground": "#A64B23",
+    "background": "#FAF8F5",
+    "ratio": 5.42
+  },
+  {
+    "pair": "light copper on charcoal",
+    "foreground": "#F2AD78",
+    "background": "#0D1117",
+    "ratio": 9.93
+  },
+  {
+    "pair": "body on charcoal",
+    "foreground": "#FAF8F5",
+    "background": "#0D1117",
+    "ratio": 17.85
+  },
+  {
+    "pair": "muted on charcoal",
+    "foreground": "#CED0D2",
+    "background": "#0D1117",
+    "ratio": 12.24
+  },
+  {
+    "pair": "footer region",
+    "foreground": "#9DA5AF",
+    "background": "#080B10",
+    "ratio": 7.91
+  }
+]

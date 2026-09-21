@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-21",
+  "tool": "Playwright with axe-core 4.10.3",
+  "viewport": {"width": 1920, "height": 800},
+  "standards": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
+  "fix": "Raised footer Cincinnati label from white at 6% opacity to #9DA5AF against #080B10.",
+  "results": [
+    {"route": "/", "slide": 1, "violations": [], "incomplete_rules": 1},
+    {"route": "/", "slide": 2, "violations": [], "incomplete_rules": 1},
+    {"route": "/", "slide": 3, "violations": [], "incomplete_rules": 1},
+    {"route": "/perchpoint/leasing", "violations": []},
+    {"route": "/perchpoint/resident", "violations": []},
+    {"route": "/foundation/permissions", "violations": []}
+  ],
+  "source_console": "/root/.emergent/automation_output/20260921_185939/console_20260921_185939.log",
+  "limitation": "One homepage rule remains incomplete for automation. Zero violations is not full WCAG certification; photograph-dependent contrast, manual screen-reader/keyboard/zoom review remain publication gates."
+}
