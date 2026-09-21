@@ -1,46 +1,19 @@
-import { ArrowRight } from "lucide-react";
-import { NEIGHBORHOODS } from "@/data/siteData";
+import { ArrowUpRight, MapPin } from "lucide-react";
+import { IMAGES } from "@/data/siteData";
 
-export const Neighborhoods = () => {
-  return (
-    <section id="neighborhoods" className="bg-obsidian py-24 text-linen sm:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="mb-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-          <div>
-            <p className="kicker-line font-mono text-xs uppercase tracking-[0.3em] text-gold">Seven hills, one strategy</p>
-            <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight sm:text-5xl">
-              Know the block before you chase the address.
-            </h2>
-          </div>
-          <p className="max-w-2xl text-base leading-8 text-linen/70 lg:justify-self-end">
-            HawkVision pairs neighborhood instinct with hard transaction signals so buyers avoid overpaying and sellers know exactly where their leverage starts.
-          </p>
-        </div>
+const areas = [
+  { name: "Downtown & OTR", image: IMAGES.mixedUse, detail: "Historic mixed-use blocks, apartments above local businesses, and direct access to the urban core." },
+  { name: "Clifton", image: IMAGES.duplex, detail: "Duplexes and smaller multifamily homes near institutions, transit, and neighborhood retail." },
+  { name: "Cincinnati neighborhoods", image: IMAGES.triplex, detail: "A flexible operating model for single-family, small multifamily, and future portfolio growth." },
+];
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {NEIGHBORHOODS.map((area, index) => (
-            <a
-              key={area.name}
-              href="#valuation"
-              className={`group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 ${index % 2 ? "lg:translate-y-10" : ""}`}
-              data-testid={`neighborhood-card-${index + 1}`}
-            >
-              <img src={area.image} alt={`${area.name} Cincinnati neighborhood`} className="h-80 w-full object-cover opacity-72 transition-all duration-700 group-hover:scale-105 group-hover:opacity-90" />
-              <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-gold/40 bg-obsidian/60 font-mono text-sm text-gold backdrop-blur">
-                  {area.score}
-                </div>
-                <h3 className="font-heading text-2xl font-bold">{area.name}</h3>
-                <p className="mt-2 text-sm leading-6 text-linen/70">{area.detail}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
-                  Explore value <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
+export const Neighborhoods = () => (
+  <section id="neighborhoods" className="bg-obsidian py-24 text-linen sm:py-28">
+    <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="max-w-3xl"><p className="kicker-line font-mono text-xs uppercase tracking-[0.28em] text-gold">Greater Cincinnati</p><h2 className="mt-5 font-heading text-4xl font-bold leading-tight sm:text-5xl">Property care should respect the block, not just the building.</h2><p className="mt-5 leading-7 text-linen/60">PerchPoint is designed to expand across municipalities and states while preserving property, building, and unit-level context.</p></div>
+      <div className="mt-12 grid gap-5 md:grid-cols-3">
+        {areas.map((area) => <article key={area.name} className="group relative aspect-[4/5] overflow-hidden border border-white/10" data-testid={`neighborhood-${area.name.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and")}`}><img src={area.image} alt={`${area.name} Cincinnati property context`} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" /><div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" /><div className="absolute inset-x-0 bottom-0 p-6"><MapPin className="h-4 w-4 text-gold" /><h3 className="mt-4 font-heading text-2xl font-bold">{area.name}</h3><p className="mt-3 text-sm leading-6 text-linen/65">{area.detail}</p><ArrowUpRight className="mt-5 h-5 w-5 text-gold" /></div></article>)}
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);

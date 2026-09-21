@@ -1,120 +1,69 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState } from "react";
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Building2, LogIn } from "lucide-react";
 import { Toaster } from "sonner";
 import "@/App.css";
-import { AgentStory } from "@/components/AgentStory";
-import { BuyerQuiz } from "@/components/BuyerQuiz";
-import { ClientDashboard } from "@/components/ClientDashboard";
+import { AboutHawkVision } from "@/components/AboutHawkVision";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
+import { HowToApply } from "@/components/HowToApply";
 import { Listings } from "@/components/Listings";
 import { LoginModal } from "@/components/LoginModal";
-import { MarketMetrics } from "@/components/MarketMetrics";
+import { MaintenanceModal } from "@/components/MaintenanceModal";
 import { Navbar } from "@/components/Navbar";
 import { Neighborhoods } from "@/components/Neighborhoods";
+import { PerchPointPortal } from "@/components/PerchPointPortal";
 import { PropertyDetailPage } from "@/components/PropertyDetailPage";
-import { Testimonials } from "@/components/Testimonials";
+import { PropertyHierarchyView } from "@/components/PropertyHierarchyView";
+import { ResidentResources } from "@/components/ResidentResources";
 import { TourModal } from "@/components/TourModal";
-import { Valuation } from "@/components/Valuation";
-import { LISTINGS } from "@/data/siteData";
+import { Button } from "@/components/ui/button";
+import { RENTALS } from "@/data/siteData";
 
-function App() {
+const PortalGate = ({ onLogin }) => (
+  <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-5 text-linen" data-testid="perchpoint-portal-gate">
+    <div className="texture-grid absolute inset-0" />
+    <div className="relative max-w-xl text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center bg-copper text-white"><Building2 className="h-6 w-6" /></span><p className="mt-7 font-mono text-xs uppercase tracking-[0.24em] text-gold">PerchPoint</p><h1 className="mt-4 font-heading text-5xl font-bold">Property operations, with the right access for every role.</h1><p className="mt-5 leading-7 text-linen/60">Enter the seeded Phase 0 workspace preview. Production identity and authorization are intentionally not active yet.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Button className="bg-copper text-white hover:bg-copperDark" onClick={onLogin} data-testid="portal-gate-login-btn"><LogIn className="h-4 w-4" /> Sign in to preview</Button><Button asChild variant="outline" className="border-white/20 bg-white/5 text-linen hover:bg-white/10 hover:text-linen"><Link to="/" data-testid="portal-gate-public-site-link">Return to HawkVision</Link></Button></div></div>
+  </main>
+);
+
+function AppContent() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loginOpen, setLoginOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
-  const [tourOpen, setTourOpen] = useState(false);
-  const [tourIntent, setTourIntent] = useState("private_tour");
+  const [loginRole, setLoginRole] = useState("resident");
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [maintenanceOpen, setMaintenanceOpen] = useState(false);
+  const [requestIntent, setRequestIntent] = useState("showing");
+  const [requestProperty, setRequestProperty] = useState(RENTALS[0]);
   const [user, setUser] = useState(null);
-  const [tourProperty, setTourProperty] = useState(LISTINGS[0]);
-  const [savedIds, setSavedIds] = useState(() => {
-    try {
-      return JSON.parse(window.localStorage.getItem("hawkvision-saved-homes") || "[]");
-    } catch {
-      return [];
-    }
-  });
 
-  useEffect(() => {
-    window.localStorage.setItem("hawkvision-saved-homes", JSON.stringify(savedIds));
-  }, [savedIds]);
+  const openLogin = (role = "resident") => { setLoginRole(role); setLoginOpen(true); };
+  const openRequest = (property = RENTALS[0], intent = "showing") => { setRequestProperty(property); setRequestIntent(intent); setRequestOpen(true); };
+  const handleLogin = (account) => { setUser(account); navigate("/perchpoint"); };
+  const handleLogout = () => { setUser(null); navigate("/"); };
+  const isPortal = location.pathname === "/perchpoint";
 
-  const toggleSaved = (propertyId) => {
-    setSavedIds((current) =>
-      current.includes(propertyId)
-        ? current.filter((item) => item !== propertyId)
-        : [...current, propertyId]
-    );
-  };
-
-  const openTour = (property = LISTINGS[0], intent = "private_tour") => {
-    setTourProperty(property);
-    setTourIntent(intent);
-    setTourOpen(true);
-  };
-
-  const openConsultation = () => openTour(LISTINGS[0], "consultation");
-
-  const handleLogin = (account) => {
-    setUser({
-      ...account,
-      savedIds: [...new Set([...account.savedIds, ...savedIds])],
-    });
-    setDashboardOpen(true);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setDashboardOpen(false);
-  };
+  if (isPortal) {
+    return <><Routes><Route path="/perchpoint" element={user ? <PerchPointPortal user={user} onRoleChange={setUser} onLogout={handleLogout} onReturn={() => navigate("/")} /> : <PortalGate onLogin={() => openLogin("owner")} />} /></Routes><LoginModal open={loginOpen} onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} /><Toaster richColors position="top-center" /></>;
+  }
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-linen text-obsidian">
-        <Navbar
-          user={user}
-          onLoginClick={() => setLoginOpen(true)}
-          onDashboardOpen={() => setDashboardOpen(true)}
-          onSchedule={() => openTour()}
-        />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <main>
-                <Hero onSchedule={() => openTour()} />
-                <MarketMetrics />
-                <Listings onSchedule={openTour} savedIds={savedIds} onToggleSaved={toggleSaved} />
-                <Neighborhoods />
-                <AgentStory onBookConsultation={openConsultation} />
-                <Valuation />
-                <BuyerQuiz onConsultation={openConsultation} />
-                <Testimonials />
-              </main>
-            }
-          />
-          <Route
-            path="/property/:propertyId"
-            element={<PropertyDetailPage onSchedule={openTour} savedIds={savedIds} onToggleSaved={toggleSaved} />}
-          />
-        </Routes>
-        <Footer onSchedule={openConsultation} />
-
-        <LoginModal open={loginOpen} onOpenChange={setLoginOpen} onSuccess={handleLogin} />
-        <ClientDashboard
-          user={user}
-          savedIds={savedIds}
-          open={dashboardOpen}
-          onOpenChange={setDashboardOpen}
-          onLogout={handleLogout}
-          onSchedule={() => {
-            setDashboardOpen(false);
-            openTour();
-          }}
-        />
-        <TourModal property={tourProperty} intent={tourIntent} open={tourOpen} onOpenChange={setTourOpen} />
-        <Toaster richColors position="top-center" />
-      </div>
-    </BrowserRouter>
+    <div className="min-h-screen bg-linen text-obsidian">
+      <Navbar onLoginClick={() => openLogin("resident")} onMaintenance={() => setMaintenanceOpen(true)} />
+      <Routes>
+        <Route path="/" element={<main><Hero onSchedule={() => openRequest(RENTALS[0], "showing")} onMaintenance={() => setMaintenanceOpen(true)} /><Listings onRequest={openRequest} /><PropertyHierarchyView /><HowToApply onApply={() => openRequest(RENTALS[0], "application")} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true)} onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route path="/property/:propertyId" element={<PropertyDetailPage onRequest={openRequest} />} />
+      </Routes>
+      <Footer onContact={() => openRequest(undefined, "contact")} onMaintenance={() => setMaintenanceOpen(true)} />
+      <LoginModal open={loginOpen} onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />
+      <TourModal property={requestProperty} intent={requestIntent} open={requestOpen} onOpenChange={setRequestOpen} />
+      <MaintenanceModal open={maintenanceOpen} onOpenChange={setMaintenanceOpen} />
+      <Toaster richColors position="top-center" />
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return <BrowserRouter><AppContent /></BrowserRouter>;
+}

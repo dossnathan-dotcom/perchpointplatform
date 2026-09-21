@@ -27,8 +27,8 @@
 
 .hero-vignette {
   background:
-    linear-gradient(90deg, rgba(13, 17, 23, 0.94) 0%, rgba(13, 17, 23, 0.72) 46%, rgba(13, 17, 23, 0.25) 100%),
-    linear-gradient(0deg, rgba(13, 17, 23, 0.92) 0%, rgba(13, 17, 23, 0) 42%);
+    linear-gradient(90deg, rgba(13, 17, 23, 0.96) 0%, rgba(13, 17, 23, 0.7) 52%, rgba(13, 17, 23, 0.3) 100%),
+    linear-gradient(0deg, rgba(13, 17, 23, 0.95) 0%, rgba(13, 17, 23, 0.08) 48%);
 }
 
 .kicker-line {
@@ -62,6 +62,23 @@
 .property-card:hover img {
   transform: scale(1.045);
   filter: saturate(1.08) contrast(1.04);
+}
+
+.hero-control {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(250, 248, 245, 0.72);
+  transition: color 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.hero-control:hover {
+  border-color: #d97706;
+  color: #fde68a;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .cta-pulse {
