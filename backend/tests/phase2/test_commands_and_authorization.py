@@ -216,6 +216,42 @@ def test_two_workers_claim_different_rows():
     assert any(row.status != "pending" for row in statuses)
 
 
+def test_worker_lease_expires_and_is_reclaimed():
+    admin = _admin()
+    org = sid("organization-demo")
+    event_id = uuid4()
+    with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+        connection.execute(
+            text(
+                """
+                INSERT INTO outbox (organization_id, id, event_type, aggregate_id, payload, status, attempts, available_at)
+                VALUES (:org, :id, 'synthetic.delivery', :id, '{"synthetic": true, "fail_once": false}', 'pending', 0, '0001-01-01')
+                """
+            ),
+            {"org": org, "id": event_id},
+        )
+    admin.dispose()
+    settings = _settings()
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        first = connection.execute(text("SELECT * FROM perchpoint.claim_outbox('worker-a')")).mappings().first()
+    assert first["id"] == event_id
+    assert first["attempts"] == 1
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        blocked = connection.execute(text("SELECT id FROM perchpoint.claim_outbox('worker-b')")).mappings().all()
+    assert all(row["id"] != event_id for row in blocked)
+    admin = _admin()
+    with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+        connection.execute(text("UPDATE outbox SET lease_until = now() - interval '1 minute' WHERE id = :id"), {"id": event_id})
+    admin.dispose()
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        second = connection.execute(text("SELECT * FROM perchpoint.claim_outbox('worker-b')")).mappings().first()
+    assert second["id"] == event_id
+    assert second["attempts"] == 2
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        status = connection.execute(text("SELECT perchpoint.finish_outbox(:id, true)"), {"id": event_id}).scalar()
+    assert status == "delivered"
+
+
 def test_signed_inbox_dedupe_isolation_and_stale():
     secret = os.environ["PHASE2_WEBHOOK_SECRET"].encode()
     org = str(sid("organization-demo"))

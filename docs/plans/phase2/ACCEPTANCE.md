@@ -40,6 +40,18 @@ Record hardware, workload mix, warm versus cold, error rates, p50/p95/p99,
 and query plans. Refine after first measurement. Do not run this benchmark
 during planning.
 
+## Measurement 2026-09-24
+
+Isolated rows named `Bench *` were inserted into local `perchpoint_phase2`,
+read through `perchpoint_runtime` with transaction-local organization context,
+then deleted. Leftover benchmark rows: 0. Dataset: 1,000 properties. Query:
+`SELECT id, name FROM properties WHERE name LIKE 'Bench %' ORDER BY id LIMIT 50`.
+Warmup: 1. Measured runs: 20. p50 12.24 ms, p95 12.42 ms, max 12.43 ms.
+This is below the planning read ceiling of 500 ms for this query only.
+Buildings, spaces, inquiries, the 250,000-activity design, concurrency, and
+`EXPLAIN ANALYZE` were not part of this run. The larger design remains unproven.
+Browser, responsive, and accessibility gates were not executed in this pass.
+
 ## Required evidence (P2-01 through P2-05)
 
 | Evidence | Package | Planned command / method | Status now |

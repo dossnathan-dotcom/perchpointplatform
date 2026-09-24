@@ -139,11 +139,37 @@ def login(body: LoginBody, settings: Settings = Depends(settings)):
     return {"token": token, "organization_id": str(membership["organization_id"]), "role_name": membership["role_name"], "synthetic": True}
 
 
+def _public_listing(row: dict) -> dict:
+    return {
+        "listing_id": row["listing_id"],
+        "property_name": row["property_name"],
+        "label": row["label"],
+        "use": row["use"],
+        "municipality": row["municipality"],
+        "state": row["state"],
+        "publication": row["publication"],
+        "availability": row["availability"],
+        "amount_minor": row["amount_minor"],
+        "currency": row["currency"],
+        "synthetic": True,
+    }
+
+
 @router.get("/listings")
 def listings(settings: Settings = Depends(settings)):
     with runtime_transaction(settings, None, None, uuid4()) as connection:
         rows = connection.execute(text("SELECT * FROM perchpoint.published_listings()")).mappings().all()
-    return {"listings": [dict(row) for row in rows], "synthetic": True}
+    return {"listings": [_public_listing(dict(row)) for row in rows], "synthetic": True}
+
+
+@router.get("/listings/{listing_id}")
+def listing_detail(listing_id: UUID, settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        rows = connection.execute(text("SELECT * FROM perchpoint.published_listings()")).mappings().all()
+    match = next((dict(row) for row in rows if row["listing_id"] == listing_id), None)
+    if not match:
+        raise HTTPException(404, "That listing is not public")
+    return _public_listing(match)
 
 
 @router.post("/properties", status_code=201)
