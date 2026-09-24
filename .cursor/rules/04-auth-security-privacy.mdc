@@ -1,0 +1,9 @@
+---
+description: Authentication authorization security and privacy
+alwaysApply: true
+---
+
+Deny by default. A UI role, hidden control, UUID, or client check is never authorization.
+Future sensitive operations require authenticated server authority and direct negative tests.
+Minimize PII, never expose secrets, and retain qualified legal review gates from the constitution.
+Requirements: `PP-AUTH-001`, `PP-SEC-001`, `PP-SEC-002`, `PP-SEC-003`, `PP-SEC-004`.

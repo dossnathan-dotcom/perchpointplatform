@@ -1,0 +1,10 @@
+---
+description: Documentation and requirements traceability
+alwaysApply: true
+---
+
+Use stable PP-* requirement IDs from
+`docs/governance/REQUIREMENTS_TRACEABILITY.md`. Link normative claims to source page/section,
+owner, acceptance authority, assumptions, dependencies, risks, verification, and evidence.
+Never promote an unresolved assumption to policy.
+Requirements: `PP-ACCEPT-003`, `PP-GOV-001`.

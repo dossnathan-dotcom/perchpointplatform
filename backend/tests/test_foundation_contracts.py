@@ -2,7 +2,7 @@
 
 import csv
 import json
-import sys
+import os
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
@@ -10,8 +10,6 @@ from pathlib import Path
 import pytest
 from jsonschema import validate
 from pydantic import ValidationError
-
-sys.path.insert(0, "/app/backend")
 
 from foundation.catalog import migration_fixture
 from foundation.delegation import ApprovalDecision, evaluate_delegation
@@ -29,7 +27,18 @@ from foundation.property import Portfolio, Unit
 from foundation.seeds import money, people_graph, portfolio, sid
 from foundation.workflows import PaymentMethodReference, ScreeningRecord
 
-ROOT = Path("/app")
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+ROOT = REPOSITORY_ROOT
+
+
+def test_repository_root_is_independent_of_working_directory(tmp_path):
+    previous = Path.cwd()
+    try:
+        os.chdir(tmp_path)
+        assert (ROOT / "contracts/generated/schema-index.json").is_file()
+        assert (ROOT / "contracts/fixtures/portfolio.json").is_file()
+    finally:
+        os.chdir(previous)
 
 
 # schema and fixture contract validation
@@ -216,7 +225,8 @@ def test_permission_matrix_role_boundaries_and_denials():
         "reason": "synthetic contract review",
     }
 
-    mkctx = lambda role, **updates: PermissionContext(role=role, **{**base_scope, **updates})
+    def mkctx(role, **updates):
+        return PermissionContext(role=role, **{**base_scope, **updates})
 
     owner_tech = evaluate_permission("technical_admin", Action.DETAIL, mkctx(Role.OWNER))
     owner_sensitive_no_reason = evaluate_permission("restricted_document", Action.SENSITIVE, mkctx(Role.OWNER, sensitivity="restricted", reason=None))

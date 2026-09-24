@@ -1,0 +1,9 @@
+---
+description: Application and provider architecture boundaries
+alwaysApply: true
+---
+
+Preserve domain authority inside PerchPoint. Put providers behind replaceable adapters.
+Use idempotency and durable inbox/outbox patterns for future external effects. Phase 0 FastAPI,
+Mongo intake, and role previews are synthetic scaffolding, not production architecture.
+Requirements: `PP-PROV-002`, `PP-DATA-004`, `PP-NFR-002`.

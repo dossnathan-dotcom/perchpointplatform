@@ -1,0 +1,10 @@
+---
+description: Operational finance integrity
+alwaysApply: true
+---
+
+Use decimal-safe, reconstructable, append-only financial facts and reversible
+corrections. Never infer money movement from browser success. Keep Stripe/provider state,
+PerchPoint operational accounting, and formal accounting authority separate. Require
+attributable authorization and idempotency for future money effects.
+Requirements: `PP-FIN-001`, `PP-FIN-002`, `PP-FIN-003`, `PP-FIN-004`, `PP-FIN-005`, `PP-FIN-006`.

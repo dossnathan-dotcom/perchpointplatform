@@ -1,0 +1,9 @@
+---
+description: Safe Git and repository workflow
+alwaysApply: true
+---
+
+Inspect status before edits; preserve user work; avoid destructive Git. Use supported
+commands from `docs/phase0/ACCEPTANCE.md`. Do not hand-edit generated artifacts. Do not commit,
+push, merge, deploy, or activate providers without explicit authorization.
+Requirements: `PP-GOV-002`, `PP-GOV-005`, `PP-ACCEPT-001`, `PP-NFR-002`.

@@ -1,12 +1,8 @@
 """Isolated FastAPI/TestClient checks for Phase 0 route guards and synthetic fixture enforcement."""
 
-import sys
-
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-sys.path.insert(0, "/app/backend")
 
 from foundation.routes import router as foundation_router
 from server import api_router

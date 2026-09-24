@@ -1,0 +1,9 @@
+---
+description: Testing and evidence requirements
+alwaysApply: true
+---
+
+A count, snapshot, screen, or happy path is not acceptance. Test positive and negative
+paths, direct API access, invariants, deterministic generation, failure recovery, and phase
+boundaries. Record commands, versions, exit codes, skips, warnings, and environmental limits.
+Requirements: `PP-ACCEPT-001`, `PP-ACCEPT-003`, `PP-NFR-002`.

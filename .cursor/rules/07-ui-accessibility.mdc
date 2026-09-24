@@ -1,0 +1,10 @@
+---
+description: UI accessibility and responsive acceptance
+alwaysApply: true
+---
+
+Preserve approved visual behavior unless evidence supports redesign. Every workflow
+needs loading, empty, error, denied, and unavailable states. Verify keyboard/focus behavior,
+responsive layouts, reduced motion, and critical WCAG 2.2 AA journeys; axe alone is not
+certification.
+Requirement: `PP-NFR-001`.
