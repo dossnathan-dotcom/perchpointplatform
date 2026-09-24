@@ -20,6 +20,7 @@ import { TourModal } from "@/components/TourModal";
 import { Button } from "@/components/ui/button";
 import { RENTALS } from "@/data/siteData";
 import FoundationPage from "@/components/FoundationPage";
+import { ReferenceOperations } from "@/components/ReferenceOperations";
 
 const PortalGate = ({ onLogin }) => (
   <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-5 text-linen" data-testid="perchpoint-portal-gate">
@@ -68,6 +69,7 @@ export function AppContent() {
         <Route path="/perchpoint/:roleId/:viewId?" element={<PerchPointPortal key={location.key} />} />
         <Route path="/perchpoint/*" element={<PageNotFound />} />
         <Route path="/foundation/:sectionId?" element={<FoundationPage key={location.key} />} />
+        <Route path="/reference" element={<ReferenceOperations />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       {loginOpen && <LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />}

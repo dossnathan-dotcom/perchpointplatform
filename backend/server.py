@@ -109,6 +109,10 @@ async def create_maintenance_request(payload: MaintenanceCreate):
 
 app.include_router(api_router)
 app.include_router(foundation_router)
+if os.environ.get("PHASE2_LOCAL_AUTH") == "development":
+    from perchpoint.routes import router as phase2_router
+
+    app.include_router(phase2_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
