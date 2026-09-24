@@ -10,7 +10,7 @@ from .db import engine_for
 from .settings import Settings
 
 
-def seed(settings: Settings | None = None) -> None:
+def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") -> None:
     settings = settings or Settings.load()
     graph = portfolio()
     org = graph.organizations[0].id
@@ -19,7 +19,7 @@ def seed(settings: Settings | None = None) -> None:
     residential = next(item for item in graph.units if item.property_id == elm.id and item.use == "residential")
     building = next(item for item in graph.buildings if item.id == residential.building_id)
     password_hash = bcrypt.hashpw(settings.dev_password.encode(), bcrypt.gensalt()).decode()
-    admin = engine_for(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    admin = engine_for(settings.admin_url.rsplit("/", 1)[0] + "/" + database)
     with admin.begin() as connection:
         connection.execute(text("INSERT INTO organizations (id, name) VALUES (:id, :name) ON CONFLICT (id) DO NOTHING"), {"id": org, "name": "HawkVision Homes — synthetic organization"})
         connection.execute(text("INSERT INTO organizations (id, name) VALUES (:id, :name) ON CONFLICT (id) DO NOTHING"), {"id": sid("organization-isolation"), "name": "Synthetic isolation organization"})

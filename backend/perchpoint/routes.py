@@ -5,11 +5,22 @@ from uuid import UUID, uuid4
 
 import bcrypt
 import jwt
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
-from .commands import CommandError, claim_and_deliver, create_property, submit_public_inquiry, triage_inquiry
+from .commands import (
+    CommandError,
+    accept_inbox,
+    claim_and_deliver,
+    create_building,
+    create_property,
+    create_space,
+    set_space_dimension,
+    submit_public_inquiry,
+    triage_inquiry,
+    update_property,
+)
 from .db import runtime_transaction
 from .settings import Phase2ConfigurationError, Settings
 
@@ -38,6 +49,35 @@ class InquiryBody(BaseModel):
 
 class TriageBody(BaseModel):
     decision: str
+    expected_version: int
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class BuildingBody(BaseModel):
+    property_id: UUID
+    name: str = Field(min_length=1, max_length=80)
+    allowed_uses: list[str] = Field(min_length=1)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class SpaceBody(BaseModel):
+    property_id: UUID
+    building_id: UUID
+    label: str = Field(min_length=1, max_length=80)
+    use: str
+    square_feet: int = Field(gt=0)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class PropertyEdit(BaseModel):
+    name: str = Field(min_length=2, max_length=160)
+    expected_version: int
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class SpaceTransition(BaseModel):
+    dimension: str
+    value: str
     expected_version: int
     idempotency_key: str = Field(min_length=8, max_length=128)
 
@@ -95,11 +135,85 @@ def post_triage(inquiry_id: UUID, body: TriageBody, current=Depends(actor), sett
     return _run(lambda: triage_inquiry(settings, current["id"], current["organization_id"], inquiry_id, body.model_dump(), body.idempotency_key, uuid4()))
 
 
+@router.post("/buildings", status_code=201)
+def post_building(body: BuildingBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    return _run(lambda: create_building(settings, current["id"], current["organization_id"], payload, body.idempotency_key, uuid4()))
+
+
+@router.post("/spaces", status_code=201)
+def post_space(body: SpaceBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    return _run(lambda: create_space(settings, current["id"], current["organization_id"], payload, body.idempotency_key, uuid4()))
+
+
+@router.post("/properties/{property_id}")
+def edit_property(property_id: UUID, body: PropertyEdit, current=Depends(actor), settings: Settings = Depends(settings)):
+    return _run(lambda: update_property(settings, current["id"], current["organization_id"], property_id, body.model_dump(), body.idempotency_key, uuid4()))
+
+
+@router.post("/spaces/{space_id}/transition")
+def transition_space(space_id: UUID, body: SpaceTransition, current=Depends(actor), settings: Settings = Depends(settings)):
+    return _run(lambda: set_space_dimension(settings, current["id"], current["organization_id"], space_id, body.model_dump(), body.idempotency_key, uuid4()))
+
+
 @router.get("/properties")
-def get_properties(current=Depends(actor), settings: Settings = Depends(settings)):
+def get_properties(limit: int = 50, cursor: str | None = None, current=Depends(actor), settings: Settings = Depends(settings)):
+    limit = min(max(limit, 1), 100)
     with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
-        rows = connection.execute(text("SELECT id, name, property_type, version FROM properties ORDER BY name")).mappings().all()
-    return {"properties": [dict(row) for row in rows]}
+        total = connection.execute(text("SELECT count(*) FROM properties")).scalar()
+        rows = connection.execute(
+            text("SELECT id, name, property_type, version FROM properties WHERE (:cursor)::uuid IS NULL OR id > (:cursor)::uuid ORDER BY id LIMIT :limit"),
+            {"cursor": cursor, "limit": limit},
+        ).mappings().all()
+    return {"properties": [dict(row) for row in rows], "total_count": total, "limit": limit}
+
+
+@router.get("/buildings")
+def get_buildings(property_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
+        rows = connection.execute(text("SELECT id, name, property_id FROM buildings WHERE property_id = :property ORDER BY name"), {"property": property_id}).mappings().all()
+    return {"buildings": [dict(row) for row in rows]}
+
+
+@router.get("/spaces")
+def get_spaces(building_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
+        rows = connection.execute(
+            text(
+                """
+                SELECT s.id, s.label, s.use, s.square_feet, st.version, st.availability, st.publication
+                FROM spaces s JOIN space_states st ON st.space_id = s.id AND st.current
+                WHERE s.building_id = :building ORDER BY s.label
+                """
+            ),
+            {"building": building_id},
+        ).mappings().all()
+    return {"spaces": [dict(row) for row in rows]}
+
+
+@router.get("/activity")
+def activity(resource_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
+        rows = connection.execute(
+            text("SELECT id, summary, occurred_at, actor_id FROM activity WHERE resource_id = :resource ORDER BY occurred_at"),
+            {"resource": resource_id},
+        ).mappings().all()
+    return {"activity": [dict(row) for row in rows]}
+
+
+@router.post("/inbox/synthetic")
+async def inbox(request: Request, settings: Settings = Depends(settings)):
+    raw = await request.body()
+    signature = request.headers.get("x-perchpoint-signature", "")
+    import json
+    from uuid import UUID as UUIDType
+
+    try:
+        organization = UUIDType(json.loads(raw)["organization_id"])
+    except Exception as exc:
+        raise HTTPException(422, "Webhook payload is invalid") from exc
+    return _run(lambda: accept_inbox(settings, raw, signature, organization))
 
 
 @router.post("/worker/once")

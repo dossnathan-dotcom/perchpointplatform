@@ -35,7 +35,7 @@ def bootstrap(settings: Settings | None = None) -> None:
     subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT, check=True)
     with owner.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
         connection.execute(text("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO perchpoint_definer"))
-        connection.execute(text("GRANT USAGE ON SCHEMA perchpoint TO perchpoint_definer"))
+        connection.execute(text("GRANT USAGE, CREATE ON SCHEMA perchpoint TO perchpoint_definer"))
         connection.execute(text("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA perchpoint TO perchpoint_definer"))
         for name in (
             "actor_in_org(uuid)",
