@@ -1,0 +1,50 @@
+{
+  "additionalProperties": false,
+  "description": "Server-resolved actor. Must not appear on public or generic update payloads.",
+  "properties": {
+    "actor_id": {
+      "format": "uuid",
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "delegated_authority_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Delegated Authority Id"
+    },
+    "feature_flags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Feature Flags",
+      "type": "array"
+    },
+    "membership_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Membership Ids",
+      "type": "array"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "actor_id",
+    "organization_id"
+  ],
+  "title": "TrustedActorContext",
+  "type": "object"
+}

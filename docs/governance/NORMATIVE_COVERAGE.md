@@ -28,6 +28,7 @@ historical descriptions that do not state an obligation are explanatory/non-norm
 | `docs/governance/PLATFORM_VISION_TRACEABILITY.md` | Existing IDs listed per row | Explanatory source corroboration; no new policy |
 | `docs/governance/REQUIREMENTS_TRACEABILITY.md` | All PP-* IDs | Canonical normative requirement source |
 | `docs/governance/PHASE_1_ACCEPTANCE.md` | PP-ACCEPT-001..003 | Evidence/verdict, not new policy |
+| `docs/plans/phase2/*.md` and `docs/plans/phase2/adr/*.md` | Existing IDs cited per document | Planning/explanatory until Nathan accepts the plan |
 | `AGENTS.md` | PP-GOV-002, PP-GOV-005, PP-SEC-001, PP-ACCEPT-001..002, PP-NFR-002 | Repository execution controls |
 | `.cursor/rules/*.mdc` | Exact PP-* IDs listed in each rule | Repository execution controls |
 | `.cursor/agents/*.md` | Exact PP-* IDs listed in each reviewer definition | Review protocol; no new product policy |

@@ -20,6 +20,7 @@ This is a controlled **Phase 0 foundation**, not production identity, authorizat
 - [Limitations and architectural review](LIMITATIONS.md)
 - [Independent Cursor audit](../audits/PHASE_0_CURSOR_AUDIT.md)
 - [Phase 1 governance and requirements](../governance/README.md)
+- [Phase 2 planning package](../plans/phase2/README.md)
 
 ## Source of truth
 Executable Pydantic contracts: `backend/foundation/`. Derived JSON Schema: `contracts/generated/`.

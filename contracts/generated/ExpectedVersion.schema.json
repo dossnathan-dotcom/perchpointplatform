@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "aggregate_id": {
+      "format": "uuid",
+      "title": "Aggregate Id",
+      "type": "string"
+    },
+    "expected_version": {
+      "minimum": 1,
+      "title": "Expected Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "aggregate_id",
+    "expected_version"
+  ],
+  "title": "ExpectedVersion",
+  "type": "object"
+}

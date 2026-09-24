@@ -1,0 +1,169 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "availability": {
+      "enum": [
+        "offerable",
+        "withheld",
+        "unknown"
+      ],
+      "title": "Availability",
+      "type": "string"
+    },
+    "availability_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Availability Source",
+      "type": "string"
+    },
+    "condition": {
+      "enum": [
+        "rent_ready",
+        "renovation",
+        "damaged",
+        "unknown"
+      ],
+      "title": "Condition",
+      "type": "string"
+    },
+    "condition_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Condition Source",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "legal_restriction": {
+      "enum": [
+        "none",
+        "hold",
+        "litigation",
+        "unknown"
+      ],
+      "title": "Legal Restriction",
+      "type": "string"
+    },
+    "legal_restriction_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Legal Restriction Source",
+      "type": "string"
+    },
+    "maintenance_restriction": {
+      "enum": [
+        "none",
+        "limited_access",
+        "unsafe",
+        "unknown"
+      ],
+      "title": "Maintenance Restriction",
+      "type": "string"
+    },
+    "maintenance_restriction_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Maintenance Restriction Source",
+      "type": "string"
+    },
+    "mapping_notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Mapping Notes",
+      "type": "array"
+    },
+    "occupancy": {
+      "enum": [
+        "vacant",
+        "occupied",
+        "notice",
+        "unknown"
+      ],
+      "title": "Occupancy",
+      "type": "string"
+    },
+    "occupancy_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Occupancy Source",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "publication": {
+      "enum": [
+        "unpublished",
+        "published",
+        "withdrawn"
+      ],
+      "title": "Publication",
+      "type": "string"
+    },
+    "publication_source": {
+      "enum": [
+        "derived",
+        "ambiguous",
+        "explicit"
+      ],
+      "title": "Publication Source",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "space_id": {
+      "format": "uuid",
+      "title": "Space Id",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "organization_id",
+    "space_id",
+    "condition",
+    "occupancy",
+    "availability",
+    "publication",
+    "maintenance_restriction",
+    "legal_restriction",
+    "condition_source",
+    "occupancy_source",
+    "availability_source",
+    "publication_source",
+    "maintenance_restriction_source",
+    "legal_restriction_source"
+  ],
+  "title": "SpaceOperatingState",
+  "type": "object"
+}

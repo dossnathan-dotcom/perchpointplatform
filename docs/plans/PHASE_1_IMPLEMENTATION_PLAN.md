@@ -19,6 +19,7 @@ atomic requirements.
 6. A dedicated maintenance mobile application remains post-core and requires separate approval.
 
 ## Next approved work
-Confirm open business/specialist decisions; plan Phase 2 only under the recorded provisional
-acceptance boundaries; authorize commits/PR separately. No Phase 2 implementation or production
-activation is authorized by this record.
+Confirm open business/specialist decisions. Phase 2 planning lives in
+`docs/plans/phase2/`. Application implementation remains unauthorized until
+Nathan accepts that package. No production activation is authorized by this
+record.

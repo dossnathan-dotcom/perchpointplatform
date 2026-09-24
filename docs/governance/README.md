@@ -11,5 +11,7 @@ provenance lives under `docs/source`; independent evidence lives in
   requirements without duplicating them.
 - `NORMATIVE_COVERAGE.md` classifies each governance artifact and maps its normative content.
 - `PHASE_1_ACCEPTANCE.md` records current evidence and blockers.
+- [Phase 2 planning package](../plans/phase2/README.md) is planning only until Nathan
+  approves it.
 
 Acceptance is provisional wherever a named business or specialist decision remains open.

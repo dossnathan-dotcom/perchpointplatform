@@ -19,6 +19,7 @@ PerchPoint is the HawkVision Homes property operating system. Start with
 - Keep provider state, operational records, and formal accounting facts distinct.
 - Record evidence, exact commands, failures, skips, and limitations.
 - Stop at the approved phase boundary. Phase 1 does not authorize production integrations.
+  Phase 2 application implementation requires Nathan's approval of `docs/plans/phase2/`.
 
 ## Acceptance
 Nathan owns technical/product acceptance; Faruk owns material business acceptance; Ann owns

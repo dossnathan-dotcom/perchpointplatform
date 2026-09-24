@@ -3,9 +3,11 @@
 import csv
 import json
 import os
+import re
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import UUID
 
 import pytest
 from jsonschema import validate
@@ -24,7 +26,14 @@ from foundation.permissions import (
     permission_matrix,
 )
 from foundation.property import Portfolio, Unit
-from foundation.seeds import money, people_graph, portfolio, sid
+from foundation.reference import (
+    ReferenceSlice,
+    SafeErrorEnvelope,
+    SubmitPublicInquiry,
+    allowed_space_transition,
+    project_phase0_unit_status,
+)
+from foundation.seeds import money, people_graph, portfolio, reference_slice, sid
 from foundation.workflows import PaymentMethodReference, ScreeningRecord
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -422,3 +431,80 @@ def test_malformed_csv_is_rejected():
     malformed = "source_system,source_record_id\nInnago,only-two-columns\n"
     with pytest.raises(ValueError, match="CSV header does not match versioned mapping"):
         validate_import(malformed, p)
+
+
+def test_phase0_fixture_identities_stay_stable():
+    assert sid("organization-demo") == UUID("d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3")
+    assert sid("property-elm") == UUID("9960c7ea-3d4b-5fd7-90b3-6360439a6875")
+    assert sid("unit-elm-0-2") == UUID("f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7")
+    elm = next(item for item in portfolio().properties if item.id == sid("property-elm"))
+    bakery = next(item for item in portfolio().units if item.id == sid("unit-elm-0-2"))
+    assert elm.property_type == "mixed_use"
+    assert bakery.label == "Bakery C1"
+    assert bakery.use == "commercial"
+
+
+def test_reference_slice_keeps_relationships_outside_the_property_row():
+    first = reference_slice()
+    second = reference_slice()
+    assert first.model_dump(mode="json") == second.model_dump(mode="json")
+    assert sid("property-elm") in first.known_property_ids
+    assert sid("organization-isolation") in first.known_organization_ids
+    assert any(item.interval.ended_on is not None for item in first.ownership)
+    occupied = project_phase0_unit_status("occupied")
+    assert occupied["occupancy"] == "occupied"
+    assert occupied["availability"] == "withheld"
+    assert occupied["publication"] == "unpublished"
+    assert allowed_space_transition("publication", "unpublished", "published")
+    assert not allowed_space_transition("publication", "unpublished", "withdrawn")
+
+
+def test_reference_slice_rejects_unknown_property_and_second_primary():
+    data = reference_slice().model_dump(mode="json")
+    foreign = deepcopy(data)
+    foreign["ownership"][0]["property_id"] = str(sid("property-not-in-graph"))
+    with pytest.raises(ValidationError, match="Ownership relationship outside known organization graph"):
+        ReferenceSlice.model_validate(foreign)
+    duplicate = deepcopy(data)
+    extra = deepcopy(duplicate["portal_access"][0])
+    extra["id"] = str(sid("portal-second-primary"))
+    extra["person_id"] = str(sid("person-1"))
+    extra["account_id"] = str(sid("account-1"))
+    duplicate["portal_access"].append(extra)
+    with pytest.raises(ValidationError, match="Only one active primary portal account per household"):
+        ReferenceSlice.model_validate(duplicate)
+
+
+def test_public_inquiry_has_no_trusted_actor_and_error_envelope_is_safe():
+    assert "actor_id" not in SubmitPublicInquiry.model_fields
+    assert "organization_id" not in SubmitPublicInquiry.model_fields
+    envelope = SafeErrorEnvelope(
+        code="validation_failed",
+        message="Check the highlighted fields.",
+        correlation_id=sid("correlation-reference"),
+        details=[{"field": "email", "reason": "invalid"}],
+        retryable=False,
+        required_action="correct_fields",
+    )
+    assert envelope.permission_safe is True
+    assert "traceback" not in envelope.model_dump()
+
+
+def test_customization_answers_cover_q1_through_q120():
+    answers = (ROOT / "docs/plans/phase2/APPROVED_CUSTOMIZATION_ANSWERS.md").read_text(encoding="utf-8")
+    trace = (ROOT / "docs/plans/phase2/ANSWER_TRACEABILITY.md").read_text(encoding="utf-8")
+    requirements = set(re.findall(r"^## (PP-[A-Z]+-\d+)$", (ROOT / "docs/governance/REQUIREMENTS_TRACEABILITY.md").read_text(encoding="utf-8"), re.M))
+    decisions = set(re.findall(r"PP-P2-DEC-\d+", (ROOT / "docs/plans/phase2/SCOPE_AND_DECISIONS.md").read_text(encoding="utf-8")))
+    found = re.findall(r"^### (Q\d+)\.", answers, re.M)
+    mapped = re.findall(r"^\| (Q\d+) \|", trace, re.M)
+    expected = [f"Q{number}" for number in range(1, 121)]
+    assert found == expected
+    assert mapped == expected
+    for number in expected:
+        block = answers.split(f"### {number}.", 1)[1].split("\n### ", 1)[0]
+        assert "- Answer:" in block
+        assert block.split("- Answer:", 1)[1].strip()
+    cited_decisions = set(re.findall(r"PP-P2-DEC-\d+", trace))
+    cited_requirements = set(re.findall(r"PP-(?!P2-DEC)[A-Z]+-\d+", trace))
+    assert cited_decisions <= decisions
+    assert cited_requirements <= requirements

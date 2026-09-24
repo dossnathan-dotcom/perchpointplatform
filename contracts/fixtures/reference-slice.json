@@ -1,0 +1,777 @@
+{
+  "groups": [
+    {
+      "id": "52974611-d46f-5ad2-9a7e-dface99137fd",
+      "label": "Synthetic Cincinnati group",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    }
+  ],
+  "known_account_ids": [
+    "69858859-c04b-52b5-82a0-58be4e0af3c8",
+    "5c7813f5-4749-5597-b000-649a5ceb78ab",
+    "ab8e1800-ad81-5445-b1ba-5f9a33bdae1f",
+    "4103251a-5e50-50fc-afec-fd6eb9de8c08",
+    "4af1a49b-be91-5e6c-8b60-67bd8e0932f4",
+    "7ad7bcd3-45aa-58db-b391-b64332a0739f",
+    "06326b45-4842-5658-a9f8-bfc891e42163"
+  ],
+  "known_entity_ids": [
+    "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+    "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+    "a81feeba-99bf-5271-9675-e29e3c9fa5b9"
+  ],
+  "known_household_ids": [
+    "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+    "cf3843b2-803c-54fb-ba25-369e2297878e"
+  ],
+  "known_organization_ids": [
+    "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+    "92b58106-46b4-53df-8958-b7be43caf91b"
+  ],
+  "known_person_ids": [
+    "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+    "d24994cc-342d-54c7-9dd7-c1a6a9cbb678",
+    "9c426e97-485b-5717-8f6a-3a40fe67c116",
+    "a02441f3-2367-5364-a29b-e8a18bcb2d70",
+    "b1c8256f-5305-527f-9f98-74da2b7bcc04",
+    "52d69dea-9f50-5d6c-8250-9e6523032136",
+    "181d201c-19ca-588f-80f2-005f76531570",
+    "8a41c711-05ea-5064-8ebf-d7592d7d93a6",
+    "3192318d-1fc2-58a6-8ca7-cacdbaba2f2c"
+  ],
+  "known_property_ids": [
+    "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+    "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+    "750911fd-c5b4-5454-a7e8-5448e56d193d",
+    "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+    "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+    "2174c189-015b-505a-b4fb-9bb291adb2cb",
+    "88cad349-7037-5f4b-8d8b-70d8ee36cfc2"
+  ],
+  "known_space_ids": [
+    "6f8eb20a-b203-54e7-84ba-8b36c68108ee",
+    "febe2e2c-8103-5ec0-b41a-d3887e776f56",
+    "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7",
+    "49f5553b-5cc3-5e99-8376-9ceaa72cb327",
+    "230bfe94-aafd-5ba4-937c-feda7a54e678",
+    "7de82635-6b6c-5486-b46b-0da8fdcef3ed",
+    "e3d0dcfa-833b-5106-b37e-ea16a376aa2c",
+    "4d9291ce-b90e-5093-b8eb-35a0c332a3e5",
+    "fa21d8b5-ed53-5148-ab97-4aa5ec463dcf",
+    "1eec88e8-21bf-54b5-b31a-63af49fa360b",
+    "a2b305c4-8ca0-52a6-8f35-87fab5eafc14",
+    "15ae8868-2471-52d5-9313-93a6861f2596",
+    "12b1044b-977d-5606-9a14-7828357787d7",
+    "f55b9361-44c5-5643-85f3-db77cb06c894",
+    "76204732-be06-57ce-9c3b-2992480fae2f"
+  ],
+  "management": [
+    {
+      "id": "2248fb95-30b2-551d-807d-ff1dc26f49aa",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "48cb60ab-3f4d-55ed-b2a3-4ab1ba641ee8",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "537457b9-1c8e-5506-b84e-c058ee232c0c",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "2e73b83b-8820-5459-962d-040ad51cfb64",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "e3b9c7da-2c14-5fa5-b973-b5ab7f9bc9da",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "515e4a01-3940-5de0-a674-1a621ff3e124",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "manager_organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    }
+  ],
+  "memberships": [
+    {
+      "group_id": "52974611-d46f-5ad2-9a7e-dface99137fd",
+      "id": "d87a6bef-ebdd-5b2a-abf1-0af2d4243f8f",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "group_id": "52974611-d46f-5ad2-9a7e-dface99137fd",
+      "id": "35ca8431-ba52-55bf-b863-2fc3d85d60aa",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "group_id": "52974611-d46f-5ad2-9a7e-dface99137fd",
+      "id": "8b494e4b-62e0-54ef-8678-65121211a5ab",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "group_id": "52974611-d46f-5ad2-9a7e-dface99137fd",
+      "id": "d5cddffa-8a88-5503-a19f-2c929ec2aa64",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    }
+  ],
+  "occupancies": [
+    {
+      "business_party_id": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "7be37fea-4ea8-51d1-a7a4-a542c44cee0d",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56",
+      "synthetic": true
+    },
+    {
+      "business_party_id": "1b1601a9-43d7-57e2-868b-8a79c867a7c0",
+      "household_id": null,
+      "id": "f7ce2ca8-0b91-5d9b-b0a3-91342d9db53b",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7",
+      "synthetic": true
+    },
+    {
+      "business_party_id": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "0622aff9-e128-553e-8e11-2ddb60f09c14",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "230bfe94-aafd-5ba4-937c-feda7a54e678",
+      "synthetic": true
+    },
+    {
+      "business_party_id": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "dc17d457-c4da-5d24-b401-93678dbcc4ee",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "e3d0dcfa-833b-5106-b37e-ea16a376aa2c",
+      "synthetic": true
+    },
+    {
+      "business_party_id": "1b1601a9-43d7-57e2-868b-8a79c867a7c0",
+      "household_id": null,
+      "id": "80e4bf6e-30f7-5d60-8157-08e5a9801f18",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "a2b305c4-8ca0-52a6-8f35-87fab5eafc14",
+      "synthetic": true
+    },
+    {
+      "business_party_id": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "7cd82db1-9a79-5908-8c69-a5e039a74565",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "12b1044b-977d-5606-9a14-7828357787d7",
+      "synthetic": true
+    },
+    {
+      "business_party_id": null,
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "39eb9f2f-2399-5d1a-bfa9-2a99e6be449c",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "schema_version": "0.2.0",
+      "space_id": "76204732-be06-57ce-9c3b-2992480fae2f",
+      "synthetic": true
+    }
+  ],
+  "ownership": [
+    {
+      "id": "35c72820-c2c0-5dd6-aad5-b2f217744c5a",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "f66c57a3-365a-5246-b13a-f3c085c15d11",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "e2c2946f-29e0-5df0-bad3-c89abce1384e",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "a18d4323-d5bb-5688-990e-ea86266babad",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "750911fd-c5b4-5454-a7e8-5448e56d193d",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "752cf64f-8034-5185-93e0-1f3a7d30cec7",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "3ca9c5e8-0158-5cbe-9226-89b472eeaf22",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "c8781c36-f79c-51cc-afca-49c7e7420121",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "d9394a4d-7004-54ee-9d69-ea8f6b4e036b",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "cbde536f-7846-5d9f-a3ed-3451af7ce7bd",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "3f6beaff-cc9d-559d-b887-6617b4a57fb3",
+      "note": null,
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "2174c189-015b-505a-b4fb-9bb291adb2cb",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "c7bc2137-6c1e-545d-bb12-535b05c99fd2",
+      "interval": {
+        "effective_on": "2018-01-01",
+        "ended_on": "2020-01-01"
+      },
+      "legal_entity_id": "20c2dcd3-4e5c-53b5-be3a-05aae9c3c00a",
+      "note": "Synthetic prior interval; not a second current owner",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    },
+    {
+      "id": "9b0ea5be-e424-52cc-b83d-db46075cc401",
+      "interval": {
+        "effective_on": "2020-01-01",
+        "ended_on": null
+      },
+      "legal_entity_id": "a81feeba-99bf-5271-9675-e29e3c9fa5b9",
+      "note": null,
+      "organization_id": "92b58106-46b4-53df-8958-b7be43caf91b",
+      "property_id": "88cad349-7037-5f4b-8d8b-70d8ee36cfc2",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    }
+  ],
+  "portal_access": [
+    {
+      "account_id": "69858859-c04b-52b5-82a0-58be4e0af3c8",
+      "authorization_reason": "Synthetic default primary portal account",
+      "household_id": "396a8d75-5a2e-5068-8878-28cd0d3eafee",
+      "id": "149c6f67-e05c-5378-880b-183807cd0626",
+      "interval": {
+        "effective_at": "2026-09-21T00:00:00Z",
+        "ended_at": null
+      },
+      "kind": "primary",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "person_id": "8c0e90d1-bef5-55b5-8f64-ee2a52f5cd7f",
+      "schema_version": "0.2.0",
+      "synthetic": true
+    }
+  ],
+  "published_listings": [
+    {
+      "availability": "offerable",
+      "available_date": "2027-01-15",
+      "label": "1A",
+      "listing_id": "311dbd36-458f-556d-9e1d-5c69c695bc1f",
+      "monthly_amount": {
+        "amount_minor": 225000,
+        "currency": "USD"
+      },
+      "municipality": "Cincinnati",
+      "property_name": "Example Elm Court",
+      "publication": "published",
+      "space_id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee",
+      "state": "OH",
+      "synthetic": true,
+      "use": "residential"
+    }
+  ],
+  "schema_version": "0.2.0",
+  "space_states": [
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "4dbac0f8-db59-574c-ac64-11e8ae7d39a1",
+      "legal_restriction": "none",
+      "legal_restriction_source": "explicit",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication",
+        "Publication is an explicit reference-slice example, not a Phase 0 status fact"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "published",
+      "publication_source": "explicit",
+      "schema_version": "0.2.0",
+      "space_id": "6f8eb20a-b203-54e7-84ba-8b36c68108ee",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "f87f9ae1-fcb1-5e9c-b754-df888fad2421",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "febe2e2c-8103-5ec0-b41a-d3887e776f56",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "003d4448-d980-5091-a4c1-536e2c07fbcc",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "f3bf0ef3-9c0d-5c7e-99d8-2bd5b58ae7d7",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "80c0d0cb-7d04-5888-85ea-a4b002cddc0a",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "49f5553b-5cc3-5e99-8376-9ceaa72cb327",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "b06ed37e-ae61-5476-b9b2-0416daa72808",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "230bfe94-aafd-5ba4-937c-feda7a54e678",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "a9217e90-725a-5c2e-966c-f92033233aea",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "7de82635-6b6c-5486-b46b-0da8fdcef3ed",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "f331a0f1-13df-58a5-a1cc-b5003df8025b",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "e3d0dcfa-833b-5106-b37e-ea16a376aa2c",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "a42c9f8b-95fe-5743-9614-72bcfdd41bb8",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "4d9291ce-b90e-5093-b8eb-35a0c332a3e5",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "f5d9661d-90f3-573f-ba15-59f43a766bc9",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "fa21d8b5-ed53-5148-ab97-4aa5ec463dcf",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "3e5db6b3-3c25-51b0-b80e-755cb2c74f9c",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "1eec88e8-21bf-54b5-b31a-63af49fa360b",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "30d48871-3029-592c-8e9b-ff4108c734df",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "a2b305c4-8ca0-52a6-8f35-87fab5eafc14",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "dcd85c57-bf2c-5ee6-8d5f-894ff1f29dd0",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "15ae8868-2471-52d5-9313-93a6861f2596",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "0aa33fa5-e90b-5ed9-b55d-a19d54522d70",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "12b1044b-977d-5606-9a14-7828357787d7",
+      "synthetic": true
+    },
+    {
+      "availability": "offerable",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "6332be90-6138-5de0-9e24-ce086c3fd9b4",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction",
+        "available does not prove historical vacancy dates or publication"
+      ],
+      "occupancy": "unknown",
+      "occupancy_source": "ambiguous",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "f55b9361-44c5-5643-85f3-db77cb06c894",
+      "synthetic": true
+    },
+    {
+      "availability": "withheld",
+      "availability_source": "derived",
+      "condition": "unknown",
+      "condition_source": "ambiguous",
+      "id": "86eb23e0-4a29-5879-b213-91c235e5488e",
+      "legal_restriction": "unknown",
+      "legal_restriction_source": "ambiguous",
+      "maintenance_restriction": "unknown",
+      "maintenance_restriction_source": "ambiguous",
+      "mapping_notes": [
+        "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
+      ],
+      "occupancy": "occupied",
+      "occupancy_source": "derived",
+      "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
+      "publication": "unpublished",
+      "publication_source": "ambiguous",
+      "schema_version": "0.2.0",
+      "space_id": "76204732-be06-57ce-9c3b-2992480fae2f",
+      "synthetic": true
+    }
+  ]
+}

@@ -31,6 +31,7 @@
         "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
         "ownership_entity_id": null,
         "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "space_id": null,
         "unit_id": null
       },
       "temporary": true
@@ -88,6 +89,7 @@
         "organization_id": "d807a7ad-5ae1-5496-8af8-c4bb9c6d1ef3",
         "ownership_entity_id": null,
         "property_id": "9960c7ea-3d4b-5fd7-90b3-6360439a6875",
+        "space_id": null,
         "unit_id": null
       },
       "supporting_evidence": [

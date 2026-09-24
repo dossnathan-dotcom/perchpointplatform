@@ -25,6 +25,7 @@ class Scope(Contract):
     property_id: Identifier | None = None
     building_id: Identifier | None = None
     unit_id: Identifier | None = None
+    space_id: Identifier | None = None
     household_id: Identifier | None = None
     assignment_id: Identifier | None = None
 

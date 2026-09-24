@@ -1,10 +1,24 @@
 """One synthetic source of truth. UUIDv5 namespace and fixture labels are not provider IDs."""
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID, uuid5
 
 from .integrations import PROVIDER_TYPES, IntegrationRecord
 from .people import PeopleGraph
 from .property import Portfolio
+from .reference import (
+    InclusiveExclusiveDateRange,
+    InclusiveExclusiveDateTimeRange,
+    ManagementRelationship,
+    OccupancyRelationship,
+    OwnershipRelationship,
+    PortfolioGroup,
+    PortfolioMembership,
+    HouseholdPortalAccess,
+    PublishedListingRead,
+    ReferenceSlice,
+    SpaceOperatingState,
+    project_phase0_unit_status,
+)
 
 NAMESPACE = UUID("4db53964-11d0-428e-b0b2-ef23f1c63e89")
 NOW = datetime(2026, 9, 21, tzinfo=timezone.utc)
@@ -68,6 +82,95 @@ def people_graph(p: Portfolio) -> PeopleGraph:
     business = {"id": sid("business-bakery"), "organization_id": org, "legal_name": "EXAMPLE ONLY — Synthetic Bakery LLC", "kind": "tenant"}
     relationships.append({"id": sid("business-tenant-contact"), "person_id": sid("person-1"), "organization_id": org, "kind": "business_tenant", "business_party_id": business["id"], "unit_id": p.units[2].id, "effective_at": NOW})
     return PeopleGraph.model_validate({"people":people, "accounts":accounts, "households":households, "businesses":[business], "relationships":relationships, "organization_ids":[org], "unit_organizations":{str(u.id):u.organization_id for u in p.units}})
+
+
+def reference_slice() -> ReferenceSlice:
+    """0.2.0 relationships and space states. Does not change Phase 0 portfolio identities."""
+    graph = portfolio()
+    people = people_graph(graph)
+    org = graph.organizations[0].id
+    isolation = sid("organization-isolation")
+    isolation_entity = sid("entity-isolation")
+    isolation_property = sid("property-isolation")
+    opened = InclusiveExclusiveDateRange(effective_on=date(2020, 1, 1))
+    ended = InclusiveExclusiveDateRange(effective_on=date(2018, 1, 1), ended_on=date(2020, 1, 1))
+    active_at = InclusiveExclusiveDateTimeRange(effective_at=NOW)
+    properties = {item.id: item for item in graph.properties}
+    ownership = []
+    management = []
+    for item in graph.properties:
+        ownership.append(OwnershipRelationship(id=sid(f"ownership-rel-{item.id}"), organization_id=org, legal_entity_id=item.ownership_entity_id, property_id=item.id, interval=opened))
+        management.append(ManagementRelationship(id=sid(f"management-rel-{item.id}"), organization_id=org, manager_organization_id=org, property_id=item.id, interval=opened))
+    elm = next(item for item in graph.properties if item.name.startswith("Example Elm Court"))
+    ownership.append(OwnershipRelationship(id=sid("ownership-rel-elm-historical"), organization_id=org, legal_entity_id=elm.ownership_entity_id, property_id=elm.id, interval=ended, note="Synthetic prior interval; not a second current owner"))
+    ownership.append(OwnershipRelationship(id=sid("ownership-rel-isolation"), organization_id=isolation, legal_entity_id=isolation_entity, property_id=isolation_property, interval=opened))
+    group = PortfolioGroup(id=sid("group-cincinnati"), organization_id=org, label="Synthetic Cincinnati group")
+    memberships = [
+        PortfolioMembership(id=sid(f"membership-{item.id}"), organization_id=org, group_id=group.id, property_id=item.id, interval=opened)
+        for item in graph.properties if item.address.state == "OH"
+    ]
+    household = people.households[0].id
+    business = people.businesses[0].id
+    occupancies = []
+    states = []
+    published = None
+    for index, unit in enumerate(graph.units):
+        projected = project_phase0_unit_status(unit.status)
+        if published is None and unit.status == "available" and unit.use == "residential":
+            projected["publication"] = "published"
+            projected["publication_source"] = "explicit"
+            projected["legal_restriction"] = "none"
+            projected["legal_restriction_source"] = "explicit"
+            projected["mapping_notes"] = [*projected["mapping_notes"], "Publication is an explicit reference-slice example, not a Phase 0 status fact"]
+            published = unit
+        states.append(SpaceOperatingState(id=sid(f"space-state-{index}"), organization_id=org, space_id=unit.id, **projected))
+        if unit.status != "occupied":
+            continue
+        if unit.use == "commercial":
+            occupancies.append(OccupancyRelationship(id=sid(f"occupancy-{index}"), organization_id=org, space_id=unit.id, business_party_id=business, interval=active_at))
+        else:
+            occupancies.append(OccupancyRelationship(id=sid(f"occupancy-{index}"), organization_id=org, space_id=unit.id, household_id=household, interval=active_at))
+    assert published is not None
+    listing = PublishedListingRead(
+        listing_id=sid("listing-reference-published"),
+        space_id=published.id,
+        property_name=properties[published.property_id].name,
+        label=published.label,
+        use="residential",
+        municipality=properties[published.property_id].address.municipality,
+        state=properties[published.property_id].address.state,
+        publication="published",
+        availability="offerable",
+        monthly_amount=published.residential.monthly_rent,
+        available_date=date.fromisoformat(published.available_date) if published.available_date else None,
+    )
+    portal = HouseholdPortalAccess(
+        id=sid("portal-primary-resident"),
+        organization_id=org,
+        household_id=household,
+        person_id=sid("person-0"),
+        account_id=sid("account-0"),
+        kind="primary",
+        interval=active_at,
+        authorization_reason="Synthetic default primary portal account",
+    )
+    return ReferenceSlice(
+        ownership=ownership,
+        management=management,
+        groups=[group],
+        memberships=memberships,
+        occupancies=occupancies,
+        portal_access=[portal],
+        space_states=states,
+        published_listings=[listing],
+        known_organization_ids=[org, isolation],
+        known_property_ids=[*properties, isolation_property],
+        known_space_ids=[unit.id for unit in graph.units],
+        known_entity_ids=[entity.id for entity in graph.ownership_entities] + [isolation_entity],
+        known_household_ids=[item.id for item in people.households],
+        known_person_ids=[item.id for item in people.people],
+        known_account_ids=[item.id for item in people.accounts],
+    )
 
 
 def integration_registry(p: Portfolio) -> list[IntegrationRecord]:

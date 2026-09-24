@@ -1,0 +1,108 @@
+{
+  "$defs": {
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "availability": {
+      "const": "offerable",
+      "title": "Availability",
+      "type": "string"
+    },
+    "available_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Available Date"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "listing_id": {
+      "format": "uuid",
+      "title": "Listing Id",
+      "type": "string"
+    },
+    "monthly_amount": {
+      "$ref": "#/$defs/Money"
+    },
+    "municipality": {
+      "title": "Municipality",
+      "type": "string"
+    },
+    "property_name": {
+      "title": "Property Name",
+      "type": "string"
+    },
+    "publication": {
+      "const": "published",
+      "title": "Publication",
+      "type": "string"
+    },
+    "space_id": {
+      "format": "uuid",
+      "title": "Space Id",
+      "type": "string"
+    },
+    "state": {
+      "title": "State",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "use": {
+      "enum": [
+        "residential",
+        "commercial"
+      ],
+      "title": "Use",
+      "type": "string"
+    }
+  },
+  "required": [
+    "listing_id",
+    "space_id",
+    "property_name",
+    "label",
+    "use",
+    "municipality",
+    "state",
+    "publication",
+    "availability",
+    "monthly_amount"
+  ],
+  "title": "PublishedListingRead",
+  "type": "object"
+}

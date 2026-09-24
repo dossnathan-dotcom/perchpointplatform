@@ -1,0 +1,90 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "aggregate_id": {
+      "format": "uuid",
+      "title": "Aggregate Id",
+      "type": "string"
+    },
+    "aggregate_version": {
+      "minimum": 1,
+      "title": "Aggregate Version",
+      "type": "integer"
+    },
+    "causation_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Causation Id"
+    },
+    "correlation_id": {
+      "format": "uuid",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "event_type": {
+      "enum": [
+        "listing.published.v1",
+        "listing.withdrawn.v1",
+        "inquiry.submitted.v1",
+        "inquiry.triaged.v1",
+        "activity.recorded.v1",
+        "property.space_states_projected.v1"
+      ],
+      "title": "Event Type",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "payload_record_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Payload Record Ids",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "event_type",
+    "aggregate_id",
+    "aggregate_version",
+    "organization_id",
+    "occurred_at",
+    "correlation_id"
+  ],
+  "title": "ReferenceDomainEvent",
+  "type": "object"
+}

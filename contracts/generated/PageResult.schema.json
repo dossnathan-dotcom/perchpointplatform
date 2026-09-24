@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "applied_authorization": {
+      "const": "same_predicate_as_list",
+      "title": "Applied Authorization",
+      "type": "string"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Next Cursor"
+    },
+    "total_count": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total Count"
+    }
+  },
+  "required": [
+    "applied_authorization"
+  ],
+  "title": "PageResult",
+  "type": "object"
+}

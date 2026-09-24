@@ -1,0 +1,37 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "operation": {
+      "enum": [
+        "echo",
+        "signed_webhook"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "payload_record_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Payload Record Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "operation",
+    "organization_id",
+    "idempotency_key"
+  ],
+  "title": "FakeProviderCommand",
+  "type": "object"
+}

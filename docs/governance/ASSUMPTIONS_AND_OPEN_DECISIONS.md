@@ -10,3 +10,6 @@
 | OD-006 | unresolved | Second maintenance employee/James identity | Ann | User validation |
 | OD-007 | resolved | Authoritative Platform Vision PDF preserved, hashed, and extracted 2/2 pages | Nathan | No |
 | OD-008 | resolved/remaining | Yarn lockfile and frozen install pass; CI workflow remains deferred | Nathan | CI delivery control only |
+| OD-009 | P2-02 locally authorized | The 2026-09-24 follow-up instruction authorizes local P2-02 through P2-06 on `cursor/phase-02-contracts`. Q120's earlier wording is preserved in `docs/plans/phase2/APPROVED_CUSTOMIZATION_ANSWERS.md`. Production, provider, and specialist acceptance remain open | Nathan | Production activation and later-package business acceptance |
+| OD-010 | planning assumption | Local PostgreSQL 16 or local Supabase for Phase 2 evidence; SQLAlchemy 2 / Alembic candidates | Nathan | Phase 2 persistence implementation |
+| OD-011 | planning assumption | Provisional performance/benchmark ceilings in `docs/plans/phase2/ACCEPTANCE.md` | Nathan | Benchmark design only |

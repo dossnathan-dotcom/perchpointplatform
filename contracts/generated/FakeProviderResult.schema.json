@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted": {
+      "title": "Accepted",
+      "type": "boolean"
+    },
+    "live_network": {
+      "const": false,
+      "default": false,
+      "title": "Live Network",
+      "type": "boolean"
+    },
+    "provider_event_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Provider Event Id"
+    },
+    "status": {
+      "enum": [
+        "synthetic_ok",
+        "synthetic_rejected"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "accepted",
+    "status"
+  ],
+  "title": "FakeProviderResult",
+  "type": "object"
+}

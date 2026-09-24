@@ -15,3 +15,5 @@
   deprecation warnings; owner Nathan; broad upgrades are deferred to an approved dependency cycle.
 - R-010 Critical contamination control: synthetic development data must contain no real PII and
   must remain visibly synthetic; owner Nathan; scan fixtures, payloads, logs, and documents.
+- R-011 Medium: Phase 2 implementation starting without plan approval or local PostgreSQL
+  evidence; owner Nathan; stop conditions in `docs/plans/phase2/ACCEPTANCE.md`.

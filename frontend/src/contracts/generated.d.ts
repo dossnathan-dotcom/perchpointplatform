@@ -13,6 +13,7 @@ export type HouseholdId = string | null;
 export type OrganizationId = string;
 export type OwnershipEntityId = string | null;
 export type PropertyId = string | null;
+export type SpaceId = string | null;
 export type UnitId = string | null;
 export type Country = string;
 export type County = string;
@@ -658,6 +659,264 @@ export type SourceSystem1 = string;
 export type ValidationResult = "valid" | "invalid" | "duplicate" | "conflict";
 export type Rows = StagingRecord[];
 export type WritesPerformed = 0;
+export type ActorId3 = string | null;
+export type Id35 = string;
+export type OccurredAt1 = string;
+export type OrganizationId17 = string;
+export type ResourceId1 = string;
+export type ResourceType1 = string;
+export type SchemaVersion33 = "0.2.0";
+export type Summary = string;
+export type Synthetic33 = boolean;
+export type Visibility = "staff" | "resident" | "public";
+export type Engine = "read_only_example";
+export type Id36 = string;
+export type OrganizationId18 = string;
+export type SchemaVersion34 = "0.2.0";
+export type State4 = "pending" | "approved" | "denied";
+export type Synthetic34 = boolean;
+export type Title = string;
+export type Accepted1 = boolean;
+export type AggregateId1 = string | null;
+export type AggregateVersion1 = number | null;
+export type CorrelationId3 = string;
+export type Id37 = string;
+export type Message = string;
+export type Replayed = boolean;
+export type ResultCode = string;
+export type SchemaVersion35 = "0.2.0";
+export type Synthetic35 = boolean;
+/**
+ * @minItems 1
+ */
+export type AllowedUses1 = ["residential" | "commercial", ...("residential" | "commercial")[]];
+export type AggregateId2 = string;
+export type ExpectedVersion2 = number;
+export type Name6 = string;
+export type PropertyId7 = string;
+export type ClientObservedAt = string | null;
+export type CorrelationId4 = string;
+export type IdempotencyKey3 = string;
+export type RequestFingerprint1 = string;
+export type BuildingId5 = string;
+export type Label2 = string;
+export type PropertyId8 = string;
+export type SquareFeet1 = number;
+export type Use1 = "residential" | "commercial";
+export type Name7 = string;
+export type ParcelReferences1 = string[];
+export type PropertyType1 = "single_family" | "duplex" | "triplex" | "multifamily" | "commercial" | "mixed_use";
+export type AttemptNumber1 = number;
+export type FinishedAt = string | null;
+export type Id38 = string;
+export type OutboxId = string;
+export type Outcome = "delivered" | "retryable" | "dead_letter";
+export type RepeatsBusinessDecision = false;
+export type SchemaVersion36 = "0.2.0";
+export type StartedAt = string;
+export type Synthetic36 = boolean;
+export type IdempotencyKey4 = string;
+export type Operation2 = "echo" | "signed_webhook";
+export type OrganizationId19 = string;
+export type PayloadRecordIds1 = string[];
+export type Accepted2 = boolean;
+export type LiveNetwork = false;
+export type ProviderEventId2 = string | null;
+export type Status9 = "synthetic_ok" | "synthetic_rejected";
+export type AccountId2 = string;
+export type AuthorizationReason = string;
+export type HouseholdId2 = string;
+export type Id39 = string;
+export type EffectiveAt8 = string;
+export type EndedAt1 = string | null;
+export type Kind6 = "primary" | "additional";
+export type OrganizationId20 = string;
+export type PersonId7 = string;
+export type SchemaVersion37 = "0.2.0";
+export type Synthetic37 = boolean;
+export type EffectiveOn = string;
+export type EndedOn = string | null;
+export type Id40 = string;
+export type ManagerOrganizationId = string;
+export type Note = string | null;
+export type OrganizationId21 = string;
+export type PropertyId9 = string;
+export type SchemaVersion38 = "0.2.0";
+export type Synthetic38 = boolean;
+export type BusinessPartyId1 = string | null;
+export type HouseholdId3 = string | null;
+export type Id41 = string;
+export type OrganizationId22 = string;
+export type SchemaVersion39 = "0.2.0";
+export type SpaceId1 = string;
+export type Synthetic39 = boolean;
+export type Id42 = string;
+export type LegalEntityId = string;
+export type Note1 = string | null;
+export type OrganizationId23 = string;
+export type PropertyId10 = string;
+export type SchemaVersion40 = "0.2.0";
+export type Synthetic40 = boolean;
+export type Cursor = string | null;
+export type Limit = number;
+export type AppliedAuthorization = "same_predicate_as_list";
+export type NextCursor = string | null;
+export type TotalCount = number | null;
+export type Id43 = string;
+export type Label3 = string;
+export type OrganizationId24 = string;
+export type SchemaVersion41 = "0.2.0";
+export type Synthetic41 = boolean;
+export type GroupId = string;
+export type Id44 = string;
+export type OrganizationId25 = string;
+export type PropertyId11 = string;
+export type SchemaVersion42 = "0.2.0";
+export type Synthetic42 = boolean;
+export type AbuseControl = "rate_limit_and_fingerprint_required";
+export type CorrelationId5 = string;
+export type InquiryId = string;
+export type Message1 = string;
+export type RetrySemantics = "identical_key_and_fingerprint_replays_ack";
+export type Status10 = "received";
+export type Synthetic43 = true;
+export type Availability = "offerable";
+export type AvailableDate1 = string | null;
+export type Label4 = string;
+export type ListingId = string;
+export type Municipality2 = string;
+export type PropertyName = string;
+export type Publication = "published";
+export type SpaceId2 = string;
+export type State5 = string;
+export type Synthetic44 = true;
+export type Use2 = "residential" | "commercial";
+export type Action2 = string;
+export type ActorId4 = string | null;
+export type CorrelationId6 = string;
+export type DelegatedAuthorityId1 = string | null;
+export type EventHash1 = string;
+export type Id45 = string;
+export type OccurredAt2 = string;
+export type PreviousEventHash1 = string | null;
+export type Redacted = true;
+export type ResourceId2 = string;
+export type ResourceType2 = string;
+export type Result2 = "allowed" | "denied" | "failed" | "replayed";
+export type SchemaVersion43 = "0.2.0";
+export type Synthetic45 = boolean;
+export type AggregateId3 = string;
+export type AggregateVersion2 = number;
+export type CausationId1 = string | null;
+export type CorrelationId7 = string;
+export type EventType1 =
+  | "listing.published.v1"
+  | "listing.withdrawn.v1"
+  | "inquiry.submitted.v1"
+  | "inquiry.triaged.v1"
+  | "activity.recorded.v1"
+  | "property.space_states_projected.v1";
+export type Id46 = string;
+export type OccurredAt3 = string;
+export type OrganizationId26 = string;
+export type PayloadRecordIds2 = string[];
+export type SchemaVersion44 = "0.2.0";
+export type Synthetic46 = boolean;
+export type Id47 = string;
+export type SchemaVersion45 = "0.2.0";
+export type Synthetic47 = boolean;
+export type Groups = PortfolioGroup[];
+export type KnownAccountIds = string[];
+export type KnownEntityIds = string[];
+export type KnownHouseholdIds = string[];
+export type KnownOrganizationIds = string[];
+export type KnownPersonIds = string[];
+export type KnownPropertyIds = string[];
+export type KnownSpaceIds = string[];
+export type Management = ManagementRelationship1[];
+export type Memberships = PortfolioMembership[];
+export type Occupancies = OccupancyRelationship[];
+export type Ownership = OwnershipRelationship[];
+export type PortalAccess = HouseholdPortalAccess[];
+export type PublishedListings = PublishedListingRead[];
+export type SchemaVersion46 = "0.2.0";
+export type Availability1 = "offerable" | "withheld" | "unknown";
+export type AvailabilitySource = "derived" | "ambiguous" | "explicit";
+export type Condition = "rent_ready" | "renovation" | "damaged" | "unknown";
+export type ConditionSource = "derived" | "ambiguous" | "explicit";
+export type Id48 = string;
+export type LegalRestriction = "none" | "hold" | "litigation" | "unknown";
+export type LegalRestrictionSource = "derived" | "ambiguous" | "explicit";
+export type MaintenanceRestriction = "none" | "limited_access" | "unsafe" | "unknown";
+export type MaintenanceRestrictionSource = "derived" | "ambiguous" | "explicit";
+export type MappingNotes = string[];
+export type Occupancy = "vacant" | "occupied" | "notice" | "unknown";
+export type OccupancySource = "derived" | "ambiguous" | "explicit";
+export type OrganizationId27 = string;
+export type Publication1 = "unpublished" | "published" | "withdrawn";
+export type PublicationSource = "derived" | "ambiguous" | "explicit";
+export type SchemaVersion47 = "0.2.0";
+export type SpaceId3 = string;
+export type Synthetic48 = boolean;
+export type SpaceStates = SpaceOperatingState[];
+export type Field = string | null;
+export type Reason5 = string;
+export type Code = string;
+export type CorrelationId8 = string;
+export type Details = SafeErrorDetail[];
+export type Message2 = string;
+export type PermissionSafe = true;
+export type RequiredAction = string | null;
+export type Retryable = boolean;
+export type Availability2 = "offerable" | "withheld" | "unknown";
+export type SpaceId4 = string;
+export type Publication2 = "unpublished" | "published" | "withdrawn";
+export type SpaceId5 = string;
+export type AssignedStaffId = string | null;
+export type Email = string;
+export type Id49 = string;
+export type Intent = "showing" | "application" | "contact" | "other";
+export type ListingId1 = string;
+export type Message3 = string;
+export type Name8 = string;
+export type OrganizationId28 = string;
+export type PreferredDate = string | null;
+export type ReceivedAt1 = string;
+export type SchemaVersion48 = "0.2.0";
+export type SpaceId6 = string;
+export type Status11 = "new" | "assigned" | "waiting" | "closed_duplicate" | "closed_not_pursuing";
+export type Synthetic49 = boolean;
+export type Version6 = number;
+export type Email1 = string;
+export type Intent1 = "showing" | "application" | "contact" | "other";
+export type ListingId2 = string;
+export type Message4 = string;
+export type Name9 = string;
+export type PreferredDate1 = string | null;
+export type DueOn = string | null;
+export type Engine1 = "read_only_example";
+export type Id50 = string;
+export type NextAction = string;
+export type OrganizationId29 = string;
+export type OwnerId = string | null;
+export type SchemaVersion49 = "0.2.0";
+export type Status12 = "open" | "waiting" | "done";
+export type Synthetic50 = boolean;
+export type Title1 = string;
+export type Decision1 = "new" | "assigned" | "waiting" | "closed_duplicate" | "closed_not_pursuing";
+export type InquiryId1 = string;
+export type Note2 = string;
+export type ActorId5 = string;
+export type DelegatedAuthorityId2 = string | null;
+export type FeatureFlags = string[];
+export type MembershipIds = string[];
+export type OrganizationId30 = string;
+export type Label5 = string | null;
+export type SpaceId7 = string;
+export type SquareFeet2 = number | null;
+export type Name10 = string | null;
+export type ParcelReferences2 = string[] | null;
+export type PropertyId12 = string;
 
 export interface FoundationContracts {
   Contract?: Contract;
@@ -719,6 +978,45 @@ export interface FoundationContracts {
   MigrationReport?: MigrationReport;
   Reconciliation?: Reconciliation;
   StagingRecord?: StagingRecord;
+  ActivityHistoryRead?: ActivityHistoryRead;
+  ApprovalExampleRead?: ApprovalExampleRead;
+  CommandResult?: CommandResult;
+  CreateBuilding?: CreateBuilding;
+  CreateLeasableSpace?: CreateLeasableSpace;
+  CreateProperty?: CreateProperty;
+  DeliveryAttempt?: DeliveryAttempt;
+  ExpectedVersion?: ExpectedVersion1;
+  FakeProviderCommand?: FakeProviderCommand;
+  FakeProviderResult?: FakeProviderResult;
+  HouseholdPortalAccess?: HouseholdPortalAccess;
+  InclusiveExclusiveDateRange?: InclusiveExclusiveDateRange;
+  InclusiveExclusiveDateTimeRange?: InclusiveExclusiveDateTimeRange;
+  ManagementRelationship?: ManagementRelationship1;
+  OccupancyRelationship?: OccupancyRelationship;
+  OwnershipRelationship?: OwnershipRelationship;
+  PageQuery?: PageQuery;
+  PageResult?: PageResult;
+  PortfolioGroup?: PortfolioGroup;
+  PortfolioMembership?: PortfolioMembership;
+  PublicInquiryAcknowledgement?: PublicInquiryAcknowledgement;
+  PublishedListingRead?: PublishedListingRead;
+  ReferenceAuditEntry?: ReferenceAuditEntry;
+  ReferenceDomainEvent?: ReferenceDomainEvent;
+  ReferenceRecord?: ReferenceRecord;
+  ReferenceSlice?: ReferenceSlice;
+  SafeErrorDetail?: SafeErrorDetail;
+  SafeErrorEnvelope?: SafeErrorEnvelope;
+  SetSpaceAvailability?: SetSpaceAvailability;
+  SetSpacePublication?: SetSpacePublication;
+  SpaceOperatingState?: SpaceOperatingState;
+  StaffInquiryRead?: StaffInquiryRead;
+  SubmitPublicInquiry?: SubmitPublicInquiry;
+  TaskExampleRead?: TaskExampleRead;
+  TriageInquiry?: TriageInquiry;
+  TrustedActorContext?: TrustedActorContext;
+  UntrustedRequestInput?: UntrustedRequestInput;
+  UpdateLeasableSpace?: UpdateLeasableSpace;
+  UpdateProperty?: UpdateProperty;
 }
 /**
  * This interface was referenced by `FoundationContracts`'s JSON-Schema
@@ -761,6 +1059,7 @@ export interface Scope {
   organization_id: OrganizationId;
   ownership_entity_id?: OwnershipEntityId;
   property_id?: PropertyId;
+  space_id?: SpaceId;
   unit_id?: UnitId;
 }
 /**
@@ -1655,4 +1954,528 @@ export interface StagingRecord {
 }
 export interface MappedFields {
   [k: string]: string;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ActivityHistoryRead".
+ */
+export interface ActivityHistoryRead {
+  actor_id?: ActorId3;
+  id: Id35;
+  occurred_at: OccurredAt1;
+  organization_id: OrganizationId17;
+  resource_id: ResourceId1;
+  resource_type: ResourceType1;
+  schema_version?: SchemaVersion33;
+  summary: Summary;
+  synthetic?: Synthetic33;
+  visibility: Visibility;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ApprovalExampleRead".
+ */
+export interface ApprovalExampleRead {
+  amount?: Money | null;
+  engine?: Engine;
+  id: Id36;
+  organization_id: OrganizationId18;
+  schema_version?: SchemaVersion34;
+  state: State4;
+  synthetic?: Synthetic34;
+  title: Title;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "CommandResult".
+ */
+export interface CommandResult {
+  accepted: Accepted1;
+  aggregate_id?: AggregateId1;
+  aggregate_version?: AggregateVersion1;
+  correlation_id: CorrelationId3;
+  id: Id37;
+  message: Message;
+  replayed?: Replayed;
+  result_code: ResultCode;
+  schema_version?: SchemaVersion35;
+  synthetic?: Synthetic35;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "CreateBuilding".
+ */
+export interface CreateBuilding {
+  allowed_uses: AllowedUses1;
+  expected_version?: ExpectedVersion1 | null;
+  name: Name6;
+  property_id: PropertyId7;
+  request: UntrustedRequestInput;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ExpectedVersion".
+ */
+export interface ExpectedVersion1 {
+  aggregate_id: AggregateId2;
+  expected_version: ExpectedVersion2;
+}
+/**
+ * External request metadata. Never treated as authenticated actor context.
+ *
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "UntrustedRequestInput".
+ */
+export interface UntrustedRequestInput {
+  client_observed_at?: ClientObservedAt;
+  correlation_id: CorrelationId4;
+  idempotency_key: IdempotencyKey3;
+  request_fingerprint: RequestFingerprint1;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "CreateLeasableSpace".
+ */
+export interface CreateLeasableSpace {
+  building_id: BuildingId5;
+  commercial?: CommercialTerms | null;
+  expected_version?: ExpectedVersion1 | null;
+  label: Label2;
+  property_id: PropertyId8;
+  request: UntrustedRequestInput;
+  residential?: ResidentialTerms | null;
+  square_feet: SquareFeet1;
+  use: Use1;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "CreateProperty".
+ */
+export interface CreateProperty {
+  address: Address;
+  expected_version?: ExpectedVersion1 | null;
+  name: Name7;
+  parcel_references?: ParcelReferences1;
+  property_type: PropertyType1;
+  request: UntrustedRequestInput;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "DeliveryAttempt".
+ */
+export interface DeliveryAttempt {
+  attempt_number: AttemptNumber1;
+  finished_at?: FinishedAt;
+  id: Id38;
+  outbox_id: OutboxId;
+  outcome: Outcome;
+  repeats_business_decision?: RepeatsBusinessDecision;
+  schema_version?: SchemaVersion36;
+  started_at: StartedAt;
+  synthetic?: Synthetic36;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "FakeProviderCommand".
+ */
+export interface FakeProviderCommand {
+  idempotency_key: IdempotencyKey4;
+  operation: Operation2;
+  organization_id: OrganizationId19;
+  payload_record_ids?: PayloadRecordIds1;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "FakeProviderResult".
+ */
+export interface FakeProviderResult {
+  accepted: Accepted2;
+  live_network?: LiveNetwork;
+  provider_event_id?: ProviderEventId2;
+  status: Status9;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "HouseholdPortalAccess".
+ */
+export interface HouseholdPortalAccess {
+  account_id: AccountId2;
+  authorization_reason: AuthorizationReason;
+  household_id: HouseholdId2;
+  id: Id39;
+  interval: InclusiveExclusiveDateTimeRange;
+  kind: Kind6;
+  organization_id: OrganizationId20;
+  person_id: PersonId7;
+  schema_version?: SchemaVersion37;
+  synthetic?: Synthetic37;
+}
+/**
+ * effective_at is inclusive. ended_at is exclusive. Open-ended when ended_at is null.
+ *
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "InclusiveExclusiveDateTimeRange".
+ */
+export interface InclusiveExclusiveDateTimeRange {
+  effective_at: EffectiveAt8;
+  ended_at?: EndedAt1;
+}
+/**
+ * effective_on is inclusive. ended_on is exclusive. Open-ended when ended_on is null.
+ *
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "InclusiveExclusiveDateRange".
+ */
+export interface InclusiveExclusiveDateRange {
+  effective_on: EffectiveOn;
+  ended_on?: EndedOn;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ManagementRelationship".
+ */
+export interface ManagementRelationship1 {
+  id: Id40;
+  interval: InclusiveExclusiveDateRange;
+  manager_organization_id: ManagerOrganizationId;
+  note?: Note;
+  organization_id: OrganizationId21;
+  property_id: PropertyId9;
+  schema_version?: SchemaVersion38;
+  synthetic?: Synthetic38;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "OccupancyRelationship".
+ */
+export interface OccupancyRelationship {
+  business_party_id?: BusinessPartyId1;
+  household_id?: HouseholdId3;
+  id: Id41;
+  interval: InclusiveExclusiveDateTimeRange;
+  organization_id: OrganizationId22;
+  schema_version?: SchemaVersion39;
+  space_id: SpaceId1;
+  synthetic?: Synthetic39;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "OwnershipRelationship".
+ */
+export interface OwnershipRelationship {
+  id: Id42;
+  interval: InclusiveExclusiveDateRange;
+  legal_entity_id: LegalEntityId;
+  note?: Note1;
+  organization_id: OrganizationId23;
+  property_id: PropertyId10;
+  schema_version?: SchemaVersion40;
+  synthetic?: Synthetic40;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PageQuery".
+ */
+export interface PageQuery {
+  cursor?: Cursor;
+  limit: Limit;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PageResult".
+ */
+export interface PageResult {
+  applied_authorization: AppliedAuthorization;
+  next_cursor?: NextCursor;
+  total_count?: TotalCount;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PortfolioGroup".
+ */
+export interface PortfolioGroup {
+  id: Id43;
+  label: Label3;
+  organization_id: OrganizationId24;
+  schema_version?: SchemaVersion41;
+  synthetic?: Synthetic41;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PortfolioMembership".
+ */
+export interface PortfolioMembership {
+  group_id: GroupId;
+  id: Id44;
+  interval: InclusiveExclusiveDateRange;
+  organization_id: OrganizationId25;
+  property_id: PropertyId11;
+  schema_version?: SchemaVersion42;
+  synthetic?: Synthetic42;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PublicInquiryAcknowledgement".
+ */
+export interface PublicInquiryAcknowledgement {
+  abuse_control: AbuseControl;
+  correlation_id: CorrelationId5;
+  inquiry_id: InquiryId;
+  message: Message1;
+  retry_semantics: RetrySemantics;
+  status: Status10;
+  synthetic?: Synthetic43;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "PublishedListingRead".
+ */
+export interface PublishedListingRead {
+  availability: Availability;
+  available_date?: AvailableDate1;
+  label: Label4;
+  listing_id: ListingId;
+  monthly_amount: Money;
+  municipality: Municipality2;
+  property_name: PropertyName;
+  publication: Publication;
+  space_id: SpaceId2;
+  state: State5;
+  synthetic?: Synthetic44;
+  use: Use2;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ReferenceAuditEntry".
+ */
+export interface ReferenceAuditEntry {
+  action: Action2;
+  actor_id: ActorId4;
+  correlation_id: CorrelationId6;
+  delegated_authority_id?: DelegatedAuthorityId1;
+  event_hash: EventHash1;
+  id: Id45;
+  occurred_at: OccurredAt2;
+  previous_event_hash?: PreviousEventHash1;
+  redacted?: Redacted;
+  resource_id: ResourceId2;
+  resource_type: ResourceType2;
+  result: Result2;
+  schema_version?: SchemaVersion43;
+  scope: Scope;
+  synthetic?: Synthetic45;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ReferenceDomainEvent".
+ */
+export interface ReferenceDomainEvent {
+  aggregate_id: AggregateId3;
+  aggregate_version: AggregateVersion2;
+  causation_id?: CausationId1;
+  correlation_id: CorrelationId7;
+  event_type: EventType1;
+  id: Id46;
+  occurred_at: OccurredAt3;
+  organization_id: OrganizationId26;
+  payload_record_ids?: PayloadRecordIds2;
+  schema_version?: SchemaVersion44;
+  synthetic?: Synthetic46;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ReferenceRecord".
+ */
+export interface ReferenceRecord {
+  id: Id47;
+  schema_version?: SchemaVersion45;
+  synthetic?: Synthetic47;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "ReferenceSlice".
+ */
+export interface ReferenceSlice {
+  groups: Groups;
+  known_account_ids: KnownAccountIds;
+  known_entity_ids: KnownEntityIds;
+  known_household_ids: KnownHouseholdIds;
+  known_organization_ids: KnownOrganizationIds;
+  known_person_ids: KnownPersonIds;
+  known_property_ids: KnownPropertyIds;
+  known_space_ids: KnownSpaceIds;
+  management: Management;
+  memberships: Memberships;
+  occupancies: Occupancies;
+  ownership: Ownership;
+  portal_access: PortalAccess;
+  published_listings: PublishedListings;
+  schema_version?: SchemaVersion46;
+  space_states: SpaceStates;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SpaceOperatingState".
+ */
+export interface SpaceOperatingState {
+  availability: Availability1;
+  availability_source: AvailabilitySource;
+  condition: Condition;
+  condition_source: ConditionSource;
+  id: Id48;
+  legal_restriction: LegalRestriction;
+  legal_restriction_source: LegalRestrictionSource;
+  maintenance_restriction: MaintenanceRestriction;
+  maintenance_restriction_source: MaintenanceRestrictionSource;
+  mapping_notes?: MappingNotes;
+  occupancy: Occupancy;
+  occupancy_source: OccupancySource;
+  organization_id: OrganizationId27;
+  publication: Publication1;
+  publication_source: PublicationSource;
+  schema_version?: SchemaVersion47;
+  space_id: SpaceId3;
+  synthetic?: Synthetic48;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SafeErrorDetail".
+ */
+export interface SafeErrorDetail {
+  field?: Field;
+  reason: Reason5;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SafeErrorEnvelope".
+ */
+export interface SafeErrorEnvelope {
+  code: Code;
+  correlation_id: CorrelationId8;
+  details?: Details;
+  message: Message2;
+  permission_safe?: PermissionSafe;
+  required_action?: RequiredAction;
+  retryable: Retryable;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SetSpaceAvailability".
+ */
+export interface SetSpaceAvailability {
+  availability: Availability2;
+  expected_version: ExpectedVersion1;
+  request: UntrustedRequestInput;
+  space_id: SpaceId4;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SetSpacePublication".
+ */
+export interface SetSpacePublication {
+  expected_version: ExpectedVersion1;
+  publication: Publication2;
+  request: UntrustedRequestInput;
+  space_id: SpaceId5;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "StaffInquiryRead".
+ */
+export interface StaffInquiryRead {
+  assigned_staff_id?: AssignedStaffId;
+  email: Email;
+  id: Id49;
+  intent: Intent;
+  listing_id: ListingId1;
+  message: Message3;
+  name: Name8;
+  organization_id: OrganizationId28;
+  preferred_date?: PreferredDate;
+  received_at: ReceivedAt1;
+  schema_version?: SchemaVersion48;
+  space_id: SpaceId6;
+  status: Status11;
+  synthetic?: Synthetic49;
+  version: Version6;
+}
+/**
+ * Public write. Does not grant staff identity or read of internal records.
+ *
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "SubmitPublicInquiry".
+ */
+export interface SubmitPublicInquiry {
+  email: Email1;
+  intent: Intent1;
+  listing_id: ListingId2;
+  message?: Message4;
+  name: Name9;
+  preferred_date?: PreferredDate1;
+  request: UntrustedRequestInput;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "TaskExampleRead".
+ */
+export interface TaskExampleRead {
+  due_on?: DueOn;
+  engine?: Engine1;
+  id: Id50;
+  next_action: NextAction;
+  organization_id: OrganizationId29;
+  owner_id?: OwnerId;
+  schema_version?: SchemaVersion49;
+  status: Status12;
+  synthetic?: Synthetic50;
+  title: Title1;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "TriageInquiry".
+ */
+export interface TriageInquiry {
+  decision: Decision1;
+  expected_version: ExpectedVersion1;
+  inquiry_id: InquiryId1;
+  note: Note2;
+  request: UntrustedRequestInput;
+}
+/**
+ * Server-resolved actor. Must not appear on public or generic update payloads.
+ *
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "TrustedActorContext".
+ */
+export interface TrustedActorContext {
+  actor_id: ActorId5;
+  delegated_authority_id?: DelegatedAuthorityId2;
+  feature_flags?: FeatureFlags;
+  membership_ids?: MembershipIds;
+  organization_id: OrganizationId30;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "UpdateLeasableSpace".
+ */
+export interface UpdateLeasableSpace {
+  commercial?: CommercialTerms | null;
+  expected_version: ExpectedVersion1;
+  label?: Label5;
+  request: UntrustedRequestInput;
+  residential?: ResidentialTerms | null;
+  space_id: SpaceId7;
+  square_feet?: SquareFeet2;
+}
+/**
+ * This interface was referenced by `FoundationContracts`'s JSON-Schema
+ * via the `definition` "UpdateProperty".
+ */
+export interface UpdateProperty {
+  address?: Address | null;
+  expected_version: ExpectedVersion1;
+  name?: Name10;
+  parcel_references?: ParcelReferences2;
+  property_id: PropertyId12;
+  request: UntrustedRequestInput;
 }

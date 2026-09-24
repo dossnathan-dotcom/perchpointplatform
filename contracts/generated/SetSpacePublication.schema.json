@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "ExpectedVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregate_id": {
+          "format": "uuid",
+          "title": "Aggregate Id",
+          "type": "string"
+        },
+        "expected_version": {
+          "minimum": 1,
+          "title": "Expected Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "aggregate_id",
+        "expected_version"
+      ],
+      "title": "ExpectedVersion",
+      "type": "object"
+    },
+    "UntrustedRequestInput": {
+      "additionalProperties": false,
+      "description": "External request metadata. Never treated as authenticated actor context.",
+      "properties": {
+        "client_observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Observed At"
+        },
+        "correlation_id": {
+          "format": "uuid",
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 8,
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "request_fingerprint": {
+          "maxLength": 128,
+          "minLength": 8,
+          "title": "Request Fingerprint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idempotency_key",
+        "request_fingerprint",
+        "correlation_id"
+      ],
+      "title": "UntrustedRequestInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_version": {
+      "$ref": "#/$defs/ExpectedVersion"
+    },
+    "publication": {
+      "enum": [
+        "unpublished",
+        "published",
+        "withdrawn"
+      ],
+      "title": "Publication",
+      "type": "string"
+    },
+    "request": {
+      "$ref": "#/$defs/UntrustedRequestInput"
+    },
+    "space_id": {
+      "format": "uuid",
+      "title": "Space Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "space_id",
+    "publication",
+    "request",
+    "expected_version"
+  ],
+  "title": "SetSpacePublication",
+  "type": "object"
+}

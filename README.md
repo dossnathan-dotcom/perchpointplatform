@@ -13,6 +13,7 @@ Premium rental and property-operations public site with explicitly synthetic Pha
 - [Requirements traceability](docs/governance/REQUIREMENTS_TRACEABILITY.md)
 - [Independent Phase 0 Cursor audit](docs/audits/PHASE_0_CURSOR_AUDIT.md)
 - [Source provenance and extraction](docs/source/provenance/SOURCE_MANIFEST.md)
+- [Phase 2 planning package](docs/plans/phase2/README.md)
 
 React frontend, FastAPI backend, existing MongoDB synthetic intake. All API calls use `REACT_APP_BACKEND_URL`; MongoDB uses `MONGO_URL` and `DB_NAME`. Do not add real credentials or production records.
 Environment values remain local and ignored. Required new preview flags are documented in [Seeds and flags](docs/phase0/SEEDS-AND-FLAGS.md).
@@ -23,8 +24,9 @@ No phase advancement is authorized by this repository state.
 
 The Phase 1 source-ingestion, technical-validation, and governance-consistency dimensions
 pass. Business acceptance remains provisional and named business, operational, accounting,
-maintenance, and legal acceptance remains pending. The corpus adds no production
-authentication, provider execution, migration, deployment, or Phase 2 workflow.
+maintenance, and legal acceptance remains pending. Phase 2 application implementation,
+production authentication, provider execution, migration, and deployment are not
+authorized until Nathan approves `docs/plans/phase2/`.
 
 ## Reproducible frontend setup
 
