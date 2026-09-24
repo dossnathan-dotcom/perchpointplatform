@@ -123,8 +123,8 @@ test("homepage has no serious accessibility violations", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("public-listing-card").first()).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
-  const serious = results.violations.filter((item) => item.impact === "critical" || item.impact === "serious");
-  expect(serious, JSON.stringify(serious, null, 2)).toEqual([]);
+  const blocking = results.violations.filter((item) => ["critical", "serious", "moderate"].includes(item.impact));
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
 });
 
 test("platform administration can see synthetic delivery status", async ({ page }) => {
@@ -135,8 +135,8 @@ test("platform administration can see synthetic delivery status", async ({ page 
   await page.getByTestId("phase2-deliver").click();
   await expect(page.getByTestId("phase2-status")).toContainText(/delivery|No pending/);
   const results = await new AxeBuilder({ page }).analyze();
-  const serious = results.violations.filter((item) => item.impact === "critical" || item.impact === "serious");
-  expect(serious, JSON.stringify(serious, null, 2)).toEqual([]);
+  const blocking = results.violations.filter((item) => ["critical", "serious", "moderate"].includes(item.impact));
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
 });
 
 for (const width of [320, 768, 1024, 1440]) {
