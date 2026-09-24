@@ -13,7 +13,10 @@ from .commands import (
     CommandError,
     accept_inbox,
     claim_and_deliver,
+    add_inquiry_note,
     create_building,
+    create_listing,
+    set_listing_publication,
     create_property,
     create_space,
     set_space_dimension,
@@ -75,6 +78,29 @@ class PropertyEdit(BaseModel):
     idempotency_key: str = Field(min_length=8, max_length=128)
 
 
+class ListingBody(BaseModel):
+    space_id: UUID
+    property_name: str
+    label: str
+    use: str
+    municipality: str
+    state: str = Field(min_length=2, max_length=2)
+    amount_minor: int = Field(ge=0)
+    currency: str = "USD"
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class PublicationBody(BaseModel):
+    publication: str
+    expected_version: int
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class NoteBody(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
 class SpaceTransition(BaseModel):
     dimension: str
     value: str
@@ -128,6 +154,28 @@ def post_property(body: PropertyBody, current=Depends(actor), settings: Settings
 @router.post("/inquiries", status_code=201)
 def post_inquiry(body: InquiryBody, settings: Settings = Depends(settings)):
     return _run(lambda: submit_public_inquiry(settings, body.model_dump(mode="json"), uuid4()))
+
+
+@router.post("/listings", status_code=201)
+def post_listing(body: ListingBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    return _run(lambda: create_listing(settings, current["id"], current["organization_id"], body.model_dump(mode="json"), body.idempotency_key, uuid4()))
+
+
+@router.post("/listings/{listing_id}/publication")
+def post_publication(listing_id: UUID, body: PublicationBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    return _run(lambda: set_listing_publication(settings, current["id"], current["organization_id"], listing_id, body.model_dump(), body.idempotency_key, uuid4()))
+
+
+@router.get("/inquiries")
+def get_inquiries(current=Depends(actor), settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
+        rows = connection.execute(text("SELECT id, listing_id, name, status, assigned_account_id, version FROM inquiries ORDER BY received_at DESC")).mappings().all()
+    return {"inquiries": [dict(row) for row in rows]}
+
+
+@router.post("/inquiries/{inquiry_id}/notes", status_code=201)
+def post_note(inquiry_id: UUID, body: NoteBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    return _run(lambda: add_inquiry_note(settings, current["id"], current["organization_id"], inquiry_id, body.model_dump(), body.idempotency_key, uuid4()))
 
 
 @router.post("/inquiries/{inquiry_id}/triage")

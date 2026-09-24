@@ -35,7 +35,8 @@ evidence.
 
 Status: **local P2-02/P2-03 reference persistence is implemented on this branch.**
 The 2026-09-24 follow-up instruction authorized packages P2-02 through P2-06
-and local commits. Q120's original approval history stays in
+and local commits. A later completion assignment the same day authorizes
+finishing those packages. Q120's original approval history stays unchanged in
 `APPROVED_CUSTOMIZATION_ANSWERS.md`. This does not record Faruk, Ann, counsel,
 or accounting signoff, and it does not make production ready.
 

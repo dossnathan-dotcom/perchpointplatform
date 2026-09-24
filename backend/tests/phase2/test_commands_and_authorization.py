@@ -260,6 +260,85 @@ def test_expired_membership_and_production_auth_refused(client):
         os.environ["PHASE2_LOCAL_AUTH"] = previous
 
 
+def test_reference_path_listing_inquiry_and_isolation(client):
+    token = _login(client, "ann.synthetic@example.com")
+    headers = _auth(token)
+    created = client.post("/api/v2/properties", headers=headers, json={"name": "Path Court", "property_type": "mixed_use", "idempotency_key": "path-p-" + uuid4().hex})
+    assert created.status_code == 201, created.text
+    property_id = created.json()["id"]
+    building = client.post("/api/v2/buildings", headers=headers, json={"property_id": property_id, "name": "House", "allowed_uses": ["residential"], "idempotency_key": "path-b-" + uuid4().hex})
+    space = client.post(
+        "/api/v2/spaces",
+        headers=headers,
+        json={"property_id": property_id, "building_id": building.json()["id"], "label": "Unit A", "use": "residential", "square_feet": 800, "idempotency_key": "path-s-" + uuid4().hex},
+    )
+    assert space.status_code == 201, space.text
+    offered = client.post(
+        f"/api/v2/spaces/{space.json()['id']}/transition",
+        headers=headers,
+        json={"dimension": "availability", "value": "offerable", "expected_version": 1, "idempotency_key": "path-t-" + uuid4().hex},
+    )
+    assert offered.status_code == 200, offered.text
+    listing = client.post(
+        "/api/v2/listings",
+        headers=headers,
+        json={
+            "space_id": space.json()["id"],
+            "property_name": "Path Court",
+            "label": "Unit A",
+            "use": "residential",
+            "municipality": "Cincinnati",
+            "state": "OH",
+            "amount_minor": 145000,
+            "currency": "USD",
+            "idempotency_key": "path-l-" + uuid4().hex,
+        },
+    )
+    assert listing.status_code == 201, listing.text
+    hidden = client.get("/api/v2/listings")
+    assert all(item["listing_id"] != listing.json()["id"] for item in hidden.json()["listings"])
+    published = client.post(
+        f"/api/v2/listings/{listing.json()['id']}/publication",
+        headers=headers,
+        json={"publication": "published", "expected_version": 1, "idempotency_key": "path-pub-" + uuid4().hex},
+    )
+    assert published.status_code == 200, published.text
+    visible = client.get("/api/v2/listings")
+    match = next(item for item in visible.json()["listings"] if item["listing_id"] == listing.json()["id"])
+    assert "organization_id" not in match
+    key = "path-inq-" + uuid4().hex
+    inquiry = client.post("/api/v2/inquiries", json={"listing_id": listing.json()["id"], "name": "Path Guest", "email": "path@example.com", "intent": "showing", "message": "Example", "idempotency_key": key})
+    replay = client.post("/api/v2/inquiries", json={"listing_id": listing.json()["id"], "name": "Path Guest", "email": "path@example.com", "intent": "showing", "message": "Example", "idempotency_key": key})
+    assert inquiry.status_code == 201 and replay.json()["inquiry_id"] == inquiry.json()["inquiry_id"]
+    queue = client.get("/api/v2/inquiries", headers=headers)
+    assert any(item["id"] == inquiry.json()["inquiry_id"] for item in queue.json()["inquiries"])
+    triaged = client.post(
+        f"/api/v2/inquiries/{inquiry.json()['inquiry_id']}/triage",
+        headers=headers,
+        json={"decision": "assigned", "expected_version": 1, "idempotency_key": "path-tri-" + uuid4().hex},
+    )
+    stale = client.post(
+        f"/api/v2/inquiries/{inquiry.json()['inquiry_id']}/triage",
+        headers=headers,
+        json={"decision": "closed_not_pursuing", "expected_version": 1, "idempotency_key": "path-stale-" + uuid4().hex},
+    )
+    note = client.post(
+        f"/api/v2/inquiries/{inquiry.json()['inquiry_id']}/notes",
+        headers=headers,
+        json={"body": "Called back.", "idempotency_key": "path-note-" + uuid4().hex},
+    )
+    assert triaged.status_code == 200 and stale.status_code == 409 and note.status_code == 201
+    history = client.get(f"/api/v2/activity?resource_id={property_id}", headers=headers)
+    assert history.json()["activity"]
+    worker = client.post("/api/v2/worker/once", headers=headers)
+    assert worker.status_code == 200
+    isolation = _login(client, "isolation.synthetic@example.com")
+    denied = client.get("/api/v2/inquiries", headers=_auth(isolation))
+    assert all(item["id"] != inquiry.json()["inquiry_id"] for item in denied.json()["inquiries"])
+    forged = client.get("/api/v2/inquiries", headers={**_auth(isolation), "X-Organization": str(sid("organization-demo"))})
+    assert all(item["id"] != inquiry.json()["inquiry_id"] for item in forged.json()["inquiries"])
+
+
 def test_empty_database_migration_and_repeatable_seed():
     admin = engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/postgres")
     with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
@@ -292,7 +371,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0004_inbox_order"
+    assert revision == "0005_listing_notes"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

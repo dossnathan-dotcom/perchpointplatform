@@ -91,6 +91,21 @@ def connection_finish(settings: Settings, outbox_id: UUID, delivered: bool) -> s
         return connection.execute(text("SELECT perchpoint.finish_outbox(:id, :delivered)"), {"id": outbox_id, "delivered": delivered}).scalar()
 
 
+def create_listing(settings: Settings, actor: UUID, organization: UUID, body: dict, key: str, correlation: UUID) -> dict:
+    payload = {name: body[name] for name in ("space_id", "property_name", "label", "use", "municipality", "state", "amount_minor", "currency")}
+    return _command(settings, actor, organization, key, payload, correlation, "listing.created", lambda conn, fp: _insert_listing(conn, organization, actor, payload, correlation))
+
+
+def set_listing_publication(settings: Settings, actor: UUID, organization: UUID, listing_id: UUID, body: dict, key: str, correlation: UUID) -> dict:
+    payload = {"listing_id": str(listing_id), "publication": body["publication"], "expected_version": body["expected_version"]}
+    return _command(settings, actor, organization, key, payload, correlation, "listing.publication_changed", lambda conn, fp: _publish_listing(conn, organization, actor, listing_id, body, correlation))
+
+
+def add_inquiry_note(settings: Settings, actor: UUID, organization: UUID, inquiry_id: UUID, body: dict, key: str, correlation: UUID) -> dict:
+    payload = {"inquiry_id": str(inquiry_id), "body": body["body"]}
+    return _command(settings, actor, organization, key, payload, correlation, "inquiry.note_added", lambda conn, fp: _insert_note(conn, organization, actor, inquiry_id, body, correlation))
+
+
 def triage_inquiry(settings: Settings, actor: UUID, organization: UUID, inquiry_id: UUID, body: dict, key: str, correlation: UUID) -> dict:
     payload = {"inquiry_id": str(inquiry_id), "decision": body["decision"], "expected_version": body["expected_version"]}
     return _command(settings, actor, organization, key, payload, correlation, "inquiry.triaged", lambda conn, fp: _triage(conn, organization, actor, inquiry_id, body, correlation))
@@ -180,6 +195,66 @@ def _transition_space(connection: Connection, organization: UUID, actor: UUID, s
     )
     result = {"id": str(space_id), "dimension": dimension, "value": body["value"], "version": current["version"] + 1}
     _audit_outbox(connection, organization, actor, "space.transitioned", space_id, correlation, "space.transitioned.v1", result)
+    return result
+
+
+def _insert_listing(connection: Connection, organization: UUID, actor: UUID, payload: dict, correlation: UUID) -> dict:
+    listing_id = uuid4()
+    connection.execute(
+        text(
+            """
+            INSERT INTO listings (
+              organization_id, id, space_id, publication, availability, property_name, label, use,
+              municipality, state, amount_minor, currency, version
+            ) VALUES (
+              :org, :id, :space, 'unpublished', 'offerable', :property_name, :label, :use,
+              :municipality, :state, :amount, :currency, 1
+            )
+            """
+        ),
+        {
+            "org": organization,
+            "id": listing_id,
+            "space": payload["space_id"],
+            "property_name": payload["property_name"],
+            "label": payload["label"],
+            "use": payload["use"],
+            "municipality": payload["municipality"],
+            "state": payload["state"],
+            "amount": payload["amount_minor"],
+            "currency": payload["currency"],
+        },
+    )
+    result = {"id": str(listing_id), "publication": "unpublished", "version": 1}
+    _audit_outbox(connection, organization, actor, "listing.created", listing_id, correlation, "listing.created.v1", result)
+    return result
+
+
+def _publish_listing(connection: Connection, organization: UUID, actor: UUID, listing_id: UUID, body: dict, correlation: UUID) -> dict:
+    if body["publication"] not in {"published", "unpublished", "restricted"}:
+        raise CommandError(422, "invalid_publication", "That listing publication is not allowed")
+    row = connection.execute(
+        text("UPDATE listings SET publication = :publication, version = version + 1 WHERE organization_id = :org AND id = :id AND version = :expected RETURNING version"),
+        {"publication": body["publication"], "org": organization, "id": listing_id, "expected": body["expected_version"]},
+    ).first()
+    if not row:
+        raise CommandError(409, "stale_version", "The listing changed. Reload and try again.", retryable=True)
+    result = {"id": str(listing_id), "publication": body["publication"], "version": row.version}
+    _audit_outbox(connection, organization, actor, "listing.publication_changed", listing_id, correlation, "listing.publication_changed.v1", result)
+    return result
+
+
+def _insert_note(connection: Connection, organization: UUID, actor: UUID, inquiry_id: UUID, body: dict, correlation: UUID) -> dict:
+    found = connection.execute(text("SELECT id FROM inquiries WHERE organization_id = :org AND id = :id"), {"org": organization, "id": inquiry_id}).first()
+    if not found:
+        raise CommandError(404, "not_found", "Inquiry was not found")
+    note_id = uuid4()
+    connection.execute(
+        text("INSERT INTO inquiry_notes (organization_id, id, inquiry_id, body, created_at, actor_id) VALUES (:org, :id, :inquiry, :body, now(), :actor)"),
+        {"org": organization, "id": note_id, "inquiry": inquiry_id, "body": body["body"], "actor": actor},
+    )
+    result = {"id": str(note_id), "inquiry_id": str(inquiry_id)}
+    _audit_outbox(connection, organization, actor, "inquiry.note_added", inquiry_id, correlation, "inquiry.note_added.v1", result)
     return result
 
 
