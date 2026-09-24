@@ -86,7 +86,7 @@ Windows PostgreSQL 16 process. The design mix of 3,000 spaces, 5,000 people,
 | Fake webhook authenticity, dedupe, order | P2-03 | inbox tests | passed |
 | Redaction and scoped projections | P2-03 / P2-04 | public GET tests | passed: public listing omits organization and space identifiers |
 | Historical relationship correctness | P2-01 / P2-02 | effective-dated fixtures | passed for active and expired memberships; not a full tenancy history |
-| Browser journeys and accessibility | P2-04 / P2-05 | Playwright plus axe | passed: 14 tests, exit 0; axe critical and serious empty on `/` and the signed-in platform workspace |
+| Browser journeys and accessibility | P2-04 / P2-05 | Playwright plus axe | passed: 14 pointer journeys plus one keyboard inquiry and assign journey; axe critical and serious empty on `/` and the signed-in platform workspace |
 | Measured performance | P2-05 | benchmark harness | passed for the measured reads below 500 ms; full design mix not executed |
 | Existing Phase 0/1 regression gates | P2-05 | established suite | frontend unit tests 22 passed; production build compiled |
 

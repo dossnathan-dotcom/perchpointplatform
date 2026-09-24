@@ -99,6 +99,26 @@ test("preview and expired access do not gain authority", async ({ page }) => {
   await expect(page.getByTestId("phase2-property-list")).not.toContainText("Example Elm Court");
 });
 
+test("keyboard submits a public inquiry and assigns an inquiry", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("public-listing-card").first().getByRole("link", { name: /View this listing/ }).click();
+  await page.locator("input[name='guest-name']").focus();
+  await page.keyboard.type("Keyboard Guest");
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("keyboard-guest@example.com");
+  await page.keyboard.press("Tab");
+  await page.keyboard.type("Keyboard showing request");
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("public-inquiry-status")).toContainText("Inquiry received");
+  await signIn(page, "ann.synthetic@example.com");
+  await page.getByRole("button", { name: /Keyboard Guest/ }).first().focus();
+  await page.keyboard.press("Enter");
+  await page.getByTestId("phase2-assign").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("phase2-status")).toContainText("assigned");
+});
+
 test("homepage has no serious accessibility violations", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("public-listing-card").first()).toBeVisible();
