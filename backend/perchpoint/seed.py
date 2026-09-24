@@ -70,7 +70,10 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
                 ),
                 {"org": org, "id": sid(f"seed-state-{unit.label}"), "space": unit.id, "publication": "published" if published else "unpublished"},
             )
-        rent = residential.residential.monthly_rent
+        terms = residential.residential
+        if terms is None:
+            raise RuntimeError("The seeded residential space has no rent terms")
+        rent = terms.monthly_rent
         connection.execute(
             text(
                 """

@@ -192,6 +192,22 @@ def post_publication(listing_id: UUID, body: PublicationBody, current=Depends(ac
     return _run(lambda: set_listing_publication(settings, current["id"], current["organization_id"], listing_id, body.model_dump(), body.idempotency_key, uuid4()))
 
 
+@router.get("/inquiries/{inquiry_id}")
+def get_inquiry(inquiry_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:
+        inquiry = connection.execute(
+            text("SELECT id, listing_id, name, email, intent, message, status, assigned_account_id, version FROM inquiries WHERE id = :id"),
+            {"id": inquiry_id},
+        ).mappings().first()
+        if not inquiry:
+            raise HTTPException(404, "Inquiry was not found")
+        notes = connection.execute(
+            text("SELECT id, body, actor_id, created_at FROM inquiry_notes WHERE inquiry_id = :id ORDER BY created_at"),
+            {"id": inquiry_id},
+        ).mappings().all()
+    return {"inquiry": dict(inquiry), "notes": [dict(note) for note in notes]}
+
+
 @router.get("/inquiries")
 def get_inquiries(current=Depends(actor), settings: Settings = Depends(settings)):
     with runtime_transaction(settings, current["id"], current["organization_id"], uuid4()) as connection:

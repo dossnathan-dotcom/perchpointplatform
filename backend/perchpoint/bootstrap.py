@@ -7,7 +7,7 @@ from pathlib import Path
 
 from sqlalchemy import text
 
-from .db import admin_connection, engine_for
+from .db import engine_for
 from .settings import Settings
 
 ROOT = Path(__file__).resolve().parents[1]

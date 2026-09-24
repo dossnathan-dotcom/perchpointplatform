@@ -53,12 +53,12 @@ export const PropertyDetailPage = () => {
     <section className="bg-linen py-16"><div className="mx-auto max-w-xl px-5">
       <h2 className="font-heading text-3xl">Request a showing</h2>
       <form className="mt-6 space-y-4" onSubmit={submit}>
-        <label className="block">Name<input className="mt-1 w-full border px-3 py-2" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
-        <label className="block">Email<input className="mt-1 w-full border px-3 py-2" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></label>
-        <label className="block">Message<textarea className="mt-1 w-full border px-3 py-2" value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} required /></label>
-        <button className="bg-obsidian px-4 py-3 text-linen" type="submit">Submit inquiry</button>
+        <label className="block">Name<input className="mt-1 w-full border px-3 py-2" name="guest-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
+        <label className="block">Email<input className="mt-1 w-full border px-3 py-2" name="guest-email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></label>
+        <label className="block">Message<textarea className="mt-1 w-full border px-3 py-2" name="guest-message" value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} required /></label>
+        <button className="bg-obsidian px-4 py-3 text-linen" type="submit" data-testid="public-inquiry-submit">Submit inquiry</button>
       </form>
-      <p className="mt-4" role="status">{notice}</p>
+      <p className="mt-4" role="status" data-testid="public-inquiry-status">{notice}</p>
     </div></section>
   </main>;
 };

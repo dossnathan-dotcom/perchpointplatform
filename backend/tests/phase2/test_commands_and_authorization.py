@@ -11,12 +11,12 @@ from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 
-load_dotenv()
-
 from foundation.seeds import sid
 from perchpoint.db import engine_for, runtime_transaction
 from perchpoint.routes import create_app
 from perchpoint.settings import Phase2ConfigurationError, Settings
+
+load_dotenv()
 
 
 def _settings() -> Settings:
@@ -407,7 +407,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0005_listing_notes"
+    assert revision == "0006_activity_index"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

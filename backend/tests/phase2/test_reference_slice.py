@@ -7,12 +7,12 @@ from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 
-load_dotenv()
-
 from foundation.seeds import sid
 from perchpoint.db import engine_for, runtime_transaction
 from perchpoint.routes import create_app
 from perchpoint.settings import Settings
+
+load_dotenv()
 
 
 def settings() -> Settings:
