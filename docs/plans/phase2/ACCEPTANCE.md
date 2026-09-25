@@ -42,34 +42,50 @@ during planning.
 
 ## Measurement 2026-09-24
 
-Isolated rows were inserted into local `perchpoint_phase2` and deleted afterward.
-Leftover benchmark properties: 0. Elm Court remained. Dataset: 1,000 properties,
-1,000 buildings, 2,000 spaces, 1,000 listings, 1,000 inquiries, 250,000 activity
-rows spread across those properties (250 each). The scale load uses the seeded
-demonstration organization. A second organization and an expired membership
-already exist in the development seed and are covered by authorization tests.
-Reads used `perchpoint_runtime` and transaction-local organization context.
-Warmup: 1. Measured runs: 10. Each sample is one target statement plus one
-`set_config` statement. No ORM N+1 loop was used.
+The design mix in "Initial benchmark design (synthetic)" was loaded into
+disposable database `perchpoint_phase2_bench`, migrated to
+`0006_activity_index`, measured, and dropped. PostgreSQL 16.15. Runtime role
+`perchpoint_runtime` (`NOSUPERUSER`, `NOBYPASSRLS`) with transaction-local
+`app.actor_id`, `app.organization_id`, and `app.request_id`. Households are
+the persisted person records in migration `0001`; there is no separate people
+table. Warmup: 1. Measured runs: 10. Each sample is one target statement plus
+one `set_config`. No ORM N+1 loop. Concurrency: 25 separate runtime
+connections after one warmup wave of 25. No errors or timeouts.
+
+| Cardinality | Count |
+|---|---:|
+| Properties | 1,000 |
+| Buildings | 1,000 |
+| Spaces | 3,000 |
+| Households | 5,000 |
+| Listings | 1,000 |
+| Inquiries | 25,000 |
+| Activity rows | 250,000 |
+| Organizations | 2 |
+| Active memberships | 2 |
+| Expired memberships | 1 |
 
 | Query | p50 ms | p95 ms | max ms | Plan evidence |
 |---|---:|---:|---:|---|
-| Property list, 50 rows | 12.43 | 12.59 | 14.23 | Sequential scan, 1,000 rows, 11.854 ms |
-| Property hierarchy | 22.40 | 22.75 | 24.62 | Sequential scans, one building and the space table, 21.868 ms |
-| Inquiry queue, 50 rows | 11.78 | 11.93 | 12.14 | Sequential scan, 1,000 rows, 11.080 ms |
-| Inquiry detail | 0.77 | 0.80 | 0.81 | Primary-key index scan, 0.093 ms |
-| Activity timeline, 50 rows | 3.30 | 3.44 | 3.59 | Bitmap index scan on `activity_resource_time`, 250 rows, 2.546 ms |
-| Public published listings | 0.90 | 1.01 | 1.16 | Function scan, 333 rows, 0.268 ms |
-| Public listing detail | 0.87 | 0.89 | 0.91 | Function scan, 1 row, 0.248 ms |
-| Concurrent public listings, 4 workers x 2 | 21.24 | 41.90 | 42.80 | Separate runtime connections |
+| Property list, 50 rows | 5.41 | 5.50 | 5.55 | Bitmap index scan on `properties_pkey`, 500 visible rows, 4.688 ms |
+| Property hierarchy | 14.19 | 14.39 | 14.56 | Bitmap index scans on `buildings_pkey` and `spaces_pkey`, 13.603 ms |
+| Inquiry queue, 50 rows | 135.27 | 137.51 | 138.90 | Sequential scan, 12,500 visible rows, 138.096 ms |
+| Inquiry detail | 0.72 | 0.77 | 0.84 | Primary-key index scan, 0.096 ms |
+| Activity timeline, 50 rows | 3.19 | 3.42 | 3.43 | Bitmap index scan on `activity_resource_time`, 250 rows, 2.613 ms |
+| Public published listings | 0.98 | 1.11 | 1.14 | Function scan, 333 rows, 0.280 ms |
+| Public listing detail | 0.81 | 0.84 | 0.86 | Function scan, 1 row, 0.389 ms |
+| RLS property count, other organization | 5.25 | 5.54 | 5.67 | Bitmap index scan, 500 rows of that organization, 4.529 ms |
+| Concurrent public listings, 25 connections | 15.94 | 40.23 | 169.56 | Separate runtime connections |
+| Concurrent internal property list, 25 connections | 17.10 | 20.28 | 21.76 | Separate runtime connections |
 
-These are under the 500 ms ordinary-read planning ceiling. A timeline that
-sorted all 250,000 rows for one resource was about 2.5 s, so migration
-`0006_activity_index` indexes `(organization_id, resource_id, occurred_at)`.
-The hierarchy and list scans stay sequential because the planner prefers them
-at this cardinality; no additional index was added. Hardware was the local
-Windows PostgreSQL 16 process. The design mix of 3,000 spaces, 5,000 people,
-25,000 inquiries, and 25 concurrent users was not executed.
+Organization A saw 500 of 1,000 properties. All measured reads are under the
+500 ms ordinary-read ceiling. The inquiry queue stays a sequential scan at
+this size; no additional index was added. The hierarchy plan filters by
+organization index rather than issuing one query per building.
+
+After `DROP DATABASE`, `perchpoint_phase2_bench` was gone. Development
+database `perchpoint_phase2` still had Elm Court (`9960c7ea-3d4b-5fd7-90b3-6360439a6875`)
+once, zero properties named `Bench`, and migration head `0006_activity_index`.
 
 ## Required evidence (P2-01 through P2-05)
 
@@ -86,8 +102,8 @@ Windows PostgreSQL 16 process. The design mix of 3,000 spaces, 5,000 people,
 | Fake webhook authenticity, dedupe, order | P2-03 | inbox tests | passed |
 | Redaction and scoped projections | P2-03 / P2-04 | public GET tests | passed: public listing omits organization and space identifiers |
 | Historical relationship correctness | P2-01 / P2-02 | effective-dated fixtures | passed for active and expired memberships; not a full tenancy history |
-| Browser journeys and accessibility | P2-04 / P2-05 | Playwright plus axe | passed: 14 pointer journeys plus one keyboard inquiry and assign journey; axe critical, serious, and moderate empty on `/` and the signed-in platform workspace |
-| Measured performance | P2-05 | benchmark harness | passed for the measured reads below 500 ms; full design mix not executed |
+| Browser journeys and accessibility | P2-04 / P2-05 | `corepack yarn playwright test --reporter=line` | passed: 15 tests, 0 failed, 0 skipped, 40.8 s, exit 0 |
+| Measured performance | P2-05 | disposable design-mix benchmark | passed: every measured read p95 is below 500 ms |
 | Existing Phase 0/1 regression gates | P2-05 | established suite | frontend unit tests 22 passed; production build compiled |
 
 ## Changed-UI journey matrix
@@ -115,12 +131,49 @@ Journeys in scope:
 - `/app` hardcoded as repository root.
 - Phase 2 presented as production-ready.
 
+## Closure evidence 2026-09-24
+
+Playwright command, from `frontend/`: `corepack yarn playwright test --reporter=line`.
+Result: 15 passed, 0 failed, 0 skipped, 40.8 seconds, exit 0. That single
+process includes the public listing and inquiry, idempotent retry, property,
+building, space, offerability, listing publication, public appearance, stale
+409, inquiry assignment, triage, internal note, activity timeline,
+authorization boundaries, organization isolation, keyboard submission and
+assign, axe critical/serious/moderate on `/` and the signed-in platform
+workspace, and overflow checks at 320, 768, 1024, and 1440 px.
+
+Phase 2 workflows do not use a modal or dialog. Inspected
+`frontend/src/components/portal/Phase2Kernel.jsx`,
+`frontend/src/components/Listings.jsx`, and
+`frontend/src/components/PropertyDetailPage.jsx`. Focus entry, containment,
+Escape, and restoration are non-applicable for those workflows. Phase 0
+preview dialogs remain outside this command path. A screen-reader pass was
+not performed, and this is not a WCAG certification.
+
+Consolidated checks after the final benchmark and browser edits: source
+verification passed; governance reported 71 requirements and 58 decisions;
+`python -m foundation.export --check` reported 107 artifacts; pytest 79
+passed, 0 failed, 0 skipped, exit 0; Ruff and Mypy passed; frontend frozen
+install, contract types, TypeScript, ESLint, 22 unit tests, and production
+build passed. Twenty application tables have forced row-level security.
+`alembic_version` is the remaining public table and is not tenant data.
+`perchpoint_runtime` is not a superuser and does not bypass row-level security.
+
+| Package | Status |
+|---|---|
+| P2-01 | passed |
+| P2-02 | passed |
+| P2-03 | passed |
+| P2-04 | passed |
+| P2-05 | passed |
+| P2-06 | passed as a local commit only |
+
 ## Acceptance dimensions after the 2026-09-24 local pass
 
 | Dimension | Status |
 |---|---|
 | Source ingestion | passed (Phase 1); Q1–Q120 register unchanged |
-| Local technical validation | passed for the gates recorded in this file |
+| Local technical validation | passed |
 | Governance consistency | re-checked after this edit; 71/58 IDs unchanged |
 | Business acceptance | not granted; Faruk confirmation remains pending |
 | Named stakeholder acceptance | pending Faruk, Ann, and specialists |

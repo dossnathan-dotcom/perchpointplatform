@@ -90,6 +90,8 @@ export function Phase2Kernel({ previewRole }) {
     setVersion(body.version);
     setExpectedVersion(String(body.version));
     setStatus("Property saved.");
+    const activityResponse = await phase2(`/api/v2/activity?resource_id=${body.id}`, { headers });
+    setActivity(activityResponse.body.activity || []);
     await refresh();
   }
 

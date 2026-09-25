@@ -11,7 +11,7 @@ Cursor audit and contracts (this package, then P2-01) → Nathan plan approval �
 reference core (P2-02, P2-03) → contract freeze → bounded Emergent UI (P2-04) →
 Cursor review (P2-05) → verification and acceptance (P2-06).
 
-Local status on 2026-09-24: P2-01 through P2-06 are implemented on
+Local status on 2026-09-24: P2-01 through P2-06 passed on
 `cursor/phase-02-contracts`. Evidence is in `ACCEPTANCE.md`. That local
 technical acceptance is not production readiness, Faruk's business acceptance,
 legal approval, provider activation, deployment approval, or Phase 3.

@@ -56,11 +56,6 @@ test("leasing workspace creates a published space and handles a stale edit", asy
   await expect(page.getByTestId("phase2-status")).toContainText("unpublished");
   await page.getByTestId("phase2-publish").click();
   await expect(page.getByTestId("phase2-status")).toContainText("published");
-  await page.goto("/");
-  await expect(page.getByTestId("public-listing-grid")).toContainText(`Browser Court ${stamp}`);
-  await page.goto("/perchpoint/leasing/operations-console");
-  await signIn(page, "ann.synthetic@example.com");
-  await page.getByRole("button", { name: `Browser Court ${stamp}` }).click();
   await expect(page.getByTestId("phase2-activity")).toContainText("property.created");
   await page.locator("input[name='property-name']").fill(`Browser Court ${stamp} renamed`);
   await page.getByTestId("phase2-save-property").click();
@@ -69,6 +64,8 @@ test("leasing workspace creates a published space and handles a stale edit", asy
   await page.locator("input[name='property-name']").fill(`Browser Court ${stamp} stale`);
   await page.getByTestId("phase2-save-property").click();
   await expect(page.getByTestId("phase2-status")).toContainText("changed");
+  await page.goto("/");
+  await expect(page.getByTestId("public-listing-grid")).toContainText(`Browser Court ${stamp}`);
 });
 
 test("inquiry note stays off the public page", async ({ page }) => {
