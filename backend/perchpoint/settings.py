@@ -26,9 +26,8 @@ class Settings:
 
     @classmethod
     def load(cls) -> "Settings":
+        environment = os.environ.get("PHASE3_ENVIRONMENT", "local")
         mode = os.environ.get("PHASE2_LOCAL_AUTH", "")
-        if mode != "development":
-            raise Phase2ConfigurationError("PHASE2_LOCAL_AUTH must be development; Phase 2 local auth is not production identity")
         values = {
             "admin_url": os.environ.get("PHASE2_ADMIN_URL", ""),
             "migrator_url": os.environ.get("PHASE2_MIGRATOR_URL", ""),
@@ -37,6 +36,22 @@ class Settings:
             "dev_password": os.environ.get("PHASE2_DEV_PASSWORD", ""),
             "webhook_secret": os.environ.get("PHASE2_WEBHOOK_SECRET", ""),
         }
+        if environment == "production":
+            reasons = []
+            if mode == "development":
+                reasons.append("local-development auth")
+            if os.environ.get("PHASE3_SYNTHETIC_CREDENTIALS") == "1":
+                reasons.append("synthetic credentials")
+            if os.environ.get("PHASE3_PERMISSIVE_ORIGINS") == "1":
+                reasons.append("permissive origins")
+            for name, value in values.items():
+                lowered = value.lower()
+                if not value or "replace-" in lowered or "changeme" in lowered or lowered in {"development", "secret", "password"}:
+                    reasons.append(name)
+            if reasons:
+                raise Phase2ConfigurationError("Production startup refused: " + ", ".join(reasons))
+        elif mode != "development":
+            raise Phase2ConfigurationError("PHASE2_LOCAL_AUTH must be development; Phase 2 local auth is not production identity")
         missing = [name for name, value in values.items() if not value or value.startswith("replace-")]
         if missing:
             raise Phase2ConfigurationError("Missing local Phase 2 settings: " + ", ".join(missing))

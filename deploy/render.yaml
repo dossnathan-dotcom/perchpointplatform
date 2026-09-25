@@ -1,0 +1,33 @@
+# Guarded hosting template. Production services are disabled.
+# Do not apply this file until Faruk approves billing and HawkVision owns the account.
+services:
+  - type: web
+    name: perchpoint-staging-web
+    runtime: docker
+    dockerfilePath: deploy/Dockerfile.web
+    autoDeploy: false
+    branch: main
+  - type: web
+    name: perchpoint-staging-api
+    runtime: docker
+    dockerfilePath: deploy/Dockerfile.api
+    healthCheckPath: /api/v2/health/ready
+    autoDeploy: false
+    branch: main
+  - type: worker
+    name: perchpoint-staging-worker
+    runtime: docker
+    dockerfilePath: deploy/Dockerfile.api
+    dockerCommand: python -m perchpoint.worker
+    autoDeploy: false
+    branch: main
+  - type: web
+    name: perchpoint-production-web
+    runtime: docker
+    autoDeploy: false
+    branch: disabled
+  - type: web
+    name: perchpoint-production-api
+    runtime: docker
+    autoDeploy: false
+    branch: disabled

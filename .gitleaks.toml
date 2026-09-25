@@ -1,0 +1,3 @@
+title = "PerchPoint"
+[allowlist]
+paths = ['''backend/\.env\.example''', '''frontend/\.env\.development''', '''docker-compose\.yml''']

@@ -1,0 +1,8 @@
+FROM node:22-bookworm
+WORKDIR /app
+COPY frontend/package.json frontend/yarn.lock /app/
+RUN corepack enable && corepack yarn install --frozen-lockfile --non-interactive
+COPY frontend /app
+ENV REACT_APP_PHASE3_ENVIRONMENT=local
+EXPOSE 3000
+CMD ["corepack", "yarn", "start"]

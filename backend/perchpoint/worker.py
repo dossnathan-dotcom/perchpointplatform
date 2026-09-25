@@ -1,10 +1,10 @@
-"""One-shot outbox worker. Synthetic delivery only."""
+"""One synthetic outbox claim for the existing worker command. Not an external provider."""
 from perchpoint.commands import claim_and_deliver
 from perchpoint.settings import Settings
 
 
 def main() -> None:
-    print(claim_and_deliver(Settings.load(), "local-worker"))
+    print(claim_and_deliver(Settings.load(), "phase3-worker"))
 
 
 if __name__ == "__main__":

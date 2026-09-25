@@ -313,10 +313,45 @@ def worker_once(current=Depends(actor), settings: Settings = Depends(settings)):
     return claim_and_deliver(settings, "api-dev-worker")
 
 
+@router.get("/health/live")
+def health_live():
+    return {"status": "live"}
+
+
+@router.get("/health/ready")
+def health_ready(settings: Settings = Depends(settings)):
+    from sqlalchemy import text
+
+    from .db import engine_for
+
+    try:
+        engine = engine_for(settings.runtime_url)
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        engine.dispose()
+    except Exception as exc:
+        raise HTTPException(503, {"status": "not_ready"}) from exc
+    return {"status": "ready"}
+
+
 def create_app():
+    import json
+    import logging
+    from uuid import uuid4
+
     from fastapi import FastAPI
 
     app = FastAPI(title="PerchPoint Phase 2 reference")
+    log = logging.getLogger("perchpoint")
+
+    @app.middleware("http")
+    async def correlation(request, call_next):
+        request_id = request.headers.get("x-request-id") or str(uuid4())
+        response = await call_next(request)
+        response.headers["x-request-id"] = request_id
+        log.info(json.dumps({"event": "request", "request_id": request_id, "method": request.method, "path": request.url.path, "status": response.status_code}))
+        return response
+
     app.include_router(router)
     return app
 

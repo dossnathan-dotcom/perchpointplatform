@@ -1,0 +1,199 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main, cursor/phase-03-environments]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  governance:
+    name: governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: pip install -r backend/requirements.txt
+      - run: python scripts/verify_sources.py
+      - run: python scripts/validate_governance.py
+      - run: python scripts/validate_phase3_answers.py
+  contracts:
+    name: contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: pip install -r backend/requirements.txt
+      - run: python -m foundation.export --check
+        working-directory: backend
+      - run: corepack yarn install --frozen-lockfile --non-interactive
+        working-directory: frontend
+      - run: node scripts/generate-contract-types.cjs --check
+        working-directory: frontend
+      - run: corepack yarn tsc -p tsconfig.contracts.json
+        working-directory: frontend
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci-only-not-production
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PHASE3_ENVIRONMENT: local
+      PHASE2_LOCAL_AUTH: development
+      PHASE2_ADMIN_URL: postgresql://postgres:ci-only-not-production@127.0.0.1:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql://perchpoint_migrator:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql://perchpoint_runtime:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_JWT_SECRET: ci-only-not-production-jwt-value
+      PHASE2_DEV_PASSWORD: ci-only-not-production-password
+      PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: pip install -r backend/requirements.txt
+      - run: python -m ruff check perchpoint tests
+        working-directory: backend
+      - run: python -m mypy perchpoint --ignore-missing-imports
+        working-directory: backend
+      - run: python -m compileall -q perchpoint
+        working-directory: backend
+      - run: python -m perchpoint.bootstrap
+        working-directory: backend
+      - run: python -m pytest -q --tb=line
+        working-directory: backend
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: corepack yarn install --frozen-lockfile --non-interactive
+        working-directory: frontend
+      - run: corepack yarn tsc -p tsconfig.contracts.json
+        working-directory: frontend
+      - run: corepack yarn eslint src --max-warnings 0
+        working-directory: frontend
+      - run: corepack yarn test --watchAll=false --watchman=false
+        working-directory: frontend
+        env:
+          CI: "true"
+      - run: corepack yarn build
+        working-directory: frontend
+        env:
+          REACT_APP_PHASE3_ENVIRONMENT: local
+          REACT_APP_SHOW_DEMO_LABELS: "true"
+          REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci-only-not-production
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PHASE3_ENVIRONMENT: local
+      PHASE2_LOCAL_AUTH: development
+      PHASE2_ADMIN_URL: postgresql://postgres:ci-only-not-production@127.0.0.1:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql://perchpoint_migrator:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql://perchpoint_runtime:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_JWT_SECRET: ci-only-not-production-jwt-value
+      PHASE2_DEV_PASSWORD: ci-only-not-production-password
+      PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
+      CI: "true"
+      REACT_APP_PHASE3_ENVIRONMENT: local
+      REACT_APP_SHOW_DEMO_LABELS: "true"
+      REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: pip install -r backend/requirements.txt
+      - run: python -m perchpoint.bootstrap
+        working-directory: backend
+      - run: python -m perchpoint.seed
+        working-directory: backend
+      - run: corepack yarn install --frozen-lockfile --non-interactive
+        working-directory: frontend
+      - run: corepack yarn playwright install --with-deps chromium
+        working-directory: frontend
+      - name: API plus Playwright
+        run: |
+          python -m uvicorn perchpoint.routes:create_app --factory --host 127.0.0.1 --port 8000 &
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+            curl -fsS http://127.0.0.1:8000/api/v2/health/live && break
+            sleep 1
+          done
+          cd frontend
+          corepack yarn playwright test --reporter=line
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: playwright-failure
+          retention-days: 7
+          path: frontend/test-results/
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+  supply-chain:
+    name: supply-chain
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: github/codeql-action/init@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3
+        with:
+          languages: javascript python
+      - uses: github/codeql-action/analyze@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3
+      - run: pip install cyclonedx-bom
+      - run: cyclonedx-py environment -o backend-sbom.json
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: npx --yes @cyclonedx/cyclonedx-npm --output-file frontend-sbom.json
+        working-directory: frontend
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom
+          retention-days: 14
+          path: |
+            backend-sbom.json
+            frontend/frontend-sbom.json

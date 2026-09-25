@@ -1,0 +1,50 @@
+# Canonical local stack. It does not replace native Windows PostgreSQL.
+# Named volume perchpoint_pg is created empty. It does not touch an existing data directory.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local-only-not-production
+      POSTGRES_DB: postgres
+    ports:
+      - "54329:5432"
+    volumes:
+      - perchpoint_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment:
+      PHASE3_ENVIRONMENT: local
+      PHASE2_LOCAL_AUTH: development
+      PHASE2_ADMIN_URL: postgresql://postgres:local-only-not-production@postgres:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_JWT_SECRET: local-only-not-production-jwt
+      PHASE2_DEV_PASSWORD: local-only-not-production-password
+      PHASE2_WEBHOOK_SECRET: local-only-not-production-webhook
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    environment:
+      REACT_APP_PHASE3_ENVIRONMENT: local
+      REACT_APP_SHOW_DEMO_LABELS: "true"
+      REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+volumes:
+  perchpoint_pg:
