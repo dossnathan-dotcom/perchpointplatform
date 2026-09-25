@@ -130,7 +130,7 @@ def reference_slice() -> ReferenceSlice:
             occupancies.append(OccupancyRelationship(id=sid(f"occupancy-{index}"), organization_id=org, space_id=unit.id, business_party_id=business, interval=active_at))
         else:
             occupancies.append(OccupancyRelationship(id=sid(f"occupancy-{index}"), organization_id=org, space_id=unit.id, household_id=household, interval=active_at))
-    assert published is not None
+    assert published is not None and published.residential is not None
     listing = PublishedListingRead(
         listing_id=sid("listing-reference-published"),
         space_id=published.id,

@@ -150,7 +150,7 @@ jobs:
         working-directory: frontend
       - name: API plus Playwright
         run: |
-          python -m uvicorn perchpoint.routes:create_app --factory --host 127.0.0.1 --port 8000 &
+          PYTHONPATH=backend python -m uvicorn perchpoint.routes:create_app --factory --host 127.0.0.1 --port 8000 &
           ready=0
           for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
             if curl -fsS http://127.0.0.1:8000/api/v2/health/live; then ready=1; break; fi

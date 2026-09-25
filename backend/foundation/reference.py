@@ -7,7 +7,7 @@ Schema or TypeScript. Database referential integrity is not claimed.
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, TypedDict
 from uuid import UUID
 
 from pydantic import Field, model_validator
@@ -184,7 +184,23 @@ def allowed_space_transition(dimension: str, current: str, nxt: str) -> bool:
     return nxt in SPACE_STATE_TRANSITIONS[dimension][current]
 
 
-def project_phase0_unit_status(status: Phase0UnitStatus) -> dict[str, object]:
+class ProjectedSpaceState(TypedDict):
+    condition: Condition
+    occupancy: OccupancyState
+    availability: AvailabilityState
+    publication: PublicationState
+    maintenance_restriction: MaintenanceRestriction
+    legal_restriction: LegalRestriction
+    condition_source: MappingConfidence
+    occupancy_source: MappingConfidence
+    availability_source: MappingConfidence
+    publication_source: MappingConfidence
+    maintenance_restriction_source: MappingConfidence
+    legal_restriction_source: MappingConfidence
+    mapping_notes: list[str]
+
+
+def project_phase0_unit_status(status: Phase0UnitStatus) -> ProjectedSpaceState:
     """Compatibility projection. Does not invent legal, publication, or dated occupancy facts."""
     notes: list[str] = [
         "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
