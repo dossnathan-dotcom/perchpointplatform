@@ -1,0 +1,5 @@
+# Supported lint gate. This is the historical Ruff default selection.
+# Import sorting and pyupgrade are not release blockers.
+
+[lint]
+select = ["E4", "E7", "E9", "F"]

@@ -14,6 +14,15 @@ class Phase2ConfigurationError(RuntimeError):
     pass
 
 
+def use_psycopg(url: str) -> str:
+    """The supported driver is psycopg 3. A bare postgresql:// URL selects psycopg2."""
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg://" + url[len("postgresql://") :]
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg://" + url[len("postgres://") :]
+    return url
+
+
 @dataclass(frozen=True)
 class Settings:
     local_auth: str
@@ -55,4 +64,6 @@ class Settings:
         missing = [name for name, value in values.items() if not value or value.startswith("replace-")]
         if missing:
             raise Phase2ConfigurationError("Missing local Phase 2 settings: " + ", ".join(missing))
+        for name in ("admin_url", "migrator_url", "runtime_url"):
+            values[name] = use_psycopg(values[name])
         return cls(local_auth=mode, **values)

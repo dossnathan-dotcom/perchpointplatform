@@ -26,9 +26,9 @@ jobs:
     env:
       PHASE3_ENVIRONMENT: local
       PHASE2_LOCAL_AUTH: development
-      PHASE2_ADMIN_URL: postgresql://postgres:ci-only-not-production@127.0.0.1:5432/postgres
-      PHASE2_MIGRATOR_URL: postgresql://perchpoint_migrator:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
-      PHASE2_RUNTIME_URL: postgresql://perchpoint_runtime:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_ADMIN_URL: postgresql+psycopg://postgres:ci-only-not-production@127.0.0.1:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql+psycopg://perchpoint_runtime:ci-only-not-production@127.0.0.1:5432/perchpoint_phase2
       PHASE2_JWT_SECRET: ci-only-not-production-jwt-value
       PHASE2_DEV_PASSWORD: ci-only-not-production-password
       PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
@@ -38,8 +38,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
-      - run: python -c "from pathlib import Path; lines=[line for line in Path('backend/requirements.txt').read_text().splitlines() if not line.startswith(('emergentintegrations==','litellm @'))]; Path('requirements-ci.txt').write_text('\n'.join(lines)+'\n')"
-      - run: pip install -r requirements-ci.txt pymupdf==1.28.2
+      - run: pip install -r backend/requirements.txt
       - run: python -m perchpoint.bootstrap
         working-directory: backend
       - run: python -m tests.phase2.benchmark_inventory

@@ -23,9 +23,9 @@ services:
     environment:
       PHASE3_ENVIRONMENT: local
       PHASE2_LOCAL_AUTH: development
-      PHASE2_ADMIN_URL: postgresql://postgres:local-only-not-production@postgres:5432/postgres
-      PHASE2_MIGRATOR_URL: postgresql://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
-      PHASE2_RUNTIME_URL: postgresql://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_ADMIN_URL: postgresql+psycopg://postgres:local-only-not-production@postgres:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
       PHASE2_JWT_SECRET: local-only-not-production-jwt
       PHASE2_DEV_PASSWORD: local-only-not-production-password
       PHASE2_WEBHOOK_SECRET: local-only-not-production-webhook

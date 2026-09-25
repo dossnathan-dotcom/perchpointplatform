@@ -21,6 +21,35 @@ def test_production_refuses_placeholder_secrets(monkeypatch):
         Settings.load()
 
 
+def test_supported_entrypoints_import_without_legacy_packages():
+    import sys
+
+    sys.modules.pop("emergentintegrations", None)
+    sys.modules.pop("litellm", None)
+    import perchpoint.routes
+    import perchpoint.seed
+    import perchpoint.worker
+
+    perchpoint.routes.create_app()
+    assert "emergentintegrations" not in sys.modules
+    assert "litellm" not in sys.modules
+
+
+def test_database_urls_use_psycopg3(monkeypatch):
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "local")
+    monkeypatch.setenv("PHASE2_LOCAL_AUTH", "development")
+    monkeypatch.setenv("PHASE2_ADMIN_URL", "postgresql://postgres:pw@127.0.0.1:5432/postgres")
+    monkeypatch.setenv("PHASE2_MIGRATOR_URL", "postgresql://perchpoint_migrator:pw@127.0.0.1:5432/perchpoint_phase2")
+    monkeypatch.setenv("PHASE2_RUNTIME_URL", "postgresql://perchpoint_runtime:pw@127.0.0.1:5432/perchpoint_phase2")
+    monkeypatch.setenv("PHASE2_JWT_SECRET", "local-test-secret-value")
+    monkeypatch.setenv("PHASE2_DEV_PASSWORD", "local-test-password")
+    monkeypatch.setenv("PHASE2_WEBHOOK_SECRET", "local-test-webhook")
+    loaded = Settings.load()
+    assert loaded.admin_url.startswith("postgresql+psycopg://")
+    assert loaded.migrator_url.startswith("postgresql+psycopg://")
+    assert loaded.runtime_url.startswith("postgresql+psycopg://")
+
+
 def test_liveness_does_not_require_a_database():
     from fastapi.testclient import TestClient
     from perchpoint.routes import create_app
