@@ -78,6 +78,8 @@ jobs:
         working-directory: backend
       - run: python -m perchpoint.bootstrap
         working-directory: backend
+      - run: python -m perchpoint.seed
+        working-directory: backend
       - run: python -m pytest -q --tb=line
         working-directory: backend
   frontend:
