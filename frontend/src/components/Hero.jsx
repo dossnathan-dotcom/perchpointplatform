@@ -16,7 +16,7 @@ export const Hero = ({ onSchedule, onMaintenance }) => {
     return () => clearInterval(timer);
   }, [paused]);
   const search = (event) => { event.preventDefault(); navigate(`/?${new URLSearchParams(filters)}#rentals`); document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' }); };
-  return <section id="top" className="relative overflow-hidden bg-obsidian pt-20 text-linen" aria-label="HawkVision Homes" data-testid="public-hero">
+  return <section id="top" className="relative overflow-hidden bg-obsidian pt-32 text-linen" aria-label="HawkVision Homes" data-testid="public-hero">
     <img src={IMAGES.hero} alt="Cincinnati skyline and riverfront at dusk" className="absolute inset-0 h-full w-full object-cover" />
     <div className="hero-vignette absolute inset-0" />
     <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">

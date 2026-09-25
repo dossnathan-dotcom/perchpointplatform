@@ -205,6 +205,10 @@ def project_phase0_unit_status(status: Phase0UnitStatus) -> ProjectedSpaceState:
     notes: list[str] = [
         "Phase 0 Unit.status cannot determine condition, publication, maintenance, or legal restriction"
     ]
+    occupancy: OccupancyState
+    occupancy_source: MappingConfidence
+    availability: AvailabilityState
+    availability_source: MappingConfidence
     if status == "occupied":
         occupancy, occupancy_source = "occupied", "derived"
         availability, availability_source = "withheld", "derived"

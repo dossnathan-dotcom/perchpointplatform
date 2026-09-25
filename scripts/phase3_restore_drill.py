@@ -12,6 +12,7 @@ from perchpoint.settings import Settings
 
 SOURCE = "perchpoint_phase3_drill_source"
 RECOVERY = "perchpoint_phase3_drill_recovery"
+FAILED = "perchpoint_phase3_drill_failed"
 
 
 def main() -> None:
@@ -48,7 +49,28 @@ def main() -> None:
     admin.dispose()
     if expected != actual or left != 0 or elm != 1:
         raise SystemExit(f"restore mismatch expected={expected} actual={actual} left={left} elm={elm}")
+    with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+        connection.execute(text(f"DROP DATABASE IF EXISTS {FAILED} WITH (FORCE)"))
+        connection.execute(text(f"CREATE DATABASE {FAILED}"))
+    failed = engine_for(root + "/" + FAILED)
+    rolled_back = False
+    try:
+        with failed.begin() as connection:
+            connection.execute(text("CREATE TABLE half_applied (id integer)"))
+            connection.execute(text("THIS IS NOT SQL"))
+    except Exception:
+        rolled_back = True
+    with failed.connect() as connection:
+        present = connection.execute(text("SELECT count(*) FROM information_schema.tables WHERE table_name = 'half_applied'")).scalar()
+    failed.dispose()
+    with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+        connection.execute(text(f"DROP DATABASE IF EXISTS {FAILED} WITH (FORCE)"))
+        failed_left = connection.execute(text("SELECT count(*) FROM pg_database WHERE datname = :name"), {"name": FAILED}).scalar()
+    admin.dispose()
+    if not rolled_back or present != 0 or failed_left != 0:
+        raise SystemExit(f"migration drill failed rolled_back={rolled_back} present={present} left={failed_left}")
     print(f"restore_ok count={expected[0]} marker={expected[1]} disposable_left={left} elm={elm}")
+    print(f"migration_rollback_ok rolled_back={rolled_back} half_applied={present} disposable_left={failed_left} elm={elm}")
 
 
 if __name__ == "__main__":

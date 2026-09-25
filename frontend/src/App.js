@@ -16,7 +16,6 @@ import { PerchPointPortal } from "@/components/PerchPointPortal";
 import { PropertyDetailPage } from "@/components/PropertyDetailPage";
 import { ResidentResources } from "@/components/ResidentResources";
 import { TourModal } from "@/components/TourModal";
-import { EnvironmentBanner } from "@/components/EnvironmentBanner";
 import { Button } from "@/components/ui/button";
 import FoundationPage from "@/components/FoundationPage";
 import { ReferenceOperations } from "@/components/ReferenceOperations";
@@ -29,7 +28,7 @@ const PortalGate = ({ onLogin }) => (
 );
 
 function PublicLayout({ onLogin, onMaintenance, onContact }) {
-  return <div className="min-h-screen bg-linen text-obsidian"><EnvironmentBanner /><Navbar onLoginClick={onLogin} onMaintenance={onMaintenance} /><Outlet /><Footer onContact={onContact} onMaintenance={onMaintenance} /></div>;
+  return <div className="min-h-screen bg-linen text-obsidian"><Navbar onLoginClick={onLogin} onMaintenance={onMaintenance} /><Outlet /><Footer onContact={onContact} onMaintenance={onMaintenance} /></div>;
 }
 
 const PageNotFound = () => <main className="min-h-screen bg-obsidian px-5 pb-20 pt-40 text-linen" data-testid="not-found-page"><h1 className="font-heading text-4xl">This page is not here.</h1><Link to="/" className="mt-6 block underline" data-testid="not-found-home-link">Return to HawkVision Homes</Link></main>;
