@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -11,7 +11,7 @@ permissions:
 jobs:
   governance:
     name: governance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -23,7 +23,7 @@ jobs:
       - run: python scripts/validate_phase3_answers.py
   contracts:
     name: contracts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -43,7 +43,7 @@ jobs:
         working-directory: frontend
   backend:
     name: backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16
@@ -84,7 +84,7 @@ jobs:
         working-directory: backend
   frontend:
     name: frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -108,7 +108,7 @@ jobs:
           REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
   browser:
     name: browser
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16
@@ -169,7 +169,7 @@ jobs:
           path: frontend/test-results/
   secrets:
     name: secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pull-requests: read
@@ -182,16 +182,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   supply-chain:
     name: supply-chain
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: github/codeql-action/init@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3
+      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           languages: javascript, python
-      - uses: github/codeql-action/analyze@87ef0dc97def48aa960fbf026a2563ee9dbdb470 # v3
+      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
       - run: pip install cyclonedx-bom
       - run: cyclonedx-py requirements backend/requirements.txt -o backend-sbom.json
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -210,7 +210,7 @@ jobs:
             frontend/frontend-sbom.json
   containers:
     name: containers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -219,6 +219,6 @@ jobs:
       - run: docker build -f deploy/Dockerfile.web -t perchpoint-web:ci .
       - run: docker compose -f docker-compose.yml config > /dev/null
       - name: Scan API image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.trivyignore:/trivyignore:ro" aquasec/trivy:0.58.1 image --ignorefile /trivyignore --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
       - name: Scan web image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.trivyignore:/trivyignore:ro" aquasec/trivy:0.58.1 image --ignorefile /trivyignore --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci

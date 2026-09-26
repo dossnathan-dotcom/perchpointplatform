@@ -2,7 +2,7 @@
 
 Classification: local engineering foundation accepted, with one external machine blocker. Hosted operational validation is owner-deferred under PP-DEC-059. Production readiness is blocked. Phase 4 is not started.
 
-The Docker Desktop clean-room sequence was not executed. `docker` is not on PATH. Winget listed Docker Desktop, and a non-interactive reinstall stopped because the installer requires an administrator approval that this session cannot grant. Container build, Compose validation, and image scanning ran in GitHub Actions instead. That does not count as the local clean-room drill.
+The Docker Desktop clean-room sequence was not executed. Docker Desktop 4.92.0 is installed for the user and the client starts, but the Linux engine does not. Its log says the Virtual Machine Platform feature was not enabled. That feature and the Windows Subsystem for Linux were enabled afterward. DISM returned 3010, which means Windows must reboot before the engine can start. Container image scanning in GitHub Actions is not the local clean-room drill.
 
 | Gate | Status | Evidence |
 |---|---|---|
