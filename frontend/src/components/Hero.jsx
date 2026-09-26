@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Building, Pause, Play, Search, Wrench } from 'lucide-react';
-import { HEADLINES, IMAGES } from '@/data/siteData';
+import { HEADLINES } from '@/data/siteData';
+import { ResponsiveImage } from '@/design-system/library';
 import { Button } from '@/components/ui/button';
 import { DemoNotice } from './DemoNotice';
 
@@ -17,7 +18,7 @@ export const Hero = ({ onSchedule, onMaintenance }) => {
   }, [paused]);
   const search = (event) => { event.preventDefault(); navigate(`/?${new URLSearchParams(filters)}#rentals`); document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' }); };
   return <section id="top" className="relative overflow-hidden bg-obsidian pt-32 text-linen" aria-label="HawkVision Homes" data-testid="public-hero">
-    <img src={IMAGES.hero} alt="Cincinnati skyline and riverfront at dusk" className="absolute inset-0 h-full w-full object-cover" />
+    <ResponsiveImage name="hero" alt="Cincinnati skyline and riverfront at dusk" priority width={1600} height={1072} className="absolute inset-0 h-full w-full" />
     <div className="hero-vignette absolute inset-0" />
     <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">
       <p className="mb-6 font-mono text-xs uppercase text-gold" data-testid="hero-brand-badge">HawkVision Homes · Powered by PerchPoint</p>

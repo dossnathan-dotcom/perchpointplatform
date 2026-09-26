@@ -2,7 +2,7 @@
 
 Client route guards remain presentation. PostgreSQL row-level security and the Phase 2 server remain authoritative.
 
-The production static server and the API send a content security policy with `default-src 'self'`, `frame-ancestors 'none'`, and no `unsafe-eval`. `style-src` includes `'unsafe-inline'` because existing components set element style attributes. Script sources are files from this origin only. The Emergent loader and PostHog session-replay snippet were removed.
+The production static server and the API send `style-src 'self'` and `style-src-attr 'none'`. Element and attribute inline styles are not allowed. Script sources are files from this origin only. There is no `unsafe-eval` and no `unsafe-inline`. The Emergent loader and PostHog session-replay snippet were removed. Fonts are self-hosted Fraunces and Source Sans 3 WOFF2 files. Public images are repository AVIF, WebP, and JPEG files.
 
 HSTS is sent only when `PHASE4_ENABLE_HSTS=1`. HTML and API responses use `cache-control: no-store`. Hashed files under `/static/` may be cached.
 

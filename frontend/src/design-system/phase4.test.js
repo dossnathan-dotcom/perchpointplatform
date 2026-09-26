@@ -15,7 +15,10 @@ test("semantic tokens meet contrast and spacing rules", () => {
 
 test("route registry does not authorize and keeps search flagged off", () => {
   expect(CANONICAL_SEARCH_ENABLED).toBe(false);
-  expect(ROUTES.every((route) => route.capability === "presentation-only")).toBe(true);
+  expect(ROUTES.every((route) => route.capability !== "presentation-only")).toBe(true);
+  expect(ROUTES.find((route) => route.id === "public-rentals").capability).toBe("functional");
+  expect(ROUTES.find((route) => route.id === "reference-kernel").capability).toBe("functional");
+  expect(ROUTES.filter((route) => route.capability === "synthetic").every((route) => route.workflowComplete === false)).toBe(true);
   expect(privilegedFallback("not-a-role")).toBeNull();
   expect(privilegedFallback("owner")).toBe("owner");
   expect(ROUTES.some((route) => route.featureFlag === "phase5-canonical-search" && route.searchVisible === false)).toBe(true);

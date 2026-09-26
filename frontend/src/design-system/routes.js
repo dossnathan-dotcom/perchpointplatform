@@ -16,7 +16,18 @@ const surfaces = [
   ["platform-organizations", "platform-admin", "/perchpoint/super-admin", "Organizations", null, "platform-admin", "organization", true, false, false, false, false],
   ["foundation", "reference", "/foundation", "Foundation", null, "staff", "none", false, false, false, false, false],
   ["reference-kernel", "reference", "/reference", "Reference operations", null, "staff", "none", false, false, false, false, false],
+  ["development-session", "staff", "/perchpoint", "Development session", null, "staff", "none", false, false, false, false, false],
 ];
+
+const CAPABILITY = {
+  "public-home": "functional",
+  "public-rentals": "functional",
+  "public-property": "functional",
+  "development-session": "functional",
+  "reference-kernel": "functional",
+  foundation: "read_only",
+  "platform-organizations": "administrative",
+};
 
 export const ROUTES = surfaces.map(([id, surface, path, label, parent, group, context, breadcrumb, search, preview, mobile, indexable]) => ({
   id,
@@ -25,7 +36,8 @@ export const ROUTES = surfaces.map(([id, surface, path, label, parent, group, co
   label,
   parent,
   group,
-  capability: "presentation-only",
+  capability: CAPABILITY[id] || "synthetic",
+  workflowComplete: ["public-home", "public-rentals", "public-property", "reference-kernel", "development-session"].includes(id),
   context,
   breadcrumb,
   searchVisible: search && CANONICAL_SEARCH_ENABLED,

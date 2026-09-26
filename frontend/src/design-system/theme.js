@@ -33,7 +33,6 @@ export function applyDocumentTheme(pathname) {
   const density = readPreference("pp-density", DENSITIES, "comfortable");
   document.documentElement.setAttribute("data-theme", theme);
   document.documentElement.setAttribute("data-density", density);
-  document.documentElement.style.colorScheme = theme === "dark" ? "dark" : "light";
   return { theme, density };
 }
 

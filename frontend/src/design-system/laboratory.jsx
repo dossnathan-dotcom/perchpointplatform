@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, ChartFrame, CommandPalette, DataTable, DecisionCard, EmptyState, ErrorSummary, Field, MaintenanceRecommendation, Money, OperationalTime, SAMPLE_DECISION, SAMPLE_RECOMMENDATION, StatusBadge, TextInput } from "./components";
+import { Breadcrumbs, CheckboxField, InlineNotice, Metric, SavingIndicator, SearchField, StatePanel } from "./library";
 import { STATE_CATALOGUE } from "./states";
 
 const columns = [
@@ -50,6 +51,16 @@ export default function Laboratory() {
       <ul className="grid gap-3">{STATE_CATALOGUE.map((item) => <li key={item.id} className="border p-3"><h3>{item.id}</h3><p>{item.happened}</p><p>Saved: {item.saved}</p><p>{item.next}</p></li>)}</ul>
     </section>
     <Button onClick={() => setOpen(true)}>Open command palette</Button>
+    <section className="mt-8 grid gap-4">
+      <h2 className="text-2xl">Forms, navigation, and states</h2>
+      <SearchField id="lab-search" label="Search the preview" />
+      <CheckboxField id="lab-check" label="Synthetic acknowledgement" />
+      <SavingIndicator />
+      <Breadcrumbs items={[{ label: "Owner", href: "/perchpoint/owner" }, { label: "Today" }]} />
+      <InlineNotice>Providers stay disconnected in this laboratory.</InlineNotice>
+      <Metric label="Synthetic vacancies" value="1" />
+      <StatePanel title="Permission denied" testId="lab-denied">This preview role cannot open the record.</StatePanel>
+    </section>
     <CommandPalette open={open} onClose={() => setOpen(false)} />
   </main>;
 }

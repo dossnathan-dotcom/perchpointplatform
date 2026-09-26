@@ -5,7 +5,7 @@ import { PHASE0 } from '@/config/phase0';
 import { Link } from 'react-router-dom';
 
 export const Footer = ({ onContact, onMaintenance }) => (
-  <footer id="contact" className="bg-[#080B10] text-linen">
+  <footer id="contact" className="bg-obsidian text-linen">
     <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
       <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
         <div><div className="mb-6 flex items-center gap-3"><span className="flex h-12 w-12 items-center justify-center border border-gold/40 bg-gold/10 text-gold"><Building2 className="h-5 w-5" /></span><span><span className="block font-heading text-3xl font-bold">HawkVision Homes</span><span className="font-mono text-[9px] uppercase tracking-[0.2em] text-linen/45">Connected by PerchPoint</span></span></div><p className="max-w-xl text-base leading-8 text-linen/60">Property operations and rental experiences built around clear records, responsive care, and accountable access.</p><div className="mt-8 font-heading text-5xl font-bold uppercase text-[#9da5af] sm:text-7xl" data-testid="footer-region-label">Cincinnati</div></div>

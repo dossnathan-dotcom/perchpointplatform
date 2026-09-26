@@ -4,13 +4,13 @@ import { PHASE0 } from '@/config/phase0';
 export const DEMO_NOTICE = 'Seeded demonstration data · not verified availability';
 export const FOUNDATION = foundation;
 export const IMAGES = {
-  hero: 'https://images.unsplash.com/photo-1709755813430-5dbd547214df?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
-  skyline: 'https://images.pexels.com/photos/33303158/pexels-photo-33303158.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1440',
-  mixedUse: 'https://images.unsplash.com/photo-1691902588772-c93ed83b7f38?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
-  duplex: 'https://images.unsplash.com/photo-1646909458037-41fc0f106cb5?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
-  triplex: 'https://images.pexels.com/photos/28949071/pexels-photo-28949071.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1200',
-  bakery: 'https://images.unsplash.com/photo-1511018556340-d16986a1c194?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
-  storefront: 'https://images.unsplash.com/photo-1601205741712-b261aff33a7d?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',
+  hero: '/media/hero.jpg',
+  skyline: '/media/skyline.jpg',
+  mixedUse: '/media/mixed-use.jpg',
+  duplex: '/media/duplex.jpg',
+  triplex: '/media/triplex.jpg',
+  bakery: '/media/bakery.jpg',
+  storefront: '/media/storefront.jpg',
 };
 
 export const HEADLINES = [

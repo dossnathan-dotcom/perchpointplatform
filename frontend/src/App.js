@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Building2, LogIn } from "lucide-react";
-import { Toaster } from "sonner";
 import "@/App.css";
 import { AboutHawkVision } from "@/components/AboutHawkVision";
 import { Footer } from "@/components/Footer";
@@ -66,7 +65,7 @@ export function AppContent() {
   return (
     <>
       <Routes>
-        <Route element={<PublicLayout onLogin={() => openLogin("resident")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
+        <Route element={<PublicLayout onLogin={(role) => openLogin(role)} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
         <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
         <Route path="/property/:propertyId" element={<PropertyDetailPage onRequest={openRequest} />} />
         <Route path="/rentals/:unitId" element={<PropertyDetailPage onRequest={openRequest} />} />
@@ -82,7 +81,6 @@ export function AppContent() {
       {loginOpen && <LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />}
       <TourModal property={requestProperty} intent={requestIntent} open={requestOpen} onOpenChange={setRequestOpen} />
       <MaintenanceModal open={maintenanceOpen} onOpenChange={setMaintenanceOpen} />
-      <Toaster richColors position="top-center" />
     </>
   );
 }

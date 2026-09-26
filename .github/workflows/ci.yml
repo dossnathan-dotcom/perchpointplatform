@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -22,6 +22,7 @@ jobs:
       - run: python scripts/validate_governance.py
       - run: python scripts/validate_phase3_answers.py
       - run: python scripts/validate_phase4_answers.py
+      - run: python scripts/validate_phase4_completeness.py
   contracts:
     name: contracts
     runs-on: ubuntu-24.04
@@ -151,7 +152,7 @@ jobs:
         working-directory: backend
       - run: corepack yarn install --frozen-lockfile --non-interactive
         working-directory: frontend
-      - run: corepack yarn playwright install --with-deps chromium
+      - run: corepack yarn playwright install --with-deps chromium firefox webkit
         working-directory: frontend
       - name: API plus Playwright
         run: |
@@ -225,3 +226,42 @@ jobs:
         run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
       - name: Scan web image
         run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+  phase4-smoke:
+    name: phase4-smoke
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: corepack yarn install --frozen-lockfile --non-interactive
+        working-directory: frontend
+      - run: corepack yarn playwright install --with-deps chromium
+        working-directory: frontend
+      - run: docker compose -f docker-compose.yml build
+      - run: docker compose -f docker-compose.yml up -d
+      - name: Production-like UI smoke
+        run: |
+          ready=0
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null && curl -fsS http://127.0.0.1:8000/api/v2/health/ready >/dev/null; then ready=1; break; fi
+            sleep 5
+          done
+          test "$ready" = 1
+          curl -fsSI http://127.0.0.1:3000/ | tee /tmp/headers.txt
+          grep -i "content-security-policy" /tmp/headers.txt
+          grep -i "style-src-attr 'none'" /tmp/headers.txt
+          curl -fsS -o /dev/null http://127.0.0.1:3000/fonts/source-sans-3-400.woff2
+          curl -fsS -o /dev/null http://127.0.0.1:3000/media/hero.avif
+          cd frontend
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 corepack yarn playwright test --config=playwright.production.config.js --reporter=line
+          node scripts/lighthouse-gate.cjs http://127.0.0.1:3000/
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: lighthouse-reports
+          retention-days: 14
+          path: frontend/lighthouse-reports/
+      - if: always()
+        run: docker compose -f docker-compose.yml down -v
+

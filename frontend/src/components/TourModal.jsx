@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { CalendarCheck, FileText, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -32,8 +31,7 @@ export const TourModal = ({ property, intent = "showing", open, onOpenChange }) 
     setError('');
     try {
       const {data} = await axios.post(`${API}/leads`, { name: form.name, email: form.email, preferred_date: form.date || undefined, message: form.message, intent, property_id: property?.propertyId, unit_id: property?.id });
-      setConfirmation(data.message);
-      toast.success('Synthetic request recorded. Nothing was sent.');
+      setConfirmation(`${data.message} Synthetic request recorded. Nothing was sent.`);
       setForm({ name: "", email: "", date: "", message: "" });
     } catch (err) {
       setError(typeof err.response?.data?.detail === 'string' ? err.response.data.detail : 'Please review the request details and try again.');

@@ -32,10 +32,12 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    overflow-x: clip;
   }
 
   ::selection {
@@ -65,6 +67,7 @@ html[data-theme="light"] {
   --paper: #faf8f5;
   --copper: #a64b23;
   --copper-light: #f2ad78;
+  color-scheme: light;
 }
 html[data-theme="dark"] {
   --pp-text: #faf8f5;
@@ -87,7 +90,12 @@ html[data-theme="dark"] {
   --muted-foreground: 30 10% 78%;
   --border: 220 8% 28%;
   --input: 220 8% 28%;
+  color-scheme: dark;
 }
+.boot-shell { min-height: 100vh; background: #0d1117; color: #faf8f5; padding: 8rem 1.25rem 2rem; }
+.boot-shell h1 { font-family: Fraunces, Palatino, serif; font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1.1; max-width: 18ch; }
+.skip-link { position: absolute; left: 1rem; top: 0; z-index: 70; transform: translateY(-120%); background: var(--pp-linen); color: var(--pp-obsidian); padding: 0.5rem 0.75rem; }
+.skip-link:focus { transform: none; top: 1rem; }
 html[data-density="compact"] { --pp-page-pad: 16px; }
 html[data-density="comfortable"] { --pp-page-pad: 32px; }
 .portal-pad { padding: var(--pp-page-pad, 32px); }

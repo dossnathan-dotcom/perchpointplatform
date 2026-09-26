@@ -13,21 +13,35 @@ import { PortalToolbar } from './portal/PortalToolbar';
 import { PreviewState } from './portal/PreviewState';
 import { Phase2Kernel } from './portal/Phase2Kernel';
 
+function readWorkspaceFilter(roleId) {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(`pp-workspace-filters-${roleId}`) || '{}');
+    return { search: typeof stored.search === 'string' ? stored.search : '', context: typeof stored.context === 'string' ? stored.context : 'all' };
+  } catch {
+    return { search: '', context: 'all' };
+  }
+}
+
 export const PerchPointPortal = () => {
   const { roleId, viewId } = useParams();
   const navigate = useNavigate();
   const role = ROLE_ACCOUNTS.find((r) => r.id === roleId);
   const view = role && PORTAL_VIEWS[role.id];
-  const [search,setSearch] = useState('');
-  const [context,setContext] = useState('all');
+  const [search,setSearch] = useState(() => readWorkspaceFilter(roleId).search);
+  const [context,setContext] = useState(() => readWorkspaceFilter(roleId).context);
   const [state,setState] = useState('seeded');
   const [menu,setMenu] = useState(false);
   const [policy,setPolicy] = useState(false);
   const [selected,setSelected] = useState(null);
   const [commands,setCommands] = useState(false);
-  useEffect(() => {setSearch('');setContext('all');setState('seeded');setSelected(null);setMenu(false);setCommands(false);},[roleId,viewId]);
+  useEffect(() => { setState('seeded'); setSelected(null); setMenu(false); setCommands(false); }, [roleId, viewId]);
+  useEffect(() => {
+    const searchValue = search.includes('@') ? '' : search.slice(0, 80);
+    sessionStorage.setItem(`pp-workspace-filters-${roleId || 'none'}`, JSON.stringify({ search: searchValue, context }));
+  }, [roleId, search, context]);
   const fallbackTab = role?.id === 'owner' && view?.tabs.includes('Today') ? 'Today' : view?.tabs[0];
-  const tab = viewId ? view?.tabs.find((t) => slug(t) === viewId) : fallbackTab;
+  const matches = view?.tabs.filter((t) => slug(t) === viewId) || [];
+  const tab = viewId ? matches[matches.length - 1] : fallbackTab;
   if (!role || !tab || !PHASE0.seedsEnabled) return <main id="main" className="min-h-screen bg-obsidian px-6 py-24 text-linen" data-testid="workspace-unavailable"><h1 className="font-heading text-4xl">Workspace preview unavailable</h1><Link className="mt-6 block underline" to="/" data-testid="workspace-unavailable-home">Return to HawkVision</Link></main>;
   const records = previewRecords(role.id,tab).filter((r) => (context==='all'||r.propertyId===context) && `${r.title} ${r.detail} ${r.status}`.toLowerCase().includes(search.toLowerCase()));
   const environment = process.env.REACT_APP_PHASE3_ENVIRONMENT || 'local';
@@ -38,7 +52,8 @@ export const PerchPointPortal = () => {
       <div className="mt-auto grid gap-2 border-t border-white/20 pt-5">{['owner','super-admin'].includes(role.id) && <button className="flex min-h-11 items-center gap-2 text-left text-sm text-gold" onClick={() => setPolicy(true)} data-testid="delegation-policy-trigger-btn"><GitBranch size={16} />Delegation policy</button>}<Link className="flex min-h-11 items-center gap-2 text-sm text-linen/75" to="/foundation" data-testid="portal-foundation-link"><FileLock2 size={16} />Foundation contracts</Link><Link className="flex min-h-11 items-center gap-2 text-sm text-linen/75" to="/" data-testid="portal-logout-btn"><ArrowLeft size={16} />Leave preview</Link></div>
     </aside>
     <section className="min-w-0 flex-1"><PortalToolbar role={role} onRoleChange={(id) => navigate(`/perchpoint/${id}`)} onMenu={() => setMenu(true)} onCommands={() => setCommands(true)} search={search} onSearch={setSearch} context={context} onContext={setContext} onLogout={() => navigate('/')} />
-      <div className="portal-pad mx-auto max-w-[1400px] p-5 sm:p-8"><p className="text-xs" data-testid="portal-identity">HawkVision Homes · {role.role} · {environment} synthetic</p><DemoNotice id="portal-demo-notice" className="mt-3 text-xs text-gold">Seeded workspace · no production authentication or live operations</DemoNotice><div className="mt-5 flex flex-wrap items-end justify-between gap-5"><div><p className="text-sm text-linen/75" data-testid="portal-role-label">{role.role}</p><h1 className="mt-3 font-heading text-4xl font-bold sm:text-5xl" data-testid="portal-active-page-title">{tab}</h1></div><label className="grid gap-2 text-xs text-linen/75">State preview<select className="h-10 border border-white/40 bg-obsidian px-3 text-linen" value={state} onChange={(e) => setState(e.target.value)} data-testid="portal-state-select">{['seeded','empty','loading','error','denied'].map((s) => <option key={s} value={s}>{s}</option>)}</select></label></div><p className="mt-5 max-w-3xl text-sm leading-7 text-linen/75" data-testid="portal-role-scope">{role.scope}</p>
+      <div className="portal-pad mx-auto max-w-[1400px] p-5 sm:p-8"><p className="text-xs" data-testid="portal-identity">HawkVision Homes · {role.role} · {environment} synthetic</p><DemoNotice id="portal-demo-notice" className="mt-3 text-xs text-gold">Seeded workspace · no production authentication or live operations</DemoNotice><div className="mt-5 flex flex-wrap items-end justify-between gap-5"><div><p className="text-sm text-linen/75" data-testid="portal-role-label">{role.role}</p><h1 className="mt-3 font-heading text-4xl font-bold sm:text-5xl" data-testid="portal-active-page-title">{tab}</h1></div><label className="grid gap-2 text-xs text-linen/75">State preview<select className="h-10 border border-white/40 bg-obsidian px-3 text-linen" value={state} onChange={(e) => setState(e.target.value)} data-testid="portal-state-select">{['seeded','empty','loading','error','denied','conflict','offline'].map((s) => <option key={s} value={s}>{s}</option>)}</select></label></div><p className="mt-5 max-w-3xl text-sm leading-7 text-linen/75" data-testid="portal-role-scope">{role.scope}</p>
+        <p className="mt-3 max-w-3xl text-sm" data-testid="synthetic-workflow-boundary">Synthetic presentation. This screen does not submit an application, payment, lease, work order, or owner decision.</p>
         <div className="my-7 flex flex-wrap gap-6 border-y border-white/20 py-4 text-xs"><span data-testid="portal-record-count">{records.length} foundation {records.length===1?'record':'records'}</span><span data-testid="portal-provider-status" className="text-gold">Providers disconnected</span><span data-testid="portal-security-status" className="text-linen/75">Preview queue is not authorization</span></div>
         {['leasing','super-admin','owner'].includes(role.id) && <Phase2Kernel previewRole={role.id} />}
         {(role.id === 'owner' && (tab === 'Today' || tab === 'Decisions')) && <div className="mb-6"><DecisionCard item={SAMPLE_DECISION} /></div>}
