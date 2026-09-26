@@ -5,6 +5,34 @@ RUN pip install --no-cache-dir -r /app/requirements.txt \
     && python -m pip install --no-cache-dir --upgrade "setuptools==84.0.0" "wheel==0.46.2" "jaraco.context==6.1.0" "msgpack==1.2.1" \
     && rm -rf /usr/local/lib/python3.13/ensurepip \
     && find /usr /root -name '*.whl' -delete \
+    && python - <<'PY'
+import pathlib, shutil, zipfile
+roots = [pathlib.Path("/usr"), pathlib.Path("/root"), pathlib.Path("/opt")]
+needles = ("Version: 70.3.0", "Version: 1.1.2", "Version: 0.45.1", "Version: 5.3.0")
+markers = ("70.3.0", "msgpack-1.1.2", "wheel-0.45.1", "jaraco.context-5.3.0")
+for root in roots:
+    if not root.exists():
+        continue
+    for meta in root.rglob("METADATA"):
+        try:
+            text = meta.read_text(errors="ignore")
+        except OSError:
+            continue
+        if any(needle in text for needle in needles):
+            print("drop", meta.parent)
+            shutil.rmtree(meta.parent, ignore_errors=True)
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix not in {".zip", ".egg", ".whl"}:
+            continue
+        try:
+            with zipfile.ZipFile(path) as archive:
+                listing = "\n".join(archive.namelist())
+        except Exception:
+            continue
+        if any(marker in listing for marker in markers):
+            print("drop-archive", path)
+            path.unlink()
+PY
     && useradd --create-home --uid 10001 perchpoint
 COPY backend /app
 RUN chown -R perchpoint:perchpoint /app
