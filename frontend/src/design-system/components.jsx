@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 export function SkipLink({ href = "#main" }) {
-  return <a className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-linen focus:px-3 focus:py-2 focus:text-obsidian" href={href}>Skip to content</a>;
+  return <a className="skip-link" href={href}>Skip to content</a>;
 }
 
 export function Button({ children, variant = "primary", type = "button", ...props }) {
@@ -72,17 +72,28 @@ export function Alert({ title, children }) {
 
 export function DataTable({ caption, columns, rows }) {
   const [sort, setSort] = useState({ key: columns[0]?.key, direction: "asc" });
+  const [hidden, setHidden] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("pp-column-preference") || "[]"); } catch { return []; }
+  });
+  const visible = columns.filter((column) => !hidden.includes(column.key));
+  const shown = visible.length ? visible : columns.slice(0, 1);
   const sorted = [...rows].sort((left, right) => {
     const result = String(left[sort.key] ?? "").localeCompare(String(right[sort.key] ?? ""));
     return sort.direction === "asc" ? result : -result;
   });
+  const toggle = (key) => {
+    const next = hidden.includes(key) ? hidden.filter((item) => item !== key) : [...hidden, key];
+    localStorage.setItem("pp-column-preference", JSON.stringify(next));
+    setHidden(next);
+  };
   return <div>
+    <fieldset className="mb-3 flex flex-wrap gap-3"><legend className="sr-only">Columns</legend>{columns.map((column) => <label key={column.key} className="flex min-h-11 items-center gap-2"><input type="checkbox" checked={!hidden.includes(column.key)} onChange={() => toggle(column.key)} />{column.label}</label>)}</fieldset>
     <table className="hidden w-full border-collapse md:table">
       <caption className="sr-only">{caption}</caption>
-      <thead><tr>{columns.map((column) => <th key={column.key} scope="col" aria-sort={sort.key === column.key ? (sort.direction === "asc" ? "ascending" : "descending") : "none"} className="border-b p-2 text-left"><button type="button" onClick={() => setSort({ key: column.key, direction: sort.key === column.key && sort.direction === "asc" ? "desc" : "asc" })}>{column.label}</button></th>)}</tr></thead>
-      <tbody>{sorted.map((row) => <tr key={row.id}>{columns.map((column) => <td key={column.key} className="border-b p-2">{row[column.key]}</td>)}</tr>)}</tbody>
+      <thead><tr>{shown.map((column) => <th key={column.key} scope="col" aria-sort={sort.key === column.key ? (sort.direction === "asc" ? "ascending" : "descending") : "none"} className="border-b p-2 text-left"><button type="button" onClick={() => setSort({ key: column.key, direction: sort.key === column.key && sort.direction === "asc" ? "desc" : "asc" })}>{column.label}</button></th>)}</tr></thead>
+      <tbody>{sorted.map((row) => <tr key={row.id}>{shown.map((column) => <td key={column.key} className="border-b p-2">{row[column.key]}</td>)}</tr>)}</tbody>
     </table>
-    <ul className="grid gap-3 md:hidden" aria-label={caption}>{sorted.map((row) => <li key={row.id} className="border p-3"><p className="font-semibold">{row[columns[0].key]}</p>{columns.slice(1).map((column) => <p key={column.key}>{column.label}: {row[column.key]}</p>)}</li>)}</ul>
+    <ul className="grid gap-3 md:hidden" aria-label={caption}>{sorted.map((row) => <li key={row.id} className="border p-3"><p className="font-semibold">{row[shown[0].key]}</p>{shown.slice(1).map((column) => <p key={column.key}>{column.label}: {row[column.key]}</p>)}</li>)}</ul>
   </div>;
 }
 

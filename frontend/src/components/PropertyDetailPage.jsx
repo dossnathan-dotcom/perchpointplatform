@@ -43,10 +43,10 @@ export const PropertyDetailPage = () => {
     else setNotice(`Inquiry received. Reference ${body.inquiry_id}. Sending again will not create a duplicate.`);
   }
 
-  if (state === 'loading') return <main className="min-h-screen bg-linen px-6 pb-20 pt-40"><p role="status">Loading listing.</p></main>;
-  if (state === 'missing') return <main className="min-h-screen bg-obsidian px-6 pb-20 pt-40 text-linen"><h1 className="font-heading text-4xl">This listing is not public.</h1><p className="mt-4">It may be unpublished, restricted, or unknown.</p><Link className="mt-8 block underline" to="/#rentals">Return to rentals</Link></main>;
-  if (state === 'unavailable') return <main className="min-h-screen bg-linen px-6 pb-20 pt-40" role="alert"><h1 className="font-heading text-4xl">This listing is unavailable.</h1><button type="button" className="mt-6 underline" onClick={() => window.location.reload()}>Try again</button></main>;
-  return <main>
+  if (state === 'loading') return <main id="main" className="min-h-screen bg-linen px-6 pb-20 pt-40"><p role="status">Loading listing.</p></main>;
+  if (state === 'missing') return <main id="main" className="min-h-screen bg-obsidian px-6 pb-20 pt-40 text-linen"><h1 className="font-heading text-4xl">This listing is not public.</h1><p className="mt-4">It may be unpublished, restricted, or unknown.</p><Link className="mt-8 block underline" to="/#rentals">Return to rentals</Link></main>;
+  if (state === 'unavailable') return <main id="main" className="min-h-screen bg-linen px-6 pb-20 pt-40" role="alert"><h1 className="font-heading text-4xl">This listing is unavailable.</h1><button type="button" className="mt-6 underline" onClick={() => window.location.reload()}>Try again</button></main>;
+  return <main id="main">
     <section className="bg-obsidian pb-14 pt-36 text-linen"><div className="mx-auto max-w-7xl px-5 sm:px-8">
       <Link to="/#rentals" className="inline-flex items-center gap-2 py-4 text-sm underline"><ArrowLeft size={16} />All published rentals</Link>
       <p className="mt-6 text-xs uppercase tracking-widest text-gold">{listing.use} · {listing.availability}</p>

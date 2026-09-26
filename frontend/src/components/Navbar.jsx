@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/button";
 import { EnvironmentBanner } from "@/components/EnvironmentBanner";
 
 const links = [
-  ["Available Rentals", "/#rentals"],
-  ["Properties", "/#properties"],
-  ["How to Apply", "/#how-to-apply"],
-  ["Resident Resources", "/#resident-resources"],
-  ["Maintenance", "/#maintenance"],
-  ["About", "/#about"],
-  ["Contact HawkVision", "/#contact"],
+  ["Rentals", "/#rentals"],
+  ["Commercial", "/#properties"],
+  ["About HawkVision", "/#about"],
+  ["Contact", "/#contact"],
+  ["Apply", "/#how-to-apply"],
 ];
 
 export const Navbar = ({ onLoginClick }) => {
@@ -33,7 +31,8 @@ export const Navbar = ({ onLoginClick }) => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button className="hidden bg-copper text-white hover:bg-copperDark sm:inline-flex" onClick={onLoginClick} data-testid="nav-login-perchpoint-btn">Sign in to PerchPoint</Button>
+          <Button className="hidden bg-copper text-white hover:bg-copperDark sm:inline-flex" onClick={() => onLoginClick("resident")} data-testid="nav-resident-login">Resident Login</Button>
+          <Button className="hidden border border-white/50 bg-transparent text-linen hover:bg-white/10 sm:inline-flex" onClick={() => onLoginClick("leasing")} data-testid="nav-staff-login">Staff Login</Button>
           <button className="flex h-11 w-11 items-center justify-center border border-white/50 xl:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label="Toggle navigation" data-testid="navbar-mobile-menu-btn">
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -43,7 +42,8 @@ export const Navbar = ({ onLoginClick }) => {
         <nav id="mobile-navigation" className="max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-white/30 bg-obsidian px-5 py-5 xl:hidden" data-testid="navbar-mobile-menu">
           <div className="mx-auto grid max-w-7xl gap-1">
             {links.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-3 text-sm font-semibold text-linen/75 hover:bg-white/5 hover:text-gold" data-testid={`mobile-nav-link-${label.toLowerCase().replaceAll(" ", "-")}`}>{label}</a>)}
-            <Button className="mt-3 bg-copper text-white" onClick={() => {setMenuOpen(false);onLoginClick();}} data-testid="mobile-signin-btn">Sign in to PerchPoint</Button>
+            <Button className="mt-3 bg-copper text-white" onClick={() => {setMenuOpen(false);onLoginClick("resident");}} data-testid="mobile-resident-login">Resident Login</Button>
+            <Button className="mt-2 border border-white/50 bg-transparent text-linen" onClick={() => {setMenuOpen(false);onLoginClick("leasing");}} data-testid="mobile-staff-login">Staff Login</Button>
           </div>
         </nav>
       )}
