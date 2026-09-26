@@ -219,6 +219,6 @@ jobs:
       - run: docker build -f deploy/Dockerfile.web -t perchpoint-web:ci .
       - run: docker compose -f docker-compose.yml config > /dev/null
       - name: Scan API image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.trivyignore:/trivyignore:ro" aquasec/trivy:0.58.1 image --ignorefile /trivyignore --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
       - name: Scan web image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.trivyignore:/trivyignore:ro" aquasec/trivy:0.58.1 image --ignorefile /trivyignore --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
