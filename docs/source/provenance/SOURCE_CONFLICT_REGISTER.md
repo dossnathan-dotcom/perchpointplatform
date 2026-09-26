@@ -119,5 +119,20 @@ Source paths:
 - Resolution status: **resolved by compatible interpretation**; production identity remains
   later-phase (`PP-AUTH-011`).
 
+## CONFLICT-011 — Phase 3 hosted evidence timing
+- Claims: the approved Q1–Q174 register still requires hosted staging, hosted PITR,
+  hosted recovery measurement, and paid monitoring before those operational gates
+  can be called passed. On 2026-09-26 Nathan Doss directed that no paid subscription,
+  paid trial, or billing-backed provider feature be activated now.
+- Consequence: Phase 3 acceptance must separate local engineering evidence from
+  hosted operational evidence. The underlying production requirements stay in force.
+- Safe assumption: implement and test the local, container, CI, and free-account
+  controls now. Record hosted execution as owner-deferred, not as a failed build
+  and not as a deleted requirement.
+- Decision owner: Nathan for the timing directive. Faruk remains the billing owner
+  for any later paid activation.
+- Resolution status: **resolved as a timing decision** by PP-DEC-059. Q1–Q174 wording
+  is unchanged.
+
 Existing listing, accounting, communications, provider, human-approval, and
 production-activation boundaries remain controlling.

@@ -19,3 +19,7 @@
 - D-012 Emergent handoff accessibility — Nathan — local branch now matches
   `origin/cursor/phase-01-governance-audit` at `494c5fb`; external UI handoff still requires
   this plan's approval and a frozen-contract commit after P2-01 through P2-03.
+- D-013 Paid hosted staging, PITR, and monitoring — Faruk billing, Nathan technical —
+  owner-deferred on 2026-09-26. Accounts may exist under the provisional identity
+  `hawkvisionhomes@gmail.com`. No DSN, provider token, or database credential has been
+  supplied. Production identity remains a HawkVision-controlled domain mailbox.

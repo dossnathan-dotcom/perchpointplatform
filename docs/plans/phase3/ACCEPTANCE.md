@@ -1,15 +1,15 @@
 # Phase 3 acceptance
 
-Classification: open. Phase 3 technical acceptance is not granted.
+Classification: open. Phase 3 local engineering foundation is not yet closed by this file alone. Hosted operational validation is owner-deferred under PP-DEC-059. Production readiness is blocked.
 
 | Gate | Status | Evidence |
 |---|---|---|
 | 3A Environment and authority policy | implemented | This file, RUNBOOKS.md, and the Q1–Q174 register |
-| 3B Hosted previews and health | externally blocked | No Render account. Local `/api/v2/health/live` and `/api/v2/health/ready` exist |
+| 3B Hosted previews and health | owner-deferred | PP-DEC-059. Local `/api/v2/health/live`, `/api/v2/health/ready`, and `/api/v2/version` exist. No paid Render project is activated |
 | 3C CI gates | verified for this commit's pull request workflow | Jobs `backend`, `frontend`, `browser`, `contracts`, `governance`, `secrets`, `supply-chain`, and `CodeQL` |
-| 3D Secrets and backups | partial | Startup rejection tests and a completed Gitleaks scan. Hosted PITR and a company vault are externally blocked |
-| 3E Restore and rollback drills | partial | `scripts/phase3_restore_drill.py` restored 3 synthetic rows, rolled back a failed statement so `half_applied` was absent, left 0 disposable databases, and Elm Court remained 1. Hosted rollback is blocked |
-| 3F Reproducible staging | externally blocked | Docker is not installed here. Staging is not provisioned |
+| 3D Secrets and backups | partial | Startup rejection tests and a completed Gitleaks scan. Hosted PITR and a company vault are owner-deferred |
+| 3E Restore and rollback drills | partial | `scripts/phase3_restore_drill.py` restored 3 synthetic rows, rolled back a failed statement so `half_applied` was absent, left 0 disposable databases, and Elm Court remained 1. Hosted rollback is owner-deferred |
+| 3F Reproducible staging | owner-deferred for hosted staging | Compose and Dockerfiles are in the repository. A local Docker engine is required before the clean-room run can be marked passed |
 
 ## Second review
 

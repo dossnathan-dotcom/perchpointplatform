@@ -17,3 +17,7 @@
   must remain visibly synthetic; owner Nathan; scan fixtures, payloads, logs, and documents.
 - R-011 Medium: Phase 2 implementation starting without plan approval or local PostgreSQL
   evidence; owner Nathan; stop conditions in `docs/plans/phase2/ACCEPTANCE.md`.
+- R-012 Owner-deferred: hosted staging, hosted PITR, and live Sentry alerts are not
+  evidence yet. The 2026-09-26 directive forbids paid activation. Owner Faruk for
+  billing and Nathan for the later technical apply. Do not treat the deferral as
+  production readiness.
