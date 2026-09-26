@@ -1,14 +1,14 @@
 import { FOUNDATION, PORTFOLIO, slug } from './siteData';
 
 export const PORTAL_VIEWS = {
-  owner: { label: 'Owner Command Center', tabs: ['Portfolio', 'Reserved approvals', 'Financial oversight', 'Delegations', 'Business audit'] },
-  'super-admin': { label: 'Platform Administration', tabs: ['System overview', 'Identity contracts', 'Permission matrix', 'Provider registry', 'Audit and events', 'Technical boundaries'] },
-  leasing: { label: 'Leasing Operations', tabs: ['Operations Console', 'Operational inbox', 'Leasing pipeline', 'Showing queue', 'Application queue', 'Tenant directory', 'Maintenance coordination', 'Payment exceptions', 'Approval requests', 'Documents and expirations', 'Tasks', 'Communication activity', 'System exceptions'] },
-  accounting: { label: 'Accounting', tabs: ['Reconciliation', 'Ledger preview', 'Payment exceptions', 'Approved documents', 'Reporting'] },
-  maintenance: { label: 'Maintenance Operations', tabs: ['Assigned work', 'Schedule', 'Parts and estimates', 'Completion evidence'] },
-  subcontractor: { label: 'Subcontractor Assignments', tabs: ['My assignment', 'Site access', 'Estimate', 'Evidence', 'Invoice'] },
-  resident: { label: 'Resident Portal', tabs: ['Household', 'Balance and charges', 'Lease and documents', 'Maintenance', 'Communications', 'Preferences'] },
-  applicant: { label: 'Applicant Portal', tabs: ['Application status', 'Household applicants', 'Document requests', 'Consent and screening', 'Showing history', 'Next steps'] },
+  owner: { label: 'Owner Command Center', tabs: ['Portfolio', 'Reserved approvals', 'Financial oversight', 'Delegations', 'Business audit', 'Today', 'Decisions', 'Financial position', 'Maintenance', 'Projects', 'Risk', 'Accountability', 'Trends'] },
+  'super-admin': { label: 'Platform Administration', tabs: ['System overview', 'Identity contracts', 'Permission matrix', 'Provider registry', 'Audit and events', 'Technical boundaries', 'Organizations', 'Users', 'Roles', 'Policies', 'Integrations', 'Feature flags', 'Environments', 'Audit', 'System health', 'Configuration'] },
+  leasing: { label: 'Leasing Operations', tabs: ['Operations Console', 'Operational inbox', 'Leasing pipeline', 'Showing queue', 'Application queue', 'Tenant directory', 'Maintenance coordination', 'Payment exceptions', 'Approval requests', 'Documents and expirations', 'Tasks', 'Communication activity', 'System exceptions', 'Today', 'Portfolio', 'Finance', 'Reports'] },
+  accounting: { label: 'Accounting', tabs: ['Reconciliation', 'Ledger preview', 'Payment exceptions', 'Approved documents', 'Reporting', 'Overview', 'Receivables', 'Resident ledgers', 'Payments', 'Exceptions', 'Property performance', 'Exports'] },
+  maintenance: { label: 'Maintenance Operations', tabs: ['Assigned work', 'Schedule', 'Parts and estimates', 'Completion evidence', 'Triage', 'Work orders', 'Properties', 'Technicians', 'Vendors', 'Recommendations', 'Communications', 'History'] },
+  subcontractor: { label: 'Subcontractor Assignments', tabs: ['My assignment', 'Site access', 'Estimate', 'Evidence', 'Invoice', 'Schedule', 'Messages', 'Recommendations', 'Receipts', 'Compliance', 'Completed work'] },
+  resident: { label: 'Resident Portal', tabs: ['Household', 'Balance and charges', 'Lease and documents', 'Maintenance', 'Communications', 'Preferences', 'Home', 'Payments', 'Documents'] },
+  applicant: { label: 'Applicant Portal', tabs: ['Application status', 'Household applicants', 'Document requests', 'Consent and screening', 'Showing history', 'Next steps', 'Overview', 'Application', 'Documents', 'Messages', 'Appointments', 'Help'] },
 };
 
 const elm = PORTFOLIO.properties[0];

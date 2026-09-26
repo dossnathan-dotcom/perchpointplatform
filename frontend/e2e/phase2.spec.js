@@ -151,3 +151,35 @@ for (const width of [320, 768, 1024, 1440]) {
     expect(overflow).toBeLessThanOrEqual(1);
   });
 }
+
+test("owner briefing shows a decision and keeps canonical search unavailable", async ({ page }) => {
+  await page.goto("/perchpoint/owner");
+  await expect(page.getByTestId("portal-identity")).toContainText("HawkVision Homes");
+  await expect(page.getByTestId("owner-decision-card")).toContainText("No approval was recorded");
+  await page.getByTestId("portal-command-palette").click();
+  await expect(page.getByRole("dialog")).toContainText("Phase 5");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const results = await new AxeBuilder({ page }).analyze();
+  const blocking = results.violations.filter((item) => ["critical", "serious", "moderate"].includes(item.impact));
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+});
+
+test("maintenance recommendation stays distinct from the management decision", async ({ page }) => {
+  await page.goto("/perchpoint/maintenance/recommendations");
+  const card = page.getByTestId("maintenance-recommendation-card");
+  await expect(card).toContainText("Worker recommendation");
+  await expect(card).toContainText("No management decision has been recorded");
+  const results = await new AxeBuilder({ page }).analyze();
+  const blocking = results.violations.filter((item) => ["critical", "serious", "moderate"].includes(item.impact));
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+});
+
+test("component laboratory is available to the local server", async ({ page }) => {
+  await page.goto("/design-system");
+  await expect(page.getByTestId("component-laboratory")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Component laboratory");
+  const results = await new AxeBuilder({ page }).analyze();
+  const blocking = results.violations.filter((item) => ["critical", "serious", "moderate"].includes(item.impact));
+  expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
+});

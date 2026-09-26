@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -21,6 +21,7 @@ jobs:
       - run: python scripts/verify_sources.py
       - run: python scripts/validate_governance.py
       - run: python scripts/validate_phase3_answers.py
+      - run: python scripts/validate_phase4_answers.py
   contracts:
     name: contracts
     runs-on: ubuntu-24.04
@@ -106,6 +107,8 @@ jobs:
           REACT_APP_PHASE3_ENVIRONMENT: local
           REACT_APP_SHOW_DEMO_LABELS: "true"
           REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
+      - run: node scripts/check_bundle_budget.cjs
+        working-directory: frontend
   browser:
     name: browser
     runs-on: ubuntu-24.04

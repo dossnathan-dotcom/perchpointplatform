@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,13 +44,76 @@
   }
 }
 
-/* Contrast pairs are measured in contracts/verification; imagery always has a scrim. */
-:root { --ink: #0d1117; --paper: #faf8f5; --copper: #a64b23; --copper-light: #f2ad78; }
+/* Token values. Feature code uses these variables or the Tailwind aliases. */
+:root,
+html[data-theme="hawkvision"],
+html[data-theme="light"] {
+  --pp-obsidian: #0d1117;
+  --pp-linen: #faf8f5;
+  --pp-copper: #a64b23;
+  --pp-gold: #f2ad78;
+  --pp-text: #0d1117;
+  --pp-text-muted: #3f3a36;
+  --pp-surface: #faf8f5;
+  --pp-surface-raised: #ffffff;
+  --pp-border: #817a73;
+  --pp-focus: #873c1b;
+  --pp-danger: #9f1239;
+  --pp-success: #166534;
+  --pp-warning: #9a3412;
+  --ink: #0d1117;
+  --paper: #faf8f5;
+  --copper: #a64b23;
+  --copper-light: #f2ad78;
+}
+html[data-theme="dark"] {
+  --pp-text: #faf8f5;
+  --pp-text-muted: #d6d3d1;
+  --pp-surface: #0d1117;
+  --pp-surface-raised: #161b22;
+  --pp-border: #8e9195;
+  --pp-focus: #f2ad78;
+  --background: 220 20% 7%;
+  --foreground: 36 33% 97%;
+  --card: 220 18% 11%;
+  --card-foreground: 36 33% 97%;
+  --popover: 220 18% 11%;
+  --popover-foreground: 36 33% 97%;
+  --primary: 22 64% 46%;
+  --primary-foreground: 36 33% 97%;
+  --secondary: 220 12% 18%;
+  --secondary-foreground: 36 33% 97%;
+  --muted: 220 12% 18%;
+  --muted-foreground: 30 10% 78%;
+  --border: 220 8% 28%;
+  --input: 220 8% 28%;
+}
+html[data-density="compact"] { --pp-page-pad: 16px; }
+html[data-density="comfortable"] { --pp-page-pad: 32px; }
+.portal-pad { padding: var(--pp-page-pad, 32px); }
+[data-testid="component-laboratory"] { color-scheme: light; background: var(--pp-linen); color: var(--pp-obsidian); }
+[data-testid="component-laboratory"] input,
+[data-testid="component-laboratory"] select,
+[data-testid="component-laboratory"] textarea { background: var(--pp-linen); color: var(--pp-obsidian); }
+[data-testid="component-laboratory"][data-theme="dark"] { color-scheme: dark; background: var(--pp-obsidian); color: var(--pp-linen); }
+[data-testid="component-laboratory"][data-theme="dark"] input,
+[data-testid="component-laboratory"][data-theme="dark"] select,
+[data-testid="component-laboratory"][data-theme="dark"] textarea { background: var(--pp-obsidian); color: var(--pp-linen); }
+html[data-theme="light"] [data-testid="perchpoint-portal-page"],
+html[data-theme="light"] [data-testid="perchpoint-portal-page"] .bg-obsidian {
+  background: var(--pp-surface-raised);
+  color: var(--pp-text);
+}
+html[data-theme="light"] [data-testid="perchpoint-portal-page"] .text-gold { color: var(--pp-copper); }
 * { letter-spacing: 0 !important; }
 section[id], footer[id] { scroll-margin-top: 6rem; }
 button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
 button, a, input, select, textarea { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
-:focus-visible { outline: 3px solid #f2ad78 !important; outline-offset: 3px; box-shadow: 0 0 0 5px #0d1117; }
+:focus-visible { outline: 3px solid var(--pp-focus) !important; outline-offset: 3px; }
+@media (forced-colors: active) {
+  :focus-visible { outline: 3px solid CanvasText !important; }
+  button, a, input, select, textarea { forced-color-adjust: auto; }
+}
 button:disabled, select:disabled { cursor: not-allowed; }
 .portal-icon { display: inline-flex; height: 44px; width: 44px; flex-shrink: 0; align-items: center; justify-content: center; border: 1px solid #8e9195; }
 .portal-icon:hover { background: #25282d; }

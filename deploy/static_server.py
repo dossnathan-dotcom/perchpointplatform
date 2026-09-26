@@ -13,6 +13,35 @@ ROOT = Path(os.environ.get("WEB_ROOT", "/srv/web")).resolve()
 API = os.environ.get("API_UPSTREAM", "http://api:8000").rstrip("/")
 FORWARDED = {"accept", "authorization", "content-type", "x-request-id"}
 MAX_BODY = 1_000_000
+CSP = (
+    "default-src 'self'; "
+    "base-uri 'self'; "
+    "object-src 'none'; "
+    "frame-ancestors 'none'; "
+    "script-src 'self'; "
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data:; "
+    "font-src 'self'; "
+    "connect-src 'self'; "
+    "worker-src 'self'; "
+    "form-action 'self'"
+)
+
+
+def security_headers(content_type: str, path: str) -> dict[str, str]:
+    headers = {
+        "content-security-policy": CSP,
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+        "x-frame-options": "DENY",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "cache-control": "public, max-age=31536000, immutable" if "/static/" in path else "no-store",
+    }
+    if os.environ.get("PHASE4_ENABLE_HSTS") == "1":
+        headers["strict-transport-security"] = "max-age=31536000; includeSubDomains"
+    return headers
 
 
 def published_files(root: Path) -> dict[str, bytes]:
@@ -100,6 +129,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("content-type", content_type)
         self.send_header("content-length", str(len(payload)))
+        for name, value in security_headers(content_type, self.path.split("?", 1)[0]).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(payload)
 

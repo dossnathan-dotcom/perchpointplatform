@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
+from .abuse import assess_inquiry
 from .commands import (
     CommandError,
     accept_inbox,
@@ -26,6 +27,7 @@ from .commands import (
     update_property,
 )
 from .db import runtime_transaction
+from .http_security import security_headers
 from .settings import Phase2ConfigurationError, Settings
 
 router = APIRouter(prefix="/api/v2")
@@ -49,6 +51,8 @@ class InquiryBody(BaseModel):
     intent: str
     message: str = ""
     idempotency_key: str = Field(min_length=8, max_length=128)
+    company_website: str = ""
+    started_at_ms: int | None = None
 
 
 class TriageBody(BaseModel):
@@ -179,8 +183,17 @@ def post_property(body: PropertyBody, current=Depends(actor), settings: Settings
 
 
 @router.post("/inquiries", status_code=201)
-def post_inquiry(body: InquiryBody, settings: Settings = Depends(settings)):
-    return _run(lambda: submit_public_inquiry(settings, body.model_dump(mode="json"), uuid4()))
+def post_inquiry(body: InquiryBody, request: Request, settings: Settings = Depends(settings)):
+    host = request.client.host if request.client else ""
+    verdict = assess_inquiry(body.model_dump(mode="json"), host)
+    if verdict == "rate_limited":
+        raise HTTPException(429, {"code": "rate_limited", "message": "The inquiry was not accepted.", "retryable": True})
+    if verdict:
+        raise HTTPException(400, {"code": "rejected", "message": "The inquiry was not accepted.", "retryable": False})
+    payload = body.model_dump(mode="json")
+    payload.pop("company_website", None)
+    payload.pop("started_at_ms", None)
+    return _run(lambda: submit_public_inquiry(settings, payload, uuid4()))
 
 
 @router.post("/listings", status_code=201)
@@ -365,6 +378,8 @@ def create_app():
         request_id = request.headers.get("x-request-id") or str(uuid4())
         response = await call_next(request)
         response.headers["x-request-id"] = request_id
+        for name, value in security_headers(response.headers.get("content-type", "application/json"), request.url.path).items():
+            response.headers[name] = value
         log.info(json.dumps({"event": "request", "request_id": request_id, "method": request.method, "path": request.url.path, "status": response.status_code}))
         return response
 
