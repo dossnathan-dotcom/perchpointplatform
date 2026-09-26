@@ -98,7 +98,13 @@ services:
       REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
       API_PROXY_TARGET: http://api:8000
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3000:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     depends_on:
       api:
         condition: service_healthy
