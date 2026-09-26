@@ -134,5 +134,24 @@ Source paths:
 - Resolution status: **resolved as a timing decision** by PP-DEC-059. Q1–Q174 wording
   is unchanged.
 
+## CONFLICT-012 — Phase 0 workspace tabs and Phase 4 navigation labels
+- Claims: accepted Phase 0 role previews use labels such as Operations Console and
+  Operational inbox. The Phase 4 directive approves a different navigation vocabulary
+  for the same roles.
+- Consequence: route stability and the meaning of the sidebar.
+- Safe assumption: keep every existing slug and label, and append the approved
+  destinations. The URL role remains a preview label, not authority.
+- Decision owner: Nathan.
+- Resolution status: **resolved by compatible routes** under PP-DEC-063.
+
+## CONFLICT-013 — Emergent runtime scripts and Phase 4 security
+- Claims: the Emergent public HTML loaded Google Fonts, `assets.emergent.sh`, and a
+  PostHog session-replay snippet. Phase 4 requires self-hosted or system fonts, no
+  third-party scripts, and no session replay.
+- Consequence: content security policy and the public entry document.
+- Safe assumption: remove those runtime dependencies and keep the visual palette.
+- Decision owner: Nathan.
+- Resolution status: **resolved by removal** under PP-DEC-065 and PP-DEC-068.
+
 Existing listing, accounting, communications, provider, human-approval, and
 production-activation boundaries remain controlling.

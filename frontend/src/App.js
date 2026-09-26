@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Building2, LogIn } from "lucide-react";
 import { Toaster } from "sonner";
@@ -12,15 +12,20 @@ import { LoginModal } from "@/components/LoginModal";
 import { MaintenanceModal } from "@/components/MaintenanceModal";
 import { Navbar } from "@/components/Navbar";
 import { Neighborhoods } from "@/components/Neighborhoods";
-import { PerchPointPortal } from "@/components/PerchPointPortal";
 import { PropertyDetailPage } from "@/components/PropertyDetailPage";
 import { ResidentResources } from "@/components/ResidentResources";
 import { TourModal } from "@/components/TourModal";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { Button } from "@/components/ui/button";
 import { startSentry } from "@/sentry";
-import FoundationPage from "@/components/FoundationPage";
-import { ReferenceOperations } from "@/components/ReferenceOperations";
+import { SkipLink } from "@/design-system/components";
+import { applyDocumentTheme } from "@/design-system/theme";
+
+const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
+const FoundationPage = lazy(() => import("@/components/FoundationPage"));
+const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
+const Laboratory = process.env.NODE_ENV === "production" ? null : lazy(() => import("@/design-system/laboratory"));
+const routePending = <main id="main" className="min-h-screen bg-obsidian px-6 py-24 text-linen"><p role="status">Loading workspace.</p></main>;
 
 const PortalGate = ({ onLogin }) => (
   <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-5 text-linen" data-testid="perchpoint-portal-gate">
@@ -30,7 +35,7 @@ const PortalGate = ({ onLogin }) => (
 );
 
 function PublicLayout({ onLogin, onMaintenance, onContact }) {
-  return <div className="min-h-screen bg-linen text-obsidian"><Navbar onLoginClick={onLogin} onMaintenance={onMaintenance} /><Outlet /><Footer onContact={onContact} onMaintenance={onMaintenance} /></div>;
+  return <div className="min-h-screen bg-linen text-obsidian"><SkipLink /><Navbar onLoginClick={onLogin} onMaintenance={onMaintenance} /><Outlet /><Footer onContact={onContact} onMaintenance={onMaintenance} /></div>;
 }
 
 const PageNotFound = () => <main className="min-h-screen bg-obsidian px-5 pb-20 pt-40 text-linen" data-testid="not-found-page"><h1 className="font-heading text-4xl">This page is not here.</h1><Link to="/" className="mt-6 block underline" data-testid="not-found-home-link">Return to HawkVision Homes</Link></main>;
@@ -56,20 +61,22 @@ export function AppContent() {
     setRequestOpen(false);
     setMaintenanceOpen(false);
   }, [location.key]);
+  useEffect(() => { applyDocumentTheme(location.pathname); }, [location.pathname]);
 
   return (
     <>
       <Routes>
         <Route element={<PublicLayout onLogin={() => openLogin("resident")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
-        <Route path="/" element={<main><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true)} onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
         <Route path="/property/:propertyId" element={<PropertyDetailPage onRequest={openRequest} />} />
         <Route path="/rentals/:unitId" element={<PropertyDetailPage onRequest={openRequest} />} />
         </Route>
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
-        <Route path="/perchpoint/:roleId/:viewId?" element={<PerchPointPortal key={location.key} />} />
+        <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />
         <Route path="/perchpoint/*" element={<PageNotFound />} />
-        <Route path="/foundation/:sectionId?" element={<FoundationPage key={location.key} />} />
-        <Route path="/reference" element={<ReferenceOperations />} />
+        <Route path="/foundation/:sectionId?" element={<Suspense fallback={routePending}><FoundationPage key={location.key} /></Suspense>} />
+        <Route path="/reference" element={<Suspense fallback={routePending}><ReferenceOperations /></Suspense>} />
+        {Laboratory ? <Route path="/design-system" element={<Suspense fallback={routePending}><Laboratory /></Suspense>} /> : null}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       {loginOpen && <LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />}

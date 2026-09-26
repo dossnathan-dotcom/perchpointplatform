@@ -8,7 +8,7 @@ export const PropertyDetailPage = () => {
   const listingId = unitId || propertyId;
   const [state, setState] = useState('loading');
   const [listing, setListing] = useState(null);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '', company_website: '' });
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
@@ -30,10 +30,14 @@ export const PropertyDetailPage = () => {
       setNotice('Enter your name, email, and a short message.');
       return;
     }
+    if (form.company_website) {
+      setNotice('The inquiry was not accepted.');
+      return;
+    }
     const key = sessionStorage.getItem(`inquiry-${listingId}`) || `web-${listingId}-${Date.now()}`;
     sessionStorage.setItem(`inquiry-${listingId}`, key);
     setNotice('Sending inquiry.');
-    const { response, body } = await phase2('/api/v2/inquiries', { method: 'POST', body: JSON.stringify({ listing_id: listingId, name: form.name, email: form.email, intent: 'showing', message: form.message, idempotency_key: key }) });
+    const { response, body } = await phase2('/api/v2/inquiries', { method: 'POST', body: JSON.stringify({ listing_id: listingId, name: form.name, email: form.email, intent: 'showing', message: form.message, idempotency_key: key, company_website: form.company_website }) });
     if (response.status === 409) setNotice('This page already sent a different inquiry with the same key. Refresh and try again.');
     else if (!response.ok) setNotice(body.detail?.message || 'The inquiry was not accepted.');
     else setNotice(`Inquiry received. Reference ${body.inquiry_id}. Sending again will not create a duplicate.`);
@@ -52,10 +56,11 @@ export const PropertyDetailPage = () => {
     </div></section>
     <section className="bg-linen py-16"><div className="mx-auto max-w-xl px-5">
       <h2 className="font-heading text-3xl">Request a showing</h2>
-      <form className="mt-6 space-y-4" onSubmit={submit}>
+      <form className="relative mt-6 space-y-4" onSubmit={submit}>
         <label className="block">Name<input className="mt-1 w-full border px-3 py-2" name="guest-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
         <label className="block">Email<input className="mt-1 w-full border px-3 py-2" name="guest-email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></label>
         <label className="block">Message<textarea className="mt-1 w-full border px-3 py-2" name="guest-message" value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} required /></label>
+        <div className="absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label>Company website<input name="company_website" tabIndex={-1} autoComplete="off" value={form.company_website} onChange={(event) => setForm({ ...form, company_website: event.target.value })} /></label></div>
         <button className="bg-obsidian px-4 py-3 text-linen" type="submit" data-testid="public-inquiry-submit">Submit inquiry</button>
       </form>
       <p className="mt-4" role="status" data-testid="public-inquiry-status">{notice}</p>

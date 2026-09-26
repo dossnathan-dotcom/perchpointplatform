@@ -64,6 +64,8 @@ class Settings:
                 lowered = value.lower()
                 if not value or any(marker in lowered for marker in DISPOSABLE_MARKERS) or lowered in {"development", "secret", "password"}:
                     reasons.append(name)
+            if os.environ.get("PHASE4_ABUSE_PROVIDER", "") == "":
+                reasons.append("distributed abuse protection")
             if reasons:
                 raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":

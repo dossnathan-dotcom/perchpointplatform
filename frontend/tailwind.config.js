@@ -6,18 +6,18 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        heading: ["Playfair Display", "serif"],
-        body: ["IBM Plex Sans", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
+        heading: ['"Iowan Old Style"', '"Palatino Linotype"', "Palatino", "serif"],
+        body: ['"Segoe UI"', "system-ui", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
       },
       colors: {
-        obsidian: "#0D1117",
-        obsidianCard: "#161B22",
-        linen: "#FAF8F5",
-        copper: "#A64B23",
-        copperDark: "#873C1B",
-        gold: "#F2AD78",
-        goldSoft: "#FDE68A",
+        obsidian: "var(--pp-obsidian)",
+        obsidianCard: "var(--pp-surface-raised)",
+        linen: "var(--pp-linen)",
+        copper: "var(--pp-copper)",
+        copperDark: "var(--pp-focus)",
+        gold: "var(--pp-gold)",
+        goldSoft: "var(--pp-gold)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
