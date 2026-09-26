@@ -208,3 +208,29 @@ jobs:
           path: |
             backend-sbom.json
             frontend/frontend-sbom.json
+  containers:
+    name: containers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: docker build -f deploy/Dockerfile.api -t perchpoint-api:ci .
+      - run: docker build -f deploy/Dockerfile.web -t perchpoint-web:ci .
+      - run: docker compose -f docker-compose.yml config > /dev/null
+      - uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: perchpoint-api:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          scanners: vuln
+      - uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: perchpoint-web:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          scanners: vuln

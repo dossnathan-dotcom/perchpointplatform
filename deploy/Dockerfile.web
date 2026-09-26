@@ -3,6 +3,8 @@ WORKDIR /app
 COPY frontend/package.json frontend/yarn.lock /app/
 RUN corepack enable && corepack yarn install --frozen-lockfile --non-interactive
 COPY frontend /app
+RUN chown -R node:node /app
 ENV REACT_APP_PHASE3_ENVIRONMENT=local
+USER node
 EXPOSE 3000
 CMD ["corepack", "yarn", "start"]

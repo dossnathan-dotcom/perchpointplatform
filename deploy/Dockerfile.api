@@ -1,8 +1,11 @@
 FROM python:3.13-slim
 WORKDIR /app
 COPY backend/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt \
+    && useradd --create-home --uid 10001 perchpoint
 COPY backend /app
+RUN chown -R perchpoint:perchpoint /app
 ENV PYTHONPATH=/app
+USER perchpoint
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "perchpoint.routes:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
