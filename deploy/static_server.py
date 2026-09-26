@@ -15,6 +15,29 @@ FORWARDED = {"accept", "authorization", "content-type", "x-request-id"}
 MAX_BODY = 1_000_000
 
 
+def published_files(root: Path) -> dict[str, bytes]:
+    """Load build files once so request paths are never joined onto the filesystem."""
+    published: dict[str, bytes] = {}
+    if not root.is_dir():
+        return published
+    for item in root.rglob("*"):
+        if item.is_file():
+            published["/" + item.relative_to(root).as_posix()] = item.read_bytes()
+    return published
+
+
+PUBLISHED = published_files(ROOT)
+
+
+def media_type(value: str | None, fallback: str) -> str:
+    if not value:
+        return fallback
+    token = value.split(";", 1)[0].strip()
+    if "/" in token and all(character.isalnum() or character in "/.+-" for character in token):
+        return token
+    return fallback
+
+
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
@@ -55,33 +78,28 @@ class Handler(BaseHTTPRequestHandler):
             with urlopen(request, timeout=30) as upstream:
                 payload = upstream.read(8_000_000)
                 content_type = upstream.headers.get("content-type", "application/json")
-                self._send(upstream.status, payload, content_type, upstream.headers.get("x-request-id"))
+                self._send(upstream.status, payload, media_type(content_type, "application/json"))
         except HTTPError as exc:
             payload = exc.read(8_000_000)
-            self._send(exc.code, payload, exc.headers.get("content-type", "application/json"))
+            self._send(exc.code, payload, media_type(exc.headers.get("content-type"), "application/json"))
         except URLError:
             self._send(502, b'{"status":"unavailable"}', "application/json")
 
     def _file(self, path: str) -> None:
-        relative = path.lstrip("/") or "index.html"
-        candidate = (ROOT / relative).resolve()
-        if ROOT not in candidate.parents and candidate != ROOT:
+        payload = PUBLISHED.get(path if path != "/" else "/index.html")
+        chosen = path if payload is not None and path != "/" else "/index.html"
+        if payload is None:
+            payload = PUBLISHED.get("/index.html")
+        if payload is None:
             self._send(404, b"Not found", "text/plain")
             return
-        if not candidate.is_file():
-            candidate = ROOT / "index.html"
-        if not candidate.is_file():
-            self._send(404, b"Not found", "text/plain")
-            return
-        content_type = mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
-        self._send(200, candidate.read_bytes(), content_type)
+        guessed = mimetypes.guess_type(chosen.rsplit("/", 1)[-1])[0]
+        self._send(200, payload, media_type(guessed, "application/octet-stream"))
 
-    def _send(self, status: int, payload: bytes, content_type: str, request_id: str | None = None) -> None:
+    def _send(self, status: int, payload: bytes, content_type: str) -> None:
         self.send_response(status)
         self.send_header("content-type", content_type)
         self.send_header("content-length", str(len(payload)))
-        if request_id:
-            self.send_header("x-request-id", request_id)
         self.end_headers()
         self.wfile.write(payload)
 

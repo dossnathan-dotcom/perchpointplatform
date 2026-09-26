@@ -25,7 +25,7 @@ Three review passes were applied to the Phase 3 branch before this record.
 
 Architecture. API startup does not migrate. Migration and seed are one-shot Compose services. Staging and production reject local-development auth and disposable credential markers. The worker claims once and exits. PostgreSQL is published only on loopback port 54329.
 
-Security. Images run as non-root. The Docker socket is not mounted into application services. The frontend image no longer ships the Create React App dependency tree or the Alpine nginx package that remained on a vulnerable revision. Readiness failures do not return database error text. Sentry stays off without a DSN and strips request bodies and secret headers. Gitleaks and CodeQL remain in the pull request workflow.
+Security. Images run as non-root. The Docker socket is not mounted into application services. The frontend image no longer ships the Create React App dependency tree or the Alpine nginx package that remained on a vulnerable revision. The static server loads the production build into an allowlist at startup, so a request path is never joined onto the filesystem and response headers are not copied from request values. Readiness failures do not return database error text. Sentry stays off without a DSN and strips request bodies and secret headers. Gitleaks and CodeQL remain in the pull request workflow.
 
 Operations. Local backup and migration rollback drills remain the native script evidence. The clean-room Compose drill is externally blocked until Docker Desktop is started by an administrator. Hosted staging, hosted PITR, hosted restore measurement, and a live Sentry event are owner-deferred external operational evidence under PP-DEC-059. They are not passed gates.
 
