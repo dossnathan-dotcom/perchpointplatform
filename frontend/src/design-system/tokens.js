@@ -40,8 +40,8 @@ export const density = {
 };
 
 export const fontFamilies = {
-  display: '"Iowan Old Style", "Palatino Linotype", Palatino, serif',
-  operational: '"Segoe UI", system-ui, sans-serif',
+  display: 'Fraunces, "Iowan Old Style", Palatino, serif',
+  operational: '"Source Sans 3", "Segoe UI", system-ui, sans-serif',
 };
 
 export const requiredCssVariables = [

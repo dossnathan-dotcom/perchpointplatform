@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /perchpoint
+Disallow: /foundation
+Disallow: /reference
+Disallow: /design-system

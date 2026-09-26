@@ -6,8 +6,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['"Iowan Old Style"', '"Palatino Linotype"', "Palatino", "serif"],
-        body: ['"Segoe UI"', "system-ui", "sans-serif"],
+        heading: ["Fraunces", '"Iowan Old Style"', "Palatino", "serif"],
+        body: ['"Source Sans 3"', '"Segoe UI"', "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
       },
       colors: {

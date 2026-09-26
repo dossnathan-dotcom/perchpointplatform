@@ -1,5 +1,5 @@
 import { ClipboardCheck, Landmark, MessageSquareText, ShieldCheck } from "lucide-react";
-import { IMAGES } from "@/data/siteData";
+import { ResponsiveImage } from "@/design-system/library";
 
 const standards = [
   [ClipboardCheck, "Preventive by default", "Property-level schedules keep recurring inspections and maintenance visible before they become emergencies."],
@@ -13,7 +13,7 @@ export const AboutHawkVision = () => (
     <div className="mx-auto max-w-7xl px-5 sm:px-8">
       <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
         <div className="relative aspect-[4/5] overflow-hidden lg:aspect-[5/6]">
-          <img src={IMAGES.skyline} alt="Cincinnati riverfront and skyline" className="h-full w-full object-cover" />
+          <ResponsiveImage name="skyline" alt="Cincinnati riverfront and skyline" width={1352} height={904} className="h-full w-full" />
           <div className="absolute inset-0 bg-gradient-to-t from-obsidian/75 via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 max-w-md p-7 text-linen sm:p-10"><p className="font-mono text-xs uppercase tracking-[0.25em] text-gold">HawkVision Homes</p><p className="mt-4 font-heading text-3xl font-bold">Local property stewardship, connected through PerchPoint.</p></div>
         </div>
