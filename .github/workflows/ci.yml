@@ -221,4 +221,4 @@ jobs:
       - name: Scan API image
         run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
       - name: Scan web image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --format template --template '{{ range . }}{{ range .Vulnerabilities }}{{ .PkgName }} {{ .InstalledVersion }} {{ .PkgPath }}{{ println }}{{ end }}{{ end }}' --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
