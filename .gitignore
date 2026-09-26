@@ -20,6 +20,7 @@ node_modules/
 /coverage
 frontend/playwright-report/
 frontend/test-results/
+frontend/lighthouse-reports/
 frontend/blob-report/
 
 # Next.js
