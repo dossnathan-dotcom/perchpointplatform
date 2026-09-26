@@ -129,6 +129,29 @@ test("accessibility tree exposes language, landmarks, and names", async ({ page 
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
+test("public hero paints without listings or a session", async ({ page }) => {
+  const requests = [];
+  let releaseListings = () => {};
+  const pending = new Promise((resolve) => { releaseListings = resolve; });
+  page.on("request", (request) => requests.push(request.url()));
+  await page.route("**/api/v2/listings", async (route) => {
+    await pending;
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{\"listings\":[]}" });
+  });
+  await page.goto("/");
+  await expect(page.getByTestId("hero-active-heading")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  expect(requests.some((url) => url.includes("/session"))).toBe(false);
+  releaseListings();
+});
+
+test("listing failure keeps the public shell", async ({ page }) => {
+  await page.route("**/api/v2/listings", (route) => route.fulfill({ status: 500, contentType: "application/json", body: "{}" }));
+  await page.goto("/");
+  await expect(page.getByTestId("hero-active-heading")).toBeVisible();
+  await expect(page.getByText("Listings are unavailable.")).toBeVisible();
+});
+
 test("api content security policy rejects inline styles", async ({ request }) => {
   const response = await request.get("http://127.0.0.1:8000/api/v2/health/live");
   const policy = response.headers()["content-security-policy"];

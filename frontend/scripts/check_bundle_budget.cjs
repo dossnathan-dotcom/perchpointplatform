@@ -21,6 +21,7 @@ const main = measured.scripts.find((item) => item.name.startsWith("main."));
 const css = measured.styles.reduce((sum, item) => sum + item.gzip, 0);
 const failures = [];
 if (!main || main.gzip > limits.main) failures.push(`main js ${main ? main.gzip : "missing"} exceeds ${limits.main}`);
+if (main && fs.readFileSync(path.join(jsDir, main.name), "utf8").includes("synthetic_contracts_only")) failures.push("public entry includes foundation data");
 measured.scripts.forEach((item) => {
   if (item.gzip > limits.chunk) failures.push(`${item.name} ${item.gzip} exceeds ${limits.chunk}`);
 });

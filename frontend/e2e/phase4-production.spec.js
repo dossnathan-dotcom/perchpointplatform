@@ -3,9 +3,10 @@ const { test, expect } = require("@playwright/test");
 test("production shell enforces CSP, fonts, images, and the owner preview", async ({ page }) => {
   const violations = [];
   page.on("console", (message) => {
-    if (message.text().includes("Content Security Policy")) violations.push(message.text());
+    if (message.text().includes("Content Security Policy") || /hydration|did not match/i.test(message.text())) violations.push(message.text());
   });
   const home = await page.goto("/");
+  expect(await home.text()).toContain("A better place to rent");
   expect(home.headers()["content-security-policy"]).toContain("style-src-attr 'none'");
   expect(home.headers()["content-security-policy"]).not.toContain("unsafe-inline");
   expect(home.headers()["x-frame-options"]).toBe("DENY");
