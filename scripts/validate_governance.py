@@ -127,8 +127,8 @@ def validate(root: Path = ROOT) -> list[str]:
     ]
     if duplicate_decisions:
         errors.append(f"Duplicate decision IDs: {', '.join(duplicate_decisions)}")
-    if len(decision_records) != 59:
-        errors.append(f"Decision register count changed: found {len(decision_records)}, expected 59")
+    if len(decision_records) != 71:
+        errors.append(f"Decision register count changed: found {len(decision_records)}, expected 71")
     known_requirements = set(ids)
     for decision_id, cells in decision_records:
         if len(cells) != 10:
