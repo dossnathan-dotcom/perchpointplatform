@@ -26,8 +26,27 @@ Closeout Lighthouse on the production static server, simulated throttling:
 - Leasing shell: performance 69, accessibility 100, best practices 100. LCP 6.30 s. CLS 0. TBT 81 ms.
 - Owner shell: performance 69, accessibility 100, best practices 100. LCP 6.30 s. CLS 0. TBT 83 ms.
 
-The public performance scores are below 90 desktop and 85 mobile. The largest element is the hero sentence, and it is painted only after the client-rendered JavaScript runs. The approved stack does not include server rendering, and this closeout does not authorize a framework migration. That constraint is recorded here. It is not a lowered bundle budget. The JavaScript budgets above still pass.
+Those closeout scores failed the approved floors. Pull request 19 treated that failure as an accepted client-rendering constraint. That explanation was wrong. The same production page, after compression, a smaller public entry, and build-time HTML for the stable homepage, meets the floors under the official Lighthouse desktop and mobile presets.
 
-INP: not directly measurable without suitable interaction or field data. Lab interaction proxy: TBT = 116 ms desktop and 138 ms mobile.
+Performance remediation build, gzip:
+
+- `main` JavaScript: 104102 bytes gzip, down from 144486 bytes. The foundation dataset is no longer evaluated in the public entry.
+- Largest lazy chunk: 24577 bytes.
+- CSS: 12717 bytes.
+- Compressed transfer of the public entry is Brotli when the client accepts it, then gzip, then identity.
+
+Local three-run medians on the production static server, official presets, simulated throttling, cold cache:
+
+| Profile | Performance | LCP | CLS | TBT | Accessibility | Best practices | SEO |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Public desktop | 100 | 0.593 s | 0.001 | 0 ms | 100 | 100 | 100 |
+| Public mobile | 99 | 1.995 s | 0.026 | 13 ms | 100 | 100 | 100 |
+| Listing | 99 | 2.194 s | 0 | 15 ms | 100 | 100 | 100 |
+| Leasing shell | 100 | 0.543 s | 0 | 0 ms | 100 | 100 | 100 |
+| Owner shell | 100 | 0.542 s | 0 | 0 ms | 100 | 100 | 100 |
+
+SEO is not a gate for the intentionally non-indexed authenticated routes. Their SEO score remains 63 because of `noindex`.
+
+INP: not directly measurable without suitable interaction or field data. Lab interaction proxy: public TBT median 0 ms desktop and 13 ms mobile. No unexplained long task remains above the approved public TBT floor.
 
 
