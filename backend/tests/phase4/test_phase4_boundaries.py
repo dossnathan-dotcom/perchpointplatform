@@ -22,6 +22,8 @@ def test_honeypot_and_timing_reject_without_storing_raw_ip():
 def test_security_headers_enforce_csp_without_unsafe_eval():
     headers = security_headers("text/html", "/")
     assert "unsafe-eval" not in headers["content-security-policy"]
+    assert "unsafe-inline" not in headers["content-security-policy"]
+    assert "style-src-attr 'none'" in headers["content-security-policy"]
     assert "frame-ancestors 'none'" in headers["content-security-policy"]
     assert headers["cache-control"] == "no-store"
     assert headers["x-frame-options"] == "DENY"

@@ -19,7 +19,8 @@ CSP = (
     "object-src 'none'; "
     "frame-ancestors 'none'; "
     "script-src 'self'; "
-    "style-src 'self' 'unsafe-inline'; "
+    "style-src 'self'; "
+    "style-src-attr 'none'; "
     "img-src 'self' data:; "
     "font-src 'self'; "
     "connect-src 'self'; "
@@ -69,6 +70,9 @@ def media_type(value: str | None, fallback: str) -> str:
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+
+    def do_HEAD(self) -> None:
+        self.do_GET()
 
     def do_GET(self) -> None:
         self._handle()
@@ -132,7 +136,8 @@ class Handler(BaseHTTPRequestHandler):
         for name, value in security_headers(content_type, self.path.split("?", 1)[0]).items():
             self.send_header(name, value)
         self.end_headers()
-        self.wfile.write(payload)
+        if self.command != "HEAD":
+            self.wfile.write(payload)
 
     def log_message(self, fmt: str, *args) -> None:
         path = self.path.split("?", 1)[0]
