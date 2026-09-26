@@ -2,17 +2,23 @@
 
 ## Remediation status
 
-The acceptance recorded below for pull request 16 was provisional. Required automated visual, browser, Lighthouse, responsive, zoom, forced-color, reduced-motion, accessibility-tree, font, image, and CSP evidence had not been executed. Until the closeout pull request is merged and the merged-main workflow passes, the accurate status is:
+The acceptance recorded below for pull request 16 was provisional. Required automated visual, browser, Lighthouse, responsive, zoom, forced-color, reduced-motion, accessibility-tree, font, image, and CSP evidence had not been executed. That provisional status applied until closeout pull request 18 merged and the merged-main workflow passed. Do not treat the historical pull request 16 result as definitive local technical acceptance.
+
+## Definitive local technical acceptance
+
+Closeout pull request 18 merged as `df4cc33759a136181e3b96c4bb0d39544b9550bf`. The merged-main workflow passed: https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36274778554
 
 ```text
 Phase 4 core implementation: merged
-Phase 4 definitive local technical acceptance: pending remediation evidence
+Phase 4 definitive local technical acceptance: granted
 Hosted operational validation: owner-deferred
 Production readiness: blocked
 Phase 5: unauthorized
 ```
 
-Do not treat the historical pull request 16 result as definitive local technical acceptance.
+The grant covers the executed local and CI gates. It does not include hosted validation or production. Public Lighthouse performance stayed below 90 on desktop and 85 on mobile because the approved client-rendered build paints the largest text only after JavaScript. Bundle budgets passed. Automated accessibility, best practices, and public SEO scored 100, and CLS stayed at or below 0.1.
+
+Human NVDA, VoiceOver, Faruk’s brand review, Ann’s operational review, hosted staging, and production accessibility certification remain pre-production deferred.
 
 ## Historical provisional record
 
