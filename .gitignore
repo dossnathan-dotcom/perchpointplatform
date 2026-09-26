@@ -18,6 +18,9 @@ node_modules/
 
 # Testing
 /coverage
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
 
 # Next.js
 /.next/
@@ -34,6 +37,7 @@ dist
 .env
 .env.*
 !.env.example
+!frontend/.env.development
 
 *token.json*
 *credentials.json*

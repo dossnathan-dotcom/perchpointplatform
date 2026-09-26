@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempt_number": {
+      "minimum": 1,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "outbox_id": {
+      "format": "uuid",
+      "title": "Outbox Id",
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "delivered",
+        "retryable",
+        "dead_letter"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "repeats_business_decision": {
+      "const": false,
+      "default": false,
+      "title": "Repeats Business Decision",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "outbox_id",
+    "attempt_number",
+    "started_at",
+    "outcome"
+  ],
+  "title": "DeliveryAttempt",
+  "type": "object"
+}

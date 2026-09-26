@@ -113,6 +113,19 @@
           "default": null,
           "title": "Property Id"
         },
+        "space_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Space Id"
+        },
         "unit_id": {
           "anyOf": [
             {

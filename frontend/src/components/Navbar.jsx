@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Building2, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EnvironmentBanner } from "@/components/EnvironmentBanner";
 
 const links = [
   ["Available Rentals", "/#rentals"],
@@ -17,6 +18,7 @@ export const Navbar = ({ onLoginClick }) => {
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-white/30 bg-obsidian text-linen" data-testid="public-header">
+      <EnvironmentBanner />
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <a href="/" className="flex min-w-0 items-center gap-3" data-testid="nav-brand-hawkvision">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold"><Building2 className="h-5 w-5" /></span>

@@ -1,0 +1,117 @@
+# Disposable local stack. It does not replace native Windows PostgreSQL.
+# Project name perchpoint-phase3 keeps volumes away from other Compose projects.
+# Host ports bind to loopback. Credentials here are disposable local values.
+name: perchpoint-phase3
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local-only-not-production
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - perchpoint_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - data
+  migrate:
+    image: perchpoint-api:local
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment: &app_env
+      PHASE3_ENVIRONMENT: local
+      PHASE2_LOCAL_AUTH: development
+      PHASE2_ADMIN_URL: postgresql+psycopg://postgres:local-only-not-production@postgres:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_JWT_SECRET: local-only-not-production-jwt
+      PHASE2_DEV_PASSWORD: local-only-not-production-password
+      PHASE2_WEBHOOK_SECRET: local-only-not-production-webhook
+    command: ["python", "-m", "perchpoint.bootstrap"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - data
+  seed:
+    image: perchpoint-api:local
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment: *app_env
+    command: ["python", "-m", "perchpoint.seed"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    networks:
+      - data
+  api:
+    image: perchpoint-api:local
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment: *app_env
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v2/health/live')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - data
+      - ingress
+  worker:
+    image: perchpoint-api:local
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment: *app_env
+    command: ["python", "-m", "perchpoint.worker"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    restart: "no"
+    networks:
+      - data
+  web:
+    image: perchpoint-web:local
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    environment:
+      REACT_APP_PHASE3_ENVIRONMENT: local
+      REACT_APP_SHOW_DEMO_LABELS: "true"
+      REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
+      API_PROXY_TARGET: http://api:8000
+    ports:
+      - "127.0.0.1:3000:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - ingress
+volumes:
+  perchpoint_pg:
+networks:
+  data:
+  ingress:

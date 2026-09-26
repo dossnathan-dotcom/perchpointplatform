@@ -1,0 +1,29 @@
+{
+  "additionalProperties": false,
+  "description": "effective_at is inclusive. ended_at is exclusive. Open-ended when ended_at is null.",
+  "properties": {
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "ended_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended At"
+    }
+  },
+  "required": [
+    "effective_at"
+  ],
+  "title": "InclusiveExclusiveDateTimeRange",
+  "type": "object"
+}

@@ -1,0 +1,174 @@
+Use the accepted Phase 2 checkpoint as the Phase 3 base.
+Push the accepted Phase 2 branch and open a PR when authorized GitHub access and required checks are available.
+Merge Phase 2 into main only after independent GitHub CI reproduces the applicable gates.
+Nathan initially holds technical production-release authority.
+Faruk Atmaca gives business authorization for the first real production launch.
+Ann Springer reviews staging and operations but has no deployment authority.
+Faruk is not required to operate technical deployment controls.
+Live production release requires Nathan technical approval and Faruk business approval.
+Nathan may immediately roll back an unsafe release and notify Faruk afterward.
+AI, Emergent, and Cursor agents cannot autonomously deploy production.
+Infrastructure accounts use HawkVision-controlled ownership, not Nathan personal email.
+Preferred operational address is platform@hawkvisionhomes.com only if HawkVision controls that domain and mailbox.
+If that mailbox is unavailable, use a dedicated transferable temporary account approved by Nathan and Faruk, not Nathan personal account.
+Faruk controls billing ownership and ultimate recovery.
+Nathan has his own individual technical administrator access.
+Never share one password between Faruk and Nathan.
+Ann has no infrastructure-console or secrets access absent a later role-specific approval.
+All infrastructure administrators use MFA.
+Recovery information belongs in a company-controlled password vault.
+Never transfer credentials through chat, repository files, text, or ordinary email.
+Define local, PR preview, development, staging, and production environment classes.
+Retain a fully local developer workflow.
+Preserve native Windows and PostgreSQL development.
+Add canonical reproducible Docker Compose without removing native Windows support.
+Give runtime-affecting PRs isolated previews when provider access and cost approval permit.
+Do not create expensive previews for documentation-only PRs.
+Development tracks accepted integration changes.
+Staging is persistent.
+Production has isolated database, services, and credentials.
+PR preview infrastructure expires after PR closure.
+Persistent staging survives PR cleanup.
+Never copy production data directly into development or preview.
+Stage with synthetic, production-scale representative data.
+Any later real-data-shaped debugging requires separately approved irreversible anonymization.
+Nonproduction environments show an unmistakable environment indicator; production keeps normal branding.
+Preserve the present React, FastAPI, and PostgreSQL architecture; no Next.js rewrite.
+Render is the preferred host for web, API, and worker, subject to compatibility and cost verification.
+Supabase is the preferred managed PostgreSQL host, subject to compatibility and cost verification.
+Supabase Auth remains deferred to the identity phase.
+Supabase Storage remains deferred to media and document work.
+Staging and eventual production use isolated database instances or suitable persistent branches.
+PR previews use disposable isolated database branches or databases.
+Keep ordinary PostgreSQL portability and avoid unnecessary Supabase lock-in.
+Put meaningful provider coupling behind adapters.
+Prefer an eastern-US region close to Greater Cincinnati where compatible across services.
+Eventual production services do not sleep.
+Development and preview may sleep to control costs.
+Staging stays available during active development and stakeholder review.
+main is the releasable line, not an agent scratch branch.
+Continue phase-specific Cursor and Emergent branches.
+Emergent naming is emergent/phase-XX-description.
+Cursor naming is cursor/phase-XX-description.
+Use integration/phase-XX when combining independently reviewed work; otherwise use a protected PR.
+Block ordinary direct pushes to main.
+Block force pushes and deletion of main.
+Required CI checks block merging.
+While Nathan is the sole engineer, allow documented technical sign-off after automated gates, without a self-approval review rule.
+Before production launch, obtain qualified independent review for security, payments, screening, and financial changes.
+CODEOWNERS initially identifies Nathan for application and infrastructure ownership.
+Migrations, authorization, payments, and deployment workflows get heightened ownership rules.
+Use immutable semantic release tags.
+Record staging and production release notes and change history.
+GitHub Actions is authoritative CI.
+Linux is canonical CI.
+Add a smaller scheduled Windows portability smoke test.
+Pin Python and Node versions.
+Keep Yarn 1.22.22 until separately approved modernization.
+Use frozen and locked dependency installs.
+Require governance and source-integrity validation.
+Require contract generation and drift validation.
+Require backend pytest, Ruff, Mypy, and compilation.
+Require frontend TypeScript, ESLint, unit tests, and build.
+Run migration and seed tests on disposable real PostgreSQL in CI.
+Test RLS through the restricted runtime role.
+Run Playwright against a real CI app and PostgreSQL.
+Include axe assertions in browser gates.
+Run the full relevant browser suite on runtime-affecting PRs.
+Use a per-PR performance smoke; full design-mix benchmark nightly, before release, and after major query changes.
+Fail newly introduced skips unless allowlisted with owner and expiration.
+A flaky-test quarantine requires issue, owner, expiration, and repair deadline.
+Retain machine-readable test results and useful failure artifacts.
+Retain successful screenshots and videos only as short-lived release evidence.
+Cancel superseded CI runs on the same branch.
+Aim for roughly 15-minute PR feedback without weakening required gates.
+Dependabot covers Python, Yarn, and GitHub Actions.
+Group routine dependency updates weekly.
+Open critical updates promptly.
+Run CodeQL on supported targets when the repository plan permits; record the entitlement otherwise.
+Block new high and critical vulnerable dependencies using available tooling.
+Enable GitHub secret scanning where entitled.
+Add an independent local and CI secret scan such as Gitleaks.
+Scan container images and filesystems when images exist.
+Produce backend and frontend SBOMs.
+Attest release artifact provenance where supported.
+Pin third-party Actions to immutable SHAs.
+Default workflow permissions to read-only; expand narrowly per job.
+Do not run untrusted PR code in privileged pull_request_target workflows.
+Development deploys automatically after accepted integration changes.
+Staging promotion requires passing CI and Nathan explicit approval.
+Live production promotion requires staging evidence, Nathan technical approval, and Faruk business approval.
+Promote an identical tested artifact or digest; do not silently rebuild materially different production code.
+Run migrations through an explicit controlled predeploy step.
+Prefer expand-and-contract migrations.
+Destructive migrations require a backup, rehearsal, and explicit approval.
+Health and smoke checks precede healthy traffic status.
+Failed health checks stop or roll back the release.
+Feature-flag incomplete or risky capabilities.
+Production flags default secure and off.
+Ordinary live releases occur Tuesday through Thursday during staffed daytime hours.
+Emergency fixes may occur outside that window.
+Prefer GitHub OIDC for deployment identity where the selected provider supports it.
+Avoid long-lived cloud deployment keys.
+Keep local secrets in ignored .env and commit only safe examples.
+Separate secrets per environment.
+Never pass server secrets into frontend builds.
+Database-owner and service credentials remain server-only.
+Limit secret access to Nathan and necessary runtimes.
+Faruk retains break-glass recovery access without routine secret handling.
+Audit secret access and changes through available provider controls.
+Rotate immediately after suspected exposure or departure.
+Rotate high-value credentials at least every 90 days where practical, without creating downtime only to meet a date.
+Revoke exposed secrets even if Git history is rewritten.
+Validate environment configuration on startup.
+Refuse production startup with local-development auth, synthetic credentials, or unsafe defaults.
+Target pre-financial RPO of at most one hour.
+Target pre-financial RTO of at most four hours.
+Tighten targets after live financial operations to about 15-minute RPO and 2-hour RTO.
+Eventual production PostgreSQL uses PITR.
+PITR retains at least seven days.
+Once real data exists, keep encrypted daily logical backups for 30 days.
+Keep monthly recovery points for 12 months only where approved retention permits.
+Separate backup copies from primary application authority where practical.
+Treat backups as sensitive production data.
+Backup creation alone is not restore evidence.
+Run restore drills in isolated recovery infrastructure without overwriting staging.
+Perform an actual synthetic-data restore drill during Phase 3.
+Repeat restore drills at least quarterly after launch.
+Recovery covers database loss, bad migration, bad app release, exposed secret, and provider outage.
+Runbooks include owner, commands, communication, and verification.
+Nathan may initiate immediate rollback or recovery before a business meeting.
+Use Sentry for frontend and backend exceptions when an owned account is available.
+Map releases, commits, and readable source maps.
+Start with conservative trace sampling.
+Use structured JSON logs and correlation IDs.
+Exclude credentials, full payment data, screening reports, and unnecessary PII from logs.
+Separate liveness from readiness.
+Readiness checks critical dependencies without leaking details.
+Monitor public site and API separately.
+Add a safe synthetic representative monitor.
+Technical alerts initially reach Nathan.
+Faruk receives business-critical or prolonged-outage escalation, not routine alerts.
+Ann receives relevant operational outage alerts once those live workflows exist.
+Define SEV-1 through SEV-4 as specified.
+SEV-1 requires immediate response and Faruk notification.
+SEV-2 targets acknowledgment within 30 minutes during supported hours.
+Every SEV-1 and SEV-2 gets a written incident review.
+Reviews emphasize corrective systems, not blame.
+Target 99.9 percent monthly core-portal availability after launch.
+Attribute infrastructure spend by environment.
+Automatically expire preview resources.
+Configure monthly cost alerts.
+Initial technical cost alerts reach Nathan.
+Faruk receives a simple monthly cost summary.
+Review projected spend growth exceeding 20 percent.
+Provide one-command or clearly scripted local setup.
+Provide environment, deploy, rollback, backup, restore, secret-rotation, and incident runbooks.
+A competent second engineer can rebuild from source plus authorized secrets.
+Rehearse setup from a clean environment.
+Deliberately fail a synthetic deployment and prove rollback.
+Deliberately fail a disposable migration, or a safe equivalent, and prove recovery.
+Prove restoration of a controlled synthetic backup.
+Document every necessary provider-dashboard setting.
+Block production activation until later identity, legal, provider, migration, and business gates pass.
+Phase 3 exits only with reproducible CI, staging, secrets, rollback, restore, monitoring, and runbooks.

@@ -14,12 +14,13 @@ import { Navbar } from "@/components/Navbar";
 import { Neighborhoods } from "@/components/Neighborhoods";
 import { PerchPointPortal } from "@/components/PerchPointPortal";
 import { PropertyDetailPage } from "@/components/PropertyDetailPage";
-import { PropertyHierarchyView } from "@/components/PropertyHierarchyView";
 import { ResidentResources } from "@/components/ResidentResources";
 import { TourModal } from "@/components/TourModal";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { Button } from "@/components/ui/button";
-import { RENTALS } from "@/data/siteData";
+import { startSentry } from "@/sentry";
 import FoundationPage from "@/components/FoundationPage";
+import { ReferenceOperations } from "@/components/ReferenceOperations";
 
 const PortalGate = ({ onLogin }) => (
   <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-5 text-linen" data-testid="perchpoint-portal-gate">
@@ -42,13 +43,13 @@ export function AppContent() {
   const [requestOpen, setRequestOpen] = useState(false);
   const [maintenanceOpen, setMaintenanceOpen] = useState(false);
   const [requestIntent, setRequestIntent] = useState("showing");
-  const [requestProperty, setRequestProperty] = useState(RENTALS[0]);
+  const [requestProperty, setRequestProperty] = useState(null);
 
   // Preview overlays belong to the history entry that opened them, not to the app session.
   const loginOpen = loginLocationKey === location.key;
   const setLoginOpen = (open) => setLoginLocationKey(open ? location.key : null);
   const openLogin = (role = "resident") => { setLoginRole(role); setLoginOpen(true); };
-  const openRequest = (property = RENTALS[0], intent = "showing") => { setRequestProperty(intent === 'contact' ? null : property); setRequestIntent(intent); setRequestOpen(true); };
+  const openRequest = (property = null, intent = "showing") => { setRequestProperty(intent === 'contact' ? null : property); setRequestIntent(intent); setRequestOpen(true); };
   const handleLogin = (account) => { setLoginLocationKey(null); navigate(`/perchpoint/${account.id}`); };
   useEffect(() => {
     setLoginLocationKey(null);
@@ -60,7 +61,7 @@ export function AppContent() {
     <>
       <Routes>
         <Route element={<PublicLayout onLogin={() => openLogin("resident")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
-        <Route path="/" element={<main><Hero onSchedule={() => openRequest(RENTALS[0], "showing")} onMaintenance={() => setMaintenanceOpen(true)} /><Listings onRequest={openRequest} /><PropertyHierarchyView /><HowToApply onApply={() => openRequest(RENTALS[0], "application")} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true)} onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route path="/" element={<main><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true)} onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
         <Route path="/property/:propertyId" element={<PropertyDetailPage onRequest={openRequest} />} />
         <Route path="/rentals/:unitId" element={<PropertyDetailPage onRequest={openRequest} />} />
         </Route>
@@ -68,6 +69,7 @@ export function AppContent() {
         <Route path="/perchpoint/:roleId/:viewId?" element={<PerchPointPortal key={location.key} />} />
         <Route path="/perchpoint/*" element={<PageNotFound />} />
         <Route path="/foundation/:sectionId?" element={<FoundationPage key={location.key} />} />
+        <Route path="/reference" element={<ReferenceOperations />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       {loginOpen && <LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />}
@@ -78,6 +80,8 @@ export function AppContent() {
   );
 }
 
+startSentry();
+
 export default function App() {
-  return <BrowserRouter><AppContent /></BrowserRouter>;
+  return <AppErrorBoundary><BrowserRouter><AppContent /></BrowserRouter></AppErrorBoundary>;
 }

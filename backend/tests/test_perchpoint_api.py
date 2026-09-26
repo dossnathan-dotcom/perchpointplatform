@@ -1,32 +1,9 @@
 """PerchPoint API smoke and integration tests for Phase 0 demo flows."""
 
-import os
-
-import pytest
-import requests
-from dotenv import load_dotenv
-
-load_dotenv("/app/frontend/.env")
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL")
-
-
-@pytest.fixture(scope="session")
-def api_base_url():
-    if not BASE_URL:
-        pytest.skip("REACT_APP_BACKEND_URL is not set")
-    return BASE_URL.rstrip("/")
-
-
-@pytest.fixture(scope="session")
-def api_client():
-    session = requests.Session()
-    session.headers.update({"Content-Type": "application/json"})
-    return session
-
 
 # health and catalog endpoints
-def test_health_endpoint(api_client, api_base_url):
-    response = api_client.get(f"{api_base_url}/api/health", timeout=20)
+def test_health_endpoint(phase0_http_client, phase0_base_url):
+    response = phase0_http_client.get(f"{phase0_base_url}/api/health", timeout=20)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
@@ -34,8 +11,8 @@ def test_health_endpoint(api_client, api_base_url):
 
 
 # public properties feed returns canonical property records
-def test_properties_endpoint(api_client, api_base_url):
-    response = api_client.get(f"{api_base_url}/api/properties", timeout=20)
+def test_properties_endpoint(phase0_http_client, phase0_base_url):
+    response = phase0_http_client.get(f"{phase0_base_url}/api/properties", timeout=20)
     assert response.status_code == 200
     data = response.json()
     assert data["data_status"] == "demonstration_phase_0"
@@ -48,7 +25,7 @@ def test_properties_endpoint(api_client, api_base_url):
 
 
 # showing/application lead capture endpoint
-def test_create_showing_lead(api_client, api_base_url):
+def test_create_showing_lead(phase0_http_client, phase0_base_url):
     payload = {
         "name": "TEST_QA User",
         "email": "qa.tester+showing@example.com",
@@ -57,7 +34,7 @@ def test_create_showing_lead(api_client, api_base_url):
         "property_id": "412-elm-unit-a",
         "preferred_date": "2026-03-10",
     }
-    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    response = phase0_http_client.post(f"{phase0_base_url}/api/leads", json=payload, timeout=20)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "received"
@@ -66,7 +43,7 @@ def test_create_showing_lead(api_client, api_base_url):
 
 
 # application interest route shares same lead endpoint
-def test_create_application_interest_lead(api_client, api_base_url):
+def test_create_application_interest_lead(phase0_http_client, phase0_base_url):
     payload = {
         "name": "TEST_QA Applicant",
         "email": "qa.tester+apply@example.com",
@@ -75,7 +52,7 @@ def test_create_application_interest_lead(api_client, api_base_url):
         "property_id": "clifton-duplex-unit-b",
         "preferred_date": "2026-03-14",
     }
-    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    response = phase0_http_client.post(f"{phase0_base_url}/api/leads", json=payload, timeout=20)
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "received"
@@ -84,7 +61,7 @@ def test_create_application_interest_lead(api_client, api_base_url):
 
 
 # non-emergency maintenance submission flow
-def test_create_maintenance_request(api_client, api_base_url):
+def test_create_maintenance_request(phase0_http_client, phase0_base_url):
     payload = {
         "name": "TEST_QA Resident",
         "email": "qa.tester+maintenance@example.com",
@@ -94,7 +71,9 @@ def test_create_maintenance_request(api_client, api_base_url):
         "description": "Kitchen sink leaking steadily below the trap.",
         "permission_to_enter": True,
     }
-    response = api_client.post(f"{api_base_url}/api/maintenance-requests", json=payload, timeout=20)
+    response = phase0_http_client.post(
+        f"{phase0_base_url}/api/maintenance-requests", json=payload, timeout=20
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "submitted"
@@ -103,8 +82,8 @@ def test_create_maintenance_request(api_client, api_base_url):
 
 
 # canonical unit/property mismatch should be rejected
-def test_create_lead_rejects_unit_property_mismatch(api_client, api_base_url):
-    rentals = api_client.get(f"{api_base_url}/api/rentals", timeout=20)
+def test_create_lead_rejects_unit_property_mismatch(phase0_http_client, phase0_base_url):
+    rentals = phase0_http_client.get(f"{phase0_base_url}/api/rentals", timeout=20)
     assert rentals.status_code == 200
     units = rentals.json()["units"]
     target_unit = next((u for u in units if u.get("property_id") and u.get("id")), None)
@@ -119,13 +98,13 @@ def test_create_lead_rejects_unit_property_mismatch(api_client, api_base_url):
         "property_id": wrong_property,
         "unit_id": target_unit["id"],
     }
-    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    response = phase0_http_client.post(f"{phase0_base_url}/api/leads", json=payload, timeout=20)
     assert response.status_code == 422
     assert "Unit must belong to the referenced canonical property" in response.json()["detail"]
 
 
 # synthetic-only domain validation for public forms
-def test_lead_rejects_non_example_domain(api_client, api_base_url):
+def test_lead_rejects_non_example_domain(phase0_http_client, phase0_base_url):
     payload = {
         "name": "TEST_QA Domain Guard",
         "email": "qa.real@gmail.com",
@@ -133,15 +112,15 @@ def test_lead_rejects_non_example_domain(api_client, api_base_url):
         "message": "Should fail synthetic domain rule",
         "property_id": "412-elm-unit-a",
     }
-    response = api_client.post(f"{api_base_url}/api/leads", json=payload, timeout=20)
+    response = phase0_http_client.post(f"{phase0_base_url}/api/leads", json=payload, timeout=20)
     assert response.status_code == 422
     assert "Synthetic requests only" in response.json()["detail"]
 
 
 # auth endpoint is intentionally absent in phase 0
-def test_auth_endpoint_absent_by_design(api_client, api_base_url):
-    response = api_client.post(
-        f"{api_base_url}/api/auth/login",
+def test_auth_endpoint_absent_by_design(phase0_http_client, phase0_base_url):
+    response = phase0_http_client.post(
+        f"{phase0_base_url}/api/auth/login",
         json={"email": "any@example.com", "password": "unused"},
         timeout=20,
     )
@@ -149,7 +128,7 @@ def test_auth_endpoint_absent_by_design(api_client, api_base_url):
 
 
 # validation handling for incomplete maintenance payload
-def test_maintenance_validation_error(api_client, api_base_url):
+def test_maintenance_validation_error(phase0_http_client, phase0_base_url):
     payload = {
         "name": "A",
         "email": "invalid-email",
@@ -159,7 +138,9 @@ def test_maintenance_validation_error(api_client, api_base_url):
         "description": "short",
         "permission_to_enter": False,
     }
-    response = api_client.post(f"{api_base_url}/api/maintenance-requests", json=payload, timeout=20)
+    response = phase0_http_client.post(
+        f"{phase0_base_url}/api/maintenance-requests", json=payload, timeout=20
+    )
     assert response.status_code == 422
     data = response.json()
     assert "detail" in data

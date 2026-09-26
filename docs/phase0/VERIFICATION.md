@@ -1,5 +1,30 @@
 # Verification — 2026-09-21
 
+## 2026-09-23 narrow remediation closure
+This section supersedes earlier current-result counts while preserving the historical record
+below.
+
+- Source: roadmap 17/17 pages, discovery 29/29 pages, and Platform Vision 2/2 pages are
+  hash-verified. Platform Vision pre/post preservation checksums match, and repeated direct
+  extraction is deterministic. `python scripts/verify_sources.py` passes with zero OCR pages.
+- Backend, from `backend/`: `pytest -q -rs` — **58 passed, 0 failed, 0 skipped**, seven
+  deprecation warnings. The formerly skipped 17 API cases now run locally in process and retain
+  disposable live-URL mode.
+- Portability: 36 contract/guard tests passed from both repository root and `backend/`.
+- Backend quality: exporter verified **67** artifacts; Ruff passed foundation, server, tests,
+  governance validator, and source validator; Mypy passed 15 source files; compileall passed.
+- Frontend clean reproduction: deleted `node_modules`, then
+  `corepack yarn install --frozen-lockfile --non-interactive` passed with the documented
+  peer/resolution/deprecation warnings.
+- Frontend quality: generated TypeScript check, TypeScript 4.9.5, ESLint, **22/22 Jest tests**,
+  and optimized build passed. Audited runtime: Node 24.13.0, Yarn 1.22.22.
+- Governance: **71 requirements**, **58 approved decisions**, 14 prefixes, 100% decision
+  references resolved, zero orphaned decisions; source-integrity validation is part of the
+  **5/5** governance regression tests.
+
+No provider, production identity, deployment, migration, payment, screening, signature,
+communication, or Phase 2 capability was activated.
+
 ## Latest narrowly scoped remediation
 The later live review exposed a role-navigation concern not established by the earlier broad verification. The original report below remains historical evidence, not a guarantee against that finding.
 

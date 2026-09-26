@@ -1,0 +1,29 @@
+{
+  "additionalProperties": false,
+  "description": "effective_on is inclusive. ended_on is exclusive. Open-ended when ended_on is null.",
+  "properties": {
+    "effective_on": {
+      "format": "date",
+      "title": "Effective On",
+      "type": "string"
+    },
+    "ended_on": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended On"
+    }
+  },
+  "required": [
+    "effective_on"
+  ],
+  "title": "InclusiveExclusiveDateRange",
+  "type": "object"
+}

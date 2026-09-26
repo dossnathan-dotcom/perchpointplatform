@@ -1,0 +1,50 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "abuse_control": {
+      "const": "rate_limit_and_fingerprint_required",
+      "title": "Abuse Control",
+      "type": "string"
+    },
+    "correlation_id": {
+      "format": "uuid",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "inquiry_id": {
+      "format": "uuid",
+      "title": "Inquiry Id",
+      "type": "string"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "retry_semantics": {
+      "const": "identical_key_and_fingerprint_replays_ack",
+      "title": "Retry Semantics",
+      "type": "string"
+    },
+    "status": {
+      "const": "received",
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "const": true,
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "inquiry_id",
+    "status",
+    "message",
+    "correlation_id",
+    "abuse_control",
+    "retry_semantics"
+  ],
+  "title": "PublicInquiryAcknowledgement",
+  "type": "object"
+}

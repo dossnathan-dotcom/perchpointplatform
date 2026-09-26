@@ -15,10 +15,11 @@ from . import (
     people,
     permissions,
     property,
+    reference,
     workflows,
 )
 from .catalog import foundation_bundle, migration_fixture
-from .seeds import portfolio
+from .seeds import portfolio, reference_slice
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -26,13 +27,13 @@ ROOT = Path(__file__).resolve().parents[2]
 def artifacts():
     bundle = foundation_bundle()
     schemas = {}
-    for module in [base, property, people, permissions, delegation, integrations, workflows, governance, migration]:
+    for module in [base, property, people, permissions, delegation, integrations, workflows, governance, migration, reference]:
         for name, cls in inspect.getmembers(module, inspect.isclass):
             if issubclass(cls, base.Contract) and cls.__module__ == module.__name__:
                 schemas[name] = cls.model_json_schema()
     def json_text(value):
         return json.dumps(value, indent=2, sort_keys=True)+"\n"
-    output = {ROOT / "contracts/generated/schema-index.json": json_text({"version":"0.1.0", "schemas":list(schemas)}), ROOT / "frontend/src/data/generated/foundation.json": json_text(bundle), ROOT / "contracts/fixtures/portfolio.json": json_text(bundle["portfolio"]), ROOT / "contracts/fixtures/people.json": json_text(bundle["people"]), ROOT / "contracts/fixtures/migration-report.json":json_text(bundle["migration"]), ROOT / "contracts/fixtures/synthetic-innago.csv":migration_fixture(portfolio()), ROOT / "contracts/fixtures/import-template.csv":",".join(migration.CSV_COLUMNS)+"\n"}
+    output = {ROOT / "contracts/generated/schema-index.json": json_text({"version":"0.1.0", "schemas":list(schemas)}), ROOT / "frontend/src/data/generated/foundation.json": json_text(bundle), ROOT / "contracts/fixtures/portfolio.json": json_text(bundle["portfolio"]), ROOT / "contracts/fixtures/people.json": json_text(bundle["people"]), ROOT / "contracts/fixtures/migration-report.json":json_text(bundle["migration"]), ROOT / "contracts/fixtures/reference-slice.json": json_text(reference_slice().model_dump(mode="json")), ROOT / "contracts/fixtures/synthetic-innago.csv":migration_fixture(portfolio()), ROOT / "contracts/fixtures/import-template.csv":",".join(migration.CSV_COLUMNS)+"\n"}
     for name, schema in schemas.items():
         output[ROOT / f"contracts/generated/{name}.schema.json"] = json_text(schema)
     matrix = bundle["permissions"]

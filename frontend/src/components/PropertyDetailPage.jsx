@@ -1,32 +1,64 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarCheck, FileText } from 'lucide-react';
-import { ALL_UNITS, money, PORTFOLIO } from '@/data/siteData';
-import { Button } from '@/components/ui/button';
-import { DemoNotice } from './DemoNotice';
-import { UnitFacts, UnitTerms } from './UnitFacts';
+import { ArrowLeft } from 'lucide-react';
+import { phase2, moneyMinor } from '@/api/phase2';
 
-export const PropertyDetailPage = ({ onRequest }) => {
+export const PropertyDetailPage = () => {
   const { unitId, propertyId } = useParams();
-  const unit = ALL_UNITS.find((u) => u.id === (unitId || propertyId));
-  useEffect(() => window.scrollTo(0, 0), [unitId, propertyId]);
-  if (!unit) return <main className="min-h-screen bg-obsidian px-6 pb-20 pt-40 text-linen" data-testid="property-detail-page"><h1 className="font-heading text-4xl">This example unit is not available.</h1><Link className="mt-8 block underline" to="/#rentals" data-testid="property-detail-back-btn">Return to rentals</Link></main>;
-  const building = PORTFOLIO.buildings.find((b) => b.id === unit.buildingId);
-  return <main data-testid="property-detail-page">
-    <section className="relative bg-obsidian pb-14 pt-36 text-linen">
-      <img src={unit.image} alt="Illustrative architecture, not this synthetic unit" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="hero-vignette absolute inset-0" />
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
-        <Link to="/#rentals" className="inline-flex items-center gap-2 py-4 text-sm underline" data-testid="property-detail-back-btn"><ArrowLeft size={16} />All rental examples</Link>
-        <DemoNotice id="property-detail-demo-notice" className="mt-8 text-gold" />
-        <h1 className="mt-5 max-w-4xl font-heading text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl" data-testid="unit-detail-title">{unit.title}</h1>
-        <p className="mt-6 max-w-2xl leading-7" data-testid="unit-detail-address">{unit.address} · {unit.neighborhood}</p>
-        <p className="mt-8 font-heading text-3xl" data-testid="unit-detail-rent">{money(unit.rent, unit.currency)} <span className="font-body text-base">{unit.use === 'Commercial' ? `base rent / ${unit.commercial.rent_period}` : '/ month'}</span></p>
-      </div>
-    </section>
-    <section className="bg-linen py-16"><div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
-      <div><p className="text-sm text-copper" data-testid="unit-detail-hierarchy">{unit.propertyName} → {building.name} → Unit {unit.unit}</p><h2 className="mt-5 font-heading text-3xl font-bold">A space with its own story.</h2><p className="mt-5 leading-8 text-stone-600">{unit.note}</p><UnitFacts unit={unit} prefix="detail" /><img className="mt-8 aspect-[4/3] w-full object-contain bg-stone-100" src={unit.image} alt="Illustrative reference only; not a verified unit photograph" data-testid="property-gallery-image-1" /><p className="mt-3 text-sm text-stone-600" data-testid="unit-photo-disclosure">Illustrative imagery. The address, terms and unit are fictional examples.</p></div>
-      <aside className="border-t border-stone-300 pt-6" data-testid="property-detail-terms-card"><h2 className="font-heading text-2xl font-bold">{unit.use === 'Commercial' ? 'Commercial leasing terms' : 'Residential terms'}</h2><UnitTerms unit={unit} prefix="detail-term" /><div className="mt-8 flex flex-wrap gap-3"><Button className="bg-copper text-white hover:bg-copperDark" onClick={() => onRequest(unit, 'showing')} data-testid="property-detail-showing-btn"><CalendarCheck size={16} />Preview showing request</Button><Button variant="outline" onClick={() => onRequest(unit, 'application')} data-testid="property-detail-apply-btn"><FileText size={16} />Application interest</Button></div></aside>
+  const listingId = unitId || propertyId;
+  const [state, setState] = useState('loading');
+  const [listing, setListing] = useState(null);
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [notice, setNotice] = useState('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    let active = true;
+    setState('loading');
+    phase2(`/api/v2/listings/${listingId}`).then(({ response, body }) => {
+      if (!active) return;
+      if (response.status === 404) setState('missing');
+      else if (!response.ok) setState('unavailable');
+      else { setListing(body); setState('ready'); }
+    }).catch(() => { if (active) setState('unavailable'); });
+    return () => { active = false; };
+  }, [listingId]);
+
+  async function submit(event) {
+    event.preventDefault();
+    if (!form.name.trim() || !form.email.includes('@') || form.message.trim().length < 2) {
+      setNotice('Enter your name, email, and a short message.');
+      return;
+    }
+    const key = sessionStorage.getItem(`inquiry-${listingId}`) || `web-${listingId}-${Date.now()}`;
+    sessionStorage.setItem(`inquiry-${listingId}`, key);
+    setNotice('Sending inquiry.');
+    const { response, body } = await phase2('/api/v2/inquiries', { method: 'POST', body: JSON.stringify({ listing_id: listingId, name: form.name, email: form.email, intent: 'showing', message: form.message, idempotency_key: key }) });
+    if (response.status === 409) setNotice('This page already sent a different inquiry with the same key. Refresh and try again.');
+    else if (!response.ok) setNotice(body.detail?.message || 'The inquiry was not accepted.');
+    else setNotice(`Inquiry received. Reference ${body.inquiry_id}. Sending again will not create a duplicate.`);
+  }
+
+  if (state === 'loading') return <main className="min-h-screen bg-linen px-6 pb-20 pt-40"><p role="status">Loading listing.</p></main>;
+  if (state === 'missing') return <main className="min-h-screen bg-obsidian px-6 pb-20 pt-40 text-linen"><h1 className="font-heading text-4xl">This listing is not public.</h1><p className="mt-4">It may be unpublished, restricted, or unknown.</p><Link className="mt-8 block underline" to="/#rentals">Return to rentals</Link></main>;
+  if (state === 'unavailable') return <main className="min-h-screen bg-linen px-6 pb-20 pt-40" role="alert"><h1 className="font-heading text-4xl">This listing is unavailable.</h1><button type="button" className="mt-6 underline" onClick={() => window.location.reload()}>Try again</button></main>;
+  return <main>
+    <section className="bg-obsidian pb-14 pt-36 text-linen"><div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <Link to="/#rentals" className="inline-flex items-center gap-2 py-4 text-sm underline"><ArrowLeft size={16} />All published rentals</Link>
+      <p className="mt-6 text-xs uppercase tracking-widest text-gold">{listing.use} · {listing.availability}</p>
+      <h1 className="mt-4 font-heading text-5xl font-bold">{listing.property_name}</h1>
+      <p className="mt-4">{listing.label} · {listing.municipality}, {listing.state}</p>
+      <p className="mt-6 font-heading text-3xl">{moneyMinor(listing.amount_minor, listing.currency)} <span className="font-body text-base">/ month</span></p>
+    </div></section>
+    <section className="bg-linen py-16"><div className="mx-auto max-w-xl px-5">
+      <h2 className="font-heading text-3xl">Request a showing</h2>
+      <form className="mt-6 space-y-4" onSubmit={submit}>
+        <label className="block">Name<input className="mt-1 w-full border px-3 py-2" name="guest-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required /></label>
+        <label className="block">Email<input className="mt-1 w-full border px-3 py-2" name="guest-email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required /></label>
+        <label className="block">Message<textarea className="mt-1 w-full border px-3 py-2" name="guest-message" value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} required /></label>
+        <button className="bg-obsidian px-4 py-3 text-linen" type="submit" data-testid="public-inquiry-submit">Submit inquiry</button>
+      </form>
+      <p className="mt-4" role="status" data-testid="public-inquiry-status">{notice}</p>
     </div></section>
   </main>;
 };

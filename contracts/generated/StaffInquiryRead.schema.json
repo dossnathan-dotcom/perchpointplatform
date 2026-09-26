@@ -1,0 +1,120 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "assigned_staff_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assigned Staff Id"
+    },
+    "email": {
+      "title": "Email",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "intent": {
+      "enum": [
+        "showing",
+        "application",
+        "contact",
+        "other"
+      ],
+      "title": "Intent",
+      "type": "string"
+    },
+    "listing_id": {
+      "format": "uuid",
+      "title": "Listing Id",
+      "type": "string"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "preferred_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Preferred Date"
+    },
+    "received_at": {
+      "format": "date-time",
+      "title": "Received At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "space_id": {
+      "format": "uuid",
+      "title": "Space Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "new",
+        "assigned",
+        "waiting",
+        "closed_duplicate",
+        "closed_not_pursuing"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": true,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "listing_id",
+    "organization_id",
+    "space_id",
+    "status",
+    "name",
+    "email",
+    "intent",
+    "message",
+    "received_at",
+    "version"
+  ],
+  "title": "StaffInquiryRead",
+  "type": "object"
+}

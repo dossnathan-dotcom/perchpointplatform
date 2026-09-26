@@ -1,0 +1,9 @@
+---
+description: Source precedence and conflict handling
+alwaysApply: true
+---
+
+Apply `docs/product/SOURCE_PRECEDENCE.md`. Never resolve conflicting requirements
+silently. Classify facts, approved decisions, assumptions, recommendations, existing behavior,
+and aspirations. Add conflicts to `docs/source/provenance/SOURCE_CONFLICT_REGISTER.md`.
+Requirement: `PP-GOV-001`.

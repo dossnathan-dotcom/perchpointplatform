@@ -36,3 +36,9 @@ No real identity verification is claimed. The seed uses `synthetic` identity/acc
 UUIDv5 is used only for repeatable fixtures in a dedicated PerchPoint namespace. Later production creation must issue stable server-controlled UUIDs. `ExternalReference` maps organization/integration/environment/provider-object identity to a canonical resource UUID. Provider strings never replace canonical keys.
 Unit lease/ledger/document/utility/access workflows are future related records, not duplicate unit records per portal. This iteration defines contracts and relationships; it does not persist or execute those workflows.
 Before PostgreSQL implementation, add foreign keys, composite organization constraints, uniqueness, relationship validity intervals, immutable history and tested RLS. Pydantic validation is not a database constraint.
+
+## Phase 2 addendum (CONFLICT-008 and CONFLICT-009)
+
+The arrow `Organization → OwnershipEntity → Property → Building → Unit` remains the Phase 0 fixture projection. It is not a mandatory legal-entity to portfolio to household foreign-key chain. Phase 2 reference contracts in `backend/foundation/reference.py` keep physical containment (`property → building → leasable space`) separate from effective-dated ownership, management, portfolio membership, and occupancy.
+
+`Unit.status` (`available`, `occupied`, `unavailable`) stays the Phase 0 field. `project_phase0_unit_status` maps it only onto occupancy and availability, and leaves condition, publication, maintenance restriction, and legal restriction unresolved unless a later explicit fact says otherwise. That projection is not a database constraint and does not prove PostgreSQL or RLS behavior.

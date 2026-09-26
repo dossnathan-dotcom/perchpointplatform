@@ -1,0 +1,818 @@
+{
+  "$defs": {
+    "HouseholdPortalAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "account_id": {
+          "format": "uuid",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "authorization_reason": {
+          "title": "Authorization Reason",
+          "type": "string"
+        },
+        "household_id": {
+          "format": "uuid",
+          "title": "Household Id",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/InclusiveExclusiveDateTimeRange"
+        },
+        "kind": {
+          "enum": [
+            "primary",
+            "additional"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "person_id": {
+          "format": "uuid",
+          "title": "Person Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "household_id",
+        "person_id",
+        "account_id",
+        "kind",
+        "interval",
+        "authorization_reason"
+      ],
+      "title": "HouseholdPortalAccess",
+      "type": "object"
+    },
+    "InclusiveExclusiveDateRange": {
+      "additionalProperties": false,
+      "description": "effective_on is inclusive. ended_on is exclusive. Open-ended when ended_on is null.",
+      "properties": {
+        "effective_on": {
+          "format": "date",
+          "title": "Effective On",
+          "type": "string"
+        },
+        "ended_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ended On"
+        }
+      },
+      "required": [
+        "effective_on"
+      ],
+      "title": "InclusiveExclusiveDateRange",
+      "type": "object"
+    },
+    "InclusiveExclusiveDateTimeRange": {
+      "additionalProperties": false,
+      "description": "effective_at is inclusive. ended_at is exclusive. Open-ended when ended_at is null.",
+      "properties": {
+        "effective_at": {
+          "format": "date-time",
+          "title": "Effective At",
+          "type": "string"
+        },
+        "ended_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ended At"
+        }
+      },
+      "required": [
+        "effective_at"
+      ],
+      "title": "InclusiveExclusiveDateTimeRange",
+      "type": "object"
+    },
+    "ManagementRelationship": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/InclusiveExclusiveDateRange"
+        },
+        "manager_organization_id": {
+          "format": "uuid",
+          "title": "Manager Organization Id",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "property_id": {
+          "format": "uuid",
+          "title": "Property Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "manager_organization_id",
+        "property_id",
+        "interval"
+      ],
+      "title": "ManagementRelationship",
+      "type": "object"
+    },
+    "Money": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount_minor",
+        "currency"
+      ],
+      "title": "Money",
+      "type": "object"
+    },
+    "OccupancyRelationship": {
+      "additionalProperties": false,
+      "properties": {
+        "business_party_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Business Party Id"
+        },
+        "household_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Household Id"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/InclusiveExclusiveDateTimeRange"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "space_id": {
+          "format": "uuid",
+          "title": "Space Id",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "space_id",
+        "interval"
+      ],
+      "title": "OccupancyRelationship",
+      "type": "object"
+    },
+    "OwnershipRelationship": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/InclusiveExclusiveDateRange"
+        },
+        "legal_entity_id": {
+          "format": "uuid",
+          "title": "Legal Entity Id",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "property_id": {
+          "format": "uuid",
+          "title": "Property Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "legal_entity_id",
+        "property_id",
+        "interval"
+      ],
+      "title": "OwnershipRelationship",
+      "type": "object"
+    },
+    "PortfolioGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "label"
+      ],
+      "title": "PortfolioGroup",
+      "type": "object"
+    },
+    "PortfolioMembership": {
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "format": "uuid",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/InclusiveExclusiveDateRange"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "property_id": {
+          "format": "uuid",
+          "title": "Property Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "group_id",
+        "property_id",
+        "interval"
+      ],
+      "title": "PortfolioMembership",
+      "type": "object"
+    },
+    "PublishedListingRead": {
+      "additionalProperties": false,
+      "properties": {
+        "availability": {
+          "const": "offerable",
+          "title": "Availability",
+          "type": "string"
+        },
+        "available_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Available Date"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "listing_id": {
+          "format": "uuid",
+          "title": "Listing Id",
+          "type": "string"
+        },
+        "monthly_amount": {
+          "$ref": "#/$defs/Money"
+        },
+        "municipality": {
+          "title": "Municipality",
+          "type": "string"
+        },
+        "property_name": {
+          "title": "Property Name",
+          "type": "string"
+        },
+        "publication": {
+          "const": "published",
+          "title": "Publication",
+          "type": "string"
+        },
+        "space_id": {
+          "format": "uuid",
+          "title": "Space Id",
+          "type": "string"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        },
+        "synthetic": {
+          "const": true,
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        },
+        "use": {
+          "enum": [
+            "residential",
+            "commercial"
+          ],
+          "title": "Use",
+          "type": "string"
+        }
+      },
+      "required": [
+        "listing_id",
+        "space_id",
+        "property_name",
+        "label",
+        "use",
+        "municipality",
+        "state",
+        "publication",
+        "availability",
+        "monthly_amount"
+      ],
+      "title": "PublishedListingRead",
+      "type": "object"
+    },
+    "SpaceOperatingState": {
+      "additionalProperties": false,
+      "properties": {
+        "availability": {
+          "enum": [
+            "offerable",
+            "withheld",
+            "unknown"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "availability_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Availability Source",
+          "type": "string"
+        },
+        "condition": {
+          "enum": [
+            "rent_ready",
+            "renovation",
+            "damaged",
+            "unknown"
+          ],
+          "title": "Condition",
+          "type": "string"
+        },
+        "condition_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Condition Source",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "legal_restriction": {
+          "enum": [
+            "none",
+            "hold",
+            "litigation",
+            "unknown"
+          ],
+          "title": "Legal Restriction",
+          "type": "string"
+        },
+        "legal_restriction_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Legal Restriction Source",
+          "type": "string"
+        },
+        "maintenance_restriction": {
+          "enum": [
+            "none",
+            "limited_access",
+            "unsafe",
+            "unknown"
+          ],
+          "title": "Maintenance Restriction",
+          "type": "string"
+        },
+        "maintenance_restriction_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Maintenance Restriction Source",
+          "type": "string"
+        },
+        "mapping_notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Mapping Notes",
+          "type": "array"
+        },
+        "occupancy": {
+          "enum": [
+            "vacant",
+            "occupied",
+            "notice",
+            "unknown"
+          ],
+          "title": "Occupancy",
+          "type": "string"
+        },
+        "occupancy_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Occupancy Source",
+          "type": "string"
+        },
+        "organization_id": {
+          "format": "uuid",
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "publication": {
+          "enum": [
+            "unpublished",
+            "published",
+            "withdrawn"
+          ],
+          "title": "Publication",
+          "type": "string"
+        },
+        "publication_source": {
+          "enum": [
+            "derived",
+            "ambiguous",
+            "explicit"
+          ],
+          "title": "Publication Source",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "space_id": {
+          "format": "uuid",
+          "title": "Space Id",
+          "type": "string"
+        },
+        "synthetic": {
+          "default": true,
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "organization_id",
+        "space_id",
+        "condition",
+        "occupancy",
+        "availability",
+        "publication",
+        "maintenance_restriction",
+        "legal_restriction",
+        "condition_source",
+        "occupancy_source",
+        "availability_source",
+        "publication_source",
+        "maintenance_restriction_source",
+        "legal_restriction_source"
+      ],
+      "title": "SpaceOperatingState",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "groups": {
+      "items": {
+        "$ref": "#/$defs/PortfolioGroup"
+      },
+      "title": "Groups",
+      "type": "array"
+    },
+    "known_account_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Account Ids",
+      "type": "array"
+    },
+    "known_entity_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Entity Ids",
+      "type": "array"
+    },
+    "known_household_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Household Ids",
+      "type": "array"
+    },
+    "known_organization_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Organization Ids",
+      "type": "array"
+    },
+    "known_person_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Person Ids",
+      "type": "array"
+    },
+    "known_property_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Property Ids",
+      "type": "array"
+    },
+    "known_space_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Known Space Ids",
+      "type": "array"
+    },
+    "management": {
+      "items": {
+        "$ref": "#/$defs/ManagementRelationship"
+      },
+      "title": "Management",
+      "type": "array"
+    },
+    "memberships": {
+      "items": {
+        "$ref": "#/$defs/PortfolioMembership"
+      },
+      "title": "Memberships",
+      "type": "array"
+    },
+    "occupancies": {
+      "items": {
+        "$ref": "#/$defs/OccupancyRelationship"
+      },
+      "title": "Occupancies",
+      "type": "array"
+    },
+    "ownership": {
+      "items": {
+        "$ref": "#/$defs/OwnershipRelationship"
+      },
+      "title": "Ownership",
+      "type": "array"
+    },
+    "portal_access": {
+      "items": {
+        "$ref": "#/$defs/HouseholdPortalAccess"
+      },
+      "title": "Portal Access",
+      "type": "array"
+    },
+    "published_listings": {
+      "items": {
+        "$ref": "#/$defs/PublishedListingRead"
+      },
+      "title": "Published Listings",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "space_states": {
+      "items": {
+        "$ref": "#/$defs/SpaceOperatingState"
+      },
+      "title": "Space States",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ownership",
+    "management",
+    "groups",
+    "memberships",
+    "occupancies",
+    "portal_access",
+    "space_states",
+    "published_listings",
+    "known_organization_ids",
+    "known_property_ids",
+    "known_space_ids",
+    "known_entity_ids",
+    "known_household_ids",
+    "known_person_ids",
+    "known_account_ids"
+  ],
+  "title": "ReferenceSlice",
+  "type": "object"
+}

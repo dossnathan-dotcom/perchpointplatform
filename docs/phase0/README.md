@@ -18,6 +18,9 @@ This is a controlled **Phase 0 foundation**, not production identity, authorizat
 - [Seed catalog and feature flags](SEEDS-AND-FLAGS.md)
 - [Acceptance and verification](ACCEPTANCE.md)
 - [Limitations and architectural review](LIMITATIONS.md)
+- [Independent Cursor audit](../audits/PHASE_0_CURSOR_AUDIT.md)
+- [Phase 1 governance and requirements](../governance/README.md)
+- [Phase 2 planning package](../plans/phase2/README.md)
 
 ## Source of truth
 Executable Pydantic contracts: `backend/foundation/`. Derived JSON Schema: `contracts/generated/`.
@@ -39,6 +42,10 @@ Do not edit generated files. The Python exporter regenerates fixtures and schema
 ## Architecture
 React/CRA/CRACO public site and role-specific preview routes; FastAPI read-only foundation metadata; existing MongoDB synthetic inquiry and maintenance capture. No canonical production persistence is introduced. Existing environment keys are preserved.
 PostgreSQL is a **future production enforcement target**, not an installed or verified database in this iteration. Server authorization and RLS require explicit later approval, database design, and direct integration tests.
+
+The independent Cursor audit is later evidence and does not rewrite this historical Phase 0
+record. Where fresh execution differs from retained claims, the audit verdict controls current
+acceptance.
 
 ## Routes
 - `/`: public rental/property-operations site.
