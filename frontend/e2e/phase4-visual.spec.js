@@ -9,6 +9,14 @@ async function settle(page, path) {
   await page.evaluate(() => document.fonts.ready);
 }
 
+const STABLE_LISTINGS = {
+  synthetic: true,
+  listings: [
+    { listing_id: "311dbd36-458f-556d-9e1d-5c69c695bc1f", property_name: "Example Elm Court", label: "1A", use: "residential", municipality: "Cincinnati", state: "OH", publication: "published", availability: "offerable", amount_minor: 225000, currency: "USD", synthetic: true },
+    { listing_id: "11111111-1111-4111-8111-111111111111", property_name: "Stable Court", label: "Unit A", use: "residential", municipality: "Cincinnati", state: "OH", publication: "published", availability: "offerable", amount_minor: 180000, currency: "USD", synthetic: true },
+  ],
+};
+
 async function shot(page, name) {
   await expect(page).toHaveScreenshot(`${name}.png`, { animations: "disabled" });
 }
@@ -32,10 +40,20 @@ const pages = [
 
 for (const [name, path, width, height] of pages) {
   test(name, async ({ page }) => {
+    if (name === "rental-discovery") {
+      await page.route("**/api/v2/listings", (route) => route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify(STABLE_LISTINGS),
+      }));
+    }
     await page.setViewportSize({ width, height });
     await page.goto(path);
     await settle(page, path);
-    if (path.includes("#")) await page.locator(path.slice(path.indexOf("#"))).scrollIntoViewIfNeeded();
+    if (name === "rental-discovery") {
+      await page.locator("#rentals").evaluate((el) => el.scrollIntoView({ block: "start", inline: "nearest" }));
+      await expect(page.getByText("2 published spaces")).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Stable Court" })).toBeVisible();
+    }
     await shot(page, name);
   });
 }
