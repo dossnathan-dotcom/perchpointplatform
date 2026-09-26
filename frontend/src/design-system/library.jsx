@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 export function IconButton({ label, children, ...props }) {
   return <button type="button" aria-label={label} className="portal-icon" {...props}>{children}</button>;
@@ -178,10 +178,16 @@ export function StickyActionBar({ children }) {
 
 export function ResponsiveImage({ name, alt, priority = false, width, height, className = "" }) {
   const base = `/media/${name}`;
+  const high = priority === true;
+  const eager = priority === true || priority === "eager";
+  const defer = priority === "after-paint";
+  const [active, setActive] = useState(!defer);
+  useEffect(() => { if (defer) setActive(true); }, [defer]);
+  if (!active) return <div className={`block overflow-hidden bg-obsidian ${className}`} role="img" aria-label={alt} />;
   return <picture className={`block overflow-hidden ${className}`}>
     <source type="image/avif" srcSet={`${base}.avif`} sizes="100vw" />
     <source type="image/webp" srcSet={`${base}.webp`} sizes="100vw" />
-    <img src={`${base}.jpg`} alt={alt} width={width} height={height} sizes="100vw" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} decoding="async" className="h-full max-h-full w-full max-w-full object-cover" />
+    <img src={`${base}.jpg`} alt={alt} width={width} height={height} sizes="100vw" loading={eager ? "eager" : "lazy"} fetchPriority={high ? "high" : "auto"} decoding="async" className="h-full max-h-full w-full max-w-full object-cover" />
   </picture>;
 }
 

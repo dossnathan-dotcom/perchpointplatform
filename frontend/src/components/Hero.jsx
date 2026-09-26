@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Building, Pause, Play, Search, Wrench } from 'lucide-react';
-import { HEADLINES } from '@/data/siteData';
+import { HEADLINES } from '@/data/publicContent';
 import { ResponsiveImage } from '@/design-system/library';
 import { Button } from '@/components/ui/button';
 import { DemoNotice } from './DemoNotice';
@@ -9,16 +9,19 @@ import { DemoNotice } from './DemoNotice';
 export const Hero = ({ onSchedule, onMaintenance }) => {
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [paused, setPaused] = useState(false);
   const [filters, setFilters] = useState({ location: 'All locations', use: 'All' });
   useEffect(() => {
-    if (paused) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setPaused(true);
+  }, []);
+  useEffect(() => {
+    if (paused) return undefined;
     const timer = setInterval(() => setActive((v) => (v + 1) % HEADLINES.length), 8000);
     return () => clearInterval(timer);
   }, [paused]);
   const search = (event) => { event.preventDefault(); navigate(`/?${new URLSearchParams(filters)}#rentals`); document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' }); };
   return <section id="top" className="relative overflow-hidden bg-obsidian pt-32 text-linen" aria-label="HawkVision Homes" data-testid="public-hero">
-    <ResponsiveImage name="hero" alt="Cincinnati skyline and riverfront at dusk" priority width={1600} height={1072} className="absolute inset-0 h-full w-full" />
+    <ResponsiveImage name="hero" alt="Cincinnati skyline and riverfront at dusk" priority="after-paint" width={1600} height={1072} className="absolute inset-0 h-full w-full" />
     <div className="hero-vignette absolute inset-0" />
     <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">
       <p className="mb-6 font-mono text-xs uppercase text-gold" data-testid="hero-brand-badge">HawkVision Homes · Powered by PerchPoint</p>
