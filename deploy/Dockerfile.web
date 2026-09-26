@@ -10,7 +10,10 @@ ENV REACT_APP_ENABLE_SEEDED_PREVIEWS=true
 RUN corepack yarn build
 
 FROM python:3.13-slim
-RUN useradd --create-home --uid 10001 perchpoint
+COPY deploy/purge_old_packages.py /tmp/purge_old_packages.py
+RUN python /tmp/purge_old_packages.py --remove-packaging-tools \
+    && rm /tmp/purge_old_packages.py \
+    && useradd --create-home --uid 10001 perchpoint
 COPY deploy/static_server.py /srv/static_server.py
 COPY --from=build /app/build /srv/web
 RUN chown -R perchpoint:perchpoint /srv

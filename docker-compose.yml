@@ -27,6 +27,7 @@ services:
       dockerfile: deploy/Dockerfile.api
     environment: &app_env
       PHASE3_ENVIRONMENT: local
+      PHASE3_COMMIT: ${PHASE3_COMMIT:-local}
       PHASE2_LOCAL_AUTH: development
       PHASE2_ADMIN_URL: postgresql+psycopg://postgres:local-only-not-production@postgres:5432/postgres
       PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
@@ -96,7 +97,7 @@ services:
       REACT_APP_PHASE3_ENVIRONMENT: local
       REACT_APP_SHOW_DEMO_LABELS: "true"
       REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
-      API_PROXY_TARGET: http://api:8000
+      API_UPSTREAM: http://api:8000
     ports:
       - "127.0.0.1:3000:8080"
     healthcheck:

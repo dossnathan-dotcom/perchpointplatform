@@ -1,6 +1,0 @@
-# Direct installs are the fixed releases. These IDs remain only as embedded
-# copies inside third-party wheels that the application does not import.
-CVE-2026-23949
-GHSA-6v7p-g79w-8964
-CVE-2025-47273
-CVE-2026-24049
