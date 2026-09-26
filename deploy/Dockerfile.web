@@ -11,20 +11,8 @@ RUN corepack yarn build
 
 FROM python:3.13-slim
 COPY deploy/purge_old_packages.py /tmp/purge_old_packages.py
-RUN python -m pip install --no-cache-dir --upgrade "setuptools==84.0.0" "wheel==0.46.2" "jaraco.context==6.1.0" "msgpack==1.2.1" \
-    && rm -rf /usr/local/lib/python3.13/ensurepip \
-    && find /usr /root -name '*.whl' -delete \
-    && python /tmp/purge_old_packages.py \
+RUN python /tmp/purge_old_packages.py --remove-packaging-tools \
     && rm /tmp/purge_old_packages.py \
-    && rm -rf /usr/local/lib/python3.13/site-packages/setuptools \
-        /usr/local/lib/python3.13/site-packages/pkg_resources \
-        /usr/local/lib/python3.13/site-packages/_distutils_hack \
-        /usr/local/lib/python3.13/site-packages/msgpack \
-        /usr/local/lib/python3.13/site-packages/wheel \
-        /usr/local/lib/python3.13/site-packages/jaraco \
-        /usr/local/lib/python3.13/site-packages/pip \
-    && find /usr/local/lib/python3.13/site-packages -maxdepth 1 \( -name 'setuptools-*' -o -name 'msgpack-*' -o -name 'wheel-*' -o -name 'jaraco*' -o -name 'pip-*' \) -exec rm -rf {} + \
-    && find /usr /root /opt \( -iname '*setuptools*' -o -iname '*msgpack*' -o -iname '*70.3.0*' -o -iname '*1.1.2*' \) \
     && useradd --create-home --uid 10001 perchpoint
 COPY deploy/static_server.py /srv/static_server.py
 COPY --from=build /app/build /srv/web
