@@ -14,6 +14,11 @@ class Phase2ConfigurationError(RuntimeError):
     pass
 
 
+KNOWN_ENVIRONMENTS = {"local", "test", "ci", "staging", "production"}
+HOSTED_ENVIRONMENTS = {"staging", "production"}
+DISPOSABLE_MARKERS = ("replace-", "changeme", "local-only-not-production", "ci-only-not-production")
+
+
 def use_psycopg(url: str) -> str:
     """The supported driver is psycopg 3. A bare postgresql:// URL selects psycopg2."""
     if url.startswith("postgresql://"):
@@ -36,6 +41,8 @@ class Settings:
     @classmethod
     def load(cls) -> "Settings":
         environment = os.environ.get("PHASE3_ENVIRONMENT", "local")
+        if environment not in KNOWN_ENVIRONMENTS:
+            raise Phase2ConfigurationError("Unknown PHASE3_ENVIRONMENT")
         mode = os.environ.get("PHASE2_LOCAL_AUTH", "")
         values = {
             "admin_url": os.environ.get("PHASE2_ADMIN_URL", ""),
@@ -45,7 +52,7 @@ class Settings:
             "dev_password": os.environ.get("PHASE2_DEV_PASSWORD", ""),
             "webhook_secret": os.environ.get("PHASE2_WEBHOOK_SECRET", ""),
         }
-        if environment == "production":
+        if environment in HOSTED_ENVIRONMENTS:
             reasons = []
             if mode == "development":
                 reasons.append("local-development auth")
@@ -55,10 +62,10 @@ class Settings:
                 reasons.append("permissive origins")
             for name, value in values.items():
                 lowered = value.lower()
-                if not value or "replace-" in lowered or "changeme" in lowered or lowered in {"development", "secret", "password"}:
+                if not value or any(marker in lowered for marker in DISPOSABLE_MARKERS) or lowered in {"development", "secret", "password"}:
                     reasons.append(name)
             if reasons:
-                raise Phase2ConfigurationError("Production startup refused: " + ", ".join(reasons))
+                raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":
             raise Phase2ConfigurationError("PHASE2_LOCAL_AUTH must be development; Phase 2 local auth is not production identity")
         missing = [name for name, value in values.items() if not value or value.startswith("replace-")]

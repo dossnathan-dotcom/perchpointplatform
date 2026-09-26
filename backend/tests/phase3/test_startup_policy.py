@@ -70,3 +70,53 @@ def test_local_mode_still_requires_development_auth(monkeypatch):
             Settings.load()
     finally:
         os.environ["PHASE2_LOCAL_AUTH"] = "development"
+
+
+def test_unknown_environment_is_refused(monkeypatch):
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "prodction")
+    with pytest.raises(Phase2ConfigurationError, match="Unknown PHASE3_ENVIRONMENT"):
+        Settings.load()
+
+
+def test_hosted_refuses_disposable_credentials(monkeypatch):
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "staging")
+    monkeypatch.setenv("PHASE2_LOCAL_AUTH", "disabled")
+    for name in ("PHASE2_ADMIN_URL", "PHASE2_MIGRATOR_URL", "PHASE2_RUNTIME_URL", "PHASE2_JWT_SECRET", "PHASE2_DEV_PASSWORD", "PHASE2_WEBHOOK_SECRET"):
+        monkeypatch.setenv(name, "local-only-not-production")
+    with pytest.raises(Phase2ConfigurationError, match="Staging startup refused"):
+        Settings.load()
+
+
+def test_sentry_stays_disabled_without_a_dsn(monkeypatch):
+    monkeypatch.delenv("SENTRY_DSN", raising=False)
+    from perchpoint.telemetry import init_sentry, sentry_enabled
+
+    assert sentry_enabled() is False
+    assert init_sentry() is False
+
+
+def test_sentry_before_send_redacts_request_secrets():
+    from perchpoint.telemetry import before_send
+
+    event = {"request": {"data": "tenant message", "headers": {"Authorization": "Bearer secret"}, "url": "/api/v2/inquiries"}}
+    cleaned = before_send(event, None)
+    assert "data" not in cleaned["request"]
+    assert cleaned["request"]["headers"]["Authorization"] == "[redacted]"
+    assert cleaned["request"]["url"] == "/api/v2/inquiries"
+
+
+def test_version_exposes_only_safe_metadata(monkeypatch):
+    monkeypatch.setenv("PHASE3_COMMIT", "abc123")
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "local")
+    from fastapi.testclient import TestClient
+    from perchpoint.routes import create_app
+
+    response = TestClient(create_app()).get("/api/v2/version")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["application"] == "perchpoint"
+    assert body["contract_version"] == "0.2.0"
+    assert body["commit"] == "abc123"
+    rendered = str(body)
+    assert "postgres" not in rendered
+    assert "secret" not in rendered

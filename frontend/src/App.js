@@ -16,7 +16,9 @@ import { PerchPointPortal } from "@/components/PerchPointPortal";
 import { PropertyDetailPage } from "@/components/PropertyDetailPage";
 import { ResidentResources } from "@/components/ResidentResources";
 import { TourModal } from "@/components/TourModal";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { Button } from "@/components/ui/button";
+import { startSentry } from "@/sentry";
 import FoundationPage from "@/components/FoundationPage";
 import { ReferenceOperations } from "@/components/ReferenceOperations";
 
@@ -78,6 +80,8 @@ export function AppContent() {
   );
 }
 
+startSentry();
+
 export default function App() {
-  return <BrowserRouter><AppContent /></BrowserRouter>;
+  return <AppErrorBoundary><BrowserRouter><AppContent /></BrowserRouter></AppErrorBoundary>;
 }

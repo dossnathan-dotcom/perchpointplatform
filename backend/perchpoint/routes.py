@@ -1,6 +1,7 @@
 """Phase 2 HTTP routes. Client role headers are ignored."""
 from __future__ import annotations
 
+import os
 from uuid import UUID, uuid4
 
 import bcrypt
@@ -318,6 +319,18 @@ def health_live():
     return {"status": "live"}
 
 
+@router.get("/version")
+def version():
+    from foundation.reference import REFERENCE_VERSION
+
+    return {
+        "application": "perchpoint",
+        "contract_version": REFERENCE_VERSION,
+        "commit": os.environ.get("PHASE3_COMMIT", "unknown"),
+        "environment": os.environ.get("PHASE3_ENVIRONMENT", "local"),
+    }
+
+
 @router.get("/health/ready")
 def health_ready(settings: Settings = Depends(settings)):
     from sqlalchemy import text
@@ -341,6 +354,9 @@ def create_app():
 
     from fastapi import FastAPI
 
+    from .telemetry import init_sentry
+
+    init_sentry()
     app = FastAPI(title="PerchPoint Phase 2 reference")
     log = logging.getLogger("perchpoint")
 

@@ -4,6 +4,9 @@ from perchpoint.settings import Settings
 
 
 def main() -> None:
+    from perchpoint.telemetry import init_sentry
+
+    init_sentry()
     print(claim_and_deliver(Settings.load(), "phase3-worker"))
 
 
