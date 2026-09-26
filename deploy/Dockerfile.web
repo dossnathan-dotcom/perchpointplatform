@@ -10,7 +10,9 @@ ENV REACT_APP_ENABLE_SEEDED_PREVIEWS=true
 RUN corepack yarn build
 
 FROM python:3.13-slim
-RUN useradd --create-home --uid 10001 perchpoint
+RUN rm -rf /usr/local/lib/python3.13/ensurepip \
+    && find /usr /root -name '*.whl' -delete \
+    && useradd --create-home --uid 10001 perchpoint
 COPY deploy/static_server.py /srv/static_server.py
 COPY --from=build /app/build /srv/web
 RUN chown -R perchpoint:perchpoint /srv
