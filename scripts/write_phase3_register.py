@@ -4,8 +4,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LINES = (ROOT / "scripts" / "phase3_answer_lines.txt").read_text(encoding="utf-8").splitlines()
 assert len(LINES) == 174, len(LINES)
-BLOCKED = {3, 11, 12, 13, 25, 37, 38, 41, 42, 45, 90, 111, 128, 129, 141, 148, 149, 161, 168, 174}
-FUTURE = {4, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 20, 27, 28, 29, 30, 31, 32, 33, 34, 46, 47, 48, 57, 58, 98, 99, 100, 101, 109, 110, 117, 118, 119, 120, 121, 122, 125, 126, 127, 130, 131, 132, 133, 137, 150, 151, 152, 158, 159, 160, 162, 163, 164}
+BLOCKED = {3, 168}
+DEFERRED = {11, 12, 25, 37, 38, 41, 42, 111, 128, 129, 141, 148, 161, 174}
+FUTURE = {4, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 20, 27, 28, 29, 30, 31, 32, 33, 34, 45, 46, 47, 48, 57, 58, 98, 99, 100, 101, 109, 110, 117, 118, 119, 120, 121, 122, 125, 126, 127, 130, 131, 132, 133, 137, 149, 150, 151, 152, 158, 159, 160, 162, 163, 164}
 VERIFIED = {1, 123, 124, 136, 140, 144, 146, 147, 170, 171}
 LOC = {
     "docs": "docs/plans/phase3/",
@@ -17,6 +18,8 @@ LOC = {
 def status(number: int) -> str:
     if number in VERIFIED:
         return "verified"
+    if number in DEFERRED:
+        return "owner-deferred"
     if number in BLOCKED:
         return "externally blocked"
     if number in FUTURE:
@@ -25,6 +28,23 @@ def status(number: int) -> str:
 
 
 def location(number: int) -> str:
+    specific = {
+        13: "docs/plans/phase3/ACCOUNT_OWNERSHIP.md",
+        24: "docker-compose.yml",
+        90: ".github/workflows/ci.yml",
+        113: "backend/.env.example",
+        136: "scripts/phase3_restore_drill.py",
+        141: "docs/plans/phase3/SENTRY.md",
+        143: "backend/perchpoint/routes.py",
+        146: "backend/perchpoint/routes.py",
+        165: "scripts/phase3_compose.ps1",
+        168: "docs/plans/phase3/LOCAL_DOCKER.md",
+        174: "docs/plans/phase3/OWNER_DIRECTIVE.md",
+    }
+    if number in specific:
+        return specific[number]
+    if number in DEFERRED:
+        return "docs/plans/phase3/OWNER_DIRECTIVE.md"
     if number in BLOCKED and number in {37, 38, 41, 42, 45, 111, 128, 129, 141, 148, 149, 161}:
         return "docs/plans/phase3/HANDOFF.md"
     if number >= 125:

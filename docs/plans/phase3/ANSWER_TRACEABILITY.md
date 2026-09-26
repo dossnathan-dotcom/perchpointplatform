@@ -14,9 +14,9 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q8 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q9 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q10 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q11 | externally blocked | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q12 | externally blocked | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q13 | externally blocked | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
+| Q11 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q12 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q13 | implemented | docs/plans/phase3/ACCOUNT_OWNERSHIP.md |
 | Q14 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q15 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q16 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
@@ -27,8 +27,8 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q21 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q22 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q23 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q24 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q25 | externally blocked | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
+| Q24 | implemented | docker-compose.yml |
+| Q25 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q26 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q27 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q28 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
@@ -40,15 +40,15 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q34 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q35 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q36 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q37 | externally blocked | docs/plans/phase3/HANDOFF.md |
-| Q38 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q37 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q38 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q39 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q40 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q41 | externally blocked | docs/plans/phase3/HANDOFF.md |
-| Q42 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q41 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q42 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q43 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q44 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q45 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q45 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q46 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q47 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q48 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
@@ -93,7 +93,7 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q87 | implemented | .github/workflows/ci.yml |
 | Q88 | implemented | .github/workflows/ci.yml |
 | Q89 | implemented | .github/workflows/ci.yml |
-| Q90 | externally blocked | .github/workflows/ci.yml |
+| Q90 | implemented | .github/workflows/ci.yml |
 | Q91 | implemented | .github/workflows/ci.yml |
 | Q92 | implemented | .github/workflows/ci.yml |
 | Q93 | implemented | .github/workflows/ci.yml |
@@ -114,9 +114,9 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q108 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q109 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q110 | future-live policy | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q111 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q111 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q112 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
-| Q113 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
+| Q113 | implemented | backend/.env.example |
 | Q114 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q115 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
 | Q116 | implemented | docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md |
@@ -131,28 +131,28 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q125 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q126 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q127 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
-| Q128 | externally blocked | docs/plans/phase3/HANDOFF.md |
-| Q129 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q128 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q129 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q130 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q131 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q132 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q133 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q134 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q135 | implemented | docs/plans/phase3/RUNBOOKS.md |
-| Q136 | verified | docs/plans/phase3/RUNBOOKS.md |
+| Q136 | verified | scripts/phase3_restore_drill.py |
 | Q137 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q138 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q139 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q140 | verified | docs/plans/phase3/RUNBOOKS.md |
-| Q141 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q141 | owner-deferred | docs/plans/phase3/SENTRY.md |
 | Q142 | implemented | docs/plans/phase3/RUNBOOKS.md |
-| Q143 | implemented | docs/plans/phase3/RUNBOOKS.md |
+| Q143 | implemented | backend/perchpoint/routes.py |
 | Q144 | verified | docs/plans/phase3/RUNBOOKS.md |
 | Q145 | implemented | docs/plans/phase3/RUNBOOKS.md |
-| Q146 | verified | docs/plans/phase3/RUNBOOKS.md |
+| Q146 | verified | backend/perchpoint/routes.py |
 | Q147 | verified | docs/plans/phase3/RUNBOOKS.md |
-| Q148 | externally blocked | docs/plans/phase3/HANDOFF.md |
-| Q149 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q148 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
+| Q149 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q150 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q151 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q152 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
@@ -164,17 +164,17 @@ Source register: [APPROVED_CUSTOMIZATION_ANSWERS.md](APPROVED_CUSTOMIZATION_ANSW
 | Q158 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q159 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q160 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
-| Q161 | externally blocked | docs/plans/phase3/HANDOFF.md |
+| Q161 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |
 | Q162 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q163 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
 | Q164 | future-live policy | docs/plans/phase3/RUNBOOKS.md |
-| Q165 | implemented | docs/plans/phase3/RUNBOOKS.md |
+| Q165 | implemented | scripts/phase3_compose.ps1 |
 | Q166 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q167 | implemented | docs/plans/phase3/RUNBOOKS.md |
-| Q168 | externally blocked | docs/plans/phase3/RUNBOOKS.md |
+| Q168 | externally blocked | docs/plans/phase3/LOCAL_DOCKER.md |
 | Q169 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q170 | verified | docs/plans/phase3/RUNBOOKS.md |
 | Q171 | verified | docs/plans/phase3/RUNBOOKS.md |
 | Q172 | implemented | docs/plans/phase3/RUNBOOKS.md |
 | Q173 | implemented | docs/plans/phase3/RUNBOOKS.md |
-| Q174 | externally blocked | docs/plans/phase3/RUNBOOKS.md |
+| Q174 | owner-deferred | docs/plans/phase3/OWNER_DIRECTIVE.md |

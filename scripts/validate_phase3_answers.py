@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTER = ROOT / "docs" / "plans" / "phase3" / "APPROVED_CUSTOMIZATION_ANSWERS.md"
 TRACE = ROOT / "docs" / "plans" / "phase3" / "ANSWER_TRACEABILITY.md"
 FIELDS = ("Answer", "Interpretation", "Location", "Evidence", "Status", "Dependency")
-ALLOWED = {"implemented", "verified", "externally blocked", "future-live policy", "non-applicable"}
+ALLOWED = {"implemented", "verified", "externally blocked", "owner-deferred", "future-live policy", "non-applicable"}
 
 
 def main() -> int:

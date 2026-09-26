@@ -120,3 +120,19 @@ def test_version_exposes_only_safe_metadata(monkeypatch):
     rendered = str(body)
     assert "postgres" not in rendered
     assert "secret" not in rendered
+
+
+def test_readiness_failure_does_not_echo_the_database_url(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import perchpoint.db as db
+    from perchpoint.routes import create_app
+
+    def explode(_url):
+        raise RuntimeError("dependency-detail-must-not-appear")
+
+    monkeypatch.setattr(db, "engine_for", explode)
+    response = TestClient(create_app()).get("/api/v2/health/ready")
+    assert response.status_code == 503
+    assert "dependency-detail-must-not-appear" not in response.text
+    assert response.json()["detail"]["status"] == "not_ready"

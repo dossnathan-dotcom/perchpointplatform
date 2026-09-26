@@ -342,8 +342,8 @@ def health_ready(settings: Settings = Depends(settings)):
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         engine.dispose()
-    except Exception as exc:
-        raise HTTPException(503, {"status": "not_ready"}) from exc
+    except Exception:
+        raise HTTPException(503, {"status": "not_ready"}) from None
     return {"status": "ready"}
 
 

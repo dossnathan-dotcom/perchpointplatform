@@ -87,25 +87,25 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q11
 - Answer: Infrastructure accounts use HawkVision-controlled ownership, not Nathan personal email.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q12
 - Answer: Preferred operational address is platform@hawkvisionhomes.com only if HawkVision controls that domain and mailbox.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q13
 - Answer: If that mailbox is unavailable, use a dedicated transferable temporary account approved by Nathan and Faruk, not Nathan personal account.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: docs/plans/phase3/ACCOUNT_OWNERSHIP.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q14
@@ -191,7 +191,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q24
 - Answer: Add canonical reproducible Docker Compose without removing native Windows support.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: docker-compose.yml
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -199,9 +199,9 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q25
 - Answer: Give runtime-affecting PRs isolated previews when provider access and cost approval permit.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q26
@@ -295,17 +295,17 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q37
 - Answer: Render is the preferred host for web, API, and worker, subject to compatibility and cost verification.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q38
 - Answer: Supabase is the preferred managed PostgreSQL host, subject to compatibility and cost verification.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q39
@@ -327,17 +327,17 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q41
 - Answer: Staging and eventual production use isolated database instances or suitable persistent branches.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q42
 - Answer: PR previews use disposable isolated database branches or databases.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q43
@@ -359,9 +359,9 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q45
 - Answer: Prefer an eastern-US region close to Greater Cincinnati where compatible across services.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: future-live policy
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q46
@@ -721,7 +721,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
 - Location: .github/workflows/ci.yml
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q91
@@ -887,9 +887,9 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q111
 - Answer: Prefer GitHub OIDC for deployment identity where the selected provider supports it.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q112
@@ -903,7 +903,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q113
 - Answer: Keep local secrets in ignored .env and commit only safe examples.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/APPROVED_CUSTOMIZATION_ANSWERS.md
+- Location: backend/.env.example
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1023,17 +1023,17 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q128
 - Answer: Eventual production PostgreSQL uses PITR.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q129
 - Answer: PITR retains at least seven days.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q130
@@ -1087,7 +1087,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q136
 - Answer: Perform an actual synthetic-data restore drill during Phase 3.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: scripts/phase3_restore_drill.py
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: verified
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1127,9 +1127,9 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q141
 - Answer: Use Sentry for frontend and backend exceptions when an owned account is available.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/SENTRY.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q142
@@ -1143,7 +1143,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q143
 - Answer: Start with conservative trace sampling.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: backend/perchpoint/routes.py
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1167,7 +1167,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q146
 - Answer: Separate liveness from readiness.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: backend/perchpoint/routes.py
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: verified
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1183,17 +1183,17 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q148
 - Answer: Monitor public site and API separately.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q149
 - Answer: Add a safe synthetic representative monitor.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/RUNBOOKS.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: future-live policy
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q150
@@ -1287,9 +1287,9 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q161
 - Answer: Configure monthly cost alerts.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/HANDOFF.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
 ### Q162
@@ -1319,7 +1319,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q165
 - Answer: Provide one-command or clearly scripted local setup.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: scripts/phase3_compose.ps1
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: implemented
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1343,7 +1343,7 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q168
 - Answer: Rehearse setup from a clean environment.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: docs/plans/phase3/LOCAL_DOCKER.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
 - Status: externally blocked
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
@@ -1391,8 +1391,8 @@ This register does not rewrite the Phase 2 Q1–Q120 record. Related map: [ANSWE
 ### Q174
 - Answer: Phase 3 exits only with reproducible CI, staging, secrets, rollback, restore, monitoring, and runbooks.
 - Interpretation: Enforce this decision in repository configuration or a runbook. Do not treat a future live control as already executed.
-- Location: docs/plans/phase3/RUNBOOKS.md
+- Location: docs/plans/phase3/OWNER_DIRECTIVE.md
 - Evidence: See docs/plans/phase3/ACCEPTANCE.md for the command or the external blocker.
-- Status: externally blocked
+- Status: owner-deferred
 - Dependency: Hosted execution needs HawkVision-owned accounts. Local policy does not.
 
