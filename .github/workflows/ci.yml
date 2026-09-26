@@ -221,4 +221,14 @@ jobs:
       - name: Scan API image
         run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
       - name: Scan web image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --format template --template '{{ range . }}{{ range .Vulnerabilities }}{{ .PkgName }} {{ .InstalledVersion }} {{ .PkgPath }}{{ println }}{{ end }}{{ end }}' --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/out" aquasec/trivy:0.58.1 image --format json --output /out/web-trivy.json --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+          python3 -c 'import json; data=json.load(open("web-trivy.json"));
+          found=[]
+          for result in data.get("Results") or []:
+            target=result.get("Target")
+            for vuln in result.get("Vulnerabilities") or []:
+              print(vuln.get("Severity"), vuln.get("PkgName"), vuln.get("InstalledVersion"), vuln.get("PkgPath") or target)
+              found.append(vuln)
+          raise SystemExit(1 if found else 0)'
+          rm -f web-trivy.json
