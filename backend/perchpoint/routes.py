@@ -34,6 +34,7 @@ from .phase6_identity import (
     CSRF_HEADER,
     accept_invitation,
     confirm_totp,
+    create_delegation,
     create_invitation,
     csrf_ok,
     enroll_totp,
@@ -711,6 +712,14 @@ class TotpConfirm(BaseModel):
     code: str = Field(min_length=6, max_length=6)
 
 
+class DelegationBody(BaseModel):
+    grantee_id: UUID
+    capability: str = Field(min_length=3, max_length=80)
+    reason: str = Field(min_length=3, max_length=500)
+    days: int = Field(ge=1, le=30)
+    amount_ceiling_minor: int | None = Field(default=None, ge=0)
+
+
 class PurchaseBody(BaseModel):
     amount_minor: int = Field(ge=0)
     monthly_rent_minor: int | None = None
@@ -807,6 +816,28 @@ def recovery_codes(request: Request, settings: Settings = Depends(settings)):
     session = _session_actor(request, settings)
     _require_csrf(request, session)
     return {"codes": issue_recovery_codes(settings, session["id"], session["organization_id"]), "synthetic": True}
+
+
+@router.post("/access/delegations")
+def delegate(body: DelegationBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    if body.grantee_id == session["id"]:
+        raise HTTPException(409, {"code": "self_delegation", "message": "You cannot delegate authority to yourself.", "retryable": False})
+    try:
+        delegation_id = create_delegation(
+            settings,
+            session["id"],
+            session["organization_id"],
+            body.grantee_id,
+            body.capability,
+            body.reason,
+            days=body.days,
+            amount_ceiling_minor=body.amount_ceiling_minor,
+        )
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "This delegation is not allowed.", "retryable": False}) from exc
+    return {"delegation_id": delegation_id, "synthetic": True}
 
 
 def _role_may_approve(role_name: str, authority: str) -> bool:

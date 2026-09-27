@@ -171,6 +171,47 @@ def issue_recovery_codes(settings: Settings, account: UUID, organization: UUID) 
     return codes
 
 
+def create_delegation(
+    settings: Settings,
+    grantor: UUID,
+    organization: UUID,
+    grantee: UUID,
+    capability: str,
+    reason: str,
+    *,
+    days: int,
+    amount_ceiling_minor: int | None = None,
+) -> str:
+    if grantor == grantee:
+        raise ValueError("self_delegation")
+    if days < 1 or days > 30:
+        raise ValueError("delegation_window")
+    delegation_id = uuid4()
+    with runtime_transaction(settings, grantor, organization, uuid4()) as connection:
+        connection.execute(
+            text(
+                """
+                INSERT INTO delegations (
+                  organization_id, id, grantor_id, grantee_id, capability, amount_ceiling_minor, ends_at, status, reason
+                ) VALUES (
+                  :org, :id, :grantor, :grantee, :capability, :ceiling, now() + make_interval(days => :days), 'active', :reason
+                )
+                """
+            ),
+            {
+                "org": organization,
+                "id": delegation_id,
+                "grantor": grantor,
+                "grantee": grantee,
+                "capability": capability,
+                "ceiling": amount_ceiling_minor,
+                "days": days,
+                "reason": reason,
+            },
+        )
+    return str(delegation_id)
+
+
 def revoke(settings: Settings, account: UUID, organization: UUID, session_id: UUID, reason: str) -> None:
     with runtime_transaction(settings, account, organization, uuid4()) as connection:
         connection.execute(

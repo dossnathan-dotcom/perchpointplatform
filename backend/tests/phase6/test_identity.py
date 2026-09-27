@@ -99,6 +99,26 @@ def test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext():
     assert len(codes.json()["codes"]) == 10
 
 
+def test_self_delegation_is_rejected_and_a_bounded_grant_is_recorded():
+    client = TestClient(create_app())
+    signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    csrf = {"x-perchpoint-csrf": signed.json()["csrf"]}
+    me = client.get("/api/v2/auth/me")
+    own = client.post(
+        "/api/v2/access/delegations",
+        headers=csrf,
+        json={"grantee_id": me.json()["account_id"], "capability": "expense.approve", "reason": "Covering leave", "days": 7, "amount_ceiling_minor": 50000},
+    )
+    assert own.status_code == 409
+    assert own.json()["detail"]["code"] == "self_delegation"
+    granted = client.post(
+        "/api/v2/access/delegations",
+        headers=csrf,
+        json={"grantee_id": str(uuid4()), "capability": "expense.approve", "reason": "Covering leave", "days": 7, "amount_ceiling_minor": 50000},
+    )
+    assert granted.status_code == 200, granted.text
+
+
 def test_development_jwt_is_retired_without_the_test_fixture(monkeypatch):
     monkeypatch.setenv("PHASE6_ALLOW_DEV_JWT", "0")
     client = TestClient(create_app())
