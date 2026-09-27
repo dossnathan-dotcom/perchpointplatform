@@ -21,6 +21,7 @@ node_modules/
 frontend/playwright-report/
 frontend/test-results/
 frontend/lighthouse-reports/
+.phase5-objects/
 frontend/blob-report/
 
 # Next.js

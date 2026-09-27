@@ -32,12 +32,16 @@ export function Phase2Kernel({ previewRole }) {
   const [activity, setActivity] = useState([]);
   const [openInquiry, setOpenInquiry] = useState(null);
   const [note, setNote] = useState("");
+  const [canonicalQuery, setCanonicalQuery] = useState("");
+  const [canonicalResults, setCanonicalResults] = useState([]);
+  const [canonicalStatus, setCanonicalStatus] = useState("Type at least two characters.");
   const canWrite = roleName === "leasing" || roleName === "platform_admin";
   const canOperate = roleName === "platform_admin";
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
     setToken("");
+    sessionStorage.removeItem("pp-phase2-token");
     setRoleName("");
     setEmail(preset);
     setProperties([]);
@@ -55,6 +59,7 @@ export function Phase2Kernel({ previewRole }) {
       return;
     }
     setToken(body.token);
+    sessionStorage.setItem("pp-phase2-token", body.token);
     setRoleName(body.role_name);
     setStatus(`Signed in as ${body.role_name}. Preview role ${previewRole} did not grant this.`);
     await refresh(body.token);
@@ -204,6 +209,21 @@ export function Phase2Kernel({ previewRole }) {
       <button className="bg-copper px-4 py-2 text-white" type="submit" data-testid="phase2-sign-in">Sign in for this workspace</button>
     </form>}
     {token && <div className="mt-6 grid gap-8">
+      <form className="grid gap-2" onSubmit={async (event) => {
+        event.preventDefault();
+        if (canonicalQuery.trim().length < 2) { setCanonicalStatus("Type at least two characters."); setCanonicalResults([]); return; }
+        setCanonicalStatus("Searching.");
+        const { response, body } = await phase2(`/api/v2/search?q=${encodeURIComponent(canonicalQuery.trim())}`, { headers });
+        if (!response.ok) { setCanonicalResults([]); setCanonicalStatus(response.status === 403 ? "This session cannot search records." : "Search is unavailable."); return; }
+        setCanonicalResults(body.results || []);
+        setCanonicalStatus(body.results?.length ? `${body.total_count} results.` : "No matching records.");
+      }}>
+        <h3 className="text-sm text-gold">Canonical search</h3>
+        <label className="text-sm">Search records<input className="mt-1 w-full border border-white/30 bg-transparent px-3 py-2" value={canonicalQuery} onChange={(event) => setCanonicalQuery(event.target.value)} data-testid="phase5-search-input" /></label>
+        <button className="w-fit bg-white px-3 py-2 text-obsidian" type="submit" data-testid="phase5-search-submit">Search</button>
+        <p role="status" data-testid="phase5-search-status">{canonicalStatus}</p>
+        <ul>{canonicalResults.map((item) => <li key={item.resource_id}>{item.title}</li>)}</ul>
+      </form>
       <div>
         <h3 className="text-sm text-gold">Properties</h3>
         <ul className="mt-3" data-testid="phase2-property-list">{properties.length === 0 ? <li>No properties are visible to this session.</li> : properties.map((item) => <li key={item.id}><button type="button" className="underline" onClick={() => chooseProperty(item)}>{item.name}</button></li>)}</ul>

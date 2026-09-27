@@ -152,12 +152,14 @@ for (const width of [320, 768, 1024, 1440]) {
   });
 }
 
-test("owner briefing shows a decision and keeps canonical search unavailable", async ({ page }) => {
+test("owner briefing shows a decision and opens canonical search", async ({ page }) => {
   await page.goto("/perchpoint/owner");
   await expect(page.getByTestId("portal-identity")).toContainText("HawkVision Homes");
   await expect(page.getByTestId("owner-decision-card")).toContainText("No approval was recorded");
   await page.getByTestId("portal-command-palette").click();
-  await expect(page.getByRole("dialog")).toContainText("Phase 5");
+  await expect(page.getByRole("dialog")).toContainText("Type at least two characters.");
+  await page.getByLabel("Search records").fill("elm");
+  await expect(page.getByRole("dialog").getByRole("status")).toContainText("Sign in through the reference kernel");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const results = await new AxeBuilder({ page }).analyze();

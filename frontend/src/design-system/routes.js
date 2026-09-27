@@ -1,6 +1,6 @@
 /** Presentation route registry. It does not authorize access. */
 
-export const CANONICAL_SEARCH_ENABLED = false;
+export const CANONICAL_SEARCH_ENABLED = true;
 
 const surfaces = [
   ["public-home", "public", "/", "HawkVision Homes", null, "public", "none", false, false, false, false, true],

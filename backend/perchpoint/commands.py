@@ -118,6 +118,9 @@ def _insert_property(connection: Connection, organization: UUID, actor: UUID, pa
         {"org": organization, "id": property_id, "name": payload["name"], "kind": payload["property_type"]},
     )
     result = {"id": str(property_id), "version": 1}
+    from .phase5 import upsert_search
+
+    upsert_search(connection, organization, "property", property_id, payload["name"], payload["property_type"], "internal")
     _audit_outbox(connection, organization, actor, "property.created", property_id, correlation, "property.created.v1", result)
     return result
 
@@ -226,6 +229,9 @@ def _insert_listing(connection: Connection, organization: UUID, actor: UUID, pay
         },
     )
     result = {"id": str(listing_id), "publication": "unpublished", "version": 1}
+    from .phase5 import upsert_search
+
+    upsert_search(connection, organization, "listing", listing_id, payload["label"], payload["property_name"], "internal")
     _audit_outbox(connection, organization, actor, "listing.created", listing_id, correlation, "listing.created.v1", result)
     return result
 
@@ -240,6 +246,14 @@ def _publish_listing(connection: Connection, organization: UUID, actor: UUID, li
     if not row:
         raise CommandError(409, "stale_version", "The listing changed. Reload and try again.", retryable=True)
     result = {"id": str(listing_id), "publication": body["publication"], "version": row.version}
+    from .phase5 import upsert_search
+
+    classification = "public" if body["publication"] == "published" else "internal"
+    current = connection.execute(
+        text("SELECT label, property_name FROM listings WHERE organization_id = :org AND id = :id"),
+        {"org": organization, "id": listing_id},
+    ).one()
+    upsert_search(connection, organization, "listing", listing_id, current.label, current.property_name, classification)
     _audit_outbox(connection, organization, actor, "listing.publication_changed", listing_id, correlation, "listing.publication_changed.v1", result)
     return result
 

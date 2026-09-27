@@ -160,8 +160,60 @@ export function OverlayDialog({ open, title, onClose, children }) {
 }
 
 export function CommandPalette({ open, onClose }) {
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("Type at least two characters.");
+  const [results, setResults] = useState([]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setResults([]);
+      setStatus("Type at least two characters.");
+      return undefined;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setStatus("Searching.");
+      const token = sessionStorage.getItem("pp-phase2-token");
+      if (!token) {
+        setResults([]);
+        setStatus("Sign in through the reference kernel before searching records.");
+        return;
+      }
+      try {
+        const response = await fetch(`/api/v2/search?q=${encodeURIComponent(trimmed)}`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+          signal: controller.signal,
+        });
+        if (response.status === 401 || response.status === 403) {
+          setResults([]);
+          setStatus("This session cannot search records.");
+          return;
+        }
+        if (!response.ok) {
+          setResults([]);
+          setStatus("Search is unavailable.");
+          return;
+        }
+        const body = await response.json();
+        setResults(body.results || []);
+        setStatus(body.results?.length ? `${body.results.length} results.` : "No matching records.");
+        const recent = JSON.parse(localStorage.getItem("pp-recent-searches") || "[]").filter((item) => item !== trimmed);
+        localStorage.setItem("pp-recent-searches", JSON.stringify([trimmed, ...recent].slice(0, 8)));
+      } catch (error) {
+        if (error.name !== "AbortError") setStatus("Search is unavailable.");
+      }
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [open, query]);
   return <OverlayDialog open={open} title="Search" onClose={onClose}>
-    <p>Canonical search is unavailable until Phase 5. This palette does not query records.</p>
+    <label className="mt-4 block text-sm" htmlFor="canonical-search">Search records</label>
+    <input id="canonical-search" className="mt-2 min-h-11 w-full border px-3" value={query} onChange={(event) => setQuery(event.target.value)} autoComplete="off" />
+    <p role="status" className="mt-3 text-sm">{status}</p>
+    <ul className="mt-3 divide-y">{results.map((item) => <li key={`${item.resource_type}-${item.resource_id}`} className="py-2 text-sm">{item.title}</li>)}</ul>
   </OverlayDialog>;
 }
 

@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 import bcrypt
 import jwt
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
@@ -342,6 +342,119 @@ def version():
         "commit": os.environ.get("PHASE3_COMMIT", "unknown"),
         "environment": os.environ.get("PHASE3_ENVIRONMENT", "local"),
     }
+
+
+class PartyBody(BaseModel):
+    party_kind: str
+    display_name: str = Field(min_length=1, max_length=200)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class HoldBody(BaseModel):
+    reason: str = Field(min_length=3, max_length=500)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class DisposeBody(BaseModel):
+    expected_version: int
+    confirmation: str
+    confirm_again: str
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class ImportBody(BaseModel):
+    content: str = Field(min_length=1)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class ApplyBody(BaseModel):
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+@router.get("/search")
+def search(q: str = "", current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import search_records
+
+    return search_records(settings, current["id"], current["organization_id"], q)
+
+
+@router.get("/search/public")
+def search_public(q: str = "", settings: Settings = Depends(settings)):
+    from .phase5 import public_search
+
+    return public_search(settings, q)
+
+
+@router.post("/parties", status_code=201)
+def post_party(body: PartyBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import create_party
+
+    return _run(lambda: create_party(settings, current["id"], current["organization_id"], body.model_dump(), body.idempotency_key, uuid4()))
+
+
+@router.post("/documents", status_code=201)
+async def post_document(
+    title: str = Form(),
+    document_class: str = Form(),
+    classification: str = Form(),
+    primary_resource_type: str = Form(),
+    primary_resource_id: UUID = Form(),
+    idempotency_key: str = Form(min_length=8, max_length=128),
+    upload: UploadFile = File(),
+    current=Depends(actor),
+    settings: Settings = Depends(settings),
+):
+    from .phase5 import store_document
+
+    data = await upload.read()
+    meta = {
+        "title": title,
+        "document_class": document_class,
+        "classification": classification,
+        "primary_resource_type": primary_resource_type,
+        "primary_resource_id": primary_resource_id,
+    }
+    return _run(
+        lambda: store_document(
+            settings,
+            current["id"],
+            current["organization_id"],
+            upload.filename or "upload.bin",
+            upload.content_type or "",
+            data,
+            meta,
+            idempotency_key,
+            uuid4(),
+        )
+    )
+
+
+@router.post("/documents/{document_id}/hold")
+def post_hold(document_id: UUID, body: HoldBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import place_hold
+
+    return _run(lambda: place_hold(settings, current["id"], current["organization_id"], document_id, body.model_dump(), body.idempotency_key, uuid4()))
+
+
+@router.post("/documents/{document_id}/disposition")
+def post_disposition(document_id: UUID, body: DisposeBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import dispose_document
+
+    return _run(lambda: dispose_document(settings, current["id"], current["organization_id"], document_id, body.model_dump(), body.idempotency_key, uuid4()))
+
+
+@router.post("/imports", status_code=201)
+def post_import(body: ImportBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import stage_import
+
+    return _run(lambda: stage_import(settings, current["id"], current["organization_id"], body.content, body.idempotency_key, uuid4()))
+
+
+@router.post("/imports/{batch_id}/apply")
+def post_apply(batch_id: UUID, body: ApplyBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5 import apply_import
+
+    return _run(lambda: apply_import(settings, current["id"], current["organization_id"], batch_id, body.idempotency_key, uuid4()))
 
 
 @router.get("/health/ready")

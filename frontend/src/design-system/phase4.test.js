@@ -13,15 +13,15 @@ test("semantic tokens meet contrast and spacing rules", () => {
   expect(spacing.every((value, index) => index === 0 || value > spacing[index - 1])).toBe(true);
 });
 
-test("route registry does not authorize and keeps search flagged off", () => {
-  expect(CANONICAL_SEARCH_ENABLED).toBe(false);
+test("route registry does not authorize and enables canonical search", () => {
+  expect(CANONICAL_SEARCH_ENABLED).toBe(true);
   expect(ROUTES.every((route) => route.capability !== "presentation-only")).toBe(true);
   expect(ROUTES.find((route) => route.id === "public-rentals").capability).toBe("functional");
   expect(ROUTES.find((route) => route.id === "reference-kernel").capability).toBe("functional");
   expect(ROUTES.filter((route) => route.capability === "synthetic").every((route) => route.workflowComplete === false)).toBe(true);
   expect(privilegedFallback("not-a-role")).toBeNull();
   expect(privilegedFallback("owner")).toBe("owner");
-  expect(ROUTES.some((route) => route.featureFlag === "phase5-canonical-search" && route.searchVisible === false)).toBe(true);
+  expect(ROUTES.some((route) => route.featureFlag === "phase5-canonical-search" && route.searchVisible === true)).toBe(true);
 });
 
 test("analytics rejects sensitive payloads and does not deliver events", () => {
