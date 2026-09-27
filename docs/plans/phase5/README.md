@@ -1,14 +1,15 @@
 # Phase 5 canonical data, documents, and search
 
-Phase 5 extends the existing FastAPI and PostgreSQL monolith. Alembic revision `0007_phase5_canonical` is the only new migration authority. Supabase is the selected hosted platform and is not activated here.
+Phase 5 extends the existing FastAPI and PostgreSQL monolith. Alembic revision `0011_phase5_hold_guard` follows `0010_phase5_search_fn`, `0009_phase5_job_source`, and `0008_phase5_closeout`. Supabase is the selected hosted platform and is not activated here.
 
 ## What is implemented
 
 - Organization-scoped parties, exclusive effective-dated relationships, addresses, parcels, property facts, and property issues.
-- Document metadata, immutable versions, quarantine, legal hold, and a 50 MB byte limit. Bytes go to the local object directory or to an S3 endpoint when `PHASE5_S3_ENDPOINT` is set.
-- PostgreSQL search documents with full text and trigram matching. Authenticated search is forced through row-level security. Public search returns `classification = public` only.
-- CSV import staging that blocks formula-like cells until an explicit apply.
-- Append-only audit remains insert-only for `perchpoint_runtime`. Digest verification compares hashes and does not rewrite history.
+- Document metadata, immutable versions, quarantine, legal hold, disposition, and a 50 MB byte limit. Accepted bytes go to MinIO when `PHASE5_OBJECT_STORE=s3`. The filesystem directory is only a unit-test double and is not Phase 5 acceptance evidence.
+- PostgreSQL search documents with full text and trigram matching. Authenticated search is forced through row-level security. Public search returns `classification = public` only. Saved searches are private until explicitly shared with the organization.
+- CSV import staging, dry run, approval, apply, and rollback. Formula-like cells stay blocked.
+- OCR and previews are derived artifacts. They do not replace original bytes. A missing scanner or OCR engine is a failure, not a clean result.
+- Append-only audit remains insert-only for `perchpoint_runtime`. Digest verification compares hashes and does not rewrite history. Replay rebuilds the search projection from canonical rows.
 
 ## Audit shutdown finding
 
@@ -24,7 +25,7 @@ PostgreSQL logs `permission denied for table audit_events` when the runtime role
 
 ## Local document services
 
-The Compose profile `documents` starts MinIO and ClamAV. The default API path uses the local object directory and the in-process signature scanner so tests do not require those containers. Set `PHASE5_CLAMAV_HOST` only when ClamAV is actually running. An unavailable scanner quarantines the file instead of accepting it.
+The Compose profile `documents` starts MinIO and ClamAV. Official `minio/minio` images are no longer pullable from Docker Hub, so the pinned local image is `bitnamilegacy/minio:2025.7.23`. The API creates the private `perchpoint-documents` bucket idempotently. Unit tests set `PHASE5_OBJECT_STORE=filesystem` and `PHASE5_SCANNER_MODE=signature`; those doubles are not acceptance evidence. Live mode treats a missing or stopped scanner as `pending_scan` / unavailable, never as clean.
 
 ## Scale
 

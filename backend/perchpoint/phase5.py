@@ -1,18 +1,22 @@
 """Phase 5 commands for parties, documents, search, holds, and import staging."""
 from __future__ import annotations
 
+import base64
 import csv
 import hashlib
 import io
+import json
 import re
+import zipfile
 from uuid import UUID, uuid4
+from xml.etree import ElementTree
 
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
 from .commands import CommandError, _audit_outbox, _command
 from .db import runtime_transaction
-from .phase5_files import inspect_upload, read_object, write_object
+from .phase5_files import inspect_upload, object_key as allocate_object_key, read_object, write_object
 from .settings import Settings
 
 FORMULA = re.compile(r"^[=+\-@]")
@@ -61,47 +65,18 @@ def _insert_party(connection: Connection, organization: UUID, actor: UUID, paylo
 
 def search_records(settings: Settings, actor: UUID, organization: UUID, query: str) -> dict:
     cleaned = query.strip()
-    if len(cleaned) < 2:
+    needle = cleaned.replace("%", "").replace("_", "")
+    if len(cleaned) < 2 or len(needle) < 2:
         return {"results": [], "total_count": 0, "facets": []}
+    params = {"query": cleaned, "needle": needle, "prefix": needle + "%", "contains": "%" + needle + "%"}
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
         rows = connection.execute(
-            text(
-                """
-                SELECT resource_type, resource_id, title, classification,
-                  CASE
-                    WHEN resource_id::text = :query THEN 100
-                    WHEN lower(title) = lower(:query) THEN 80
-                    WHEN lower(title) LIKE lower(:query) || '%' THEN 60
-                    WHEN search_vector @@ websearch_to_tsquery('simple', :query) THEN 40
-                    WHEN similarity(title, :query) > 0.35 THEN 20
-                    ELSE 0
-                  END AS rank
-                FROM search_documents
-                WHERE resource_id::text = :query
-                   OR lower(title) = lower(:query)
-                   OR lower(title) LIKE lower(:query) || '%'
-                   OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR similarity(title, :query) > 0.35
-                ORDER BY rank DESC, title
-                LIMIT 20
-                """
-            ),
-            {"query": cleaned},
+            text("SELECT * FROM perchpoint.search_rows(:query, :needle, :prefix, :contains)"),
+            params,
         ).mappings().all()
         facets = connection.execute(
-            text(
-                """
-                SELECT resource_type, count(*) AS total
-                FROM search_documents
-                WHERE resource_id::text = :query
-                   OR lower(title) = lower(:query)
-                   OR lower(title) LIKE lower(:query) || '%'
-                   OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR similarity(title, :query) > 0.35
-                GROUP BY resource_type
-                """
-            ),
-            {"query": cleaned},
+            text("SELECT * FROM perchpoint.search_facets(:query, :needle, :prefix, :contains)"),
+            params,
         ).mappings().all()
     results = []
     for row in rows:
@@ -130,7 +105,8 @@ def store_document(settings: Settings, actor: UUID, organization: UUID, filename
         "verdict": decision.verdict,
         "reason": decision.reason,
     }
-    object_key = f"org/{organization}/documents/{uuid4().hex}"
+    namespace = "accepted" if decision.verdict == "clean" else "staged" if decision.verdict == "pending_scan" else "quarantined"
+    stored_key = None if decision.verdict == "rejected" else allocate_object_key(str(organization), namespace)
     return _command(
         settings,
         actor,
@@ -139,13 +115,20 @@ def store_document(settings: Settings, actor: UUID, organization: UUID, filename
         payload,
         correlation,
         "document.stored",
-        lambda conn, fp: _insert_document(conn, organization, actor, payload, object_key, data, decision.media_type, correlation),
+        lambda conn, fp: _insert_document(conn, organization, actor, payload, stored_key, data, decision.media_type, correlation),
     )
 
 
 def _insert_document(connection, organization, actor, payload, object_key, data: bytes, media_type, correlation) -> dict:
     document_id = uuid4()
-    lifecycle = "available" if payload["verdict"] == "clean" else "quarantined"
+    if payload["verdict"] == "rejected":
+        lifecycle = "rejected"
+    elif payload["verdict"] == "pending_scan":
+        lifecycle = "scanning"
+    elif payload["verdict"] == "clean":
+        lifecycle = "available"
+    else:
+        lifecycle = "quarantined"
     connection.execute(
         text(
             """
@@ -166,8 +149,25 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
             "lifecycle": lifecycle,
         },
     )
-    if payload["verdict"] == "clean":
+    version_id = None
+    if object_key and payload["verdict"] in {"clean", "quarantined", "pending_scan"}:
         write_object(object_key, data)
+    if payload["verdict"] == "pending_scan":
+        connection.execute(
+            text(
+                """
+                INSERT INTO document_jobs (
+                  organization_id, id, document_id, actor_id, correlation_id, job_kind, object_key,
+                  source_name, media_type, status
+                ) VALUES (
+                  :org, :id, :document, :actor, :correlation, 'scan', :key, :filename, :media, 'pending'
+                )
+                """
+            ),
+            {"org": organization, "id": uuid4(), "document": document_id, "actor": actor, "correlation": correlation, "key": object_key, "filename": payload["filename"], "media": media_type},
+        )
+    if payload["verdict"] == "clean":
+        version_id = uuid4()
         connection.execute(
             text(
                 """
@@ -179,7 +179,7 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
             ),
             {
                 "org": organization,
-                "id": uuid4(),
+                "id": version_id,
                 "document": document_id,
                 "key": object_key,
                 "checksum": payload["checksum"],
@@ -191,6 +191,9 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
         )
         if payload["classification"] != "restricted":
             upsert_search(connection, organization, "document", document_id, payload["title"], "", payload["classification"])
+        from .phase5_closeout import enqueue_processing
+
+        enqueue_processing(connection, organization, actor, document_id, version_id, correlation)
     result = {"id": str(document_id), "lifecycle": lifecycle, "reason": payload["reason"]}
     _audit_outbox(connection, organization, actor, "document.stored", document_id, correlation, "document.stored.v1", result)
     return result
@@ -241,29 +244,62 @@ def _dispose(connection, organization, actor, document_id, body, correlation) ->
     ).first()
     if held or row["lifecycle"] == "held":
         raise CommandError(409, "legal_hold", "A legal hold blocks disposition")
-    result = {"id": str(document_id), "disposition": "eligible_review_only"}
-    _audit_outbox(connection, organization, actor, "document.disposition_blocked_or_reviewed", document_id, correlation, "document.disposition.v1", result)
+    if row["lifecycle"] in {"quarantined", "rejected", "disposed", "scanning", "staged"}:
+        raise CommandError(409, "not_disposable", "Only an available document can be disposed")
+    from .phase5_closeout import destroy_document_bytes
+
+    destroy_document_bytes(connection, organization, document_id)
+    connection.execute(
+        text("UPDATE documents SET lifecycle = 'disposed', version = version + 1, published = false WHERE organization_id = :org AND id = :id"),
+        {"org": organization, "id": document_id},
+    )
+    connection.execute(
+        text("DELETE FROM search_documents WHERE organization_id = :org AND resource_type = 'document' AND resource_id = :id"),
+        {"org": organization, "id": document_id},
+    )
+    result = {"id": str(document_id), "disposition": "disposed"}
+    _audit_outbox(connection, organization, actor, "document.disposed", document_id, correlation, "document.disposed.v1", result)
     return result
 
 
-def stage_import(settings: Settings, actor: UUID, organization: UUID, content: str, key: str, correlation: UUID) -> dict:
-    payload = {"content_sha256": hashlib.sha256(content.encode()).hexdigest(), "content": content}
-    return _command(settings, actor, organization, key, payload, correlation, "import.staged", lambda conn, fp: _stage_import(conn, organization, actor, content, payload["content_sha256"], correlation))
+def stage_import(settings: Settings, actor: UUID, organization: UUID, content: str, source_format: str, key: str, correlation: UUID) -> dict:
+    payload = {"content_sha256": hashlib.sha256(content.encode()).hexdigest(), "source_format": source_format, "content": content}
+    return _command(
+        settings,
+        actor,
+        organization,
+        key,
+        payload,
+        correlation,
+        "import.staged",
+        lambda conn, fp: _stage_import(conn, organization, actor, content, source_format, payload["content_sha256"], correlation),
+    )
 
 
-def _stage_import(connection, organization, actor, content, digest, correlation) -> dict:
+def _stage_import(connection, organization, actor, content, source_format, digest, correlation) -> dict:
+    source_name, names = _import_names(content, source_format)
     batch_id = uuid4()
     connection.execute(
-        text("INSERT INTO import_batches (organization_id, id, source_name, content_sha256, status) VALUES (:org, :id, 'synthetic-csv', :digest, 'staged')"),
-        {"org": organization, "id": batch_id, "digest": digest},
+        text("INSERT INTO import_batches (organization_id, id, source_name, content_sha256, status) VALUES (:org, :id, :source, :digest, 'staged')"),
+        {"org": organization, "id": batch_id, "source": source_name, "digest": digest},
     )
+    existing = {
+        value.lower()
+        for value in connection.execute(
+            text("SELECT display_name FROM parties WHERE organization_id = :org"),
+            {"org": organization},
+        ).scalars()
+    }
+    seen: set[str] = set()
     blockers = 0
-    reader = csv.DictReader(io.StringIO(content))
-    for index, row in enumerate(reader, start=1):
-        name = (row.get("name") or "").strip()
+    for index, name in enumerate(names, start=1):
         finding, detail = _classify_import(name)
+        if finding == "valid" and (name.lower() in seen or name.lower() in existing):
+            finding, detail = "warning", "duplicate_candidate"
         if finding == "blocker":
             blockers += 1
+        if finding == "valid":
+            seen.add(name.lower())
         connection.execute(
             text(
                 """
@@ -272,11 +308,82 @@ def _stage_import(connection, organization, actor, content, digest, correlation)
                 ) VALUES (:org, :id, :batch, :row, :raw, :name, :finding, :detail)
                 """
             ),
-            {"org": organization, "id": uuid4(), "batch": batch_id, "row": index, "raw": str(row), "name": name, "finding": finding, "detail": detail},
+            {"org": organization, "id": uuid4(), "batch": batch_id, "row": index, "raw": name, "name": name, "finding": finding, "detail": detail},
         )
-    result = {"id": str(batch_id), "status": "staged", "blockers": blockers}
+    if blockers:
+        from .phase5_closeout import record_quality
+
+        record_quality(connection, organization, batch_id, "blocker", "import_blocker")
+    result = {"id": str(batch_id), "status": "staged", "blockers": blockers, "source_format": source_format}
     _audit_outbox(connection, organization, actor, "import.staged", batch_id, correlation, "import.staged.v1", result)
     return result
+
+
+def _import_names(content: str, source_format: str) -> tuple[str, list[str]]:
+    if source_format == "csv":
+        reader = csv.DictReader(io.StringIO(content))
+        return "synthetic-csv", [(row.get("name") or row.get("display_name") or "").strip() for row in reader]
+    if source_format == "json":
+        payload = json.loads(content)
+        if not isinstance(payload, list):
+            raise CommandError(409, "import_format", "JSON import must be a list of records")
+        return "synthetic-json", [(item.get("display_name") or item.get("name") or "").strip() for item in payload]
+    if source_format == "xlsx":
+        return "synthetic-xlsx", _xlsx_names(base64.b64decode(content))
+    if source_format == "archive":
+        return "synthetic-archive", _archive_names(base64.b64decode(content))
+    raise CommandError(409, "import_format", "Unsupported import format")
+
+
+def _reject_traversal(names: list[str]) -> None:
+    for name in names:
+        parts = name.replace("\\", "/").split("/")
+        if name.startswith("/") or ".." in parts:
+            raise CommandError(409, "archive_traversal", "Archive path is not allowed")
+
+
+def _xlsx_names(data: bytes) -> list[str]:
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        _reject_traversal(archive.namelist())
+        if "xl/worksheets/sheet1.xml" not in archive.namelist():
+            raise CommandError(409, "import_format", "Workbook has no worksheet")
+        strings: list[str] = []
+        if "xl/sharedStrings.xml" in archive.namelist():
+            root = ElementTree.fromstring(archive.read("xl/sharedStrings.xml"))
+            strings = [node.text or "" for node in root.iter() if node.tag.rsplit("}", 1)[-1] == "t"]
+        sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+        parsed: list[list[str]] = []
+        for row in sheet.iter():
+            if row.tag.rsplit("}", 1)[-1] != "row":
+                continue
+            values: list[str] = []
+            for cell in list(row):
+                if cell.tag.rsplit("}", 1)[-1] != "c":
+                    continue
+                value = ""
+                for child in cell.iter():
+                    if child.tag.rsplit("}", 1)[-1] == "v" and child.text:
+                        value = child.text
+                if cell.attrib.get("t") == "s" and value.isdigit():
+                    value = strings[int(value)]
+                values.append(value)
+            if values:
+                parsed.append(values)
+    if not parsed:
+        return []
+    header = [item.strip().lower() for item in parsed[0]]
+    column = header.index("name") if "name" in header else 0
+    return [row[column].strip() if column < len(row) else "" for row in parsed[1:]]
+
+
+def _archive_names(data: bytes) -> list[str]:
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        _reject_traversal(archive.namelist())
+        if "rows.csv" not in archive.namelist():
+            raise CommandError(409, "import_format", "Archive is missing rows.csv")
+        text_value = archive.read("rows.csv").decode("utf-8")
+    reader = csv.DictReader(io.StringIO(text_value))
+    return [(row.get("name") or "").strip() for row in reader]
 
 
 def _classify_import(name: str) -> tuple[str, str]:
@@ -307,17 +414,25 @@ def _apply_import(connection, organization, actor, batch_id, correlation) -> dic
     ).scalar()
     if blockers:
         raise CommandError(409, "import_blocked", "Blockers must be resolved before apply")
+    if batch["status"] != "approved":
+        raise CommandError(409, "approval_required", "Apply requires an explicit approval")
     rows = connection.execute(
         text("SELECT normalized_name FROM import_rows WHERE organization_id = :org AND batch_id = :id AND finding = 'valid'"),
         {"org": organization, "id": batch_id},
     ).scalars().all()
+    created = []
     for name in rows:
-        _insert_party(connection, organization, actor, {"party_kind": "person", "display_name": name}, correlation)
+        party = _insert_party(connection, organization, actor, {"party_kind": "person", "display_name": name}, correlation)
+        created.append(party["id"])
+        connection.execute(
+            text("INSERT INTO import_effects (organization_id, id, batch_id, party_id) VALUES (:org, :id, :batch, :party)"),
+            {"org": organization, "id": uuid4(), "batch": batch_id, "party": party["id"]},
+        )
     connection.execute(
         text("UPDATE import_batches SET status = 'applied', version = version + 1 WHERE organization_id = :org AND id = :id"),
         {"org": organization, "id": batch_id},
     )
-    result = {"id": str(batch_id), "status": "applied", "created": len(rows)}
+    result = {"id": str(batch_id), "status": "applied", "created": len(created)}
     _audit_outbox(connection, organization, actor, "import.applied", batch_id, correlation, "import.applied.v1", result)
     return result
 

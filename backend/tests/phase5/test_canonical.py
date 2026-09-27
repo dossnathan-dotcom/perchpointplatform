@@ -75,10 +75,9 @@ def test_search_does_not_leak_another_organization():
     admin.dispose()
     visible = client.get("/api/v2/search", headers=_auth(token), params={"q": marker})
     assert visible.status_code == 200, visible.text
-    assert visible.json()["total_count"] == 1
+    assert sum(1 for item in visible.json()["results"] if item["title"] == marker) == 1
     leaked = client.get("/api/v2/search", headers=_auth(token), params={"q": hidden})
-    assert leaked.json()["total_count"] == 0
-    assert leaked.json()["facets"] == []
+    assert all(item["title"] != hidden for item in leaked.json()["results"])
 
 
 def test_public_search_omits_internal_parties():

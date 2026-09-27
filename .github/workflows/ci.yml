@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout, cursor/phase-05-canonical-data-documents]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout, cursor/phase-05-canonical-data-documents, cursor/phase-05-definitive-closeout]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

@@ -23,6 +23,8 @@ os.environ.setdefault("MONGO_URL", "mongodb://127.0.0.1:27017")
 os.environ.setdefault("DB_NAME", "perchpoint_phase0_test")
 os.environ.setdefault("CORS_ORIGINS", "http://localhost:3000")
 os.environ.setdefault("PHASE0_ENABLED", "true")
+os.environ.setdefault("PHASE5_SCANNER_MODE", "signature")
+os.environ.setdefault("PHASE5_OBJECT_STORE", "filesystem")
 
 load_dotenv(REPOSITORY_ROOT / "frontend/.env")
 
