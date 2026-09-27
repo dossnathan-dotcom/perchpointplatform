@@ -407,7 +407,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0011_phase5_hold_guard"
+    assert revision == "0012_phase6_identity"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

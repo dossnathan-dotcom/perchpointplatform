@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 import bcrypt
 import jwt
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
@@ -28,6 +29,8 @@ from .commands import (
 )
 from .db import runtime_transaction
 from .http_security import security_headers
+from .phase6_identity import COOKIE, CSRF_HEADER, csrf_ok, open_session, resolve, revoke
+from .phase6_policy import approval_authority, authorize
 from .settings import Phase2ConfigurationError, Settings
 
 router = APIRouter(prefix="/api/v2")
@@ -132,6 +135,8 @@ def actor(authorization: str | None = Header(default=None), settings: Settings =
 
 @router.post("/session")
 def login(body: LoginBody, settings: Settings = Depends(settings)):
+    if os.environ.get("PHASE6_ALLOW_DEV_JWT") != "1":
+        raise HTTPException(404, {"code": "development_jwt_retired", "message": "Use the unified sign-in.", "retryable": False})
     with runtime_transaction(settings, None, None, uuid4()) as connection:
         row = connection.execute(text("SELECT * FROM perchpoint.login_material(:email)"), {"email": body.email}).mappings().first()
     if not row or not bcrypt.checkpw(body.password.encode(), row["password_hash"].encode()):
@@ -676,6 +681,93 @@ def health_ready(settings: Settings = Depends(settings)):
     except Exception:
         raise HTTPException(503, {"status": "not_ready"}) from None
     return {"status": "ready"}
+
+
+class PurchaseBody(BaseModel):
+    amount_minor: int = Field(ge=0)
+    monthly_rent_minor: int | None = None
+    capital: bool = False
+    emergency: bool = False
+
+
+def _session_actor(request: Request, settings: Settings) -> dict:
+    session = resolve(settings, request.cookies.get(COOKIE))
+    if not session:
+        raise HTTPException(401, {"code": "authentication_required", "message": "Sign in to continue.", "retryable": True})
+    return session
+
+
+@router.post("/auth/sign-in")
+def sign_in(body: LoginBody, settings: Settings = Depends(settings)):
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        row = connection.execute(text("SELECT * FROM perchpoint.login_material(:email)"), {"email": body.email}).mappings().first()
+    if not row or not bcrypt.checkpw(body.password.encode(), row["password_hash"].encode()):
+        raise HTTPException(401, {"code": "authentication_failed", "message": "The email or password is incorrect.", "retryable": True})
+    with runtime_transaction(settings, row["id"], None, uuid4()) as connection:
+        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": row["id"]}).mappings().first()
+    if not membership:
+        raise HTTPException(403, {"code": "membership_expired", "message": "This account has no current membership.", "retryable": False})
+    opened = open_session(settings, row["id"], membership["organization_id"], membership["role_name"], f"local:{row['id']}")
+    response = JSONResponse(
+        {
+            "organization_id": str(membership["organization_id"]),
+            "role_name": membership["role_name"],
+            "csrf": opened["csrf"],
+            "assurance": opened["assurance"],
+            "synthetic": True,
+        }
+    )
+    response.set_cookie(COOKIE, opened["token"], httponly=True, samesite="lax", secure=os.environ.get("PHASE3_ENVIRONMENT") in {"staging", "production"}, path="/")
+    return response
+
+
+@router.get("/auth/me")
+def current_session(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    return {"account_id": str(session["id"]), "organization_id": str(session["organization_id"]), "assurance": session["assurance"], "synthetic": True}
+
+
+@router.post("/auth/sign-out")
+def sign_out(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    if not csrf_ok(session, request.headers.get(CSRF_HEADER)):
+        raise HTTPException(403, {"code": "csrf_rejected", "message": "The security token did not match this session.", "retryable": True})
+    revoke(settings, session["id"], session["organization_id"], session["session_id"], "sign_out")
+    response = JSONResponse({"signed_out": True, "synthetic": True})
+    response.delete_cookie(COOKIE, path="/")
+    return response
+
+
+def _role_may_approve(role_name: str, authority: str) -> bool:
+    if authority == "routine":
+        return role_name in {"leasing", "owner", "maintenance"}
+    if authority in {"operations", "operations_emergency"}:
+        return role_name in {"leasing", "owner"}
+    return role_name == "owner"
+
+
+@router.post("/access/purchase-authority")
+def purchase_authority(body: PurchaseBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": session["id"]}).mappings().first()
+    authority = approval_authority(body.amount_minor, body.monthly_rent_minor, capital=body.capital, emergency=body.emergency)
+    role_name = membership["role_name"] if membership else ""
+    decision = authorize(
+        capability="expense.approve",
+        role_name=role_name,
+        actor_id=str(session["id"]),
+        assurance=session["assurance"],
+        privileged=authority == "owner",
+    )
+    return {
+        "authority": authority,
+        "allowed": decision.allowed and _role_may_approve(role_name, authority),
+        "reason": decision.reason,
+        "role_name": role_name,
+        "policy_version": "phase6-1",
+        "synthetic": True,
+    }
 
 
 def create_app():

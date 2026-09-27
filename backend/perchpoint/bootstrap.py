@@ -50,6 +50,8 @@ def bootstrap(settings: Settings | None = None) -> None:
             "search_rows(text, text, text, text)",
             "search_facets(text, text, text, text)",
             "reject_held_mutation()",
+            "resolve_session(text)",
+            "record_session(uuid, text, uuid, text, text, text, text, timestamp with time zone, timestamp with time zone)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
     owner.dispose()

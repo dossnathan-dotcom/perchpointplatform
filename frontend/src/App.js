@@ -18,6 +18,7 @@ import { applyDocumentTheme } from "@/design-system/theme";
 
 const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
 const Phase5Workspace = lazy(() => import("@/components/portal/Phase5Workspace").then((module) => ({ default: module.Phase5Workspace })));
+const Phase6SignIn = lazy(() => import("@/components/portal/Phase6SignIn").then((module) => ({ default: module.Phase6SignIn })));
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
 const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
@@ -71,6 +72,7 @@ export function AppContent() {
         <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
+        <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
         <Route path="/perchpoint/:roleId/phase5/:center" element={<Suspense fallback={routePending}><Phase5Workspace /></Suspense>} />
         <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />
