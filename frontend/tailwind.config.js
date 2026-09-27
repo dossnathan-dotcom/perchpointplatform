@@ -7,7 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         heading: ["Fraunces", '"Iowan Old Style"', "Palatino", "serif"],
-        body: ['"Source Sans 3"', '"Segoe UI"', "system-ui", "sans-serif"],
+        body: ['"Source Sans 3"', '"Source Sans 3 Fallback"', '"Segoe UI"', "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
       },
       colors: {
