@@ -41,7 +41,7 @@ export const density = {
 
 export const fontFamilies = {
   display: 'Fraunces, "Iowan Old Style", Palatino, serif',
-  operational: '"Source Sans 3", "Segoe UI", system-ui, sans-serif',
+  operational: '"Source Sans 3", "Source Sans 3 Fallback", "Segoe UI", system-ui, sans-serif',
 };
 
 export const requiredCssVariables = [

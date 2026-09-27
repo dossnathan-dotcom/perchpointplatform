@@ -7,13 +7,9 @@ import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import { HowToApply } from "@/components/HowToApply";
 import { Listings } from "@/components/Listings";
-import { LoginModal } from "@/components/LoginModal";
-import { MaintenanceModal } from "@/components/MaintenanceModal";
 import { Navbar } from "@/components/Navbar";
 import { Neighborhoods } from "@/components/Neighborhoods";
-import { PropertyDetailPage } from "@/components/PropertyDetailPage";
 import { ResidentResources } from "@/components/ResidentResources";
-import { TourModal } from "@/components/TourModal";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { Button } from "@/components/ui/button";
 import { startSentry } from "@/sentry";
@@ -23,6 +19,10 @@ import { applyDocumentTheme } from "@/design-system/theme";
 const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
+const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
+const LoginModal = lazy(() => import("@/components/LoginModal").then((module) => ({ default: module.LoginModal })));
+const TourModal = lazy(() => import("@/components/TourModal").then((module) => ({ default: module.TourModal })));
+const MaintenanceModal = lazy(() => import("@/components/MaintenanceModal").then((module) => ({ default: module.MaintenanceModal })));
 const Laboratory = process.env.NODE_ENV === "production" ? null : lazy(() => import("@/design-system/laboratory"));
 const routePending = <main id="main" className="min-h-screen bg-obsidian px-6 py-24 text-linen"><p role="status">Loading workspace.</p></main>;
 
@@ -67,8 +67,8 @@ export function AppContent() {
       <Routes>
         <Route element={<PublicLayout onLogin={(role) => openLogin(role)} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
         <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
-        <Route path="/property/:propertyId" element={<PropertyDetailPage onRequest={openRequest} />} />
-        <Route path="/rentals/:unitId" element={<PropertyDetailPage onRequest={openRequest} />} />
+        <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
+        <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
         <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />
@@ -78,9 +78,9 @@ export function AppContent() {
         {Laboratory ? <Route path="/design-system" element={<Suspense fallback={routePending}><Laboratory /></Suspense>} /> : null}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-      {loginOpen && <LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} />}
-      <TourModal property={requestProperty} intent={requestIntent} open={requestOpen} onOpenChange={setRequestOpen} />
-      <MaintenanceModal open={maintenanceOpen} onOpenChange={setMaintenanceOpen} />
+      {loginOpen && <Suspense fallback={null}><LoginModal key={location.key} open onOpenChange={setLoginOpen} onSuccess={handleLogin} initialRole={loginRole} /></Suspense>}
+      {requestOpen && <Suspense fallback={null}><TourModal property={requestProperty} intent={requestIntent} open onOpenChange={setRequestOpen} /></Suspense>}
+      {maintenanceOpen && <Suspense fallback={null}><MaintenanceModal open onOpenChange={setMaintenanceOpen} /></Suspense>}
     </>
   );
 }

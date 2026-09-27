@@ -4,7 +4,20 @@
 
 The acceptance recorded below for pull request 16 was provisional. Required automated visual, browser, Lighthouse, responsive, zoom, forced-color, reduced-motion, accessibility-tree, font, image, and CSP evidence had not been executed. That provisional status applied until closeout pull request 18 merged and the merged-main workflow passed. Do not treat the historical pull request 16 result as definitive local technical acceptance.
 
-## Definitive local technical acceptance
+## Performance remediation status
+
+The acceptance recorded for pull request 19 treated failed public Lighthouse floors as an accepted client-rendering constraint. That was incorrect. The floors stayed in force. Local and GitHub-hosted three-run medians now pass them. The passing `phase4-performance` job is https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36281733622. Its medians were public desktop performance 100, LCP 0.501 s, TBT 0 ms; public mobile performance 100, LCP 1.758 s, CLS 0.049, TBT 31 ms; listing performance 99, LCP 2.153 s, TBT 54 ms. Accessibility stayed 100, best practices stayed 100, public SEO stayed 100, and CLS stayed at or below 0.1. Authenticated SEO stayed at 63 because those routes are `noindex`, and that score is not a gate.
+
+```text
+Phase 4 functional/design/accessibility/security implementation: passed
+Phase 4 public performance acceptance: passed
+Phase 4 definitive local technical acceptance: restored
+Hosted operational validation: owner-deferred
+Production readiness: blocked
+Phase 5: unauthorized
+```
+
+## Earlier closeout record
 
 Closeout pull request 18 merged as `df4cc33759a136181e3b96c4bb0d39544b9550bf`. The merged-main workflow passed: https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36274778554
 
@@ -16,7 +29,7 @@ Production readiness: blocked
 Phase 5: unauthorized
 ```
 
-The grant covers the executed local and CI gates. It does not include hosted validation or production. Public Lighthouse performance stayed below 90 on desktop and 85 on mobile because the approved client-rendered build paints the largest text only after JavaScript. Bundle budgets passed. Automated accessibility, best practices, and public SEO scored 100, and CLS stayed at or below 0.1.
+That grant covered the executed design, accessibility, browser, and security gates. It does not remain the performance decision. Public Lighthouse on that commit was desktop performance 36, LCP 8.06 s, TBT 2412 ms, and mobile performance 75, LCP 6.81 s, TBT 117 ms. Those figures failed the approved floors. Bundle budgets passed. Automated accessibility, best practices, and public SEO scored 100, and CLS stayed at or below 0.1.
 
 Human NVDA, VoiceOver, Faruk’s brand review, Ann’s operational review, hosted staging, and production accessibility certification remain pre-production deferred.
 
