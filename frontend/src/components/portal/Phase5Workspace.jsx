@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { phase2 } from "@/api/phase2";
 import { SkipLink } from "@/design-system/components";
@@ -37,8 +37,54 @@ export function Phase5Workspace() {
   useEffect(() => {
     setToken("");
     setRows([]);
+    setBatchId("");
     setStatus(allowed ? "Sign in to load canonical records. The preview role is not authority." : "This role has no Phase 5 workspace.");
-  }, [roleId, center, allowed]);
+  }, [roleId, allowed]);
+
+  const load = useCallback(async (current = token, cancelled = () => false) => {
+    setStatus("Loading.");
+    const headers = { Authorization: `Bearer ${current}` };
+    const path = {
+      documents: query.trim().length >= 2 ? `/api/v2/search?q=${encodeURIComponent(query.trim())}` : "/api/v2/documents",
+      quality: "/api/v2/quality",
+      imports: "/api/v2/imports",
+      audit: "/api/v2/audit/events",
+      timeline: "/api/v2/audit/events",
+      saved: "/api/v2/search/saved",
+    }[center];
+    if (!path) {
+      setStatus("This workspace is not available.");
+      return;
+    }
+    try {
+      const { response, body } = await phase2(path, { headers });
+      if (cancelled()) return;
+      if (response.status === 404 || response.status === 403) {
+        setRows([]);
+        setStatus("Access denied for this membership.");
+        return;
+      }
+      if (!response.ok) {
+        setRows([]);
+        setStatus("The canonical service returned an error.");
+        return;
+      }
+      const next = body.documents || body.results || body.findings || body.events || body.saved || body.batches || [];
+      setRows(next);
+      setStatus(next.length ? `${next.length} records.` : "No records in this view.");
+    } catch {
+      if (!cancelled()) setStatus("Offline. The canonical service could not be reached.");
+    }
+  }, [center, query, token]);
+
+  useEffect(() => {
+    if (!token) return undefined;
+    let cancelled = false;
+    load(token, () => cancelled);
+    return () => {
+      cancelled = true;
+    };
+  }, [load, token]);
 
   async function signIn(event) {
     event.preventDefault();
@@ -51,36 +97,6 @@ export function Phase5Workspace() {
     setToken(body.token);
     setStatus(`Signed in as ${body.role_name}.`);
     await load(body.token);
-  }
-
-  async function load(current = token) {
-    setStatus("Loading.");
-    const headers = { Authorization: `Bearer ${current}` };
-    const path = {
-      documents: query.trim().length >= 2 ? `/api/v2/search?q=${encodeURIComponent(query.trim())}` : "/api/v2/documents",
-      quality: "/api/v2/quality",
-      imports: "/api/v2/quality",
-      audit: "/api/v2/audit/events",
-      timeline: "/api/v2/audit/events",
-      saved: "/api/v2/search/saved",
-    }[center];
-    if (!path) {
-      setStatus("This workspace is not available.");
-      return;
-    }
-    const { response, body } = await phase2(path, { headers });
-    if (response.status === 404 || response.status === 403) {
-      setRows([]);
-      setStatus("Access denied for this membership.");
-      return;
-    }
-    if (!response.ok) {
-      setStatus("The canonical service did not respond.");
-      return;
-    }
-    const next = body.documents || body.results || body.findings || body.events || body.saved || [];
-    setRows(next);
-    setStatus(next.length ? `${next.length} records.` : "No records in this view.");
   }
 
   async function saveSearch(event) {
@@ -129,6 +145,13 @@ export function Phase5Workspace() {
           <button className="h-11 self-end border border-gold px-4" type="submit" data-testid="phase5-sign-in">Sign in</button>
         </form>
         <p role="status" className="mt-4 text-sm" data-testid="phase5-status">{status}</p>
+        {roleId === "super-admin" && token && (center === "timeline" || center === "audit") ? (
+          <button className="mt-4 h-11 border border-gold px-4" type="button" data-testid="phase5-replay" onClick={async () => {
+            setStatus("Replay in progress.");
+            const { response, body } = await phase2("/api/v2/replay", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+            setStatus(response.ok ? `Replay ${body.status}. Expected ${body.expected}, actual ${body.actual}.` : "Replay was denied.");
+          }}>Replay projection</button>
+        ) : null}
         {center === "saved" && token ? (
           <form className="mt-6 grid gap-3 sm:grid-cols-[1fr_1fr_auto]" onSubmit={saveSearch}>
             <label className="grid gap-1 text-sm">Name

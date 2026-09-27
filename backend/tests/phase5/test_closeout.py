@@ -2,10 +2,16 @@
 from uuid import uuid4
 
 import fitz
+import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
+from foundation.seeds import sid
+from perchpoint.db import runtime_transaction
 from perchpoint.phase5_closeout import _safe_csv, sanitize_text
 from perchpoint.routes import create_app
+from perchpoint.settings import Settings
 from tests.phase5.test_canonical import _auth, _login
 
 
@@ -206,3 +212,30 @@ def test_owner_quality_queue_is_material_only():
     events = client.get("/api/v2/audit/events", headers=_auth(token))
     assert events.status_code == 200
     assert all("password" not in item["action"] for item in events.json()["events"])
+
+
+def test_runtime_sql_cannot_delete_a_held_document(tmp_path, monkeypatch):
+    monkeypatch.setenv("PHASE5_OBJECT_ROOT", str(tmp_path))
+    client = TestClient(create_app())
+    token = _login(client, "ann.synthetic@example.com")
+    property_id = _property(client, token)
+    uploaded = _upload(client, token, property_id, "hold.txt", b"Held synthetic note", "text/plain", "Held note")
+    assert uploaded.status_code == 201, uploaded.text
+    document_id = uploaded.json()["id"]
+    held = client.post(
+        f"/api/v2/documents/{document_id}/hold",
+        headers=_auth(token),
+        json={"reason": "synthetic hold", "idempotency_key": "hold-" + uuid4().hex},
+    )
+    assert held.status_code == 200, held.text
+    settings = Settings.load()
+    with pytest.raises(DBAPIError, match="legal hold"):
+        with runtime_transaction(settings, sid("account-phase2-ann"), sid("organization-demo"), uuid4()) as connection:
+            connection.execute(text("DELETE FROM documents WHERE id = :id"), {"id": document_id})
+    denied = client.post(
+        f"/api/v2/documents/{document_id}/disposition",
+        headers=_auth(token),
+        json={"expected_version": 2, "confirmation": "destroy", "confirm_again": "destroy", "idempotency_key": "disp-" + uuid4().hex},
+    )
+    assert denied.status_code == 409
+    assert denied.json()["detail"]["code"] == "legal_hold"

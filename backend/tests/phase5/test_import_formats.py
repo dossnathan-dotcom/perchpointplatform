@@ -57,6 +57,9 @@ def test_json_xlsx_and_archive_imports_stage_without_innago():
     assert report.status_code == 200
     assert report.json()["checksum"]
     assert report.json()["mapping_version"] == 1
+    listed = client.get("/api/v2/imports", headers=_auth(token))
+    assert listed.status_code == 200
+    assert any(item["id"] == staged.json()["id"] for item in listed.json()["batches"])
     workbook = _stage(client, token, _xlsx("Sheet " + uuid4().hex[:8]), "xlsx")
     assert workbook.status_code == 201, workbook.text
     assert workbook.json()["blockers"] == 0

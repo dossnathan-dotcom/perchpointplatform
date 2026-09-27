@@ -847,6 +847,33 @@ def _rollback_import(connection, organization, actor, batch_id, correlation) -> 
     return result
 
 
+def list_imports(settings: Settings, actor: UUID, organization: UUID) -> dict:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        _require(connection, actor, READ)
+        rows = connection.execute(
+            text(
+                """
+                SELECT id, source_name, status, content_sha256, mapping_version
+                FROM import_batches
+                ORDER BY created_at DESC
+                LIMIT 50
+                """
+            )
+        ).mappings().all()
+    return {
+        "batches": [
+            {
+                "id": str(row["id"]),
+                "title": row["source_name"],
+                "lifecycle": row["status"],
+                "checksum": row["content_sha256"],
+                "mapping_version": row["mapping_version"],
+            }
+            for row in rows
+        ]
+    }
+
+
 def import_report(settings: Settings, actor: UUID, organization: UUID, batch_id: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
         _require(connection, actor, READ)

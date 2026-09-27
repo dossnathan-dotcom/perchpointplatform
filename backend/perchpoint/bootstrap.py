@@ -49,6 +49,7 @@ def bootstrap(settings: Settings | None = None) -> None:
             "claim_document_job(text)",
             "search_rows(text, text, text, text)",
             "search_facets(text, text, text, text)",
+            "reject_held_mutation()",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
     owner.dispose()

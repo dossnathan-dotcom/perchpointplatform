@@ -444,6 +444,13 @@ def post_disposition(document_id: UUID, body: DisposeBody, current=Depends(actor
     return _run(lambda: dispose_document(settings, current["id"], current["organization_id"], document_id, body.model_dump(), body.idempotency_key, uuid4()))
 
 
+@router.get("/imports")
+def get_imports(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import list_imports
+
+    return _run(lambda: list_imports(settings, current["id"], current["organization_id"]))
+
+
 @router.post("/imports", status_code=201)
 def post_import(body: ImportBody, current=Depends(actor), settings: Settings = Depends(settings)):
     from .phase5 import stage_import
