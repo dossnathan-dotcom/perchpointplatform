@@ -1208,3 +1208,71 @@ Canonical Phase 1 requirement register. IDs are immutable; supersede rather than
 - **Related tests/evidence:** docs/governance/APPROVED_DECISION_REGISTER.md
 - **Affected domains:** governance,operations
 - **Faruk must confirm later:** no
+
+## PP-DATA-005
+
+- **Normative statement:** Canonical records shall use stable organization-scoped identifiers, provenance, lifecycle, and effective-dated relationships.
+- **Rationale:** Later workflows need one reconstructable source of truth.
+- **Source:** Phase 5 Q11–Q50
+- **Business owner:** Faruk
+- **Technical owner:** Nathan
+- **Acceptance authority:** Nathan
+- **Status:** accepted
+- **Assumptions:** Phase 5 does not activate leasing, payment, or maintenance workflows.
+- **Dependencies:** Existing organization and property schema
+- **Risks:** Parallel identity trees
+- **Verification method:** Constraint and relationship tests
+- **Related tests/evidence:** docs/plans/phase5/README.md
+- **Affected domains:** data,property
+- **Faruk must confirm later:** no
+
+## PP-DATA-006
+
+- **Normative statement:** Document metadata shall live in PostgreSQL and document bytes shall pass through the application storage abstraction.
+- **Rationale:** Authorization, audit, and scanning cannot depend on a bucket URL.
+- **Source:** Phase 5 Q101–Q140
+- **Business owner:** Faruk
+- **Technical owner:** Nathan
+- **Acceptance authority:** Nathan
+- **Status:** accepted
+- **Assumptions:** Local bytes use an S3-compatible store. Hosted bytes use Supabase Storage later.
+- **Dependencies:** Forced row-level security
+- **Risks:** Direct object access or unscanned files
+- **Verification method:** Upload, quarantine, and hold tests
+- **Related tests/evidence:** docs/plans/phase5/README.md
+- **Affected domains:** data,security
+- **Faruk must confirm later:** no
+
+## PP-DATA-007
+
+- **Normative statement:** Authenticated search shall use PostgreSQL and the same organization authorization as direct record access.
+- **Rationale:** Search must not reveal records the actor cannot open.
+- **Source:** Phase 5 Q81–Q100
+- **Business owner:** Faruk
+- **Technical owner:** Nathan
+- **Acceptance authority:** Nathan
+- **Status:** accepted
+- **Assumptions:** No external or vector search engine is introduced in Phase 5.
+- **Dependencies:** Forced row-level security
+- **Risks:** Existence leakage through counts, snippets, or suggestions
+- **Verification method:** Cross-organization search tests
+- **Related tests/evidence:** docs/plans/phase5/README.md
+- **Affected domains:** data,security
+- **Faruk must confirm later:** no
+
+## PP-DATA-008
+
+- **Normative statement:** Retention defaults are provisional synthetic policy, and a legal hold shall block disposition.
+- **Rationale:** Phase 5 must not present unreviewed defaults as legal advice.
+- **Source:** Phase 5 Q141–Q150
+- **Business owner:** Faruk
+- **Technical owner:** Nathan
+- **Acceptance authority:** Faruk and qualified counsel
+- **Status:** provisional
+- **Assumptions:** Counsel has not approved a production retention schedule.
+- **Dependencies:** Document and audit records
+- **Risks:** Destruction of held evidence
+- **Verification method:** Hold and disposition tests
+- **Related tests/evidence:** docs/plans/phase5/README.md
+- **Affected domains:** data,governance
+- **Faruk must confirm later:** yes

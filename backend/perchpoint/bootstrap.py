@@ -45,6 +45,7 @@ def bootstrap(settings: Settings | None = None) -> None:
             "submit_public_inquiry(uuid, text, text, text, text, text, text, uuid)",
             "claim_outbox(text)",
             "finish_outbox(uuid, boolean)",
+            "public_search(text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
     owner.dispose()

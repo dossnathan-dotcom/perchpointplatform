@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout, cursor/phase-05-canonical-data-documents]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -23,6 +23,8 @@ jobs:
       - run: python scripts/validate_phase3_answers.py
       - run: python scripts/validate_phase4_answers.py
       - run: python scripts/validate_phase4_completeness.py
+      - run: python scripts/validate_phase5_answers.py
+      - run: python scripts/phase5_staging_preflight.py
   contracts:
     name: contracts
     runs-on: ubuntu-24.04

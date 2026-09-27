@@ -84,8 +84,8 @@ def validate(root: Path = ROOT) -> list[str]:
     duplicates = [item for item, count in Counter(ids).items() if count > 1]
     if duplicates:
         errors.append(f"Duplicate requirement IDs: {', '.join(duplicates)}")
-    if len(records) != 71:
-        errors.append(f"Requirement register count changed: found {len(records)}, expected 71")
+    if len(records) != 75:
+        errors.append(f"Requirement register count changed: found {len(records)}, expected 75")
 
     seen_prefixes: set[str] = set()
     for requirement_id, metadata in records:
@@ -127,8 +127,8 @@ def validate(root: Path = ROOT) -> list[str]:
     ]
     if duplicate_decisions:
         errors.append(f"Duplicate decision IDs: {', '.join(duplicate_decisions)}")
-    if len(decision_records) != 71:
-        errors.append(f"Decision register count changed: found {len(decision_records)}, expected 71")
+    if len(decision_records) != 75:
+        errors.append(f"Decision register count changed: found {len(decision_records)}, expected 75")
     known_requirements = set(ids)
     for decision_id, cells in decision_records:
         if len(cells) != 10:

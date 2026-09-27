@@ -106,7 +106,7 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
         ]
         for email, account_id, role, member_org, ended in users:
             connection.execute(
-                text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, :password) ON CONFLICT (id) DO NOTHING"),
+                text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, :password) ON CONFLICT (id) DO UPDATE SET password_hash = EXCLUDED.password_hash"),
                 {"id": account_id, "email": email, "password": password_hash},
             )
             connection.execute(
