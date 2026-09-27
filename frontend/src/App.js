@@ -17,6 +17,7 @@ import { SkipLink } from "@/design-system/components";
 import { applyDocumentTheme } from "@/design-system/theme";
 
 const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
+const Phase5Workspace = lazy(() => import("@/components/portal/Phase5Workspace").then((module) => ({ default: module.Phase5Workspace })));
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
 const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
@@ -71,6 +72,7 @@ export function AppContent() {
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
+        <Route path="/perchpoint/:roleId/phase5/:center" element={<Suspense fallback={routePending}><Phase5Workspace /></Suspense>} />
         <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />
         <Route path="/perchpoint/*" element={<PageNotFound />} />
         <Route path="/foundation/:sectionId?" element={<Suspense fallback={routePending}><FoundationPage key={location.key} /></Suspense>} />

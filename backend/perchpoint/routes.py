@@ -457,6 +457,173 @@ def post_apply(batch_id: UUID, body: ApplyBody, current=Depends(actor), settings
     return _run(lambda: apply_import(settings, current["id"], current["organization_id"], batch_id, body.idempotency_key, uuid4()))
 
 
+class SaveSearchBody(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    query: str = Field(min_length=2, max_length=200)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class ShareSearchBody(BaseModel):
+    visibility: str
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class ExportBody(BaseModel):
+    document_ids: list[UUID]
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class ResolveBody(BaseModel):
+    reason: str = Field(min_length=3, max_length=500)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+@router.get("/documents")
+def get_documents(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import list_documents
+
+    return _run(lambda: list_documents(settings, current["id"], current["organization_id"]))
+
+
+@router.post("/documents/{document_id}/access")
+def post_access(document_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import mint_access
+
+    return _run(lambda: mint_access(settings, current["id"], current["organization_id"], document_id, "download"))
+
+
+@router.get("/documents/{document_id}/content")
+def get_content(
+    document_id: UUID,
+    range_header: str | None = Header(default=None, alias="range"),
+    x_perchpoint_document_token: str | None = Header(default=None),
+    current=Depends(actor),
+    settings: Settings = Depends(settings),
+):
+    from fastapi.responses import Response
+
+    from .phase5_closeout import read_granted
+
+    if not x_perchpoint_document_token:
+        raise HTTPException(404, {"code": "not_found", "message": "Document was not found", "retryable": False})
+    data, media = _run(
+        lambda: read_granted(
+            settings,
+            current["id"],
+            current["organization_id"],
+            document_id,
+            x_perchpoint_document_token,
+            range_header,
+        )
+    )
+    return Response(content=data, media_type=media, headers={"Cache-Control": "private, no-store", "Accept-Ranges": "bytes"})
+
+
+@router.post("/exports", status_code=201)
+def post_export(body: ExportBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import create_export
+
+    return _run(lambda: create_export(settings, current["id"], current["organization_id"], body.document_ids, body.idempotency_key, uuid4()))
+
+
+@router.post("/search/saved", status_code=201)
+def post_saved(body: SaveSearchBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import save_search
+
+    return _run(lambda: save_search(settings, current["id"], current["organization_id"], body.name, body.query, body.idempotency_key, uuid4()))
+
+
+@router.get("/search/saved")
+def get_saved(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import list_saved
+
+    return _run(lambda: list_saved(settings, current["id"], current["organization_id"]))
+
+
+@router.post("/search/saved/{search_id}/share")
+def post_share(search_id: UUID, body: ShareSearchBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import share_search
+
+    return _run(lambda: share_search(settings, current["id"], current["organization_id"], search_id, body.visibility, body.idempotency_key, uuid4()))
+
+
+@router.delete("/search/saved/{search_id}")
+def delete_saved_search(search_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import delete_saved
+
+    return _run(lambda: delete_saved(settings, current["id"], current["organization_id"], search_id))
+
+
+@router.post("/imports/{batch_id}/approve")
+def post_approve(batch_id: UUID, body: ApplyBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import approve_import
+
+    return _run(lambda: approve_import(settings, current["id"], current["organization_id"], batch_id, body.idempotency_key, uuid4()))
+
+
+@router.post("/imports/{batch_id}/dry-run")
+def post_dry_run(batch_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import dry_run_import
+
+    return _run(lambda: dry_run_import(settings, current["id"], current["organization_id"], batch_id))
+
+
+@router.post("/imports/{batch_id}/rollback")
+def post_rollback(batch_id: UUID, body: ApplyBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import rollback_import
+
+    return _run(lambda: rollback_import(settings, current["id"], current["organization_id"], batch_id, body.idempotency_key, uuid4()))
+
+
+@router.get("/imports/{batch_id}")
+def get_import(batch_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import import_report
+
+    return _run(lambda: import_report(settings, current["id"], current["organization_id"], batch_id))
+
+
+@router.get("/quality")
+def get_quality(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import list_quality
+
+    return _run(lambda: list_quality(settings, current["id"], current["organization_id"]))
+
+
+@router.post("/quality/{finding_id}/resolve")
+def post_resolve(finding_id: UUID, body: ResolveBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import resolve_quality
+
+    return _run(lambda: resolve_quality(settings, current["id"], current["organization_id"], finding_id, body.reason, body.idempotency_key, uuid4()))
+
+
+@router.get("/audit/events")
+def get_audit(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import list_audit
+
+    return _run(lambda: list_audit(settings, current["id"], current["organization_id"]))
+
+
+@router.post("/replay")
+def post_replay(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import replay_projection
+
+    return _run(lambda: replay_projection(settings, current["id"], current["organization_id"]))
+
+
+@router.get("/phase5/diagnostics")
+def get_diagnostics(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import diagnostics
+
+    return _run(lambda: diagnostics(settings, current["id"], current["organization_id"]))
+
+
+@router.post("/phase5/jobs/process")
+def post_jobs(current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import process_document_jobs
+
+    return process_document_jobs(settings)
+
+
 @router.get("/health/ready")
 def health_ready(settings: Settings = Depends(settings)):
     from sqlalchemy import text

@@ -22,6 +22,7 @@ frontend/playwright-report/
 frontend/test-results/
 frontend/lighthouse-reports/
 .phase5-objects/
+.phase5-local.env
 frontend/blob-report/
 
 # Next.js

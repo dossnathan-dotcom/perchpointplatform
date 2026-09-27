@@ -12,7 +12,7 @@ from sqlalchemy.engine import Connection
 
 from .commands import CommandError, _audit_outbox, _command
 from .db import runtime_transaction
-from .phase5_files import inspect_upload, read_object, write_object
+from .phase5_files import inspect_upload, object_key as allocate_object_key, read_object, write_object
 from .settings import Settings
 
 FORMULA = re.compile(r"^[=+\-@]")
@@ -61,9 +61,13 @@ def _insert_party(connection: Connection, organization: UUID, actor: UUID, paylo
 
 def search_records(settings: Settings, actor: UUID, organization: UUID, query: str) -> dict:
     cleaned = query.strip()
-    if len(cleaned) < 2:
+    needle = cleaned.replace("%", "").replace("_", "")
+    if len(cleaned) < 2 or len(needle) < 2:
         return {"results": [], "total_count": 0, "facets": []}
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        connection.execute(text("SELECT set_config('pg_trgm.similarity_threshold', '0.35', true)"))
+        connection.execute(text("SET LOCAL random_page_cost = 1.1"))
+        connection.execute(text("SET LOCAL cpu_tuple_cost = 0.05"))
         rows = connection.execute(
             text(
                 """
@@ -73,7 +77,7 @@ def search_records(settings: Settings, actor: UUID, organization: UUID, query: s
                     WHEN lower(title) = lower(:query) THEN 80
                     WHEN lower(title) LIKE lower(:query) || '%' THEN 60
                     WHEN search_vector @@ websearch_to_tsquery('simple', :query) THEN 40
-                    WHEN similarity(title, :query) > 0.35 THEN 20
+                    WHEN title ILIKE '%' || :needle || '%' THEN 20
                     ELSE 0
                   END AS rank
                 FROM search_documents
@@ -81,12 +85,12 @@ def search_records(settings: Settings, actor: UUID, organization: UUID, query: s
                    OR lower(title) = lower(:query)
                    OR lower(title) LIKE lower(:query) || '%'
                    OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR similarity(title, :query) > 0.35
+                   OR title ILIKE '%' || :needle || '%'
                 ORDER BY rank DESC, title
                 LIMIT 20
                 """
             ),
-            {"query": cleaned},
+            {"query": cleaned, "needle": needle},
         ).mappings().all()
         facets = connection.execute(
             text(
@@ -97,11 +101,11 @@ def search_records(settings: Settings, actor: UUID, organization: UUID, query: s
                    OR lower(title) = lower(:query)
                    OR lower(title) LIKE lower(:query) || '%'
                    OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR similarity(title, :query) > 0.35
+                   OR title ILIKE '%' || :needle || '%'
                 GROUP BY resource_type
                 """
             ),
-            {"query": cleaned},
+            {"query": cleaned, "needle": needle},
         ).mappings().all()
     results = []
     for row in rows:
@@ -130,7 +134,8 @@ def store_document(settings: Settings, actor: UUID, organization: UUID, filename
         "verdict": decision.verdict,
         "reason": decision.reason,
     }
-    object_key = f"org/{organization}/documents/{uuid4().hex}"
+    namespace = "accepted" if decision.verdict == "clean" else "staged" if decision.verdict == "pending_scan" else "quarantined"
+    stored_key = None if decision.verdict == "rejected" else allocate_object_key(str(organization), namespace)
     return _command(
         settings,
         actor,
@@ -139,13 +144,20 @@ def store_document(settings: Settings, actor: UUID, organization: UUID, filename
         payload,
         correlation,
         "document.stored",
-        lambda conn, fp: _insert_document(conn, organization, actor, payload, object_key, data, decision.media_type, correlation),
+        lambda conn, fp: _insert_document(conn, organization, actor, payload, stored_key, data, decision.media_type, correlation),
     )
 
 
 def _insert_document(connection, organization, actor, payload, object_key, data: bytes, media_type, correlation) -> dict:
     document_id = uuid4()
-    lifecycle = "available" if payload["verdict"] == "clean" else "quarantined"
+    if payload["verdict"] == "rejected":
+        lifecycle = "rejected"
+    elif payload["verdict"] == "pending_scan":
+        lifecycle = "scanning"
+    elif payload["verdict"] == "clean":
+        lifecycle = "available"
+    else:
+        lifecycle = "quarantined"
     connection.execute(
         text(
             """
@@ -166,8 +178,22 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
             "lifecycle": lifecycle,
         },
     )
-    if payload["verdict"] == "clean":
+    version_id = None
+    if object_key and payload["verdict"] in {"clean", "quarantined", "pending_scan"}:
         write_object(object_key, data)
+    if payload["verdict"] == "pending_scan":
+        connection.execute(
+            text(
+                """
+                INSERT INTO document_jobs (
+                  organization_id, id, document_id, actor_id, correlation_id, job_kind, object_key, status
+                ) VALUES (:org, :id, :document, :actor, :correlation, 'scan', :key, 'pending')
+                """
+            ),
+            {"org": organization, "id": uuid4(), "document": document_id, "actor": actor, "correlation": correlation, "key": object_key},
+        )
+    if payload["verdict"] == "clean":
+        version_id = uuid4()
         connection.execute(
             text(
                 """
@@ -179,7 +205,7 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
             ),
             {
                 "org": organization,
-                "id": uuid4(),
+                "id": version_id,
                 "document": document_id,
                 "key": object_key,
                 "checksum": payload["checksum"],
@@ -191,6 +217,9 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
         )
         if payload["classification"] != "restricted":
             upsert_search(connection, organization, "document", document_id, payload["title"], "", payload["classification"])
+        from .phase5_closeout import enqueue_processing
+
+        enqueue_processing(connection, organization, actor, document_id, version_id, correlation)
     result = {"id": str(document_id), "lifecycle": lifecycle, "reason": payload["reason"]}
     _audit_outbox(connection, organization, actor, "document.stored", document_id, correlation, "document.stored.v1", result)
     return result
@@ -241,8 +270,21 @@ def _dispose(connection, organization, actor, document_id, body, correlation) ->
     ).first()
     if held or row["lifecycle"] == "held":
         raise CommandError(409, "legal_hold", "A legal hold blocks disposition")
-    result = {"id": str(document_id), "disposition": "eligible_review_only"}
-    _audit_outbox(connection, organization, actor, "document.disposition_blocked_or_reviewed", document_id, correlation, "document.disposition.v1", result)
+    if row["lifecycle"] in {"quarantined", "rejected", "disposed", "scanning", "staged"}:
+        raise CommandError(409, "not_disposable", "Only an available document can be disposed")
+    from .phase5_closeout import destroy_document_bytes
+
+    destroy_document_bytes(connection, organization, document_id)
+    connection.execute(
+        text("UPDATE documents SET lifecycle = 'disposed', version = version + 1, published = false WHERE organization_id = :org AND id = :id"),
+        {"org": organization, "id": document_id},
+    )
+    connection.execute(
+        text("DELETE FROM search_documents WHERE organization_id = :org AND resource_type = 'document' AND resource_id = :id"),
+        {"org": organization, "id": document_id},
+    )
+    result = {"id": str(document_id), "disposition": "disposed"}
+    _audit_outbox(connection, organization, actor, "document.disposed", document_id, correlation, "document.disposed.v1", result)
     return result
 
 
@@ -274,6 +316,10 @@ def _stage_import(connection, organization, actor, content, digest, correlation)
             ),
             {"org": organization, "id": uuid4(), "batch": batch_id, "row": index, "raw": str(row), "name": name, "finding": finding, "detail": detail},
         )
+    if blockers:
+        from .phase5_closeout import record_quality
+
+        record_quality(connection, organization, batch_id, "blocker", "import_blocker")
     result = {"id": str(batch_id), "status": "staged", "blockers": blockers}
     _audit_outbox(connection, organization, actor, "import.staged", batch_id, correlation, "import.staged.v1", result)
     return result
@@ -307,17 +353,25 @@ def _apply_import(connection, organization, actor, batch_id, correlation) -> dic
     ).scalar()
     if blockers:
         raise CommandError(409, "import_blocked", "Blockers must be resolved before apply")
+    if batch["status"] != "approved":
+        raise CommandError(409, "approval_required", "Apply requires an explicit approval")
     rows = connection.execute(
         text("SELECT normalized_name FROM import_rows WHERE organization_id = :org AND batch_id = :id AND finding = 'valid'"),
         {"org": organization, "id": batch_id},
     ).scalars().all()
+    created = []
     for name in rows:
-        _insert_party(connection, organization, actor, {"party_kind": "person", "display_name": name}, correlation)
+        party = _insert_party(connection, organization, actor, {"party_kind": "person", "display_name": name}, correlation)
+        created.append(party["id"])
+        connection.execute(
+            text("INSERT INTO import_effects (organization_id, id, batch_id, party_id) VALUES (:org, :id, :batch, :party)"),
+            {"org": organization, "id": uuid4(), "batch": batch_id, "party": party["id"]},
+        )
     connection.execute(
         text("UPDATE import_batches SET status = 'applied', version = version + 1 WHERE organization_id = :org AND id = :id"),
         {"org": organization, "id": batch_id},
     )
-    result = {"id": str(batch_id), "status": "applied", "created": len(rows)}
+    result = {"id": str(batch_id), "status": "applied", "created": len(created)}
     _audit_outbox(connection, organization, actor, "import.applied", batch_id, correlation, "import.applied.v1", result)
     return result
 

@@ -35,6 +35,26 @@ def main() -> None:
     migrator = os.environ["PHASE2_MIGRATOR_URL"]
     os.environ["PHASE2_MIGRATOR_URL"] = migrator.rsplit("/", 1)[0] + "/" + DATABASE
     subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=BACKEND, check=True)
+    os.environ["PHASE2_MIGRATOR_URL"] = migrator
+    owned = engine_for(settings.admin_url.rsplit("/", 1)[0] + "/" + DATABASE)
+    with owned.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+        for name in (
+            "actor_in_org(uuid)",
+            "published_listings()",
+            "login_material(text)",
+            "current_membership(uuid)",
+            "submit_public_inquiry(uuid, text, text, text, text, text, text, uuid)",
+            "claim_outbox(text)",
+            "finish_outbox(uuid, boolean)",
+            "accept_inbox(uuid, text, text, text, text, jsonb, integer)",
+            "public_search(text)",
+            "claim_document_job(text)",
+        ):
+            connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
+        connection.execute(text("GRANT USAGE ON SCHEMA perchpoint TO perchpoint_definer"))
+        connection.execute(text("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA perchpoint TO perchpoint_definer"))
+        connection.execute(text("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO perchpoint_definer"))
+    owned.dispose()
     scale = engine_for(settings.admin_url.rsplit("/", 1)[0] + "/" + DATABASE)
     with scale.connect() as connection:
         connection.execute(text("INSERT INTO organizations (id, name, synthetic) VALUES (gen_random_uuid(), 'Scale Org', true)"))
@@ -53,7 +73,7 @@ def main() -> None:
             text(
                 """
                 INSERT INTO parties (organization_id, id, party_kind, display_name)
-                SELECT :org, gen_random_uuid(), 'person', 'Person ' || n
+                SELECT :org, gen_random_uuid(), CASE WHEN n <= 1000 THEN 'household' ELSE 'person' END, 'Person ' || n
                 FROM generate_series(1, 5000) AS n
                 """
             ),
@@ -117,15 +137,45 @@ def main() -> None:
                 """
             )
         )
-        import time
-
-        samples = []
-        for _ in range(20):
-            started = time.perf_counter()
-            connection.execute(text("SELECT count(*) FROM search_documents WHERE title = 'Scale 1'")).scalar()
-            samples.append((time.perf_counter() - started) * 1000)
-        samples.sort()
-        print(f"search_exact_ms p50={samples[len(samples)//2]:.2f} p95={samples[int(len(samples)*0.95)-1]:.2f} max={samples[-1]:.2f}")
+        connection.execute(
+            text(
+                """
+                INSERT INTO search_documents (
+                  organization_id, id, resource_type, resource_id, title, body, classification
+                )
+                SELECT organization_id, gen_random_uuid(), 'document', id, title, 'synthetic body', classification
+                FROM documents
+                """
+            )
+        )
+        other = connection.execute(text("SELECT gen_random_uuid()")).scalar()
+        actor = connection.execute(text("SELECT gen_random_uuid()")).scalar()
+        connection.execute(text("INSERT INTO organizations (id, name, synthetic) VALUES (:id, 'Scale Org B', true)"), {"id": other})
+        connection.execute(
+            text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, 'synthetic')"),
+            {"id": actor, "email": f"scale-{actor}@example.com"},
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO memberships (id, account_id, organization_id, role_name, effective_at)
+                VALUES (gen_random_uuid(), :actor, :org, 'leasing', now())
+                """
+            ),
+            {"actor": actor, "org": org},
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO search_documents (
+                  organization_id, id, resource_type, resource_id, title, body, classification
+                ) VALUES (:org, gen_random_uuid(), 'property', gen_random_uuid(), 'Hawthorn Lane 18', 'address', 'internal')
+                """
+            ),
+            {"org": org},
+        )
+        connection.execute(text("ANALYZE search_documents"))
+        connection.execute(text("GRANT CONNECT ON DATABASE perchpoint_phase5_scale TO perchpoint_runtime"))
         counts = connection.execute(
             text(
                 """
@@ -140,6 +190,57 @@ def main() -> None:
         ).one()
         connection.commit()
     scale.dispose()
+    runtime = engine_for(settings.runtime_url.rsplit("/", 1)[0] + "/" + DATABASE)
+    samples = {name: [] for name in ("exact", "prefix", "phrase", "fuzzy", "facet")}
+    with runtime.connect() as connection:
+        connection.execute(
+            text("SELECT set_config('app.actor_id', :actor, false), set_config('app.organization_id', :org, false), set_config('app.request_id', :request, false)"),
+            {"actor": str(actor), "org": str(org), "request": str(actor)},
+        )
+        connection.execute(text("SET random_page_cost = 1.1"))
+        connection.execute(text("SET cpu_tuple_cost = 0.05"))
+        statements = {
+            "exact": "SELECT count(*) FROM search_documents WHERE title = 'Scale 1'",
+            "prefix": "SELECT count(*) FROM search_documents WHERE lower(title) LIKE 'scale %'",
+            "phrase": "SELECT count(*) FROM search_documents WHERE search_vector @@ websearch_to_tsquery('simple', '\"Scale 1\"')",
+            "fuzzy": "SELECT count(*) FROM search_documents WHERE title ILIKE '%Hawthorn%'",
+            "facet": "SELECT resource_type, count(*) FROM search_documents GROUP BY resource_type",
+        }
+        for _ in range(5):
+            for name, statement in statements.items():
+                connection.execute(text(statement)).all()
+        import time
+
+        for _ in range(20):
+            for name, statement in statements.items():
+                started = time.perf_counter()
+                connection.execute(text(statement)).all()
+                samples[name].append((time.perf_counter() - started) * 1000)
+        plan = connection.execute(text("EXPLAIN (ANALYZE, BUFFERS) SELECT count(*) FROM search_documents WHERE title = 'Scale 1'")).scalars().all()
+        fuzzy_plan = connection.execute(text("EXPLAIN (ANALYZE, BUFFERS) SELECT count(*) FROM search_documents WHERE title ILIKE '%Hawthorn%'")).scalars().all()
+        hidden = connection.execute(text("SELECT count(*) FROM search_documents WHERE title = 'Scale Org B'")).scalar()
+        started = time.perf_counter()
+        connection.execute(
+            text(
+                """
+                INSERT INTO search_documents (organization_id, id, resource_type, resource_id, title, body, classification)
+                VALUES (:org, gen_random_uuid(), 'property', gen_random_uuid(), 'Index Lag Probe', 'accepted', 'internal')
+                """
+            ),
+            {"org": org},
+        )
+        connection.execute(text("SELECT count(*) FROM search_documents WHERE title = 'Index Lag Probe'")).scalar()
+        lag_ms = (time.perf_counter() - started) * 1000
+        connection.commit()
+    runtime.dispose()
+    for name, values in samples.items():
+        values.sort()
+        print(f"runtime_{name}_ms p50={values[len(values)//2]:.2f} p95={values[int(len(values)*0.95)-1]:.2f} max={values[-1]:.2f}")
+    print("runtime_explain")
+    print("\n".join(plan))
+    print("runtime_fuzzy_explain")
+    print("\n".join(fuzzy_plan))
+    print(f"cross_org_visible={hidden} index_lag_ms={lag_ms:.2f}")
     print(
         f"properties={counts[0]} spaces={counts[1]} parties={counts[2]} documents={counts[3]} audit_events={counts[4]}"
     )

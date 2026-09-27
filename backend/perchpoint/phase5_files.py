@@ -51,6 +51,8 @@ def inspect_upload(filename: str, declared: str, data: bytes) -> FileDecision:
     if scanner == "suspicious":
         return FileDecision("quarantined", "scanner_suspicious", expected)
     if scanner == "unavailable":
+        if os.environ.get("PHASE5_SCANNER_MODE", "live") == "live":
+            return FileDecision("pending_scan", "scanner_unavailable", expected)
         return FileDecision("quarantined", "scanner_unavailable", expected)
     return FileDecision("clean", "accepted", expected)
 
@@ -98,12 +100,44 @@ def _pdf_encrypted(data: bytes) -> bool:
 
 
 def _external_scan(data: bytes) -> str:
-    host = os.environ.get("PHASE5_CLAMAV_HOST", "")
-    if not host:
+    """A missing or failed scanner is not a clean result."""
+    if os.environ.get("PHASE5_SCANNER_MODE", "live") == "signature":
         return "clean"
     if os.environ.get("PHASE5_CLAMAV_FORCE_UNAVAILABLE") == "1":
         return "unavailable"
-    return "clean"
+    host = os.environ.get("PHASE5_CLAMAV_HOST", "")
+    if not host:
+        return "unavailable"
+    try:
+        return _clamav_instream(host, int(os.environ.get("PHASE5_CLAMAV_PORT", "3310")), data)
+    except OSError:
+        return "unavailable"
+
+
+def _clamav_instream(host: str, port: int, data: bytes) -> str:
+    import socket
+
+    timeout = float(os.environ.get("PHASE5_CLAMAV_TIMEOUT", "20"))
+    with socket.create_connection((host, port), timeout=timeout) as sock:
+        sock.settimeout(timeout)
+        sock.sendall(b"zINSTREAM\0")
+        view = memoryview(data)
+        for offset in range(0, len(data), 65536):
+            piece = view[offset : offset + 65536]
+            sock.sendall(len(piece).to_bytes(4, "big") + piece.tobytes())
+        sock.sendall((0).to_bytes(4, "big"))
+        response = b""
+        while b"\0" not in response and len(response) < 4096:
+            packet = sock.recv(4096)
+            if not packet:
+                break
+            response += packet
+    text = response.split(b"\0", 1)[0].decode(errors="replace")
+    if "FOUND" in text:
+        return "suspicious"
+    if text.endswith("OK"):
+        return "clean"
+    return "unavailable"
 
 
 def object_root() -> Path:
@@ -112,9 +146,30 @@ def object_root() -> Path:
     return root
 
 
-def write_object(key: str, data: bytes) -> None:
-    """Store bytes through the local filesystem or an S3-compatible endpoint."""
+NAMESPACES = {"staged", "accepted", "quarantined", "derived", "exports"}
+
+
+def object_key(organization: str, namespace: str) -> str:
+    from uuid import uuid4
+
+    if namespace not in NAMESPACES:
+        raise ValueError("object namespace is not allowed")
+    return f"org/{organization}/{namespace}/{uuid4().hex}"
+
+
+def store_mode() -> str:
+    explicit = os.environ.get("PHASE5_OBJECT_STORE", "")
+    if explicit:
+        return explicit
     if os.environ.get("PHASE5_S3_ENDPOINT"):
+        return "s3"
+    return "filesystem"
+
+
+def write_object(key: str, data: bytes) -> None:
+    """Store bytes through the configured object store. Keys stay organization-scoped."""
+    _require_key(key)
+    if store_mode() == "s3":
         _write_s3(key, data)
         return
     path = _local_path(key)
@@ -123,9 +178,85 @@ def write_object(key: str, data: bytes) -> None:
 
 
 def read_object(key: str) -> bytes:
-    if os.environ.get("PHASE5_S3_ENDPOINT"):
+    _require_key(key)
+    if store_mode() == "s3":
         return _read_s3(key)
     return _local_path(key).read_bytes()
+
+
+def delete_object(key: str) -> None:
+    _require_key(key)
+    if store_mode() == "s3":
+        _client().delete_object(Bucket=_bucket(), Key=key)
+        return
+    path = _local_path(key)
+    if path.exists():
+        path.unlink()
+
+
+def object_exists(key: str) -> bool:
+    _require_key(key)
+    if store_mode() == "s3":
+        from botocore.exceptions import ClientError
+
+        try:
+            _client().head_object(Bucket=_bucket(), Key=key)
+        except ClientError:
+            return False
+        return True
+    return _local_path(key).exists()
+
+
+def list_objects(prefix: str) -> list[str]:
+    if prefix.startswith("/") or ".." in prefix.split("/"):
+        raise ValueError("object key is not allowed")
+    if store_mode() == "s3":
+        keys: list[str] = []
+        token = None
+        while True:
+            args = {"Bucket": _bucket(), "Prefix": prefix}
+            if token:
+                args["ContinuationToken"] = token
+            page = _client().list_objects_v2(**args)
+            keys.extend(item["Key"] for item in page.get("Contents", []))
+            if not page.get("IsTruncated"):
+                return keys
+            token = page.get("NextContinuationToken")
+    root = object_root()
+    folder = _local_path(prefix)
+    if not folder.exists():
+        return []
+    return [path.relative_to(root).as_posix() for path in folder.rglob("*") if path.is_file()]
+
+
+def presign_get(key: str, seconds: int = 300) -> str | None:
+    _require_key(key)
+    if store_mode() != "s3":
+        return None
+    return _client().generate_presigned_url(
+        "get_object",
+        Params={"Bucket": _bucket(), "Key": key},
+        ExpiresIn=seconds,
+    )
+
+
+def ensure_bucket() -> None:
+    if store_mode() != "s3":
+        return
+    from botocore.exceptions import ClientError
+
+    client = _client()
+    bucket = _bucket()
+    try:
+        client.head_bucket(Bucket=bucket)
+    except ClientError:
+        client.create_bucket(Bucket=bucket)
+
+
+def _require_key(key: str) -> None:
+    parts = key.split("/")
+    if len(parts) != 4 or parts[0] != "org" or parts[2] not in NAMESPACES or ".." in parts:
+        raise ValueError("object key is not allowed")
 
 
 def _local_path(key: str) -> Path:
@@ -136,6 +267,7 @@ def _local_path(key: str) -> Path:
 
 def _client():
     import boto3
+    from botocore.config import Config
 
     return boto3.client(
         "s3",
@@ -143,13 +275,18 @@ def _client():
         aws_access_key_id=os.environ.get("PHASE5_S3_ACCESS_KEY", ""),
         aws_secret_access_key=os.environ.get("PHASE5_S3_SECRET_KEY", ""),
         region_name=os.environ.get("PHASE5_S3_REGION", "us-east-1"),
+        config=Config(signature_version="s3v4", s3={"addressing_style": "path"}),
     )
 
 
+def _bucket() -> str:
+    return os.environ.get("PHASE5_S3_BUCKET", "perchpoint-documents")
+
+
 def _write_s3(key: str, data: bytes) -> None:
-    _client().put_object(Bucket=os.environ.get("PHASE5_S3_BUCKET", "perchpoint-documents"), Key=key, Body=data)
+    _client().put_object(Bucket=_bucket(), Key=key, Body=data)
 
 
 def _read_s3(key: str) -> bytes:
-    response = _client().get_object(Bucket=os.environ.get("PHASE5_S3_BUCKET", "perchpoint-documents"), Key=key)
+    response = _client().get_object(Bucket=_bucket(), Key=key)
     return response["Body"].read()
