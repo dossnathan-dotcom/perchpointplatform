@@ -35,18 +35,18 @@ Performance remediation build, gzip:
 - CSS: 12766 bytes.
 - Compressed transfer of the public entry is Brotli when the client accepts it, then gzip, then identity.
 
-Local three-run medians on the production static server, official presets, simulated throttling, cold cache:
+GitHub `phase4-performance` three-run medians, official presets, simulated throttling, cold cache, run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36281733622:
 
 | Profile | Performance | LCP | CLS | TBT | Accessibility | Best practices | SEO |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Public desktop | 100 | 0.594 s | 0.002 | 0 ms | 100 | 100 | 100 |
-| Public mobile | 100 | 1.352 s | 0.049 | 15 ms | 100 | 100 | 100 |
-| Listing | 99 | 2.198 s | 0 | 21 ms | 100 | 100 | 100 |
-| Leasing shell | 100 | 0.543 s | 0 | 0 ms | 100 | 100 | 100 |
-| Owner shell | 100 | 0.542 s | 0 | 0 ms | 100 | 100 | 100 |
+| Public desktop | 100 | 0.501 s | 0.002 | 0 ms | 100 | 100 | 100 |
+| Public mobile | 100 | 1.758 s | 0.049 | 31 ms | 100 | 100 | 100 |
+| Listing | 99 | 2.153 s | 0 | 54 ms | 100 | 100 | 100 |
+| Leasing shell | 100 | 0.510 s | 0 | 0 ms | 100 | 100 | 100 |
+| Owner shell | 100 | 0.511 s | 0 | 0 ms | 100 | 100 | 100 |
 
 SEO is not a gate for the intentionally non-indexed authenticated routes. Their SEO score remains 63 because of `noindex`.
 
-INP: not directly measurable without suitable interaction or field data. Lab interaction proxy: public TBT median 0 ms desktop and 13 ms mobile. No unexplained long task remains above the approved public TBT floor.
+INP: not directly measurable without suitable interaction or field data. Lab interaction proxy: public TBT median 0 ms desktop and 31 ms mobile on the passing CI job. No unexplained long task remains above the approved public TBT floor.
 
 

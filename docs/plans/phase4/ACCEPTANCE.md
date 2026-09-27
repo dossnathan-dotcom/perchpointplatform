@@ -6,12 +6,12 @@ The acceptance recorded below for pull request 16 was provisional. Required auto
 
 ## Performance remediation status
 
-The acceptance recorded for pull request 19 treated failed public Lighthouse floors as an accepted client-rendering constraint. That was incorrect. The floors stayed in force. Local three-run medians on the production static server now pass them: public desktop performance 100, LCP 0.594 s, TBT 0 ms; public mobile performance 100, LCP 1.352 s, CLS 0.049, TBT 15 ms; listing performance 99, LCP 2.198 s. Accessibility stayed 100, best practices stayed at least 95, public SEO stayed at least 95, and CLS stayed at or below 0.1. The same gate runs in the `phase4-performance` job. Definitive acceptance of this remediation is the merge of that passing job, not a lowered threshold.
+The acceptance recorded for pull request 19 treated failed public Lighthouse floors as an accepted client-rendering constraint. That was incorrect. The floors stayed in force. Local and GitHub-hosted three-run medians now pass them. The passing `phase4-performance` job is https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36281733622. Its medians were public desktop performance 100, LCP 0.501 s, TBT 0 ms; public mobile performance 100, LCP 1.758 s, CLS 0.049, TBT 31 ms; listing performance 99, LCP 2.153 s, TBT 54 ms. Accessibility stayed 100, best practices stayed 100, public SEO stayed 100, and CLS stayed at or below 0.1. Authenticated SEO stayed at 63 because those routes are `noindex`, and that score is not a gate.
 
 ```text
 Phase 4 functional/design/accessibility/security implementation: passed
-Phase 4 public performance acceptance: passed on local controlled medians
-Phase 4 definitive local technical acceptance: pending the required CI performance job on this change
+Phase 4 public performance acceptance: passed
+Phase 4 definitive local technical acceptance: restored
 Hosted operational validation: owner-deferred
 Production readiness: blocked
 Phase 5: unauthorized
