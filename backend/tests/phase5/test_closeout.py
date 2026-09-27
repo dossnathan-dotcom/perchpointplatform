@@ -126,6 +126,19 @@ def test_saved_search_stays_private_until_shared():
     assert shared.status_code == 200, shared.text
     visible = client.get("/api/v2/search/saved", headers=_auth(nathan)).json()["saved"]
     assert any(item["id"] == search_id for item in visible)
+    renamed = client.post(
+        f"/api/v2/search/saved/{search_id}",
+        headers=_auth(ann),
+        json={"name": "Boiler queue renamed", "query": "boiler", "idempotency_key": "rename-" + uuid4().hex},
+    )
+    assert renamed.status_code == 200, renamed.text
+    copied = client.post(
+        f"/api/v2/search/saved/{search_id}/duplicate",
+        headers=_auth(ann),
+        json={"idempotency_key": "copy-" + uuid4().hex},
+    )
+    assert copied.status_code == 201, copied.text
+    assert copied.json()["visibility"] == "private"
     assert all(item["id"] != search_id for item in client.get("/api/v2/search/saved", headers=_auth(other)).json()["saved"])
 
 

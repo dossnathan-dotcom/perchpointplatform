@@ -30,6 +30,7 @@ export function Phase5Workspace() {
   const [savedName, setSavedName] = useState("Recent canonical search");
   const [batchId, setBatchId] = useState("");
   const [importText, setImportText] = useState("display_name,party_kind\nSynthetic Resident,person\n");
+  const [importFormat, setImportFormat] = useState("csv");
   const [resolveReason, setResolveReason] = useState("Reviewed synthetic finding");
   const allowed = roleId === "owner" || roleId === "leasing" || roleId === "super-admin";
 
@@ -111,7 +112,7 @@ export function Phase5Workspace() {
         <p className="text-xs text-gold">HawkVision Homes · synthetic canonical records</p>
         <h1 className="mt-3 font-heading text-4xl font-bold" data-testid="phase5-title">{title}</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-linen/75" data-testid="phase5-role-note">
-          {roleId === "owner" ? "Material exceptions and protected decisions. Routine filing stays with operations." : "Operational records stay inside the signed-in organization. This screen is not production authority."}
+          {roleId === "owner" ? "Material exceptions, expiring obligations, and unresolved conflicts. Routine filing stays with operations." : roleId === "super-admin" ? "Taxonomy, mappings, replay, and storage diagnostics stay with the platform administrator." : "Operational records stay inside the signed-in organization. This screen is not production authority."}
         </p>
         <nav className="mt-6 flex flex-wrap gap-3 text-sm" aria-label="Phase 5 workspaces">
           {Object.entries(CENTERS).map(([key, label]) => (
@@ -137,6 +138,7 @@ export function Phase5Workspace() {
               <input className="h-11 border border-white/40 bg-obsidian px-3" value={query} onChange={(event) => setQuery(event.target.value)} data-testid="phase5-saved-query" />
             </label>
             <button className="h-11 self-end border border-white/40 px-4" type="submit" data-testid="phase5-save-search">Save search</button>
+            <button className="h-11 self-end underline" type="button" onClick={() => { setQuery(""); setStatus("Recent search cleared."); }}>Clear recent search</button>
           </form>
         ) : null}
         {center === "documents" && token ? (
@@ -174,7 +176,7 @@ export function Phase5Workspace() {
             const { response, body } = await phase2("/api/v2/imports", {
               method: "POST",
               headers: { Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ content: importText, idempotency_key: `ui-import-${Date.now()}` }),
+              body: JSON.stringify({ content: importText, source_format: importFormat, idempotency_key: `ui-import-${Date.now()}` }),
             });
             if (!response.ok) {
               setStatus("Import was not staged.");
@@ -183,7 +185,15 @@ export function Phase5Workspace() {
             setBatchId(body.id);
             setStatus(`Import ${body.id} staged.`);
           }}>
-            <label className="grid gap-1 text-sm">Synthetic CSV
+            <label className="grid gap-1 text-sm">Format
+              <select className="h-11 border border-white/40 bg-obsidian px-3" value={importFormat} onChange={(event) => setImportFormat(event.target.value)} data-testid="phase5-import-format">
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+                <option value="xlsx">XLSX</option>
+                <option value="archive">Manifested archive</option>
+              </select>
+            </label>
+            <label className="grid gap-1 text-sm">Synthetic source
               <textarea className="min-h-28 border border-white/40 bg-obsidian p-3" value={importText} onChange={(event) => setImportText(event.target.value)} />
             </label>
             <button className="h-11 border border-white/40 px-4" type="submit">Stage import</button>

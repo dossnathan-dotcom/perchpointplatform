@@ -364,6 +364,7 @@ class DisposeBody(BaseModel):
 
 class ImportBody(BaseModel):
     content: str = Field(min_length=1)
+    source_format: str = "csv"
     idempotency_key: str = Field(min_length=8, max_length=128)
 
 
@@ -447,7 +448,7 @@ def post_disposition(document_id: UUID, body: DisposeBody, current=Depends(actor
 def post_import(body: ImportBody, current=Depends(actor), settings: Settings = Depends(settings)):
     from .phase5 import stage_import
 
-    return _run(lambda: stage_import(settings, current["id"], current["organization_id"], body.content, body.idempotency_key, uuid4()))
+    return _run(lambda: stage_import(settings, current["id"], current["organization_id"], body.content, body.source_format, body.idempotency_key, uuid4()))
 
 
 @router.post("/imports/{batch_id}/apply")
@@ -458,6 +459,12 @@ def post_apply(batch_id: UUID, body: ApplyBody, current=Depends(actor), settings
 
 
 class SaveSearchBody(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    query: str = Field(min_length=2, max_length=200)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+
+
+class UpdateSearchBody(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     query: str = Field(min_length=2, max_length=200)
     idempotency_key: str = Field(min_length=8, max_length=128)
@@ -562,6 +569,20 @@ def delete_saved_search(search_id: UUID, current=Depends(actor), settings: Setti
     from .phase5_closeout import delete_saved
 
     return _run(lambda: delete_saved(settings, current["id"], current["organization_id"], search_id))
+
+
+@router.post("/search/saved/{search_id}")
+def post_saved_update(search_id: UUID, body: UpdateSearchBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import update_saved
+
+    return _run(lambda: update_saved(settings, current["id"], current["organization_id"], search_id, body.name, body.query, body.idempotency_key, uuid4()))
+
+
+@router.post("/search/saved/{search_id}/duplicate", status_code=201)
+def post_saved_duplicate(search_id: UUID, body: ApplyBody, current=Depends(actor), settings: Settings = Depends(settings)):
+    from .phase5_closeout import duplicate_saved
+
+    return _run(lambda: duplicate_saved(settings, current["id"], current["organization_id"], search_id, body.idempotency_key, uuid4()))
 
 
 @router.post("/imports/{batch_id}/approve")

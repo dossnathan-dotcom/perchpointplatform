@@ -1,11 +1,15 @@
 """Phase 5 commands for parties, documents, search, holds, and import staging."""
 from __future__ import annotations
 
+import base64
 import csv
 import hashlib
 import io
+import json
 import re
+import zipfile
 from uuid import UUID, uuid4
+from xml.etree import ElementTree
 
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
@@ -258,24 +262,44 @@ def _dispose(connection, organization, actor, document_id, body, correlation) ->
     return result
 
 
-def stage_import(settings: Settings, actor: UUID, organization: UUID, content: str, key: str, correlation: UUID) -> dict:
-    payload = {"content_sha256": hashlib.sha256(content.encode()).hexdigest(), "content": content}
-    return _command(settings, actor, organization, key, payload, correlation, "import.staged", lambda conn, fp: _stage_import(conn, organization, actor, content, payload["content_sha256"], correlation))
+def stage_import(settings: Settings, actor: UUID, organization: UUID, content: str, source_format: str, key: str, correlation: UUID) -> dict:
+    payload = {"content_sha256": hashlib.sha256(content.encode()).hexdigest(), "source_format": source_format, "content": content}
+    return _command(
+        settings,
+        actor,
+        organization,
+        key,
+        payload,
+        correlation,
+        "import.staged",
+        lambda conn, fp: _stage_import(conn, organization, actor, content, source_format, payload["content_sha256"], correlation),
+    )
 
 
-def _stage_import(connection, organization, actor, content, digest, correlation) -> dict:
+def _stage_import(connection, organization, actor, content, source_format, digest, correlation) -> dict:
+    source_name, names = _import_names(content, source_format)
     batch_id = uuid4()
     connection.execute(
-        text("INSERT INTO import_batches (organization_id, id, source_name, content_sha256, status) VALUES (:org, :id, 'synthetic-csv', :digest, 'staged')"),
-        {"org": organization, "id": batch_id, "digest": digest},
+        text("INSERT INTO import_batches (organization_id, id, source_name, content_sha256, status) VALUES (:org, :id, :source, :digest, 'staged')"),
+        {"org": organization, "id": batch_id, "source": source_name, "digest": digest},
     )
+    existing = {
+        value.lower()
+        for value in connection.execute(
+            text("SELECT display_name FROM parties WHERE organization_id = :org"),
+            {"org": organization},
+        ).scalars()
+    }
+    seen: set[str] = set()
     blockers = 0
-    reader = csv.DictReader(io.StringIO(content))
-    for index, row in enumerate(reader, start=1):
-        name = (row.get("name") or "").strip()
+    for index, name in enumerate(names, start=1):
         finding, detail = _classify_import(name)
+        if finding == "valid" and (name.lower() in seen or name.lower() in existing):
+            finding, detail = "warning", "duplicate_candidate"
         if finding == "blocker":
             blockers += 1
+        if finding == "valid":
+            seen.add(name.lower())
         connection.execute(
             text(
                 """
@@ -284,15 +308,82 @@ def _stage_import(connection, organization, actor, content, digest, correlation)
                 ) VALUES (:org, :id, :batch, :row, :raw, :name, :finding, :detail)
                 """
             ),
-            {"org": organization, "id": uuid4(), "batch": batch_id, "row": index, "raw": str(row), "name": name, "finding": finding, "detail": detail},
+            {"org": organization, "id": uuid4(), "batch": batch_id, "row": index, "raw": name, "name": name, "finding": finding, "detail": detail},
         )
     if blockers:
         from .phase5_closeout import record_quality
 
         record_quality(connection, organization, batch_id, "blocker", "import_blocker")
-    result = {"id": str(batch_id), "status": "staged", "blockers": blockers}
+    result = {"id": str(batch_id), "status": "staged", "blockers": blockers, "source_format": source_format}
     _audit_outbox(connection, organization, actor, "import.staged", batch_id, correlation, "import.staged.v1", result)
     return result
+
+
+def _import_names(content: str, source_format: str) -> tuple[str, list[str]]:
+    if source_format == "csv":
+        reader = csv.DictReader(io.StringIO(content))
+        return "synthetic-csv", [(row.get("name") or row.get("display_name") or "").strip() for row in reader]
+    if source_format == "json":
+        payload = json.loads(content)
+        if not isinstance(payload, list):
+            raise CommandError(409, "import_format", "JSON import must be a list of records")
+        return "synthetic-json", [(item.get("display_name") or item.get("name") or "").strip() for item in payload]
+    if source_format == "xlsx":
+        return "synthetic-xlsx", _xlsx_names(base64.b64decode(content))
+    if source_format == "archive":
+        return "synthetic-archive", _archive_names(base64.b64decode(content))
+    raise CommandError(409, "import_format", "Unsupported import format")
+
+
+def _reject_traversal(names: list[str]) -> None:
+    for name in names:
+        parts = name.replace("\\", "/").split("/")
+        if name.startswith("/") or ".." in parts:
+            raise CommandError(409, "archive_traversal", "Archive path is not allowed")
+
+
+def _xlsx_names(data: bytes) -> list[str]:
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        _reject_traversal(archive.namelist())
+        if "xl/worksheets/sheet1.xml" not in archive.namelist():
+            raise CommandError(409, "import_format", "Workbook has no worksheet")
+        strings: list[str] = []
+        if "xl/sharedStrings.xml" in archive.namelist():
+            root = ElementTree.fromstring(archive.read("xl/sharedStrings.xml"))
+            strings = [node.text or "" for node in root.iter() if node.tag.rsplit("}", 1)[-1] == "t"]
+        sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+        parsed: list[list[str]] = []
+        for row in sheet.iter():
+            if row.tag.rsplit("}", 1)[-1] != "row":
+                continue
+            values: list[str] = []
+            for cell in list(row):
+                if cell.tag.rsplit("}", 1)[-1] != "c":
+                    continue
+                value = ""
+                for child in cell.iter():
+                    if child.tag.rsplit("}", 1)[-1] == "v" and child.text:
+                        value = child.text
+                if cell.attrib.get("t") == "s" and value.isdigit():
+                    value = strings[int(value)]
+                values.append(value)
+            if values:
+                parsed.append(values)
+    if not parsed:
+        return []
+    header = [item.strip().lower() for item in parsed[0]]
+    column = header.index("name") if "name" in header else 0
+    return [row[column].strip() if column < len(row) else "" for row in parsed[1:]]
+
+
+def _archive_names(data: bytes) -> list[str]:
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        _reject_traversal(archive.namelist())
+        if "rows.csv" not in archive.namelist():
+            raise CommandError(409, "import_format", "Archive is missing rows.csv")
+        text_value = archive.read("rows.csv").decode("utf-8")
+    reader = csv.DictReader(io.StringIO(text_value))
+    return [(row.get("name") or "").strip() for row in reader]
 
 
 def _classify_import(name: str) -> tuple[str, str]:

@@ -732,6 +732,43 @@ def delete_saved(settings: Settings, actor: UUID, organization: UUID, search_id:
     return {"id": str(search_id), "deleted": True}
 
 
+def update_saved(settings: Settings, actor: UUID, organization: UUID, search_id: UUID, name: str, query: str, key: str, correlation: UUID) -> dict:
+    payload = {"id": str(search_id), "name": name, "query": query}
+    return _command(settings, actor, organization, key, payload, correlation, "search.updated", lambda conn, fp: _update_saved(conn, organization, actor, search_id, name, query, correlation))
+
+
+def _update_saved(connection, organization, actor, search_id, name, query, correlation) -> dict:
+    updated = connection.execute(
+        text(
+            """
+            UPDATE saved_searches SET name = :name, query_text = :query
+            WHERE organization_id = :org AND id = :id AND actor_id = :actor
+            """
+        ),
+        {"org": organization, "id": search_id, "actor": actor, "name": name, "query": query},
+    )
+    if updated.rowcount != 1:
+        raise CommandError(404, "not_found", "Saved search was not found")
+    result = {"id": str(search_id), "name": name, "query": query}
+    _audit_outbox(connection, organization, actor, "search.updated", search_id, correlation, "search.updated.v1", result)
+    return result
+
+
+def duplicate_saved(settings: Settings, actor: UUID, organization: UUID, search_id: UUID, key: str, correlation: UUID) -> dict:
+    payload = {"id": str(search_id)}
+    return _command(settings, actor, organization, key, payload, correlation, "search.duplicated", lambda conn, fp: _duplicate_saved(conn, organization, actor, search_id, correlation))
+
+
+def _duplicate_saved(connection, organization, actor, search_id, correlation) -> dict:
+    row = connection.execute(
+        text("SELECT name, query_text FROM saved_searches WHERE organization_id = :org AND id = :id AND actor_id = :actor"),
+        {"org": organization, "id": search_id, "actor": actor},
+    ).mappings().first()
+    if not row:
+        raise CommandError(404, "not_found", "Saved search was not found")
+    return _save_search(connection, organization, actor, row["name"] + " copy", row["query_text"], correlation)
+
+
 def approve_import(settings: Settings, actor: UUID, organization: UUID, batch_id: UUID, key: str, correlation: UUID) -> dict:
     payload = {"batch_id": str(batch_id)}
     return _command(settings, actor, organization, key, payload, correlation, "import.approved", lambda conn, fp: _approve_import(conn, organization, actor, batch_id, correlation))
