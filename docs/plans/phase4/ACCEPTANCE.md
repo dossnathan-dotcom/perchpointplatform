@@ -6,7 +6,7 @@ The acceptance recorded below for pull request 16 was provisional. Required auto
 
 ## Performance remediation status
 
-The acceptance recorded for pull request 19 treated failed public Lighthouse floors as an accepted client-rendering constraint. That was incorrect. The floors stayed in force. Local three-run medians on the production static server now pass them: public desktop performance 100, LCP 0.593 s, TBT 0 ms; public mobile performance 99, LCP 1.995 s, TBT 13 ms; listing performance 99, LCP 2.194 s. Accessibility stayed 100, best practices stayed at least 95, public SEO stayed at least 95, and CLS stayed at or below 0.1. The same gate runs in the `phase4-performance` job. Definitive acceptance of this remediation is the merge of that passing job, not a lowered threshold.
+The acceptance recorded for pull request 19 treated failed public Lighthouse floors as an accepted client-rendering constraint. That was incorrect. The floors stayed in force. Local three-run medians on the production static server now pass them: public desktop performance 100, LCP 0.594 s, TBT 0 ms; public mobile performance 100, LCP 1.352 s, CLS 0.049, TBT 15 ms; listing performance 99, LCP 2.198 s. Accessibility stayed 100, best practices stayed at least 95, public SEO stayed at least 95, and CLS stayed at or below 0.1. The same gate runs in the `phase4-performance` job. Definitive acceptance of this remediation is the merge of that passing job, not a lowered threshold.
 
 ```text
 Phase 4 functional/design/accessibility/security implementation: passed

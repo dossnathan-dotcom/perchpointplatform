@@ -30,18 +30,18 @@ Those closeout scores failed the approved floors. Pull request 19 treated that f
 
 Performance remediation build, gzip:
 
-- `main` JavaScript: 104102 bytes gzip, down from 144486 bytes. The foundation dataset is no longer evaluated in the public entry.
+- `main` JavaScript: 104142 bytes gzip, down from 144486 bytes. The foundation dataset is no longer evaluated in the public entry.
 - Largest lazy chunk: 24577 bytes.
-- CSS: 12717 bytes.
+- CSS: 12766 bytes.
 - Compressed transfer of the public entry is Brotli when the client accepts it, then gzip, then identity.
 
 Local three-run medians on the production static server, official presets, simulated throttling, cold cache:
 
 | Profile | Performance | LCP | CLS | TBT | Accessibility | Best practices | SEO |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Public desktop | 100 | 0.593 s | 0.001 | 0 ms | 100 | 100 | 100 |
-| Public mobile | 99 | 1.995 s | 0.026 | 13 ms | 100 | 100 | 100 |
-| Listing | 99 | 2.194 s | 0 | 15 ms | 100 | 100 | 100 |
+| Public desktop | 100 | 0.594 s | 0.002 | 0 ms | 100 | 100 | 100 |
+| Public mobile | 100 | 1.352 s | 0.049 | 15 ms | 100 | 100 | 100 |
+| Listing | 99 | 2.198 s | 0 | 21 ms | 100 | 100 | 100 |
 | Leasing shell | 100 | 0.543 s | 0 | 0 ms | 100 | 100 | 100 |
 | Owner shell | 100 | 0.542 s | 0 | 0 ms | 100 | 100 | 100 |
 
