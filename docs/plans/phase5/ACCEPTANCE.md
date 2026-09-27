@@ -18,16 +18,16 @@ Executed and passed for cardinality, then removed. `python scripts/phase5_scale.
 
 Externally blocked. `python scripts/phase5_staging_preflight.py` reported missing secret names `SUPABASE_DB_URL`, `SUPABASE_STORAGE_URL`, and `SUPABASE_STORAGE_KEY`. No values were printed. No production target was used.
 
-## Not executed in this record
+## Pull request checks
 
-Browser, accessibility, visual regression, and Lighthouse were not re-run after the Phase 5 search connection. Clean-room Compose recovery was not re-run. Container image scanning, SBOM, and CodeQL were not re-run locally. Merged-main CI was not run because this branch was not merged from this record.
+Executed and passed on commit `db11ea3` in run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36288723584. Required jobs, including browser, phase4-performance, phase4-smoke, containers, supply-chain, and CodeQL, passed. Supabase Preview was skipped by the hosted integration. Clean-room Compose recovery was not re-run. This branch was not merged.
 
 ## Verdicts
 
 | Verdict | Status |
 | --- | --- |
 | Source and governance | Executed and passed |
-| Local technical | Not complete. Database, search isolation, documents, hold, and import tests passed. Browser and recovery gates were not re-executed. |
+| Local technical | Not complete. Database, search isolation, documents, hold, import, and the pull-request browser and performance jobs passed. Clean-room recovery was not re-executed. |
 | Hosted staging | Externally blocked |
 | Business and stakeholder | Not granted |
 | Production readiness | Not authorized |
