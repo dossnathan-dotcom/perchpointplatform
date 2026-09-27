@@ -40,7 +40,7 @@ These rows describe commit `73c170374e13476236c1d948c9cd8ac2262c478e` only. They
 
 ## Definitive closeout
 
-Current `main` is merge commit `017f0ba88cf8381d60eace9a41469d3ae227c8c1`, which is pull request 25: https://github.com/dossnathan-dotcom/perchpointplatform/pull/25. Pull-request head `f180c09954ad6cd8df8e0bc3f8ba94f69e6606f3`. No later commit supersedes it. Alembic head is `0011_phase5_hold_guard`. Approved answers remain Q1–Q160 in `docs/plans/phase5/APPROVED_CUSTOMIZATION_ANSWERS.md`.
+Phase 5 implementation merged at `017f0ba88cf8381d60eace9a41469d3ae227c8c1` through pull request 25: https://github.com/dossnathan-dotcom/perchpointplatform/pull/25. Pull-request head `f180c09954ad6cd8df8e0bc3f8ba94f69e6606f3`. No later product commit supersedes that implementation. Alembic head is `0011_phase5_hold_guard`. Approved answers remain Q1–Q160 in `docs/plans/phase5/APPROVED_CUSTOMIZATION_ANSWERS.md`.
 
 Pull-request checks passed on https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36342661578. Merged-main checks passed on https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36343157087. Both runs concluded success for governance, contracts, backend, frontend, browser, secrets, supply-chain, containers, phase4-smoke, and phase4-performance. CodeQL succeeded. Supabase Preview stayed skipped.
 
