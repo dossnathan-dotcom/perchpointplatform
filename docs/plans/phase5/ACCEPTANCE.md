@@ -20,7 +20,7 @@ Externally blocked. `python scripts/phase5_staging_preflight.py` reported missin
 
 ## Pull request checks
 
-Executed and passed on commit `db11ea3` in run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36288723584. Required jobs, including browser, phase4-performance, phase4-smoke, containers, supply-chain, and CodeQL, passed. Supabase Preview was skipped by the hosted integration. Clean-room Compose recovery was not re-run. This branch was not merged.
+Executed and passed on commit `9c39390d523508e8255a6d9f9f2b7bdbd04e05c8`. Push run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289071803 and pull-request run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289074582 both completed with governance, contracts, backend, frontend, browser, secrets, supply-chain, containers, phase4-smoke, phase4-performance, and CodeQL successful. Supabase Preview was skipped by the hosted branch integration and is not a required repository job. Clean-room Compose recovery was not re-run. This branch was not merged when this paragraph was written.
 
 ## Verdicts
 
