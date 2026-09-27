@@ -20,7 +20,7 @@ Externally blocked. `python scripts/phase5_staging_preflight.py` reported missin
 
 ## Pull request checks
 
-Executed and passed on commit `9c39390d523508e8255a6d9f9f2b7bdbd04e05c8`. Push run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289071803 and pull-request run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289074582 both completed with governance, contracts, backend, frontend, browser, secrets, supply-chain, containers, phase4-smoke, phase4-performance, and CodeQL successful. Supabase Preview was skipped by the hosted branch integration and is not a required repository job. Clean-room Compose recovery was not re-run. This branch was not merged when this paragraph was written.
+Commit `9c39390d523508e8255a6d9f9f2b7bdbd04e05c8` passed push run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289071803 and pull-request run https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36289074582. The documentation commit `2df44fa4db7ad64f75ad27a882ee183e28a1984a` then failed pull-request browser job https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/36292173610/job/108544238572: WebKit stayed on the homepage heading after one listing click while the hero text was rotating. The same SHA's push browser job passed. The listing test now scrolls the link into view, repeats the click once if the URL has not changed, and requires `/rentals/` before reading the listing heading. Supabase Preview remains a skipped hosted-branch integration, not a required repository job. Clean-room Compose recovery was not re-run.
 
 ## Verdicts
 

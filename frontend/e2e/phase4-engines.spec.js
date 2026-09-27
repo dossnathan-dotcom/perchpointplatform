@@ -30,7 +30,13 @@ test("public homepage, discovery, listing, and inquiry", async ({ page }) => {
   await page.goto("/#rentals");
   const card = page.getByTestId("public-listing-card").first();
   await expect(card).toContainText("Example Elm Court");
-  await card.getByRole("link", { name: /View this listing/ }).click();
+  const listingLink = card.getByRole("link", { name: /View this listing/ });
+  await listingLink.scrollIntoViewIfNeeded();
+  await listingLink.click();
+  if (!/\/rentals\//.test(page.url())) {
+    await listingLink.click();
+  }
+  await expect(page).toHaveURL(/\/rentals\//);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Example Elm Court");
   await page.locator("input[name='guest-name']").fill("Engine Guest");
   await page.locator("input[name='guest-email']").fill("engine-guest@example.com");
