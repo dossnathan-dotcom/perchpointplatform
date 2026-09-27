@@ -526,6 +526,16 @@ def post_export(body: ExportBody, current=Depends(actor), settings: Settings = D
     return _run(lambda: create_export(settings, current["id"], current["organization_id"], body.document_ids, body.idempotency_key, uuid4()))
 
 
+@router.get("/exports/{export_id}/content")
+def get_export_content(export_id: UUID, current=Depends(actor), settings: Settings = Depends(settings)):
+    from fastapi.responses import Response
+
+    from .phase5_closeout import read_export
+
+    data, _manifest = _run(lambda: read_export(settings, current["id"], current["organization_id"], export_id))
+    return Response(content=data, media_type="application/zip", headers={"Cache-Control": "private, no-store"})
+
+
 @router.post("/search/saved", status_code=201)
 def post_saved(body: SaveSearchBody, current=Depends(actor), settings: Settings = Depends(settings)):
     from .phase5_closeout import save_search

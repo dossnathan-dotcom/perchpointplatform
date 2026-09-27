@@ -1,0 +1,67 @@
+# Isolated Phase 5 clean-room. Use with:
+# docker compose -p perchpoint-phase5-closeout -f docker-compose.yml -f docker-compose.phase5-closeout.yml
+# Do not point this file at the perchpoint-phase3 project.
+name: perchpoint-phase5-closeout
+services:
+  postgres:
+    ports: !override
+      - "127.0.0.1:54330:5432"
+  migrate:
+    environment:
+      PHASE5_OBJECT_STORE: s3
+      PHASE5_S3_ENDPOINT: http://minio:9000
+      PHASE5_S3_ACCESS_KEY: local-only-not-production
+      PHASE5_S3_SECRET_KEY: local-only-not-production
+      PHASE5_S3_BUCKET: perchpoint-documents
+      PHASE5_SCANNER_MODE: live
+      PHASE5_CLAMAV_HOST: clamav
+      PHASE5_CLAMAV_PORT: "3310"
+  seed:
+    environment:
+      PHASE5_OBJECT_STORE: s3
+      PHASE5_S3_ENDPOINT: http://minio:9000
+      PHASE5_S3_ACCESS_KEY: local-only-not-production
+      PHASE5_S3_SECRET_KEY: local-only-not-production
+      PHASE5_S3_BUCKET: perchpoint-documents
+      PHASE5_SCANNER_MODE: live
+      PHASE5_CLAMAV_HOST: clamav
+      PHASE5_CLAMAV_PORT: "3310"
+  api:
+    environment:
+      PHASE5_OBJECT_STORE: s3
+      PHASE5_S3_ENDPOINT: http://minio:9000
+      PHASE5_S3_ACCESS_KEY: local-only-not-production
+      PHASE5_S3_SECRET_KEY: local-only-not-production
+      PHASE5_S3_BUCKET: perchpoint-documents
+      PHASE5_SCANNER_MODE: live
+      PHASE5_CLAMAV_HOST: clamav
+      PHASE5_CLAMAV_PORT: "3310"
+    ports: !override
+      - "127.0.0.1:8001:8000"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+  worker:
+    environment:
+      PHASE5_OBJECT_STORE: s3
+      PHASE5_S3_ENDPOINT: http://minio:9000
+      PHASE5_S3_ACCESS_KEY: local-only-not-production
+      PHASE5_S3_SECRET_KEY: local-only-not-production
+      PHASE5_S3_BUCKET: perchpoint-documents
+      PHASE5_SCANNER_MODE: live
+      PHASE5_CLAMAV_HOST: clamav
+      PHASE5_CLAMAV_PORT: "3310"
+  web:
+    ports: !override
+      - "127.0.0.1:3001:8080"
+  minio:
+    ports: !override
+      - "127.0.0.1:9100:9000"
+      - "127.0.0.1:9101:9001"
+  clamav:
+    ports: !override
+      - "127.0.0.1:3311:3310"

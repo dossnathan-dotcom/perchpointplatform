@@ -157,7 +157,7 @@ def _finish_scan(connection, organization, actor, job) -> None:
             INSERT INTO document_versions (
               organization_id, id, document_id, version_number, object_key, checksum_sha256,
               byte_size, media_type, original_filename, scan_verdict
-            ) VALUES (:org, :id, :document, 1, :key, :checksum, :size, 'application/octet-stream', 'upload', 'clean')
+            ) VALUES (:org, :id, :document, 1, :key, :checksum, :size, :media, :filename, 'clean')
             """
         ),
         {
@@ -167,6 +167,8 @@ def _finish_scan(connection, organization, actor, job) -> None:
             "key": accepted,
             "checksum": hashlib.sha256(data).hexdigest(),
             "size": len(data),
+            "media": job["media_type"],
+            "filename": job["source_name"],
         },
     )
     connection.execute(
@@ -322,28 +324,34 @@ def _office_text(data: bytes, member: str) -> str:
 
 def _ocr_image(data: bytes):
     import shutil
-
-    binary = shutil.which("tesseract")
-    if not binary:
-        return "", "tesseract", "absent", "failed", "ocr_engine_absent"
     import subprocess
     import tempfile
 
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as handle:
-        handle.write(data)
-        path = handle.name
-    try:
+    binary = shutil.which("tesseract")
+    if binary:
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as handle:
+            handle.write(data)
+            path = handle.name
+        try:
+            completed = subprocess.run([binary, path, "stdout", "--psm", "6"], check=False, capture_output=True, timeout=20)
+        finally:
+            os.remove(path)
+        version = "local"
+    else:
+        image = os.environ.get("PHASE5_TESSERACT_IMAGE", "")
+        if not image:
+            return "", "tesseract", "absent", "failed", "ocr_engine_absent"
         completed = subprocess.run(
-            [binary, path, "stdout", "--psm", "6"],
+            ["docker", "run", "--rm", "-i", image, "tesseract", "stdin", "stdout", "--psm", "6"],
+            input=data,
             check=False,
             capture_output=True,
-            timeout=20,
+            timeout=40,
         )
-    finally:
-        os.remove(path)
+        version = image
     if completed.returncode != 0:
-        return "", "tesseract", "local", "failed", "ocr_failed"
-    return sanitize_text(completed.stdout.decode("utf-8", errors="replace")), "tesseract", "local", "ready", None
+        return "", "tesseract", version, "failed", "ocr_failed"
+    return sanitize_text(completed.stdout.decode("utf-8", errors="replace")), "tesseract", version, "ready", None
 
 
 def _preview(filename: str, data: bytes):
@@ -614,7 +622,35 @@ def _export(connection, organization, actor, document_ids, correlation) -> dict:
         },
     )
     _audit_outbox(connection, organization, actor, "document.exported", export_id, correlation, "document.exported.v1", {"count": len(included)})
-    return {"id": str(export_id), "count": len(included), "expires_at": expires.isoformat()}
+    return {"id": str(export_id), "count": len(included), "expires_at": expires.isoformat(), "role": _role(connection, actor)}
+
+
+def read_export(settings: Settings, actor: UUID, organization: UUID, export_id: UUID) -> tuple[bytes, dict]:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        _require(connection, actor, READ)
+        row = connection.execute(
+            text(
+                """
+                SELECT actor_id, manifest, object_key, status, expires_at
+                FROM document_exports
+                WHERE organization_id = :org AND id = :id
+                """
+            ),
+            {"org": organization, "id": export_id},
+        ).mappings().first()
+        if not row:
+            raise CommandError(404, "not_found", "Export was not found")
+        if row["expires_at"] <= datetime.now(UTC) or row["status"] != "ready":
+            delete_object(row["object_key"])
+            connection.execute(
+                text("UPDATE document_exports SET status = 'expired' WHERE organization_id = :org AND id = :id"),
+                {"org": organization, "id": export_id},
+            )
+            raise CommandError(410, "export_expired", "Export access expired")
+        _audit_outbox(connection, organization, actor, "document.export_read", export_id, uuid4(), "document.export_read.v1", {"expired": False})
+        key = row["object_key"]
+        manifest = row["manifest"]
+    return read_object(key), manifest
 
 
 def _safe_csv(rows: list[dict]) -> str:

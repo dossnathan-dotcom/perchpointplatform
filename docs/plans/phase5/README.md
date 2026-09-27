@@ -1,6 +1,6 @@
 # Phase 5 canonical data, documents, and search
 
-Phase 5 extends the existing FastAPI and PostgreSQL monolith. Alembic revision `0008_phase5_closeout` follows `0007_phase5_canonical`. Supabase is the selected hosted platform and is not activated here.
+Phase 5 extends the existing FastAPI and PostgreSQL monolith. Alembic revision `0010_phase5_search_fn` follows `0009_phase5_job_source` and `0008_phase5_closeout`. Supabase is the selected hosted platform and is not activated here.
 
 ## What is implemented
 

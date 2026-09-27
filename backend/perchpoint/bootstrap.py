@@ -47,6 +47,8 @@ def bootstrap(settings: Settings | None = None) -> None:
             "finish_outbox(uuid, boolean)",
             "public_search(text)",
             "claim_document_job(text)",
+            "search_rows(text, text, text, text)",
+            "search_facets(text, text, text, text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
     owner.dispose()

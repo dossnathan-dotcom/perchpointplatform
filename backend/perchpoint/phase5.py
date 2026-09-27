@@ -64,48 +64,15 @@ def search_records(settings: Settings, actor: UUID, organization: UUID, query: s
     needle = cleaned.replace("%", "").replace("_", "")
     if len(cleaned) < 2 or len(needle) < 2:
         return {"results": [], "total_count": 0, "facets": []}
+    params = {"query": cleaned, "needle": needle, "prefix": needle + "%", "contains": "%" + needle + "%"}
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        connection.execute(text("SELECT set_config('pg_trgm.similarity_threshold', '0.35', true)"))
-        connection.execute(text("SET LOCAL random_page_cost = 1.1"))
-        connection.execute(text("SET LOCAL cpu_tuple_cost = 0.05"))
         rows = connection.execute(
-            text(
-                """
-                SELECT resource_type, resource_id, title, classification,
-                  CASE
-                    WHEN resource_id::text = :query THEN 100
-                    WHEN lower(title) = lower(:query) THEN 80
-                    WHEN lower(title) LIKE lower(:query) || '%' THEN 60
-                    WHEN search_vector @@ websearch_to_tsquery('simple', :query) THEN 40
-                    WHEN title ILIKE '%' || :needle || '%' THEN 20
-                    ELSE 0
-                  END AS rank
-                FROM search_documents
-                WHERE resource_id::text = :query
-                   OR lower(title) = lower(:query)
-                   OR lower(title) LIKE lower(:query) || '%'
-                   OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR title ILIKE '%' || :needle || '%'
-                ORDER BY rank DESC, title
-                LIMIT 20
-                """
-            ),
-            {"query": cleaned, "needle": needle},
+            text("SELECT * FROM perchpoint.search_rows(:query, :needle, :prefix, :contains)"),
+            params,
         ).mappings().all()
         facets = connection.execute(
-            text(
-                """
-                SELECT resource_type, count(*) AS total
-                FROM search_documents
-                WHERE resource_id::text = :query
-                   OR lower(title) = lower(:query)
-                   OR lower(title) LIKE lower(:query) || '%'
-                   OR search_vector @@ websearch_to_tsquery('simple', :query)
-                   OR title ILIKE '%' || :needle || '%'
-                GROUP BY resource_type
-                """
-            ),
-            {"query": cleaned, "needle": needle},
+            text("SELECT * FROM perchpoint.search_facets(:query, :needle, :prefix, :contains)"),
+            params,
         ).mappings().all()
     results = []
     for row in rows:
@@ -186,11 +153,14 @@ def _insert_document(connection, organization, actor, payload, object_key, data:
             text(
                 """
                 INSERT INTO document_jobs (
-                  organization_id, id, document_id, actor_id, correlation_id, job_kind, object_key, status
-                ) VALUES (:org, :id, :document, :actor, :correlation, 'scan', :key, 'pending')
+                  organization_id, id, document_id, actor_id, correlation_id, job_kind, object_key,
+                  source_name, media_type, status
+                ) VALUES (
+                  :org, :id, :document, :actor, :correlation, 'scan', :key, :filename, :media, 'pending'
+                )
                 """
             ),
-            {"org": organization, "id": uuid4(), "document": document_id, "actor": actor, "correlation": correlation, "key": object_key},
+            {"org": organization, "id": uuid4(), "document": document_id, "actor": actor, "correlation": correlation, "key": object_key, "filename": payload["filename"], "media": media_type},
         )
     if payload["verdict"] == "clean":
         version_id = uuid4()
