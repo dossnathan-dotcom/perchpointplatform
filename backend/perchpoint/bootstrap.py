@@ -52,6 +52,8 @@ def bootstrap(settings: Settings | None = None) -> None:
             "reject_held_mutation()",
             "resolve_session(text)",
             "record_session(uuid, text, uuid, text, text, text, text, timestamp with time zone, timestamp with time zone)",
+            "claim_invitation(text)",
+            "accept_invitation(text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
     owner.dispose()

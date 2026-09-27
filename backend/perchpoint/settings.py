@@ -66,6 +66,9 @@ class Settings:
                     reasons.append(name)
             if os.environ.get("PHASE4_ABUSE_PROVIDER", "") == "":
                 reasons.append("distributed abuse protection")
+            session_key = os.environ.get("PHASE6_SESSION_KEY", "")
+            if not session_key or any(marker in session_key.lower() for marker in DISPOSABLE_MARKERS):
+                reasons.append("session encryption key")
             if reasons:
                 raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":

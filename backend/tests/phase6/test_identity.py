@@ -1,3 +1,4 @@
+import base64
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -66,6 +67,36 @@ def test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf():
     signed_out = client.post("/api/v2/auth/sign-out", headers={"x-perchpoint-csrf": signed.json()["csrf"]})
     assert signed_out.status_code == 200
     assert client.get("/api/v2/auth/me").status_code == 401
+
+
+def test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext():
+    client = TestClient(create_app())
+    signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    csrf = {"x-perchpoint-csrf": signed.json()["csrf"]}
+    invited = client.post(
+        "/api/v2/auth/invitations",
+        headers=csrf,
+        json={"email": "worker.synthetic@example.com", "role_name": "technician", "purpose": "Assigned work only", "staff": False},
+    )
+    assert invited.status_code == 200, invited.text
+    token = invited.json()["token"]
+    assert client.post("/api/v2/auth/invitations/accept", json={"token": token}).status_code == 200
+    replay = client.post("/api/v2/auth/invitations/accept", json={"token": token})
+    assert replay.status_code == 400
+    assert replay.json()["detail"]["code"] == "invitation_invalid"
+    enrolled = client.post("/api/v2/auth/mfa/enroll", headers=csrf)
+    assert enrolled.status_code == 200, enrolled.text
+    secret = enrolled.json()["secret"]
+    padded = secret + ("=" * ((8 - len(secret) % 8) % 8))
+    confirmed = client.post(
+        "/api/v2/auth/mfa/confirm",
+        headers=csrf,
+        json={"factor_id": enrolled.json()["factor_id"], "code": totp(base64.b32decode(padded))},
+    )
+    assert confirmed.status_code == 200, confirmed.text
+    codes = client.post("/api/v2/auth/recovery-codes", headers=csrf)
+    assert codes.status_code == 200
+    assert len(codes.json()["codes"]) == 10
 
 
 def test_development_jwt_is_retired_without_the_test_fixture(monkeypatch):

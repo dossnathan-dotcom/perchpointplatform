@@ -29,7 +29,19 @@ from .commands import (
 )
 from .db import runtime_transaction
 from .http_security import security_headers
-from .phase6_identity import COOKIE, CSRF_HEADER, csrf_ok, open_session, resolve, revoke
+from .phase6_identity import (
+    COOKIE,
+    CSRF_HEADER,
+    accept_invitation,
+    confirm_totp,
+    create_invitation,
+    csrf_ok,
+    enroll_totp,
+    issue_recovery_codes,
+    open_session,
+    resolve,
+    revoke,
+)
 from .phase6_policy import approval_authority, authorize
 from .settings import Phase2ConfigurationError, Settings
 
@@ -683,6 +695,22 @@ def health_ready(settings: Settings = Depends(settings)):
     return {"status": "ready"}
 
 
+class InvitationBody(BaseModel):
+    email: str = Field(min_length=3, max_length=200)
+    role_name: str = Field(min_length=2, max_length=80)
+    purpose: str = Field(min_length=3, max_length=500)
+    staff: bool = True
+
+
+class InvitationAccept(BaseModel):
+    token: str = Field(min_length=20, max_length=200)
+
+
+class TotpConfirm(BaseModel):
+    factor_id: UUID
+    code: str = Field(min_length=6, max_length=6)
+
+
 class PurchaseBody(BaseModel):
     amount_minor: int = Field(ge=0)
     monthly_rent_minor: int | None = None
@@ -736,6 +764,49 @@ def sign_out(request: Request, settings: Settings = Depends(settings)):
     response = JSONResponse({"signed_out": True, "synthetic": True})
     response.delete_cookie(COOKIE, path="/")
     return response
+
+
+def _require_csrf(request: Request, session: dict) -> None:
+    if not csrf_ok(session, request.headers.get(CSRF_HEADER)):
+        raise HTTPException(403, {"code": "csrf_rejected", "message": "The security token did not match this session.", "retryable": True})
+
+
+@router.post("/auth/invitations")
+def invite(body: InvitationBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    created = create_invitation(settings, session["id"], session["organization_id"], body.email, body.role_name, body.purpose, staff=body.staff)
+    return {**created, "synthetic": True}
+
+
+@router.post("/auth/invitations/accept")
+def accept_invite(body: InvitationAccept, settings: Settings = Depends(settings)):
+    if not accept_invitation(settings, body.token):
+        raise HTTPException(400, {"code": "invitation_invalid", "message": "This invitation is no longer valid.", "retryable": False})
+    return {"accepted": True, "synthetic": True}
+
+
+@router.post("/auth/mfa/enroll")
+def mfa_enroll(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    return {**enroll_totp(settings, session["id"], session["organization_id"]), "synthetic": True}
+
+
+@router.post("/auth/mfa/confirm")
+def mfa_confirm(body: TotpConfirm, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    if not confirm_totp(settings, session["id"], session["organization_id"], body.factor_id, body.code):
+        raise HTTPException(401, {"code": "mfa_invalid", "message": "The authentication code is incorrect.", "retryable": True})
+    return {"assurance": "aal2", "synthetic": True}
+
+
+@router.post("/auth/recovery-codes")
+def recovery_codes(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    return {"codes": issue_recovery_codes(settings, session["id"], session["organization_id"]), "synthetic": True}
 
 
 def _role_may_approve(role_name: str, authority: str) -> bool:
