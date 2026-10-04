@@ -13,7 +13,31 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(os.environ.get("WEB_ROOT", "/srv/web")).resolve()
 API = os.environ.get("API_UPSTREAM", "http://api:8000").rstrip("/")
-FORWARDED = {"accept", "authorization", "content-type", "x-request-id"}
+FORWARDED = {
+    "accept",
+    "authorization",
+    "content-type",
+    "cookie",
+    "if-match",
+    "origin",
+    "range",
+    "referer",
+    "x-perchpoint-audience",
+    "x-perchpoint-csrf",
+    "x-perchpoint-document-token",
+    "x-perchpoint-signature",
+    "x-perchpoint-worker",
+    "x-request-id",
+}
+RESPONSE_FORWARDED = {
+    "accept-ranges",
+    "content-disposition",
+    "content-range",
+    "location",
+    "retry-after",
+    "set-cookie",
+    "x-request-id",
+}
 MAX_BODY = 1_000_000
 COMPRESSIBLE = {".html", ".js", ".css", ".svg", ".json", ".txt", ".map", ".xml"}
 MIME = {
@@ -199,10 +223,32 @@ class Handler(BaseHTTPRequestHandler):
             with urlopen(request, timeout=30) as upstream:
                 payload = upstream.read(8_000_000)
                 content_type = upstream.headers.get("content-type", "application/json")
-                self._send(upstream.status, payload, content_type.split(";", 1)[0].strip() or "application/json", "/api")
+                response_headers = [
+                    (name, value)
+                    for name in RESPONSE_FORWARDED
+                    for value in upstream.headers.get_all(name, [])
+                ]
+                self._send(
+                    upstream.status,
+                    payload,
+                    content_type.split(";", 1)[0].strip() or "application/json",
+                    "/api",
+                    response_headers=response_headers,
+                )
         except HTTPError as exc:
             payload = exc.read(8_000_000)
-            self._send(exc.code, payload, "application/json", "/api")
+            response_headers = [
+                (name, value)
+                for name in RESPONSE_FORWARDED
+                for value in exc.headers.get_all(name, [])
+            ]
+            self._send(
+                exc.code,
+                payload,
+                "application/json",
+                "/api",
+                response_headers=response_headers,
+            )
         except URLError:
             self._send(502, b'{"status":"unavailable"}', "application/json", "/api")
 
@@ -219,7 +265,16 @@ class Handler(BaseHTTPRequestHandler):
                 payload = ENCODED[chosen][encoding]
         self._send(200, payload, content_type_for(chosen), chosen, encoding, MODIFIED.get(chosen))
 
-    def _send(self, status: int, payload: bytes, content_type: str, path: str, encoding: str | None = None, modified: float | None = None) -> None:
+    def _send(
+        self,
+        status: int,
+        payload: bytes,
+        content_type: str,
+        path: str,
+        encoding: str | None = None,
+        modified: float | None = None,
+        response_headers: list[tuple[str, str]] | None = None,
+    ) -> None:
         self.send_response(status)
         self.send_header("content-type", content_type)
         self.send_header("content-length", str(len(payload)))
@@ -231,6 +286,8 @@ class Handler(BaseHTTPRequestHandler):
         if Path(path).suffix.lower() in COMPRESSIBLE:
             self.send_header("vary", "Accept-Encoding")
         for name, value in security_headers(content_type, path).items():
+            self.send_header(name, value)
+        for name, value in response_headers or []:
             self.send_header(name, value)
         self.end_headers()
         if self.command != "HEAD":

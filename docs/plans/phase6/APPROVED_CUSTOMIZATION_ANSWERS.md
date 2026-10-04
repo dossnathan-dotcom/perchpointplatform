@@ -28,7 +28,7 @@ These 160 decisions are the Phase 6 customization record. They do not grant host
 | Q22 | Access is represented by granular capabilities and versioned role bundles. |
 | Q23 | Multiple-role memberships are allowed, and each action records its authorizing role and scope. |
 | Q24 | Explicit denial, suspension, legal restriction, expiration, and separation of duties override grants. |
-| Q25 | Default is denial. |
+| Q25 | Access is denied by default unless current server authority explicitly permits it. |
 | Q26 | Owner authority is scoped to a specific organization. |
 | Q27 | Faruk is HawkVision owner and final business authority without development-console, raw-database, deployment-secret, or source-control duties. |
 | Q28 | Nathan is platform administrator and may hold a separate operational membership. Platform administration is not business approval authority. |
@@ -143,7 +143,7 @@ These 160 decisions are the Phase 6 customization record. They do not grant host
 | Q137 | Security Center includes password, MFA, recovery codes, verified contacts, devices, sessions, security events, and sign-out controls. |
 | Q138 | Delegation Center includes incoming and outgoing grants, requests, limits, expiry, usage, and revocation. |
 | Q139 | Identity interfaces meet premium responsive, keyboard, focus, screen-reader, error-summary, reduced-motion, and automated-accessibility standards. |
-| Q140 | No placeholder controls, fake success states, or unexplained disabled actions are allowed. |
+| Q140 | No nonfunctional controls, fake success states, or unexplained disabled actions are allowed. |
 | Q141 | Vendor companies never share a single account. |
 | Q142 | Vendor administrators may propose workers. HawkVision operations approves activation. |
 | Q143 | Contractor access requires active company membership, active assignment, capability, scope, and time window. |

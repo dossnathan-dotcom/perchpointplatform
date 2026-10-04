@@ -10,6 +10,7 @@ import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
 
 from foundation.seeds import sid
 from perchpoint.db import engine_for, runtime_transaction
@@ -205,7 +206,19 @@ def test_two_workers_claim_different_rows():
     from perchpoint.commands import claim_and_deliver
 
     with ThreadPoolExecutor(max_workers=2) as pool:
-        claimed = list(pool.map(lambda _: claim_and_deliver(_settings(), "worker-" + uuid4().hex[:4]), range(2)))
+        claimed = list(
+            pool.map(
+                lambda _: claim_and_deliver(
+                    _settings(),
+                    os.environ.get("PHASE6_WORKER_NAME", "synthetic-worker"),
+                    os.environ.get(
+                        "PHASE6_WORKER_CREDENTIAL",
+                        "local-only-not-production-worker-credential",
+                    ),
+                ),
+                range(2),
+            )
+        )
     ids = [item.get("id") for item in claimed if item.get("claimed")]
     assert len(ids) == 2 and len(set(ids)) == 2
     admin = _admin()
@@ -232,22 +245,68 @@ def test_worker_lease_expires_and_is_reclaimed():
         )
     admin.dispose()
     settings = _settings()
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
-        first = connection.execute(text("SELECT * FROM perchpoint.claim_outbox('worker-a')")).mappings().first()
+    from perchpoint.phase6_identity import authenticate_service_credential
+
+    worker_name = os.environ.get("PHASE6_WORKER_NAME", "synthetic-worker")
+    credential = os.environ.get(
+        "PHASE6_WORKER_CREDENTIAL",
+        "local-only-not-production-worker-credential",
+    )
+    principal = authenticate_service_credential(
+        settings,
+        credential,
+        audience="perchpoint-worker",
+        worker_name=worker_name,
+    )
+    assert principal is not None
+    with pytest.raises(DBAPIError, match="worker_authority_required"):
+        with runtime_transaction(settings, None, None, uuid4()) as connection:
+            connection.execute(text("SELECT * FROM perchpoint.claim_outbox(:worker)"), {"worker": worker_name})
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
+        first = connection.execute(
+            text("SELECT * FROM perchpoint.claim_outbox(:worker)"),
+            {"worker": worker_name},
+        ).mappings().first()
     assert first["id"] == event_id
     assert first["attempts"] == 1
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
-        blocked = connection.execute(text("SELECT id FROM perchpoint.claim_outbox('worker-b')")).mappings().all()
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
+        blocked = connection.execute(
+            text("SELECT id FROM perchpoint.claim_outbox(:worker)"),
+            {"worker": worker_name},
+        ).mappings().all()
     assert all(row["id"] != event_id for row in blocked)
     admin = _admin()
     with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
         connection.execute(text("UPDATE outbox SET lease_until = now() - interval '1 minute' WHERE id = :id"), {"id": event_id})
     admin.dispose()
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
-        second = connection.execute(text("SELECT * FROM perchpoint.claim_outbox('worker-b')")).mappings().first()
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
+        second = connection.execute(
+            text("SELECT * FROM perchpoint.claim_outbox(:worker)"),
+            {"worker": worker_name},
+        ).mappings().first()
     assert second["id"] == event_id
     assert second["attempts"] == 2
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
         status = connection.execute(text("SELECT perchpoint.finish_outbox(:id, true)"), {"id": event_id}).scalar()
     assert status == "delivered"
 
@@ -407,7 +466,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0014_phase6_provider"
+    assert revision == "0031_phase6_authz_remediation"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

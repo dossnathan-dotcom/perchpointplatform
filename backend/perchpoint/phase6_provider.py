@@ -83,8 +83,17 @@ def verify_access_token(token: str) -> dict:
     subject = claims.get("sub")
     if not isinstance(subject, str) or not subject:
         raise ProviderError("authentication_failed")
-    assurance = claims.get("aal") if claims.get("aal") in {"aal1", "aal2"} else "aal1"
-    return {"subject": subject, "assurance": assurance, "session_id": claims.get("session_id"), "email": claims.get("email")}
+    assurance = claims.get("aal")
+    session_id = claims.get("session_id")
+    methods = claims.get("amr")
+    if assurance not in {"aal1", "aal2"} or not isinstance(session_id, str) or not session_id:
+        raise ProviderError("authentication_failed")
+    if not isinstance(methods, list) or not any(
+        isinstance(method, dict) and method.get("method") in {"password", "otp", "totp", "recovery"}
+        for method in methods
+    ):
+        raise ProviderError("authentication_failed")
+    return {"subject": subject, "assurance": assurance, "session_id": session_id, "email": claims.get("email")}
 
 
 def _session_from(payload: dict) -> ProviderSession:
@@ -117,6 +126,10 @@ def refresh_grant(refresh_token: str) -> ProviderSession:
     return _session_from(_request("POST", "/token?grant_type=refresh_token", {"refresh_token": refresh_token}))
 
 
+def request_email_change(access_token: str, new_email: str) -> None:
+    _request("PUT", "/user", {"email": new_email}, access_token)
+
+
 def create_user(email: str, password: str) -> str:
     payload = _request(
         "POST",
@@ -128,6 +141,43 @@ def create_user(email: str, password: str) -> str:
     if not isinstance(user_id, str):
         raise ProviderError("provider_unavailable")
     return user_id
+
+
+def find_user_by_email(email: str) -> str | None:
+    payload = _request("GET", "/admin/users?page=1&per_page=1000", token=admin_token())
+    users = payload.get("users")
+    if not isinstance(users, list):
+        raise ProviderError("provider_unavailable")
+    normalized = email.strip().lower()
+    for user in users:
+        if isinstance(user, dict) and str(user.get("email", "")).lower() == normalized:
+            user_id = user.get("id")
+            return user_id if isinstance(user_id, str) else None
+    return None
+
+
+def delete_user(user_id: str) -> None:
+    _request("DELETE", f"/admin/users/{user_id}", token=admin_token())
+
+
+def update_user_password(user_id: str, password: str) -> None:
+    _request("PUT", f"/admin/users/{user_id}", {"password": password}, admin_token())
+
+
+def list_user_factors(user_id: str) -> list[str]:
+    payload = _request("GET", f"/admin/users/{user_id}", token=admin_token())
+    factors = payload.get("factors")
+    if not isinstance(factors, list):
+        return []
+    return [
+        str(factor["id"])
+        for factor in factors
+        if isinstance(factor, dict) and isinstance(factor.get("id"), str)
+    ]
+
+
+def admin_remove_factor(user_id: str, factor_id: str) -> None:
+    _request("DELETE", f"/admin/users/{user_id}/factors/{factor_id}", token=admin_token())
 
 
 def enroll_factor(access_token: str) -> dict:
@@ -154,6 +204,10 @@ def confirm_factor(access_token: str, factor_id: str, code: str) -> ProviderSess
         raise ProviderError("mfa_invalid")
     verified = _request("POST", f"/factors/{factor_id}/verify", {"challenge_id": challenge_id, "code": code}, access_token)
     return _session_from(verified)
+
+
+def remove_factor(access_token: str, factor_id: str) -> None:
+    _request("DELETE", f"/factors/{factor_id}", token=access_token)
 
 
 def request_recovery(email: str) -> None:

@@ -72,8 +72,23 @@ def set_space_dimension(settings: Settings, actor: UUID, organization: UUID, spa
     return _command(settings, actor, organization, key, payload, correlation, "space.transitioned", lambda conn, fp: _transition_space(conn, organization, actor, space_id, body, correlation))
 
 
-def claim_and_deliver(settings: Settings, worker_name: str) -> dict:
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
+def claim_and_deliver(settings: Settings, worker_name: str, credential: str) -> dict:
+    from .phase6_identity import authenticate_service_credential
+
+    principal = authenticate_service_credential(
+        settings,
+        credential,
+        audience="perchpoint-worker",
+        worker_name=worker_name,
+    )
+    if principal is None:
+        raise CommandError(401, "service_credential_invalid", "Worker authentication failed")
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
         row = connection.execute(text("SELECT * FROM perchpoint.claim_outbox(:worker)"), {"worker": worker_name}).mappings().first()
         if not row:
             return {"claimed": False}
@@ -82,12 +97,17 @@ def claim_and_deliver(settings: Settings, worker_name: str) -> dict:
         return {"claimed": True, "status": "dead_letter", "id": str(claimed["id"])}
     payload = claimed["payload"] if isinstance(claimed["payload"], dict) else json.loads(claimed["payload"])
     delivered = not (payload.get("fail_once") and claimed["attempts"] == 1)
-    status = connection_finish(settings, claimed["id"], delivered)
+    status = connection_finish(settings, claimed["id"], delivered, principal)
     return {"claimed": True, "status": status, "id": str(claimed["id"]), "synthetic": True, "exactly_once": False}
 
 
-def connection_finish(settings: Settings, outbox_id: UUID, delivered: bool) -> str:
-    with runtime_transaction(settings, None, None, uuid4()) as connection:
+def connection_finish(settings: Settings, outbox_id: UUID, delivered: bool, principal: dict) -> str:
+    with runtime_transaction(
+        settings,
+        principal["id"],
+        principal["organization_id"],
+        uuid4(),
+    ) as connection:
         return connection.execute(text("SELECT perchpoint.finish_outbox(:id, :delivered)"), {"id": outbox_id, "delivered": delivered}).scalar()
 
 

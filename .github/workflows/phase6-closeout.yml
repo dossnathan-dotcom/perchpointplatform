@@ -1,0 +1,44 @@
+name: phase6-closeout
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: phase6-closeout-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  clean-room:
+    name: phase6-clean-room
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - run: corepack yarn install --frozen-lockfile --non-interactive
+        working-directory: frontend
+      - run: corepack yarn playwright install --with-deps chromium firefox webkit
+        working-directory: frontend
+      - run: python scripts/phase6_clean_room.py --execute
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: phase6-clean-room-${{ github.sha }}
+          retention-days: 30
+          path: |
+            test_reports/phase6/clean-room*.json
+            test_reports/phase6/clean-room.txt
+            test_reports/phase6/browser-results.json
+            test_reports/phase6/browser.txt
+            test_reports/phase6/accessibility.json
+            test_reports/phase6/responsive.json
+            test_reports/phase6/rls.json
+            test_reports/phase6/frontend.json
+            test_reports/phase6/raw/**

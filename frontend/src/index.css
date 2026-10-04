@@ -117,9 +117,14 @@ html[data-theme="light"] [data-testid="perchpoint-portal-page"] .text-gold { col
 section[id], footer[id] { scroll-margin-top: 6rem; }
 button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
 button, a, input, select, textarea { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
-:focus-visible { outline: 3px solid var(--pp-focus) !important; outline-offset: 3px; }
+:focus-visible,
+[tabindex]:focus {
+  outline: 3px solid var(--pp-focus) !important;
+  outline-offset: 3px;
+}
 @media (forced-colors: active) {
-  :focus-visible { outline: 3px solid CanvasText !important; }
+  :focus-visible,
+  [tabindex]:focus { outline: 3px solid CanvasText !important; }
   button, a, input, select, textarea { forced-color-adjust: auto; }
 }
 button:disabled, select:disabled { cursor: not-allowed; }

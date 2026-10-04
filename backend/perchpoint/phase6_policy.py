@@ -1,29 +1,39 @@
 """Phase 6 authorization policy. The identity provider does not decide business authority."""
 from __future__ import annotations
 
-import hmac
-import hashlib
-import struct
-import time
 from dataclasses import dataclass
 
 COMMON_PASSWORDS = {
     "passwordpassword",
     "correcthorsebatterystaple",
     "hawthornhomes1234",
+    "123456789012345",
+    "qwertyuiopasdfgh",
+    "letmeinletmein",
+    "iloveyouiloveyou",
+    "adminadminadmin",
+    "welcome123456789",
+    "password123456",
+    "changemechangeme",
 }
 
 _OPERATIONS = frozenset({
     "identity.profile.read", "session.read", "session.revoke", "invitation.create", "membership.read",
     "access.request", "leasing.coordinate", "maintenance.coordinate", "work.assign", "property.read",
-    "document.read", "search.read", "expense.approve", "resident.read", "household.read", "vendor.admin",
+    "property.manage", "inquiry.manage", "document.read", "document.manage", "search.read",
+    "expense.approve", "resident.read", "household.read", "vendor.admin", "vendor.worker.approve",
+    "delegation.grant", "delegation.revoke",
 })
 _RESIDENT = frozenset({"identity.profile.read", "session.read", "session.revoke", "resident.read", "household.read", "document.read", "mfa.enroll"})
 BUNDLES = {
-    "owner": _OPERATIONS | frozenset({"approval.owner", "delegation.grant", "delegation.revoke", "access.approve", "audit.read", "legal.read", "export.create", "accounting.read", "role.manage"}),
+    "owner": _OPERATIONS | frozenset({"approval.owner", "delegation.grant", "delegation.revoke", "access.approve", "audit.read", "security.read", "legal.read", "export.create", "accounting.read", "import.manage"}),
     "platform_admin": frozenset({"identity.profile.read", "session.read", "session.revoke", "membership.read", "membership.grant", "role.manage", "scope.manage", "platform.configure", "security.read", "service.manage", "audit.read", "invitation.create"}),
+    "project_manager": _OPERATIONS | frozenset({"access.approve", "security.read", "import.manage"}),
+    "operations_manager": _OPERATIONS | frozenset({"access.approve", "security.read", "import.manage"}),
     "leasing": _OPERATIONS,
+    "leasing_staff": _OPERATIONS,
     "maintenance": frozenset({"identity.profile.read", "session.read", "maintenance.coordinate", "work.assign", "property.read", "document.read"}),
+    "maintenance_coordinator": _OPERATIONS,
     "accounting": frozenset({"identity.profile.read", "session.read", "accounting.read", "export.create", "document.read"}),
     "limited_approver": frozenset({"identity.profile.read", "session.read", "expense.approve"}),
     "applicant": _RESIDENT,
@@ -54,6 +64,8 @@ def password_problem(password: str) -> str | None:
         return "password_too_long"
     if password.lower() in COMMON_PASSWORDS:
         return "password_common"
+    if len(set(password.casefold())) < 4:
+        return "password_common"
     return None
 
 
@@ -61,6 +73,32 @@ OWNER_RESERVED = frozenset({
     "approval.owner", "legal.adverse", "lease.approve", "eviction.decide", "screening.policy",
     "writeoff.material", "insurance.claim", "delegation.policy", "production.launch",
 })
+
+
+def invitation_role_allowed(inviter_role: str, target_role: str) -> bool:
+    if target_role in {"owner", "platform_admin"}:
+        return False
+    external_roles = {
+        "applicant",
+        "resident",
+        "household_adult",
+        "guarantor",
+        "vendor_admin",
+        "vendor_worker",
+        "technician",
+        "cleaner",
+    }
+    if target_role in external_roles:
+        return inviter_role in {
+            "owner",
+            "platform_admin",
+            "project_manager",
+            "operations_manager",
+            "leasing",
+            "leasing_staff",
+            "maintenance_coordinator",
+        }
+    return inviter_role in {"owner", "platform_admin"}
 
 
 def approval_authority(amount_minor: int, monthly_rent_minor: int | None, *, capital: bool, emergency: bool) -> str:
@@ -112,28 +150,14 @@ def authorize(
 
 
 def recovery_participants(subject_role: str, initiator_role: str, approver_role: str | None) -> str:
+    if not subject_role or not initiator_role:
+        return "recovery_participant_invalid"
     if subject_role == "owner" and initiator_role == "platform_admin":
         return "allowed"
     if subject_role == "platform_admin" and initiator_role == "owner":
         return "allowed"
-    if subject_role == "leasing" and initiator_role == "platform_admin" and approver_role == "owner":
+    if subject_role in {"leasing", "project_manager", "operations_manager"} and initiator_role == "platform_admin" and approver_role == "owner":
         return "allowed"
-    if subject_role in {"owner", "platform_admin", "leasing"}:
+    if subject_role in {"owner", "platform_admin", "leasing", "project_manager", "operations_manager"}:
         return "supervised_recovery_required"
     return "allowed"
-
-
-def hotp(secret: bytes, counter: int) -> str:
-    digest = hmac.new(secret, struct.pack(">Q", counter), hashlib.sha1).digest()
-    offset = digest[-1] & 0x0F
-    code = struct.unpack(">I", digest[offset : offset + 4])[0] & 0x7FFFFFFF
-    return f"{code % 1_000_000:06d}"
-
-
-def totp(secret: bytes, moment: float | None = None, step: int = 30) -> str:
-    return hotp(secret, int((time.time() if moment is None else moment) // step))
-
-
-def totp_matches(secret: bytes, code: str, moment: float | None = None) -> bool:
-    now = time.time() if moment is None else moment
-    return any(hmac.compare_digest(totp(secret, now + offset), code) for offset in (-30, 0, 30))

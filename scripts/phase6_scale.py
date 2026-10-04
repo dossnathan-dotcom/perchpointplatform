@@ -50,6 +50,13 @@ def _prepare(settings: Settings) -> tuple[str, str]:
             "resolve_session(text)",
             "record_provider_session(uuid, text, uuid, text, text, text, text, timestamp with time zone, timestamp with time zone, integer, text, text)",
             "search_rows(text, text, text, text)",
+            "recovery_code_material(uuid)",
+            "consume_recovery_code(uuid, uuid)",
+            "accept_invitation(text, text)",
+            "current_role()",
+            "role_for_account(uuid)",
+            "authorized_for(text, text, uuid)",
+            "can_read_household(uuid)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(text("GRANT USAGE ON SCHEMA perchpoint TO perchpoint_runtime, perchpoint_definer"))
