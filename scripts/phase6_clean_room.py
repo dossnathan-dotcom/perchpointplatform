@@ -94,7 +94,7 @@ class Driver:
             output += f"\nrequired marker absent: {markers}\n"
         raw_path = REPORTS / "raw" / "clean-room" / f"{len(self.executions) + 1:02d}-{name}.log"
         raw_path.parent.mkdir(parents=True, exist_ok=True)
-        raw_path.write_text(output, encoding="utf-8")
+        raw_path.write_text(output, encoding="utf-8", newline="\n")
         self.executions.append(
             {
                 "step": name,
