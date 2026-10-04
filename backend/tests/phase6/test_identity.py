@@ -2,9 +2,10 @@ import base64
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text as sql_text
 
-from perchpoint.phase6_policy import approval_authority, authorize, password_problem, totp, totp_matches
+from perchpoint.db import runtime_transaction
+from perchpoint.phase6_policy import approval_authority, authorize, password_problem, recovery_participants, totp, totp_matches
 from perchpoint.phase6_provider import ProviderError, create_user
 from perchpoint.routes import create_app
 from perchpoint.settings import Settings
@@ -36,6 +37,14 @@ def test_financial_thresholds_and_authority_boundaries():
     assert approval_authority(100_000, 90_000, capital=False, emergency=False) == "owner"
     assert approval_authority(10_000, rent, capital=True, emergency=False) == "owner"
     assert approval_authority(120_000, rent, capital=False, emergency=True) == "operations_emergency"
+    assert approval_authority(89_999, 90_000, capital=False, emergency=False) == "operations"
+    assert approval_authority(90_000, 90_000, capital=False, emergency=False) == "operations"
+    assert approval_authority(90_001, 90_000, capital=False, emergency=False) == "owner"
+    assert recovery_participants("owner", "platform_admin", None) == "allowed"
+    assert recovery_participants("owner", "owner", None) == "supervised_recovery_required"
+    assert recovery_participants("platform_admin", "leasing", "owner") == "supervised_recovery_required"
+    assert recovery_participants("leasing", "platform_admin", "owner") == "allowed"
+    assert recovery_participants("leasing", "platform_admin", None) == "supervised_recovery_required"
 
 
 def test_self_grant_self_approval_and_non_transitive_delegation():
@@ -102,11 +111,11 @@ def test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext():
     admin = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
     with admin.begin() as connection:
         connection.execute(
-            text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, 'provider-owned')"),
+            sql_text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, 'provider-owned')"),
             {"id": account, "email": fresh},
         )
         connection.execute(
-            text(
+                sql_text(
                 """
                 INSERT INTO memberships (id, account_id, organization_id, role_name, effective_at)
                 VALUES (:id, :account, :org, 'leasing', '1999-01-01T00:00:00Z')
@@ -154,6 +163,47 @@ def test_self_delegation_is_rejected_and_a_bounded_grant_is_recorded():
         json={"grantee_id": str(uuid4()), "capability": "expense.approve", "reason": "Covering leave", "days": 7, "amount_ceiling_minor": 50000},
     )
     assert granted.status_code == 200, granted.text
+
+
+def test_sessions_access_requests_and_self_recovery_are_enforced():
+    _provider_user("ann.synthetic@example.com")
+    client = TestClient(create_app())
+    signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    csrf = {"x-perchpoint-csrf": signed.json()["csrf"]}
+    listed = client.get("/api/v2/me/sessions")
+    assert listed.status_code == 200
+    assert listed.json()["sessions"]
+    assert "token" not in listed.json()["sessions"][0]
+    requested = client.post("/api/v2/access/requests", headers=csrf, json={"capability": "document.read", "justification": "Need the lease file"})
+    assert requested.status_code == 200, requested.text
+    reviewed = client.post(f"/api/v2/access/requests/{requested.json()['request_id']}", headers=csrf, json={"approve": True})
+    assert reviewed.status_code == 409
+    assert reviewed.json()["detail"]["code"] == "self_approval"
+    reserved = client.post(
+        "/api/v2/access/delegations",
+        headers=csrf,
+        json={"grantee_id": str(uuid4()), "capability": "approval.owner", "reason": "Covering leave", "days": 7},
+    )
+    assert reserved.status_code == 409
+    assert reserved.json()["detail"]["code"] == "owner_reserved"
+    recovery = client.post(
+        "/api/v2/access/recoveries",
+        headers=csrf,
+        json={"subject_account": client.get("/api/v2/auth/me").json()["account_id"], "evidence": "Offline sealed envelope"},
+    )
+    assert recovery.status_code == 409
+    assert recovery.json()["detail"]["code"] == "self_recovery"
+    forged = client.post("/api/v2/me/context", headers=csrf, json={"membership_id": str(uuid4())})
+    assert forged.status_code == 409
+    assert forged.json()["detail"]["code"] == "context_invalid"
+
+
+def test_runtime_role_without_actor_context_sees_no_identity_rows():
+    with runtime_transaction(Settings.load(), None, None, uuid4()) as connection:
+        accounts = connection.execute(sql_text("SELECT count(*) FROM identity_accounts")).scalar()
+        sessions = connection.execute(sql_text("SELECT count(*) FROM identity_sessions")).scalar()
+    assert accounts == 0
+    assert sessions == 0
 
 
 def test_development_jwt_is_retired_without_the_test_fixture(monkeypatch):

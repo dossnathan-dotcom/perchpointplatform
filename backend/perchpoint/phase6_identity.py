@@ -14,6 +14,7 @@ from cryptography.fernet import Fernet
 from sqlalchemy import text
 
 from .db import runtime_transaction
+from .phase6_policy import OWNER_RESERVED
 from .settings import Settings
 
 COOKIE = "pp_session"
@@ -218,6 +219,8 @@ def create_delegation(
         raise ValueError("self_delegation")
     if days < 1 or days > 30:
         raise ValueError("delegation_window")
+    if capability in OWNER_RESERVED:
+        raise ValueError("owner_reserved")
     delegation_id = uuid4()
     with runtime_transaction(settings, grantor, organization, uuid4()) as connection:
         connection.execute(
@@ -242,6 +245,123 @@ def create_delegation(
             },
         )
     return str(delegation_id)
+
+
+def list_sessions(settings: Settings, account: UUID, organization: UUID) -> list[dict]:
+    with runtime_transaction(settings, account, organization, uuid4()) as connection:
+        rows = connection.execute(
+            text(
+                """
+                SELECT s.id, s.device_label, s.created_at, s.last_seen_at, s.revoked_at IS NOT NULL AS revoked
+                FROM identity_sessions s
+                JOIN identity_accounts a ON a.id = s.identity_id
+                WHERE a.account_id = :account
+                ORDER BY s.created_at DESC
+                """
+            ),
+            {"account": account},
+        ).mappings().all()
+    return [{"id": str(row["id"]), "device_label": row["device_label"], "revoked": row["revoked"]} for row in rows]
+
+
+def revoke_others(settings: Settings, account: UUID, organization: UUID, session_id: UUID) -> int:
+    with runtime_transaction(settings, account, organization, uuid4()) as connection:
+        result = connection.execute(
+            text(
+                """
+                UPDATE identity_sessions SET revoked_at = now(), revoke_reason = 'sign_out_others'
+                WHERE revoked_at IS NULL AND id <> :id
+                  AND identity_id IN (SELECT id FROM identity_accounts WHERE account_id = :account)
+                """
+            ),
+            {"id": session_id, "account": account},
+        )
+    return result.rowcount or 0
+
+
+def select_context(settings: Settings, account: UUID, organization: UUID, session_id: UUID, membership_id: UUID) -> dict:
+    with runtime_transaction(settings, account, organization, uuid4()) as connection:
+        rows = connection.execute(text("SELECT * FROM perchpoint.list_memberships(:account)"), {"account": account}).mappings().all()
+        match = next((row for row in rows if row["membership_id"] == membership_id), None)
+        if match is None:
+            raise ValueError("context_invalid")
+        connection.execute(
+            text("UPDATE identity_sessions SET organization_id = :org, context_membership = :membership WHERE id = :id"),
+            {"org": match["organization_id"], "membership": membership_id, "id": session_id},
+        )
+    return {"organization_id": str(match["organization_id"]), "role_name": match["role_name"]}
+
+
+def create_access_request(settings: Settings, requester: UUID, organization: UUID, capability: str, justification: str) -> str:
+    request_id = uuid4()
+    with runtime_transaction(settings, requester, organization, uuid4()) as connection:
+        connection.execute(
+            text(
+                """
+                INSERT INTO access_requests (organization_id, id, requester_id, capability, justification, status)
+                VALUES (:org, :id, :requester, :capability, :justification, 'pending')
+                """
+            ),
+            {"org": organization, "id": request_id, "requester": requester, "capability": capability, "justification": justification},
+        )
+    return str(request_id)
+
+
+def decide_access_request(settings: Settings, approver: UUID, organization: UUID, request_id: UUID, approve: bool) -> None:
+    with runtime_transaction(settings, approver, organization, uuid4()) as connection:
+        row = connection.execute(
+            text("SELECT requester_id FROM access_requests WHERE id = :id AND organization_id = :org AND status = 'pending'"),
+            {"id": request_id, "org": organization},
+        ).mappings().first()
+        if row is None:
+            raise ValueError("request_missing")
+        if row["requester_id"] == approver:
+            raise ValueError("self_approval")
+        connection.execute(
+            text("UPDATE access_requests SET status = :status, approver_id = :approver WHERE id = :id"),
+            {"status": "approved" if approve else "denied", "approver": approver, "id": request_id},
+        )
+
+
+def issue_service_credential(settings: Settings, actor: UUID, organization: UUID, principal_id: UUID) -> str:
+    secret = secrets.token_urlsafe(32)
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        principal = connection.execute(
+            text("SELECT interactive FROM service_principals WHERE id = :id AND organization_id = :org AND status = 'active'"),
+            {"id": principal_id, "org": organization},
+        ).mappings().first()
+        if principal is None or principal["interactive"]:
+            raise ValueError("principal_invalid")
+        connection.execute(
+            text(
+                """
+                INSERT INTO service_credentials (organization_id, id, principal_id, verifier_hash, expires_at)
+                VALUES (:org, :id, :principal, :verifier, now() + interval '1 day')
+                """
+            ),
+            {"org": organization, "id": uuid4(), "principal": principal_id, "verifier": _hash(secret)},
+        )
+    return secret
+
+
+def open_privileged_recovery(settings: Settings, initiator: UUID, organization: UUID, subject: UUID, evidence: str, approver: UUID | None) -> str:
+    if initiator == subject or approver == subject:
+        raise ValueError("self_recovery")
+    recovery_id = uuid4()
+    with runtime_transaction(settings, initiator, organization, uuid4()) as connection:
+        connection.execute(
+            text(
+                """
+                INSERT INTO privileged_recoveries (
+                  organization_id, id, subject_account, initiator_account, approver_account, status, not_before, evidence_note
+                ) VALUES (
+                  :org, :id, :subject, :initiator, :approver, 'waiting', now() + interval '15 minutes', :evidence
+                )
+                """
+            ),
+            {"org": organization, "id": recovery_id, "subject": subject, "initiator": initiator, "approver": approver, "evidence": evidence},
+        )
+    return str(recovery_id)
 
 
 def revoke(settings: Settings, account: UUID, organization: UUID, session_id: UUID, reason: str) -> None:

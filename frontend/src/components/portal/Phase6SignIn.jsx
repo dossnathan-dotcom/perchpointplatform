@@ -5,6 +5,7 @@ export function Phase6SignIn() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [session, setSession] = useState(null);
+  const [sessions, setSessions] = useState([]);
   const [busy, setBusy] = useState(false);
 
   async function submit(event) {
@@ -25,6 +26,9 @@ export function Phase6SignIn() {
         return;
       }
       setSession(body);
+      const current = await fetch("/api/v2/me/sessions", { credentials: "include" });
+      const listed = await current.json();
+      setSessions(current.ok ? listed.sessions : []);
       setMessage("Signed in.");
     } catch {
       setMessage("The identity service is unavailable. Try again.");
@@ -65,6 +69,7 @@ export function Phase6SignIn() {
       {session ? (
         <section className="mt-6" aria-label="Current access">
           <p>Organization context is active. Role: {session.role_name}. Assurance: {session.assurance}.</p>
+          <p>{sessions.length} session{sessions.length === 1 ? "" : "s"} on this account.</p>
           <button className="mt-3 rounded border border-linen/40 px-4 py-2" type="button" onClick={signOut}>Sign out</button>
         </section>
       ) : null}

@@ -33,18 +33,25 @@ from .phase6_identity import (
     COOKIE,
     CSRF_HEADER,
     accept_invitation,
+    create_access_request,
     create_delegation,
     create_invitation,
     csrf_ok,
+    decide_access_request,
     issue_recovery_codes,
+    issue_service_credential,
+    list_sessions,
     mark_factor_confirmed,
+    open_privileged_recovery,
     open_session,
     refresh_token_for,
     remember_factor,
     resolve,
     revoke,
+    revoke_others,
+    select_context,
 )
-from .phase6_policy import approval_authority, authorize, password_problem
+from .phase6_policy import approval_authority, authorize, password_problem, recovery_participants
 from .phase6_provider import ProviderError, complete_recovery, confirm_factor, enroll_factor, password_grant, refresh_grant, request_recovery
 from .settings import Phase2ConfigurationError, Settings
 
@@ -973,6 +980,106 @@ def purchase_authority(body: PurchaseBody, request: Request, settings: Settings 
         "policy_version": "phase6-1",
         "synthetic": True,
     }
+
+
+class AccessRequestBody(BaseModel):
+    capability: str = Field(min_length=3, max_length=80)
+    justification: str = Field(min_length=3, max_length=500)
+
+
+class AccessDecisionBody(BaseModel):
+    approve: bool
+
+
+class ContextBody(BaseModel):
+    membership_id: UUID
+
+
+class RecoveryOpenBody(BaseModel):
+    subject_account: UUID
+    evidence: str = Field(min_length=3, max_length=500)
+    approver_account: UUID | None = None
+
+
+@router.get("/me/sessions")
+def sessions(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    return {"sessions": list_sessions(settings, session["id"], session["organization_id"]), "synthetic": True}
+
+
+@router.post("/me/sessions/revoke-others")
+def revoke_other_sessions(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    return {"revoked": revoke_others(settings, session["id"], session["organization_id"], session["session_id"]), "synthetic": True}
+
+
+@router.post("/me/context")
+def switch_context(body: ContextBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        selected = select_context(settings, session["id"], session["organization_id"], session["session_id"], body.membership_id)
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "That access context is not available.", "retryable": False}) from exc
+    return {**selected, "synthetic": True}
+
+
+@router.post("/access/requests")
+def request_access(body: AccessRequestBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    return {"request_id": create_access_request(settings, session["id"], session["organization_id"], body.capability, body.justification), "synthetic": True}
+
+
+@router.post("/access/requests/{request_id}")
+def review_access(request_id: UUID, body: AccessDecisionBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        decide_access_request(settings, session["id"], session["organization_id"], request_id, body.approve)
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "This access request cannot be decided by you.", "retryable": False}) from exc
+    return {"decided": True, "synthetic": True}
+
+
+@router.post("/access/service-credentials/{principal_id}")
+def service_credential(principal_id: UUID, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": session["id"]}).mappings().first()
+    decision = authorize(capability="service.manage", role_name=membership["role_name"] if membership else "", actor_id=str(session["id"]), assurance=session["assurance"])
+    if not decision.allowed:
+        raise HTTPException(403, {"code": decision.reason, "message": "You cannot issue a service credential.", "retryable": False})
+    try:
+        secret = issue_service_credential(settings, session["id"], session["organization_id"], principal_id)
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "This service principal cannot receive a credential.", "retryable": False}) from exc
+    return {"credential": secret, "shown_once": True, "synthetic": True}
+
+
+@router.post("/access/recoveries")
+def open_recovery(body: RecoveryOpenBody, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    if body.subject_account == session["id"]:
+        raise HTTPException(409, {"code": "self_recovery", "message": "You cannot recover your own privileged account.", "retryable": False})
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        initiator = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": session["id"]}).mappings().first()
+        subject = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": body.subject_account}).mappings().first()
+        approver = None
+        if body.approver_account is not None:
+            approver = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": body.approver_account}).mappings().first()
+    verdict = recovery_participants(
+        subject["role_name"] if subject else "",
+        initiator["role_name"] if initiator else "",
+        approver["role_name"] if approver else None,
+    )
+    if verdict != "allowed":
+        raise HTTPException(409, {"code": verdict, "message": "This recovery needs the required second person.", "retryable": False})
+    recovery_id = open_privileged_recovery(settings, session["id"], session["organization_id"], body.subject_account, body.evidence, body.approver_account)
+    return {"recovery_id": recovery_id, "status": "waiting", "synthetic": True}
 
 
 def create_app():

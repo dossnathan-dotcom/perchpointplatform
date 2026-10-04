@@ -57,6 +57,12 @@ def password_problem(password: str) -> str | None:
     return None
 
 
+OWNER_RESERVED = frozenset({
+    "approval.owner", "legal.adverse", "lease.approve", "eviction.decide", "screening.policy",
+    "writeoff.material", "insurance.claim", "delegation.policy", "production.launch",
+})
+
+
 def approval_authority(amount_minor: int, monthly_rent_minor: int | None, *, capital: bool, emergency: bool) -> str:
     if capital or amount_minor > 120_000 or (monthly_rent_minor is not None and amount_minor > monthly_rent_minor):
         return "owner"
@@ -103,6 +109,18 @@ def authorize(
     if capability not in BUNDLES.get(role_name, frozenset()):
         return Decision(False, "denied", "none", assurance)
     return Decision(True, "allowed", role_name, assurance)
+
+
+def recovery_participants(subject_role: str, initiator_role: str, approver_role: str | None) -> str:
+    if subject_role == "owner" and initiator_role == "platform_admin":
+        return "allowed"
+    if subject_role == "platform_admin" and initiator_role == "owner":
+        return "allowed"
+    if subject_role == "leasing" and initiator_role == "platform_admin" and approver_role == "owner":
+        return "allowed"
+    if subject_role in {"owner", "platform_admin", "leasing"}:
+        return "supervised_recovery_required"
+    return "allowed"
 
 
 def hotp(secret: bytes, counter: int) -> str:
