@@ -244,6 +244,10 @@ def _query_samples(settings: Settings, actor: str, organization: str, token_hash
                 text("UPDATE memberships SET ended_at = now() - interval '1 second' WHERE account_id = :actor"),
                 {"actor": actor},
             )
+            connection.execute(
+                text("UPDATE worker_assignments SET ends_at = now() - interval '1 second' WHERE worker_account_id = :actor"),
+                {"actor": actor},
+            )
         check = engine_for(runtime_url)
         started = time.perf_counter()
         with check.begin() as connection:
@@ -257,6 +261,10 @@ def _query_samples(settings: Settings, actor: str, organization: str, token_hash
         with admin.begin() as connection:
             connection.execute(
                 text("UPDATE memberships SET ended_at = NULL WHERE account_id = :actor"),
+                {"actor": actor},
+            )
+            connection.execute(
+                text("UPDATE worker_assignments SET ends_at = now() + interval '1 day' WHERE worker_account_id = :actor"),
                 {"actor": actor},
             )
     for _ in range(20):
