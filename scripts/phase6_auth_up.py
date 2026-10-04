@@ -52,11 +52,32 @@ def main() -> None:
         try:
             with urllib.request.urlopen("http://127.0.0.1:9999/health", timeout=2) as response:
                 if response.status == 200:
+                    _provision(settings)
                     print("phase6 auth ready")
                     return
         except Exception:
             time.sleep(2)
     raise SystemExit("local auth service did not become ready")
+
+
+def _provision(settings: Settings) -> None:
+    from perchpoint.phase6_provider import ProviderError, create_user
+
+    emails = (
+        "ann.synthetic@example.com",
+        "nathan.synthetic@example.com",
+        "faruk.synthetic@example.com",
+    )
+    for email in emails:
+        try:
+            create_user(email, settings.dev_password)
+        except ProviderError as exc:
+            if exc.code != "authentication_failed":
+                raise
+    auth_engine = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_auth")
+    with auth_engine.begin() as connection:
+        connection.execute(text("UPDATE auth.users SET aud = 'authenticated', role = 'authenticated' WHERE aud IS NULL OR aud = ''"))
+    auth_engine.dispose()
 
 
 if __name__ == "__main__":

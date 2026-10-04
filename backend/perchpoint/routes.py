@@ -925,7 +925,9 @@ def reset_password(body: ResetBody, settings: Settings = Depends(settings)):
 def recovery_codes(request: Request, settings: Settings = Depends(settings)):
     session = _session_actor(request, settings)
     _require_csrf(request, session)
-    return {"codes": issue_recovery_codes(settings, session["id"], session["organization_id"]), "synthetic": True}
+    codes = issue_recovery_codes(settings, session["id"], session["organization_id"])
+    revoke_others(settings, session["id"], session["organization_id"], session["session_id"])
+    return {"codes": codes, "synthetic": True}
 
 
 @router.post("/access/delegations")

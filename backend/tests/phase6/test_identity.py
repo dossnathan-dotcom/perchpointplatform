@@ -6,7 +6,8 @@ from sqlalchemy import create_engine, text as sql_text
 
 from perchpoint.db import runtime_transaction
 from perchpoint.phase6_policy import approval_authority, authorize, password_problem, recovery_participants, totp, totp_matches
-from perchpoint.phase6_provider import ProviderError, create_user
+from foundation.seeds import sid
+from perchpoint.phase6_provider import ProviderError, create_user, recovery_link
 from perchpoint.routes import create_app
 from perchpoint.settings import Settings
 
@@ -196,6 +197,85 @@ def test_sessions_access_requests_and_self_recovery_are_enforced():
     forged = client.post("/api/v2/me/context", headers=csrf, json={"membership_id": str(uuid4())})
     assert forged.status_code == 409
     assert forged.json()["detail"]["code"] == "context_invalid"
+
+
+def _account(email: str, role_name: str, organization_id: str) -> None:
+    settings = Settings.load()
+    admin = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with admin.begin() as connection:
+        connection.execute(
+            sql_text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, 'provider-owned') ON CONFLICT (email) DO NOTHING"),
+            {"id": uuid4(), "email": email},
+        )
+        account = connection.execute(sql_text("SELECT id FROM accounts WHERE email = :email"), {"email": email}).scalar()
+        connection.execute(
+            sql_text(
+                """
+                INSERT INTO memberships (id, account_id, organization_id, role_name, effective_at)
+                VALUES (:id, :account, :org, :role, '1999-01-01T00:00:00Z')
+                ON CONFLICT (id) DO NOTHING
+                """
+            ),
+            {"id": uuid4(), "account": account, "org": organization_id, "role": role_name},
+        )
+    admin.dispose()
+    create_user(email, settings.dev_password)
+
+
+def test_password_reset_does_not_sign_in_and_rejects_replay():
+    _provider_user("ann.synthetic@example.com")
+    client = TestClient(create_app())
+    signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    email = f"reset.{uuid4().hex[:8]}@example.com"
+    _account(email, "resident", signed.json()["organization_id"])
+    fresh = TestClient(create_app())
+    assert fresh.post("/api/v2/auth/sign-in", json={"email": email, "password": Settings.load().dev_password}).status_code == 200
+    unknown = fresh.post("/api/v2/auth/password/reset-request", json={"email": "nobody.synthetic@example.com"})
+    known = fresh.post("/api/v2/auth/password/reset-request", json={"email": email})
+    assert unknown.status_code == known.status_code == 200
+    assert unknown.json()["message"] == known.json()["message"]
+    token = recovery_link(email)
+    reset = fresh.post("/api/v2/auth/password/reset", json={"token": token, "password": "synthetic-reset-passphrase"})
+    assert reset.status_code == 200, reset.text
+    assert reset.json()["signed_in"] is False
+    assert "pp_session" not in reset.cookies
+    assert fresh.get("/api/v2/auth/me").status_code == 401
+    replay = fresh.post("/api/v2/auth/password/reset", json={"token": token, "password": "synthetic-reset-passphrase"})
+    assert replay.status_code == 400
+    assert replay.json()["detail"]["code"] == "reset_invalid"
+
+
+def test_service_credential_is_shown_once_and_hidden_from_operations():
+    _provider_user("nathan.synthetic@example.com")
+    _provider_user("ann.synthetic@example.com")
+    client = TestClient(create_app())
+    nathan = client.post("/api/v2/auth/sign-in", json={"email": "nathan.synthetic@example.com", "password": Settings.load().dev_password})
+    assert nathan.status_code == 200, nathan.text
+    principal = sid("service-principal-worker")
+    admin = create_engine(Settings.load().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with admin.begin() as connection:
+        connection.execute(
+            sql_text(
+                """
+                INSERT INTO service_principals (organization_id, id, name, status, interactive)
+                VALUES (:org, :id, 'synthetic-worker', 'active', false)
+                ON CONFLICT (organization_id, id) DO NOTHING
+                """
+            ),
+            {"org": nathan.json()["organization_id"], "id": principal},
+        )
+    admin.dispose()
+    issued = client.post(f"/api/v2/access/service-credentials/{principal}", headers={"x-perchpoint-csrf": nathan.json()["csrf"]})
+    assert issued.status_code == 200, issued.text
+    assert issued.json()["shown_once"] is True
+    assert len(issued.json()["credential"]) >= 20
+    operations = TestClient(create_app())
+    ann = operations.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    denied = operations.post(
+        f"/api/v2/access/service-credentials/{sid('service-principal-worker')}",
+        headers={"x-perchpoint-csrf": ann.json()["csrf"]},
+    )
+    assert denied.status_code == 403
 
 
 def test_runtime_role_without_actor_context_sees_no_identity_rows():

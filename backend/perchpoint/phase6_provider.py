@@ -166,14 +166,14 @@ def request_recovery(email: str) -> None:
 
 def recovery_link(email: str) -> str:
     payload = _request("POST", "/admin/generate_link", {"type": "recovery", "email": email}, admin_token())
-    link = payload.get("action_link")
-    if not isinstance(link, str) or "token=" not in link:
+    hashed = payload.get("hashed_token")
+    if not isinstance(hashed, str) or not hashed:
         raise ProviderError("provider_unavailable")
-    return link.split("token=", 1)[1].split("&", 1)[0]
+    return hashed
 
 
 def complete_recovery(token: str, password: str) -> str:
-    verified = _request("POST", "/verify", {"type": "recovery", "token": token})
+    verified = _request("POST", "/verify", {"type": "recovery", "token_hash": token})
     session = _session_from(verified)
     _request("PUT", "/user", {"password": password}, session.access_token)
     return session.email
