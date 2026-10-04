@@ -247,6 +247,71 @@ def create_delegation(
     return str(delegation_id)
 
 
+def expire_invitation(settings: Settings, actor: UUID, organization: UUID, invitation_id: UUID) -> None:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        updated = connection.execute(
+            text(
+                """
+                UPDATE identity_invitations
+                SET created_at = now() - interval '2 minutes',
+                    expires_at = now() - interval '1 minute'
+                WHERE id = :id AND organization_id = :org AND inviter_id = :actor AND accepted_at IS NULL AND revoked_at IS NULL
+                """
+            ),
+            {"id": invitation_id, "org": organization, "actor": actor},
+        ).rowcount
+    if not updated:
+        raise ValueError("invitation_invalid")
+
+
+def revoke_invitation(settings: Settings, actor: UUID, organization: UUID, invitation_id: UUID) -> None:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        updated = connection.execute(
+            text(
+                """
+                UPDATE identity_invitations
+                SET revoked_at = now()
+                WHERE id = :id AND organization_id = :org AND inviter_id = :actor AND accepted_at IS NULL AND revoked_at IS NULL
+                """
+            ),
+            {"id": invitation_id, "org": organization, "actor": actor},
+        ).rowcount
+    if not updated:
+        raise ValueError("invitation_invalid")
+
+
+def revoke_delegation(settings: Settings, actor: UUID, organization: UUID, delegation_id: UUID) -> None:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        updated = connection.execute(
+            text(
+                """
+                UPDATE delegations
+                SET status = 'revoked', revoked_at = now()
+                WHERE id = :id AND organization_id = :org AND grantor_id = :actor AND status = 'active'
+                """
+            ),
+            {"id": delegation_id, "org": organization, "actor": actor},
+        ).rowcount
+    if not updated:
+        raise ValueError("delegation_invalid")
+
+
+def expire_delegation(settings: Settings, actor: UUID, organization: UUID, delegation_id: UUID) -> None:
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        updated = connection.execute(
+            text(
+                """
+                UPDATE delegations
+                SET status = 'expired', ends_at = now() - interval '1 minute'
+                WHERE id = :id AND organization_id = :org AND grantor_id = :actor AND status = 'active'
+                """
+            ),
+            {"id": delegation_id, "org": organization, "actor": actor},
+        ).rowcount
+    if not updated:
+        raise ValueError("delegation_invalid")
+
+
 def list_sessions(settings: Settings, account: UUID, organization: UUID) -> list[dict]:
     with runtime_transaction(settings, account, organization, uuid4()) as connection:
         rows = connection.execute(

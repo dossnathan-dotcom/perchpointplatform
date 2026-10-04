@@ -38,6 +38,8 @@ from .phase6_identity import (
     create_invitation,
     csrf_ok,
     decide_access_request,
+    expire_delegation,
+    expire_invitation,
     issue_recovery_codes,
     issue_service_credential,
     list_sessions,
@@ -48,6 +50,8 @@ from .phase6_identity import (
     remember_factor,
     resolve,
     revoke,
+    revoke_delegation,
+    revoke_invitation,
     revoke_others,
     select_context,
 )
@@ -145,14 +149,17 @@ def settings() -> Settings:
         raise HTTPException(503, str(exc)) from exc
 
 
-def actor(authorization: str | None = Header(default=None), settings: Settings = Depends(settings)) -> dict:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(401, "Authentication required")
-    try:
-        payload = jwt.decode(authorization.removeprefix("Bearer "), settings.jwt_secret, algorithms=["HS256"])
-        return {"id": UUID(payload["sub"]), "organization_id": UUID(payload["org"])}
-    except Exception as exc:
-        raise HTTPException(401, "Authentication required") from exc
+def actor(request: Request, authorization: str | None = Header(default=None), settings: Settings = Depends(settings)) -> dict:
+    session = resolve(settings, request.cookies.get(COOKIE))
+    if session and session.get("status") == "active":
+        return {"id": session["id"], "organization_id": session["organization_id"]}
+    if os.environ.get("PHASE6_ALLOW_DEV_JWT") == "1" and authorization and authorization.startswith("Bearer "):
+        try:
+            payload = jwt.decode(authorization.removeprefix("Bearer "), settings.jwt_secret, algorithms=["HS256"])
+            return {"id": UUID(payload["sub"]), "organization_id": UUID(payload["org"])}
+        except Exception as exc:
+            raise HTTPException(401, "Authentication required") from exc
+    raise HTTPException(401, "Authentication required")
 
 
 @router.post("/session")
@@ -1082,6 +1089,77 @@ def open_recovery(body: RecoveryOpenBody, request: Request, settings: Settings =
         raise HTTPException(409, {"code": verdict, "message": "This recovery needs the required second person.", "retryable": False})
     recovery_id = open_privileged_recovery(settings, session["id"], session["organization_id"], body.subject_account, body.evidence, body.approver_account)
     return {"recovery_id": recovery_id, "status": "waiting", "synthetic": True}
+
+
+@router.post("/auth/invitations/{invitation_id}/revoke")
+def revoke_invite(invitation_id: UUID, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        revoke_invitation(settings, session["id"], session["organization_id"], invitation_id)
+    except ValueError as exc:
+        raise HTTPException(400, {"code": str(exc), "message": "This invitation is no longer valid.", "retryable": False}) from exc
+    return {"revoked": True, "synthetic": True}
+
+
+@router.post("/auth/invitations/{invitation_id}/expire")
+def expire_invite(invitation_id: UUID, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        expire_invitation(settings, session["id"], session["organization_id"], invitation_id)
+    except ValueError as exc:
+        raise HTTPException(400, {"code": str(exc), "message": "This invitation is no longer valid.", "retryable": False}) from exc
+    return {"expired": True, "synthetic": True}
+
+
+@router.post("/access/delegations/{delegation_id}/revoke")
+def revoke_grant(delegation_id: UUID, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        revoke_delegation(settings, session["id"], session["organization_id"], delegation_id)
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "This delegation cannot be revoked.", "retryable": False}) from exc
+    return {"revoked": True, "synthetic": True}
+
+
+@router.post("/access/delegations/{delegation_id}/expire")
+def expire_grant(delegation_id: UUID, request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _require_csrf(request, session)
+    try:
+        expire_delegation(settings, session["id"], session["organization_id"], delegation_id)
+    except ValueError as exc:
+        raise HTTPException(409, {"code": str(exc), "message": "This delegation cannot be expired.", "retryable": False}) from exc
+    return {"expired": True, "synthetic": True}
+
+
+@router.get("/households")
+def households(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        rows = connection.execute(text("SELECT id, label FROM households ORDER BY label")).mappings().all()
+    return {"households": [{"id": str(row["id"]), "label": row["label"]} for row in rows], "synthetic": True}
+
+
+@router.get("/access/users")
+def access_users(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        rows = connection.execute(
+            text(
+                """
+                SELECT a.id AS account_id, a.email, m.role_name
+                FROM memberships m
+                JOIN accounts a ON a.id = m.account_id
+                WHERE m.organization_id = :org AND m.effective_at <= now() AND (m.ended_at IS NULL OR m.ended_at > now())
+                ORDER BY a.email
+                """
+            ),
+            {"org": session["organization_id"]},
+        ).mappings().all()
+    return {"users": [{"account_id": str(row["account_id"]), "email": row["email"], "role_name": row["role_name"]} for row in rows], "synthetic": True}
 
 
 def create_app():
