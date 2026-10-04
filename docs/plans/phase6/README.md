@@ -6,7 +6,7 @@ The development JWT is not part of supported interactive startup. Tests may set 
 
 ## Status
 
-Implementation is in progress on `cursor/phase-06-identity-access`. Local technical acceptance is not granted. Hosted Supabase, stakeholder acceptance, and production remain separate and are not granted.
+Password verification and TOTP enrollment go through local GoTrue. PerchPoint keeps the opaque session and business authorization. Local technical acceptance is not granted. Hosted Supabase, stakeholder acceptance, and production remain separate and are not granted.
 
 ## Decisions
 

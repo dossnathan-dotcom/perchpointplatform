@@ -1,0 +1,37 @@
+# Local identity services for Phase 6. They do not replace the Phase 3 stack.
+name: perchpoint-phase6
+services:
+  auth:
+    image: supabase/gotrue@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: "9999"
+      API_EXTERNAL_URL: http://127.0.0.1:9999
+      GOTRUE_SITE_URL: http://127.0.0.1:3000
+      GOTRUE_URI_ALLOW_LIST: http://127.0.0.1:3000,http://127.0.0.1:3010
+      GOTRUE_DB_DRIVER: postgres
+      DATABASE_URL: ${PHASE6_AUTH_DATABASE_URL}
+      GOTRUE_JWT_SECRET: ${PHASE6_PROVIDER_JWT_SECRET}
+      GOTRUE_JWT_ISSUER: perchpoint-local-auth
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_SMTP_HOST: mailpit
+      GOTRUE_SMTP_PORT: "1025"
+      GOTRUE_SMTP_ADMIN_EMAIL: noreply@perchpoint.local
+      GOTRUE_MAILER_EXTERNAL_HOSTS: mailpit
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:9999:9999"
+    depends_on:
+      - mailpit
+  mailpit:
+    image: axllent/mailpit@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"

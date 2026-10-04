@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import os
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -13,7 +14,6 @@ from cryptography.fernet import Fernet
 from sqlalchemy import text
 
 from .db import runtime_transaction
-from .phase6_policy import totp_matches
 from .settings import Settings
 
 COOKIE = "pp_session"
@@ -21,7 +21,8 @@ CSRF_HEADER = "x-perchpoint-csrf"
 
 
 def _hash(value: str) -> str:
-    return hashlib.sha256(value.encode()).hexdigest()
+    key = os.environ.get("PHASE6_SESSION_KEY", "local-only-not-production-session-key").encode()
+    return hmac.new(key, value.encode(), hashlib.sha256).hexdigest()
 
 
 def _limits(role_name: str) -> tuple[timedelta, timedelta]:
@@ -32,17 +33,44 @@ def _limits(role_name: str) -> tuple[timedelta, timedelta]:
     return timedelta(hours=1), timedelta(hours=24)
 
 
-def open_session(settings: Settings, account: UUID, organization: UUID, role_name: str, subject: str, assurance: str = "aal1") -> dict:
+def open_session(
+    settings: Settings,
+    account: UUID,
+    organization: UUID,
+    role_name: str,
+    subject: str,
+    assurance: str = "aal1",
+    *,
+    refresh_token: str | None = None,
+    provider_session_id: str | None = None,
+) -> dict:
     token = secrets.token_urlsafe(32)
     csrf = secrets.token_urlsafe(32)
     idle, absolute = _limits(role_name)
     now = datetime.now(timezone.utc)
+    workforce = role_name not in {"applicant", "resident", "household_adult", "guarantor"}
+    limit = 3 if workforce else 5
     with runtime_transaction(settings, account, organization, uuid4()) as connection:
+        existing = connection.execute(
+            text(
+                """
+                SELECT s.id FROM identity_sessions s
+                JOIN identity_accounts a ON a.id = s.identity_id
+                WHERE a.account_id = :account AND s.revoked_at IS NULL AND s.absolute_expires_at > now()
+                ORDER BY s.created_at ASC
+                """
+            ),
+            {"account": account},
+        ).scalars().all()
+        overflow = list(existing)[0 : max(0, len(existing) + 1 - limit)]
+        for old in overflow:
+            connection.execute(text("UPDATE identity_sessions SET revoked_at = now(), revoke_reason = 'concurrent_limit' WHERE id = :id"), {"id": old})
         session_id = connection.execute(
             text(
                 """
-                SELECT perchpoint.record_session(
-                  :account, :subject, :org, :token_hash, :csrf_hash, :assurance, :device, :idle, :absolute
+                SELECT perchpoint.record_provider_session(
+                  :account, :subject, :org, :token_hash, :csrf_hash, :assurance, :device,
+                  :idle, :absolute, :idle_seconds, :provider_session, :refresh_ciphertext
                 )
                 """
             ),
@@ -56,6 +84,9 @@ def open_session(settings: Settings, account: UUID, organization: UUID, role_nam
                 "device": "synthetic-browser",
                 "idle": now + idle,
                 "absolute": now + absolute,
+                "idle_seconds": int(idle.total_seconds()),
+                "provider_session": provider_session_id,
+                "refresh_ciphertext": None if refresh_token is None else _fernet().encrypt(refresh_token.encode()).decode(),
             },
         ).scalar()
     return {"session_id": str(session_id), "token": token, "csrf": csrf, "assurance": assurance}
@@ -78,7 +109,16 @@ def resolve(settings: Settings, token: str | None) -> dict | None:
         "assurance": row["assurance"],
         "reauthenticated_at": row["reauthenticated_at"],
         "csrf_hash": row["csrf_hash"],
+        "status": row["status"],
+        "refresh_ciphertext": row["refresh_ciphertext"],
     }
+
+
+def refresh_token_for(session: dict) -> str | None:
+    raw = session.get("refresh_ciphertext")
+    if not raw:
+        return None
+    return _fernet().decrypt(str(raw).encode()).decode()
 
 
 def csrf_ok(session: dict, presented: str | None) -> bool:
@@ -127,35 +167,27 @@ def accept_invitation(settings: Settings, token: str) -> bool:
         return bool(connection.execute(text("SELECT perchpoint.accept_invitation(:token)"), {"token": _hash(token)}).scalar())
 
 
-def enroll_totp(settings: Settings, account: UUID, organization: UUID) -> dict:
-    secret = secrets.token_bytes(20)
-    factor_id = uuid4()
+def remember_factor(settings: Settings, account: UUID, organization: UUID, provider_factor_id: str) -> None:
     with runtime_transaction(settings, account, organization, uuid4()) as connection:
         identity = connection.execute(text("SELECT id FROM identity_accounts WHERE account_id = :account"), {"account": account}).scalar()
         connection.execute(
             text(
                 """
-                INSERT INTO identity_factors (id, identity_id, kind, secret_ciphertext)
-                VALUES (:id, :identity, 'totp', :secret)
+                INSERT INTO identity_factors (id, identity_id, kind, provider_factor_id)
+                VALUES (:id, :identity, 'totp', :provider_factor)
                 """
             ),
-            {"id": factor_id, "identity": identity, "secret": _fernet().encrypt(secret).decode()},
+            {"id": uuid4(), "identity": identity, "provider_factor": provider_factor_id},
         )
-    encoded = base64.b32encode(secret).decode().rstrip("=")
-    return {"factor_id": str(factor_id), "secret": encoded, "otpauth": f"otpauth://totp/PerchPoint:{account}?secret={encoded}&issuer=PerchPoint"}
 
 
-def confirm_totp(settings: Settings, account: UUID, organization: UUID, factor_id: UUID, code: str) -> bool:
+def mark_factor_confirmed(settings: Settings, account: UUID, organization: UUID, provider_factor_id: str) -> None:
     with runtime_transaction(settings, account, organization, uuid4()) as connection:
-        row = connection.execute(
-            text("SELECT secret_ciphertext FROM identity_factors WHERE id = :id AND confirmed_at IS NULL AND removed_at IS NULL"),
-            {"id": factor_id},
-        ).scalar()
-        if not row or not totp_matches(_fernet().decrypt(row.encode()), code):
-            return False
-        connection.execute(text("UPDATE identity_factors SET confirmed_at = now() WHERE id = :id"), {"id": factor_id})
+        connection.execute(
+            text("UPDATE identity_factors SET confirmed_at = now() WHERE provider_factor_id = :factor AND confirmed_at IS NULL"),
+            {"factor": provider_factor_id},
+        )
         connection.execute(text("UPDATE identity_accounts SET assurance = 'aal2' WHERE account_id = :account"), {"account": account})
-    return True
 
 
 def issue_recovery_codes(settings: Settings, account: UUID, organization: UUID) -> list[str]:

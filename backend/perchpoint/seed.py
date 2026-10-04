@@ -1,12 +1,15 @@
 """Synthetic seed. Runs as the local superuser because forced RLS blocks unscoped inserts."""
 from __future__ import annotations
 
+import uuid
+
 import bcrypt
 from sqlalchemy import text
 
 from foundation.seeds import portfolio, sid
 
 from .db import engine_for
+from .phase6_policy import BUNDLES
 from .settings import Settings
 
 
@@ -103,6 +106,16 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
             ("resident.synthetic@example.com", sid("account-0"), "resident", org, None),
             ("isolation.synthetic@example.com", sid("account-phase2-isolation"), "platform_admin", sid("organization-isolation"), None),
             ("expired.synthetic@example.com", sid("account-phase2-expired"), "leasing", org, "2001-01-01T00:00:00Z"),
+            ("faruk.synthetic@example.com", sid("account-phase6-faruk"), "owner", org, None),
+            ("accounting.synthetic@example.com", sid("account-phase6-accounting"), "accounting", org, None),
+            ("maintenance.synthetic@example.com", sid("account-phase6-maintenance"), "maintenance", org, None),
+            ("vendor.admin.synthetic@example.com", sid("account-phase6-vendor-admin"), "vendor_admin", org, None),
+            ("technician.synthetic@example.com", sid("account-phase6-technician"), "technician", org, None),
+            ("cleaner.synthetic@example.com", sid("account-phase6-cleaner"), "cleaner", org, None),
+            ("applicant.synthetic@example.com", sid("account-phase6-applicant"), "applicant", org, None),
+            ("guarantor.synthetic@example.com", sid("account-phase6-guarantor"), "guarantor", org, None),
+            ("former.synthetic@example.com", sid("account-phase6-former"), "resident", org, "2001-01-01T00:00:00Z"),
+            ("suspended.synthetic@example.com", sid("account-phase6-suspended"), "leasing", org, None),
         ]
         for email, account_id, role, member_org, ended in users:
             connection.execute(
@@ -122,6 +135,44 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
         connection.execute(
             text("INSERT INTO households (organization_id, id, label) VALUES (:org, :id, :label) ON CONFLICT (organization_id, id) DO NOTHING"),
             {"org": org, "id": sid("household-resident"), "label": "Example resident household"},
+        )
+        nathan = sid("account-phase2-nathan")
+        connection.execute(
+            text(
+                """
+                INSERT INTO memberships (id, account_id, organization_id, role_name, effective_at, ended_at)
+                VALUES (:id, :account, :org, 'leasing', '1998-01-01T00:00:00Z', NULL)
+                ON CONFLICT (id) DO NOTHING
+                """
+            ),
+            {"id": sid("membership-nathan-operations"), "account": nathan, "org": org},
+        )
+        codes = set().union(*BUNDLES.values()) | {"platform.secrets", "platform.database", "platform.deploy", "audit.delete", "listing.public", "inquiry.submit"}
+        for code in sorted(codes):
+            connection.execute(
+                text("INSERT INTO capabilities (code, family, description) VALUES (:code, :family, :description) ON CONFLICT (code) DO NOTHING"),
+                {"code": code, "family": code.split(".", 1)[0], "description": code},
+            )
+        for name, grants in BUNDLES.items():
+            bundle = uuid.uuid5(uuid.NAMESPACE_URL, "perchpoint:role:" + name)
+            connection.execute(
+                text("INSERT INTO role_bundles (id, name, version) VALUES (:id, :name, 1) ON CONFLICT (id) DO NOTHING"),
+                {"id": bundle, "name": name},
+            )
+            for capability in grants:
+                connection.execute(
+                    text("INSERT INTO role_bundle_capabilities (bundle_id, capability) VALUES (:bundle, :capability) ON CONFLICT DO NOTHING"),
+                    {"bundle": bundle, "capability": capability},
+                )
+        connection.execute(
+            text(
+                """
+                INSERT INTO service_principals (organization_id, id, name, status, interactive)
+                VALUES (:org, :id, 'synthetic-worker', 'active', false)
+                ON CONFLICT (organization_id, id) DO NOTHING
+                """
+            ),
+            {"org": org, "id": sid("service-principal-worker")},
         )
     admin.dispose()
 

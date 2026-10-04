@@ -69,6 +69,11 @@ class Settings:
             session_key = os.environ.get("PHASE6_SESSION_KEY", "")
             if not session_key or any(marker in session_key.lower() for marker in DISPOSABLE_MARKERS):
                 reasons.append("session encryption key")
+            provider_secret = os.environ.get("PHASE6_PROVIDER_JWT_SECRET", "")
+            if not provider_secret or any(marker in provider_secret.lower() for marker in DISPOSABLE_MARKERS):
+                reasons.append("identity provider secret")
+            if not os.environ.get("PHASE6_AUTH_URL", ""):
+                reasons.append("identity provider")
             if reasons:
                 raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":

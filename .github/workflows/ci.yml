@@ -85,6 +85,7 @@ jobs:
         working-directory: backend
       - run: python -m perchpoint.seed
         working-directory: backend
+      - run: python scripts/phase6_auth_up.py
       - run: python -m pytest -q --tb=line
         working-directory: backend
   frontend:
@@ -155,6 +156,7 @@ jobs:
         working-directory: backend
       - run: python -m perchpoint.seed
         working-directory: backend
+      - run: python scripts/phase6_auth_up.py
       - run: corepack yarn install --frozen-lockfile --non-interactive
         working-directory: frontend
       - run: corepack yarn playwright install --with-deps chromium firefox webkit

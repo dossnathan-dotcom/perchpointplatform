@@ -2,10 +2,20 @@ import base64
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, text
 
 from perchpoint.phase6_policy import approval_authority, authorize, password_problem, totp, totp_matches
+from perchpoint.phase6_provider import ProviderError, create_user
 from perchpoint.routes import create_app
 from perchpoint.settings import Settings
+
+
+def _provider_user(email: str) -> None:
+    try:
+        create_user(email, Settings.load().dev_password)
+    except ProviderError as exc:
+        if exc.code != "authentication_failed":
+            raise
 
 
 def test_password_policy_and_generic_boundaries():
@@ -50,6 +60,7 @@ def test_step_up_and_totp():
 
 
 def test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf():
+    _provider_user("ann.synthetic@example.com")
     client = TestClient(create_app())
     signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
     assert signed.status_code == 200, signed.text
@@ -70,6 +81,7 @@ def test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf():
 
 
 def test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext():
+    _provider_user("ann.synthetic@example.com")
     client = TestClient(create_app())
     signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
     csrf = {"x-perchpoint-csrf": signed.json()["csrf"]}
@@ -84,22 +96,47 @@ def test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext():
     replay = client.post("/api/v2/auth/invitations/accept", json={"token": token})
     assert replay.status_code == 400
     assert replay.json()["detail"]["code"] == "invitation_invalid"
-    enrolled = client.post("/api/v2/auth/mfa/enroll", headers=csrf)
+    fresh = f"mfa.{uuid4().hex[:8]}@example.com"
+    account = uuid4()
+    settings = Settings.load()
+    admin = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with admin.begin() as connection:
+        connection.execute(
+            text("INSERT INTO accounts (id, email, password_hash) VALUES (:id, :email, 'provider-owned')"),
+            {"id": account, "email": fresh},
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO memberships (id, account_id, organization_id, role_name, effective_at)
+                VALUES (:id, :account, :org, 'leasing', '1999-01-01T00:00:00Z')
+                """
+            ),
+            {"id": uuid4(), "account": account, "org": signed.json()["organization_id"]},
+        )
+    admin.dispose()
+    create_user(fresh, settings.dev_password)
+    fresh_client = TestClient(create_app())
+    fresh_signed = fresh_client.post("/api/v2/auth/sign-in", json={"email": fresh, "password": settings.dev_password})
+    assert fresh_signed.status_code == 200, fresh_signed.text
+    csrf = {"x-perchpoint-csrf": fresh_signed.json()["csrf"]}
+    enrolled = fresh_client.post("/api/v2/auth/mfa/enroll", headers=csrf)
     assert enrolled.status_code == 200, enrolled.text
     secret = enrolled.json()["secret"]
     padded = secret + ("=" * ((8 - len(secret) % 8) % 8))
-    confirmed = client.post(
+    confirmed = fresh_client.post(
         "/api/v2/auth/mfa/confirm",
         headers=csrf,
         json={"factor_id": enrolled.json()["factor_id"], "code": totp(base64.b32decode(padded))},
     )
     assert confirmed.status_code == 200, confirmed.text
-    codes = client.post("/api/v2/auth/recovery-codes", headers=csrf)
+    codes = fresh_client.post("/api/v2/auth/recovery-codes", headers={"x-perchpoint-csrf": confirmed.json()["csrf"]})
     assert codes.status_code == 200
     assert len(codes.json()["codes"]) == 10
 
 
 def test_self_delegation_is_rejected_and_a_bounded_grant_is_recorded():
+    _provider_user("ann.synthetic@example.com")
     client = TestClient(create_app())
     signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
     csrf = {"x-perchpoint-csrf": signed.json()["csrf"]}

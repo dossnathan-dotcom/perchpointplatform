@@ -13,6 +13,30 @@ COMMON_PASSWORDS = {
     "hawthornhomes1234",
 }
 
+_OPERATIONS = frozenset({
+    "identity.profile.read", "session.read", "session.revoke", "invitation.create", "membership.read",
+    "access.request", "leasing.coordinate", "maintenance.coordinate", "work.assign", "property.read",
+    "document.read", "search.read", "expense.approve", "resident.read", "household.read", "vendor.admin",
+})
+_RESIDENT = frozenset({"identity.profile.read", "session.read", "session.revoke", "resident.read", "household.read", "document.read", "mfa.enroll"})
+BUNDLES = {
+    "owner": _OPERATIONS | frozenset({"approval.owner", "delegation.grant", "delegation.revoke", "access.approve", "audit.read", "legal.read", "export.create", "accounting.read", "role.manage"}),
+    "platform_admin": frozenset({"identity.profile.read", "session.read", "session.revoke", "membership.read", "membership.grant", "role.manage", "scope.manage", "platform.configure", "security.read", "service.manage", "audit.read", "invitation.create"}),
+    "leasing": _OPERATIONS,
+    "maintenance": frozenset({"identity.profile.read", "session.read", "maintenance.coordinate", "work.assign", "property.read", "document.read"}),
+    "accounting": frozenset({"identity.profile.read", "session.read", "accounting.read", "export.create", "document.read"}),
+    "limited_approver": frozenset({"identity.profile.read", "session.read", "expense.approve"}),
+    "applicant": _RESIDENT,
+    "resident": _RESIDENT,
+    "household_adult": _RESIDENT,
+    "guarantor": frozenset({"identity.profile.read", "session.read", "document.read"}),
+    "vendor_admin": frozenset({"identity.profile.read", "session.read", "vendor.admin", "work.assign", "mfa.enroll"}),
+    "vendor_worker": frozenset({"identity.profile.read", "session.read", "work.assign", "mfa.enroll"}),
+    "technician": frozenset({"identity.profile.read", "session.read", "work.assign", "mfa.enroll"}),
+    "cleaner": frozenset({"identity.profile.read", "session.read", "work.assign", "mfa.enroll"}),
+    "service_principal": frozenset({"search.read"}),
+}
+
 
 @dataclass(frozen=True)
 class Decision:
@@ -76,6 +100,8 @@ def authorize(
         return Decision(False, "owner_is_not_technical_operator", role_name, assurance)
     if role_name == "leasing" and capability in {"platform.secrets", "audit.delete", "platform.deploy"}:
         return Decision(False, "operations_boundary", role_name, assurance)
+    if capability not in BUNDLES.get(role_name, frozenset()):
+        return Decision(False, "denied", "none", assurance)
     return Decision(True, "allowed", role_name, assurance)
 
 

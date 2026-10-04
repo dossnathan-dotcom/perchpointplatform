@@ -33,17 +33,19 @@ from .phase6_identity import (
     COOKIE,
     CSRF_HEADER,
     accept_invitation,
-    confirm_totp,
     create_delegation,
     create_invitation,
     csrf_ok,
-    enroll_totp,
     issue_recovery_codes,
+    mark_factor_confirmed,
     open_session,
+    refresh_token_for,
+    remember_factor,
     resolve,
     revoke,
 )
-from .phase6_policy import approval_authority, authorize
+from .phase6_policy import approval_authority, authorize, password_problem
+from .phase6_provider import ProviderError, complete_recovery, confirm_factor, enroll_factor, password_grant, refresh_grant, request_recovery
 from .settings import Phase2ConfigurationError, Settings
 
 router = APIRouter(prefix="/api/v2")
@@ -727,24 +729,60 @@ class PurchaseBody(BaseModel):
     emergency: bool = False
 
 
+def _session_cookie(response: JSONResponse, token: str) -> None:
+    response.set_cookie(
+        COOKIE,
+        token,
+        httponly=True,
+        samesite="lax",
+        secure=os.environ.get("PHASE3_ENVIRONMENT") in {"staging", "production"},
+        path="/",
+    )
+
+
 def _session_actor(request: Request, settings: Settings) -> dict:
     session = resolve(settings, request.cookies.get(COOKIE))
-    if not session:
+    if not session or session.get("status") != "active":
         raise HTTPException(401, {"code": "authentication_required", "message": "Sign in to continue.", "retryable": True})
     return session
 
 
+def _generic_auth_failure() -> HTTPException:
+    return HTTPException(401, {"code": "authentication_failed", "message": "The email or password is incorrect.", "retryable": True})
+
+
 @router.post("/auth/sign-in")
 def sign_in(body: LoginBody, settings: Settings = Depends(settings)):
+    if password_problem(body.password):
+        raise _generic_auth_failure()
+    try:
+        provider_session = password_grant(body.email, body.password)
+    except ProviderError as exc:
+        if exc.code == "provider_unavailable":
+            raise HTTPException(503, {"code": "provider_unavailable", "message": "Sign-in is temporarily unavailable.", "retryable": True}) from exc
+        with runtime_transaction(settings, None, None, uuid4()) as connection:
+            recent = connection.execute(text("SELECT perchpoint.note_auth_attempt(:key)"), {"key": body.email.lower()}).scalar()
+        if recent is not None and int(recent) > 8:
+            raise HTTPException(429, {"code": "rate_limited", "message": "Wait a few minutes and try again.", "retryable": True}) from exc
+        raise _generic_auth_failure() from exc
     with runtime_transaction(settings, None, None, uuid4()) as connection:
-        row = connection.execute(text("SELECT * FROM perchpoint.login_material(:email)"), {"email": body.email}).mappings().first()
-    if not row or not bcrypt.checkpw(body.password.encode(), row["password_hash"].encode()):
-        raise HTTPException(401, {"code": "authentication_failed", "message": "The email or password is incorrect.", "retryable": True})
-    with runtime_transaction(settings, row["id"], None, uuid4()) as connection:
-        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": row["id"]}).mappings().first()
+        account_id = connection.execute(text("SELECT perchpoint.account_id_for_email(:email)"), {"email": body.email}).scalar()
+    if account_id is None:
+        raise _generic_auth_failure()
+    with runtime_transaction(settings, account_id, None, uuid4()) as connection:
+        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": account_id}).mappings().first()
     if not membership:
         raise HTTPException(403, {"code": "membership_expired", "message": "This account has no current membership.", "retryable": False})
-    opened = open_session(settings, row["id"], membership["organization_id"], membership["role_name"], f"local:{row['id']}")
+    opened = open_session(
+        settings,
+        account_id,
+        membership["organization_id"],
+        membership["role_name"],
+        provider_session.subject,
+        provider_session.assurance,
+        refresh_token=provider_session.refresh_token,
+        provider_session_id=provider_session.provider_session_id,
+    )
     response = JSONResponse(
         {
             "organization_id": str(membership["organization_id"]),
@@ -754,7 +792,7 @@ def sign_in(body: LoginBody, settings: Settings = Depends(settings)):
             "synthetic": True,
         }
     )
-    response.set_cookie(COOKIE, opened["token"], httponly=True, samesite="lax", secure=os.environ.get("PHASE3_ENVIRONMENT") in {"staging", "production"}, path="/")
+    _session_cookie(response, opened["token"])
     return response
 
 
@@ -799,16 +837,81 @@ def accept_invite(body: InvitationAccept, settings: Settings = Depends(settings)
 def mfa_enroll(request: Request, settings: Settings = Depends(settings)):
     session = _session_actor(request, settings)
     _require_csrf(request, session)
-    return {**enroll_totp(settings, session["id"], session["organization_id"]), "synthetic": True}
+    refresh = refresh_token_for(session)
+    if not refresh:
+        raise HTTPException(401, {"code": "authentication_required", "message": "Sign in to continue.", "retryable": True})
+    try:
+        provider_session = refresh_grant(refresh)
+        enrolled = enroll_factor(provider_session.access_token)
+    except ProviderError as exc:
+        raise HTTPException(503, {"code": "provider_unavailable", "message": "Multi-factor setup is temporarily unavailable.", "retryable": True}) from exc
+    remember_factor(settings, session["id"], session["organization_id"], enrolled["factor_id"])
+    return {"factor_id": enrolled["factor_id"], "secret": enrolled["secret"], "otpauth": enrolled["otpauth"], "synthetic": True}
 
 
 @router.post("/auth/mfa/confirm")
 def mfa_confirm(body: TotpConfirm, request: Request, settings: Settings = Depends(settings)):
     session = _session_actor(request, settings)
     _require_csrf(request, session)
-    if not confirm_totp(settings, session["id"], session["organization_id"], body.factor_id, body.code):
-        raise HTTPException(401, {"code": "mfa_invalid", "message": "The authentication code is incorrect.", "retryable": True})
-    return {"assurance": "aal2", "synthetic": True}
+    refresh = refresh_token_for(session)
+    if not refresh:
+        raise HTTPException(401, {"code": "authentication_required", "message": "Sign in to continue.", "retryable": True})
+    try:
+        current = refresh_grant(refresh)
+        confirmed = confirm_factor(current.access_token, str(body.factor_id), body.code)
+    except ProviderError as exc:
+        raise HTTPException(401, {"code": "mfa_invalid", "message": "The authentication code is incorrect.", "retryable": True}) from exc
+    mark_factor_confirmed(settings, session["id"], session["organization_id"], str(body.factor_id))
+    revoke(settings, session["id"], session["organization_id"], session["session_id"], "assurance_elevated")
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        membership = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": session["id"]}).mappings().first()
+    opened = open_session(
+        settings,
+        session["id"],
+        membership["organization_id"],
+        membership["role_name"],
+        confirmed.subject,
+        confirmed.assurance,
+        refresh_token=confirmed.refresh_token,
+        provider_session_id=confirmed.provider_session_id,
+    )
+    response = JSONResponse({"assurance": opened["assurance"], "csrf": opened["csrf"], "synthetic": True})
+    _session_cookie(response, opened["token"])
+    return response
+
+
+class ResetRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=200)
+
+
+class ResetBody(BaseModel):
+    token: str = Field(min_length=8, max_length=500)
+    password: str = Field(min_length=15, max_length=64)
+
+
+@router.post("/auth/password/reset-request")
+def reset_request(body: ResetRequest, settings: Settings = Depends(settings)):
+    try:
+        request_recovery(body.email)
+    except ProviderError as exc:
+        if exc.code == "provider_unavailable":
+            raise HTTPException(503, {"code": "provider_unavailable", "message": "Password reset is temporarily unavailable.", "retryable": True}) from exc
+    return {"accepted": True, "message": "If an account exists, a reset message will be sent.", "synthetic": True}
+
+
+@router.post("/auth/password/reset")
+def reset_password(body: ResetBody, settings: Settings = Depends(settings)):
+    if password_problem(body.password):
+        raise HTTPException(400, {"code": "password_rejected", "message": "Choose a different password.", "retryable": True})
+    try:
+        email = complete_recovery(body.token, body.password)
+    except ProviderError as exc:
+        raise HTTPException(400, {"code": "reset_invalid", "message": "This reset link is no longer valid.", "retryable": False}) from exc
+    with runtime_transaction(settings, None, None, uuid4()) as connection:
+        account_id = connection.execute(text("SELECT perchpoint.account_id_for_email(:email)"), {"email": email}).scalar()
+        if account_id is not None:
+            connection.execute(text("SELECT perchpoint.revoke_account_sessions(:account, 'password_reset')"), {"account": account_id})
+    return {"reset": True, "signed_in": False, "synthetic": True}
 
 
 @router.post("/auth/recovery-codes")
