@@ -113,13 +113,34 @@ def _supplement(settings: Settings, actor: str, organization: str) -> dict[str, 
         connection.execute(
             text(
                 """
-                INSERT INTO delegations
-                  (organization_id, id, grantor_id, grantee_id, capability, starts_at, ends_at, status, reason)
-                VALUES (:org, :delegation, gen_random_uuid(), :actor, 'expense.approve',
-                        now() - interval '1 day', now() + interval '1 day', 'active', 'Scale benchmark')
+                UPDATE memberships SET role_name = 'owner'
+                WHERE organization_id = :org
+                  AND account_id = (
+                    SELECT id FROM accounts WHERE id <> :actor ORDER BY email LIMIT 1
+                  )
                 """
             ),
-            {"org": organization, "delegation": ids["delegation"], "actor": actor},
+            {"org": organization, "actor": actor},
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO delegations
+                  (organization_id, id, grantor_id, grantee_id, capability, starts_at, ends_at, status, reason,
+                   approved_by, resource_type, resource_id, decision_types, amount_ceiling_minor)
+                VALUES (:org, :delegation, gen_random_uuid(), :actor, 'expense.approve',
+                        now() - interval '1 day', now() + interval '1 day', 'active', 'Scale benchmark',
+                        (SELECT account_id FROM memberships
+                          WHERE organization_id = :org AND role_name = 'owner' LIMIT 1),
+                        'property', :property, ARRAY['routine_purchase'], 100000)
+                """
+            ),
+            {
+                "org": organization,
+                "delegation": ids["delegation"],
+                "actor": actor,
+                "property": property_id,
+            },
         )
         connection.execute(
             text(
