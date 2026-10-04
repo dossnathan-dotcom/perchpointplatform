@@ -75,6 +75,9 @@ def test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf():
     signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
     assert signed.status_code == 200, signed.text
     assert "pp_session" in signed.cookies
+    cookie = signed.headers["set-cookie"].lower()
+    assert "httponly" in cookie
+    assert "samesite=lax" in cookie
     assert signed.json()["role_name"] == "leasing"
     me = client.get("/api/v2/auth/me")
     assert me.status_code == 200
@@ -276,6 +279,58 @@ def test_service_credential_is_shown_once_and_hidden_from_operations():
         headers={"x-perchpoint-csrf": ann.json()["csrf"]},
     )
     assert denied.status_code == 403
+
+
+def test_public_listings_hide_internal_identifiers():
+    client = TestClient(create_app())
+    response = client.get("/api/v2/listings")
+    assert response.status_code == 200, response.text
+    for listing in response.json()["listings"]:
+        assert "organization_id" not in listing
+        assert "space_id" not in listing
+        assert "tenant" not in listing
+
+
+def test_phase6_tables_are_forced_and_runtime_cannot_bypass():
+    admin = create_engine(Settings.load().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with admin.connect() as connection:
+        runtime = connection.execute(sql_text("SELECT rolsuper, rolbypassrls, rolcanlogin FROM pg_roles WHERE rolname = 'perchpoint_runtime'")).one()
+        definer = connection.execute(sql_text("SELECT rolsuper, rolbypassrls, rolcanlogin FROM pg_roles WHERE rolname = 'perchpoint_definer'")).one()
+        forced = set(connection.execute(sql_text(
+            """
+            SELECT relname FROM pg_class
+            JOIN pg_namespace ON pg_namespace.oid = relnamespace
+            WHERE nspname = 'public' AND relkind = 'r' AND relrowsecurity AND relforcerowsecurity
+            """
+        )).scalars())
+    admin.dispose()
+    assert runtime.rolsuper is False and runtime.rolbypassrls is False
+    assert definer.rolsuper is False and definer.rolbypassrls is True and definer.rolcanlogin is False
+    for name in ("identity_accounts", "identity_sessions", "delegations", "access_requests", "service_principals", "security_events", "capabilities"):
+        assert name in forced
+
+
+def test_suspended_session_stops_immediately():
+    _provider_user("ann.synthetic@example.com")
+    client = TestClient(create_app())
+    signed = client.post("/api/v2/auth/sign-in", json={"email": "ann.synthetic@example.com", "password": Settings.load().dev_password})
+    email = f"suspended.{uuid4().hex[:8]}@example.com"
+    _account(email, "leasing", signed.json()["organization_id"])
+    fresh = TestClient(create_app())
+    assert fresh.post("/api/v2/auth/sign-in", json={"email": email, "password": Settings.load().dev_password}).status_code == 200
+    admin = create_engine(Settings.load().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with admin.begin() as connection:
+        connection.execute(
+            sql_text(
+                """
+                UPDATE identity_accounts SET status = 'suspended'
+                WHERE account_id = (SELECT id FROM accounts WHERE email = :email)
+                """
+            ),
+            {"email": email},
+        )
+    admin.dispose()
+    assert fresh.get("/api/v2/auth/me").status_code == 401
 
 
 def test_runtime_role_without_actor_context_sees_no_identity_rows():
