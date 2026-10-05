@@ -1,0 +1,33 @@
+{
+  "command": "python scripts/phase6_evidence.py rls",
+  "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+  "database": "PostgreSQL 16",
+  "exit_code": 0,
+  "facts": {
+    "definer_login": false,
+    "forced_tables": 77,
+    "rls_tables": 77,
+    "role": "postgres",
+    "runtime_bypass": false,
+    "runtime_super": false
+  },
+  "kind": "rls",
+  "raw_artifacts": [
+    {
+      "bytes": 1058,
+      "path": "test_reports/phase6/raw/rls.log",
+      "sha256": "947c6fd2abc220cd8e2f89cb2b5b22b7adf683fad147bdc99052a2dcb683f8ee"
+    }
+  ],
+  "schema_version": 2,
+  "source_clean": true,
+  "test_output": "bringing up nodes...\nbringing up nodes...\n\n...                                                                      [100%]\n=============================== warnings summary ===============================\n../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1\n../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1\n../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1\n  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 3 warnings in 2.23s\n",
+  "timestamp": "2026-10-05T00:23:11.955215+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 3,
+    "skipped": 0,
+    "total": 3
+  },
+  "tree_hash": "122acca6d8c41067442d359b87c23c1286d9f07f"
+}

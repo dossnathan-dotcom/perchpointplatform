@@ -1,0 +1,35 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' up -d postgres
+
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Creating 
+ Network perchpoint-phase6-cleanroom_data Creating 
+ Network perchpoint-phase6-cleanroom_data Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Created 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Created 
+ Network perchpoint-phase6-cleanroom_data Created 
+ Network perchpoint-phase6-cleanroom_data Created 
+ Container perchpoint-phase6-cleanroom-postgres-1 Creating 
+ Container perchpoint-phase6-cleanroom-postgres-1 Created 
+ Container perchpoint-phase6-cleanroom-postgres-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - no response
+/var/run/postgresql:5432 - accepting connections
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE ROLE perchpoint_migrator LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '"'"'local-only-not-production'"'"';CREATE ROLE perchpoint_runtime LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '"'"'local-only-not-production'"'"';CREATE ROLE perchpoint_definer NOLOGIN BYPASSRLS NOSUPERUSER;'
+CREATE ROLE
+CREATE ROLE
+CREATE ROLE
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase2;'
+CREATE DATABASE
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase2 TO perchpoint_migrator;GRANT CONNECT ON DATABASE perchpoint_phase2 TO perchpoint_runtime;'
+GRANT
+GRANT
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;'
+GRANT
+GRANT ROLE
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m alembic upgrade head
+
+ Container perchpoint-phase6-cleanroom-migrate-run-b36ffd26b912 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-b36ffd26b912 Created
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT version_num FROM alembic_version;'
+0031_phase6_authz_remediation

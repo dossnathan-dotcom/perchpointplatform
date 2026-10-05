@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T02:40:00Z",
+  "gates": [
+    {
+      "id": "P6-R0",
+      "requirement": "Preflight and gap analysis",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "docs/plans/phase6/ANSWER_TRACEABILITY.md"
+      ],
+      "evidence_command": "python scripts/validate_phase6_answers.py",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 160,
+        "passed": 160,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R1",
+      "requirement": "Auth provider architecture",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/clean-room.json"
+      ],
+      "evidence_command": "python scripts/phase6_clean_room.py --execute",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 38,
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R2",
+      "requirement": "Session and browser security",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/browser-results.json"
+      ],
+      "evidence_command": "corepack yarn playwright test e2e/phase6-engines.spec.js",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 162,
+        "passed": 162,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R3",
+      "requirement": "Identity and account lifecycle",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/clean-room.json",
+        "test_reports/phase6/browser-results.json"
+      ],
+      "evidence_command": "python scripts/phase6_clean_room.py --execute",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 162,
+        "passed": 162,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R4",
+      "requirement": "Central authorization and forced RLS",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/rls.json"
+      ],
+      "evidence_command": "python scripts/phase6_evidence.py rls",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R5",
+      "requirement": "Search, storage, export, cache, worker, and outbox authorization",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/clean-room.json"
+      ],
+      "evidence_command": "python scripts/phase6_clean_room.py --execute",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 38,
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R6",
+      "requirement": "Delegation, approvals, and purchasing",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/browser-results.json"
+      ],
+      "evidence_command": "corepack yarn playwright test e2e/phase6-engines.spec.js",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 162,
+        "passed": 162,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Faruk / Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R7",
+      "requirement": "Users, vendors, reviews, and service principals",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/browser-results.json"
+      ],
+      "evidence_command": "corepack yarn playwright test e2e/phase6-engines.spec.js",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 162,
+        "passed": 162,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Ann / Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R8",
+      "requirement": "Connected frontend",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/frontend.json"
+      ],
+      "evidence_command": "python scripts/phase6_evidence.py frontend",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 486,
+        "passed": 486,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R9",
+      "requirement": "Threat model and adversarial testing",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/security-review.json"
+      ],
+      "evidence_command": "python scripts/phase6_evidence.py security-review --source test_reports/phase6/raw/security-review-source.json",
+      "commit": "1132d792ccdded5d00e74618b3308a14713f4a5b",
+      "test_totals": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R10",
+      "requirement": "Complete automated suites",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/clean-room.json"
+      ],
+      "evidence_command": "python scripts/phase6_clean_room.py --execute",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 38,
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R11",
+      "requirement": "Three-browser, accessibility, keyboard, and responsive proof",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/browser-results.json",
+        "test_reports/phase6/accessibility.json",
+        "test_reports/phase6/responsive.json"
+      ],
+      "evidence_command": "corepack yarn playwright test e2e/phase6-engines.spec.js",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 162,
+        "passed": 162,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R12",
+      "requirement": "Clean-room and recovery proof",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/clean-room.json"
+      ],
+      "evidence_command": "python scripts/phase6_clean_room.py --execute",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 161,
+        "passed": 158,
+        "failed": 0,
+        "skipped": 3
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R13",
+      "requirement": "Three-round authorization benchmark",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/benchmark.json"
+      ],
+      "evidence_command": "python scripts/phase6_benchmark.py",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 840,
+        "passed": 840,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R14",
+      "requirement": "Documentation and governance closeout",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "docs/plans/phase6/ANSWER_TRACEABILITY.md"
+      ],
+      "evidence_command": "python scripts/validate_phase6_answers.py",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 160,
+        "passed": 160,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R15",
+      "requirement": "Independent review and remediation",
+      "status": "PASSED",
+      "classification": "local",
+      "evidence_files": [
+        "test_reports/phase6/security-review.json"
+      ],
+      "evidence_command": "python scripts/phase6_evidence.py security-review --source test_reports/phase6/raw/security-review-source.json",
+      "commit": "1132d792ccdded5d00e74618b3308a14713f4a5b",
+      "test_totals": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "",
+      "owner": "Nathan",
+      "smallest_next_action": "Evidence is recorded."
+    },
+    {
+      "id": "P6-R16",
+      "requirement": "Git, PR, CI, merge, and main verification",
+      "status": "IN_PROGRESS",
+      "classification": "local",
+      "evidence_files": [],
+      "evidence_command": "gh pr checks",
+      "commit": "1132d792ccdded5d00e74618b3308a14713f4a5b",
+      "test_totals": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "Pull request, merge, and merged-main CI are not recorded yet.",
+      "owner": "Nathan",
+      "smallest_next_action": "Open the pull request and record the green checks."
+    },
+    {
+      "id": "P6-HOSTED",
+      "requirement": "Hosted Supabase acceptance",
+      "status": "BLOCKED_EXTERNAL",
+      "classification": "hosted",
+      "evidence_files": [],
+      "evidence_command": "not locally executable",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "No hosted Supabase credentials or hosted-provider authority.",
+      "owner": "Nathan",
+      "smallest_next_action": "Provide a HawkVision-owned nonproduction Supabase project.",
+      "blocker": {
+        "reason": "Hosted credentials and provider access are unavailable.",
+        "owner": "Nathan",
+        "smallest_external_action": "Provide a HawkVision-owned nonproduction Supabase project and scoped credentials."
+      }
+    },
+    {
+      "id": "P6-STAKEHOLDER",
+      "requirement": "Stakeholder and business acceptance",
+      "status": "BLOCKED_EXTERNAL",
+      "classification": "stakeholder",
+      "evidence_files": [],
+      "evidence_command": "stakeholder review",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "Faruk and Ann have not accepted the business and operational workflows.",
+      "owner": "Faruk / Ann",
+      "smallest_next_action": "Review green merged Phase 6 evidence.",
+      "blocker": {
+        "reason": "Independent stakeholder acceptance has not occurred.",
+        "owner": "Faruk / Ann",
+        "smallest_external_action": "Review the green merged evidence and record business and operational decisions."
+      }
+    },
+    {
+      "id": "P6-PRODUCTION",
+      "requirement": "Production readiness and launch",
+      "status": "BLOCKED_EXTERNAL",
+      "classification": "production",
+      "evidence_files": [],
+      "evidence_command": "production readiness review",
+      "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+      "test_totals": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "timestamp": "2026-10-05T02:40:00Z",
+      "failure_or_blocker": "Production secrets, activation, specialist gates, and deployment authority are unavailable.",
+      "owner": "Faruk / Nathan",
+      "smallest_next_action": "Complete hosted and stakeholder acceptance first.",
+      "blocker": {
+        "reason": "Production activation authority and prerequisites are unavailable.",
+        "owner": "Faruk / Nathan",
+        "smallest_external_action": "Complete hosted, stakeholder, legal, security, and deployment readiness gates."
+      }
+    }
+  ]
+}

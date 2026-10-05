@@ -1,0 +1,6 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' ps worker
+NAME                                   IMAGE                   COMMAND                  SERVICE   CREATED         STATUS                   PORTS
+perchpoint-phase6-cleanroom-worker-1   perchpoint-api:phase6   "/bin/sh -ec 'while …"   worker    2 minutes ago   Up 2 minutes (healthy)   8000/tcp
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T worker python -m perchpoint.worker
+{'processed': 0}
+{'claimed': True, 'status': 'delivered', 'id': 'd5f3e57c-70bf-4379-bf87-ae1b63b69a79', 'synthetic': True, 'exactly_once': False}

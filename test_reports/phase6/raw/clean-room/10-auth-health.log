@@ -1,0 +1,106 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' up -d mailpit auth-db-init auth minio clamav api worker web
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Running 
+ Container perchpoint-phase6-cleanroom-migrate-1 Creating 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Creating 
+ Container perchpoint-phase6-cleanroom-clamav-1 Creating 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Creating 
+ Network perchpoint-phase6-cleanroom_ingress Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Creating 
+ Network perchpoint-phase6-cleanroom_ingress Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Created 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Created 
+ Container perchpoint-phase6-cleanroom-minio-1 Creating 
+ Network perchpoint-phase6-cleanroom_ingress Created 
+ Network perchpoint-phase6-cleanroom_ingress Created 
+ Container perchpoint-phase6-cleanroom-minio-1 Created 
+ Container perchpoint-phase6-cleanroom-migrate-1 Created 
+ Container perchpoint-phase6-cleanroom-seed-1 Creating 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Created 
+ Container perchpoint-phase6-cleanroom-clamav-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-1 Creating 
+ Container perchpoint-phase6-cleanroom-seed-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Creating 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Created 
+ Container perchpoint-phase6-cleanroom-worker-1 Creating 
+ Container perchpoint-phase6-cleanroom-api-1 Creating 
+ Container perchpoint-phase6-cleanroom-worker-1 Created 
+ Container perchpoint-phase6-cleanroom-api-1 Created 
+ Container perchpoint-phase6-cleanroom-web-1 Creating 
+ Container perchpoint-phase6-cleanroom-web-1 Created 
+ Container perchpoint-phase6-cleanroom-clamav-1 Starting 
+ Container perchpoint-phase6-cleanroom-minio-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Waiting 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Waiting 
+ Container perchpoint-phase6-cleanroom-clamav-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Started 
+ Container perchpoint-phase6-cleanroom-postgres-1 Healthy 
+ Container perchpoint-phase6-cleanroom-postgres-1 Healthy 
+ Container perchpoint-phase6-cleanroom-migrate-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Starting 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Started 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Exited 
+ Container perchpoint-phase6-cleanroom-auth-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Exited 
+ Container perchpoint-phase6-cleanroom-seed-1 Starting 
+ Container perchpoint-phase6-cleanroom-seed-1 Started 
+ Container perchpoint-phase6-cleanroom-seed-1 Waiting 
+ Container perchpoint-phase6-cleanroom-seed-1 Exited 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Waiting 
+ Container perchpoint-phase6-cleanroom-clamav-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Exited 
+ Container perchpoint-phase6-cleanroom-worker-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Exited 
+ Container perchpoint-phase6-cleanroom-worker-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Healthy 
+ Container perchpoint-phase6-cleanroom-clamav-1 Healthy 
+ Container perchpoint-phase6-cleanroom-api-1 Starting 
+ Container perchpoint-phase6-cleanroom-api-1 Started 
+ Container perchpoint-phase6-cleanroom-api-1 Waiting 
+ Container perchpoint-phase6-cleanroom-api-1 Healthy 
+ Container perchpoint-phase6-cleanroom-web-1 Starting 
+ Container perchpoint-phase6-cleanroom-web-1 Started
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:9998/health'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:9998/health
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:8010/api/v2/health/ready
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import json,urllib.request
+body=json.dumps({'"'"'email'"'"':'"'"'ann.synthetic@example.com'"'"','"'"'password'"'"':'"'"'local-only-not-production-password'"'"'}).encode()
+request=urllib.request.Request('"'"'http://127.0.0.1:8010/api/v2/auth/sign-in'"'"',data=body,headers={'"'"'content-type'"'"':'"'"'application/json'"'"'},method='"'"'POST'"'"')
+with urllib.request.urlopen(request,timeout=10) as response:
+ print(f'"'"'sign_in_ready status={response.status}'"'"')
+'
+sign_in_ready status=200
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_evidence.py rls
+wrote verified evidence: C:\Users\Admin\PerchPoint\test_reports\phase6\rls.json

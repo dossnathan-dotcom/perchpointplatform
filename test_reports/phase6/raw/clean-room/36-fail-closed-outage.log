@@ -1,0 +1,33 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' stop postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopping 
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopped
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys;p=subprocess.run(sys.argv[1:]);print('"'"'denied'"'"' if p.returncode else '"'"'unexpected success'"'"');sys.exit(0 if p.returncode else 1)' 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import urllib.request; urllib.request.urlopen('"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"',timeout=5)'
+denied
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/v2/health/ready',timeout=5)
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 495, in open
+    response = meth(req, response)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 503: Service Unavailable
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' start postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - accepting connections

@@ -1,0 +1,13 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart worker
+
+ Container perchpoint-phase6-cleanroom-worker-1 Restarting 
+ Container perchpoint-phase6-cleanroom-worker-1 Started
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys,time
+name='"'"'perchpoint-phase6-cleanroom-worker-1'"'"'
+for _ in range(120):
+ p=subprocess.run(['"'"'docker'"'"','"'"'inspect'"'"','"'"'--format'"'"','"'"'{{.State.Health.Status}}'"'"',name],text=True,capture_output=True)
+ if p.returncode==0 and p.stdout.strip()=='"'"'healthy'"'"':print(f'"'"'healthy {name}'"'"');sys.exit(0)
+ time.sleep(2)
+print(f'"'"'not healthy: {name}'"'"',file=sys.stderr);sys.exit(1)
+'
+healthy perchpoint-phase6-cleanroom-worker-1

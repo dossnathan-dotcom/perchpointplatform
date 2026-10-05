@@ -1,0 +1,434 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "connections": 25,
+      "cardinalities": {
+        "properties": 1001,
+        "spaces": 3000,
+        "parties_households": 5000,
+        "identities": 5000,
+        "active_memberships": 5000,
+        "operational_records": 25000,
+        "audit_security_rows": 250000
+      },
+      "queries": {
+        "session": {
+          "samples": 20,
+          "p50": 0.674,
+          "p95": 0.756,
+          "max": 1.386,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "decision": {
+          "samples": 20,
+          "p50": 0.741,
+          "p95": 0.791,
+          "max": 1.24,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "property-list": {
+          "samples": 20,
+          "p50": 53.48,
+          "p95": 54.798,
+          "max": 56.103,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "household-detail": {
+          "samples": 20,
+          "p50": 0.783,
+          "p95": 1.218,
+          "max": 1.317,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "vendor-list": {
+          "samples": 20,
+          "p50": 1.662,
+          "p95": 1.937,
+          "max": 2.063,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "directory": {
+          "samples": 20,
+          "p50": 124.028,
+          "p95": 126.204,
+          "max": 127.725,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "delegation": {
+          "samples": 20,
+          "p50": 0.667,
+          "p95": 0.764,
+          "max": 1.302,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "sensitive-audit": {
+          "samples": 20,
+          "p50": 0.659,
+          "p95": 1.145,
+          "max": 1.587,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "search": {
+          "samples": 20,
+          "p50": 871.282,
+          "p95": 884.551,
+          "max": 896.483,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "export": {
+          "samples": 20,
+          "p50": 868.321,
+          "p95": 873.627,
+          "max": 874.097,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "cross-org-denial": {
+          "samples": 20,
+          "p50": 0.738,
+          "p95": 0.775,
+          "max": 1.408,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "permission-revocation": {
+          "samples": 20,
+          "p50": 108.337,
+          "p95": 130.744,
+          "max": 133.521,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "session-revocation": {
+          "samples": 20,
+          "p50": 21.178,
+          "p95": 39.189,
+          "max": 44.848,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "concurrent-read": {
+          "samples": 25,
+          "p50": 262.31,
+          "p95": 316.29,
+          "max": 331.52,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1000
+        }
+      },
+      "query_plan": "Limit  (cost=15.49..15.49 rows=2 width=48) (actual time=49.594..49.596 rows=1 loops=1)\n  Buffers: shared hit=6032\n  ->  Sort  (cost=15.49..15.49 rows=2 width=48) (actual time=49.593..49.594 rows=1 loops=1)\n        Sort Key: id\n        Sort Method: quicksort  Memory: 25kB\n        Buffers: shared hit=6032\n        ->  Bitmap Heap Scan on properties  (cost=4.32..15.48 rows=2 width=48) (actual time=8.634..49.582 rows=1 loops=1)\n              Recheck Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n              Filter: (perchpoint.authorized_for('property.read'::text, 'property'::text, id) OR perchpoint.worker_assignment_allows(NULL::uuid, id))\n              Rows Removed by Filter: 999\n              Heap Blocks: exact=12\n              Buffers: shared hit=6029\n              ->  Bitmap Index Scan on properties_pkey  (cost=0.00..4.32 rows=4 width=0) (actual time=0.028..0.029 rows=1000 loops=1)\n                    Index Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n                    Buffers: shared hit=10\nPlanning:\n  Buffers: shared hit=5\nPlanning Time: 0.073 ms\nExecution Time: 49.611 ms",
+      "cross_org_visible": 0
+    },
+    {
+      "round": 2,
+      "connections": 25,
+      "cardinalities": {
+        "properties": 1001,
+        "spaces": 3000,
+        "parties_households": 5000,
+        "identities": 5000,
+        "active_memberships": 5000,
+        "operational_records": 25000,
+        "audit_security_rows": 250000
+      },
+      "queries": {
+        "session": {
+          "samples": 20,
+          "p50": 0.769,
+          "p95": 0.881,
+          "max": 1.647,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "decision": {
+          "samples": 20,
+          "p50": 0.707,
+          "p95": 0.819,
+          "max": 1.474,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "property-list": {
+          "samples": 20,
+          "p50": 50.453,
+          "p95": 51.142,
+          "max": 52.146,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "household-detail": {
+          "samples": 20,
+          "p50": 0.76,
+          "p95": 0.956,
+          "max": 1.617,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "vendor-list": {
+          "samples": 20,
+          "p50": 1.623,
+          "p95": 2.111,
+          "max": 2.133,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "directory": {
+          "samples": 20,
+          "p50": 117.316,
+          "p95": 118.59,
+          "max": 119.329,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "delegation": {
+          "samples": 20,
+          "p50": 0.64,
+          "p95": 0.755,
+          "max": 1.343,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "sensitive-audit": {
+          "samples": 20,
+          "p50": 0.609,
+          "p95": 1.04,
+          "max": 1.175,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "search": {
+          "samples": 20,
+          "p50": 841.002,
+          "p95": 844.403,
+          "max": 844.527,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "export": {
+          "samples": 20,
+          "p50": 843.503,
+          "p95": 861.84,
+          "max": 863.597,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "cross-org-denial": {
+          "samples": 20,
+          "p50": 0.683,
+          "p95": 0.853,
+          "max": 1.418,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "permission-revocation": {
+          "samples": 20,
+          "p50": 106.095,
+          "p95": 132.36,
+          "max": 141.815,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "session-revocation": {
+          "samples": 20,
+          "p50": 19.713,
+          "p95": 37.851,
+          "max": 69.079,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "concurrent-read": {
+          "samples": 25,
+          "p50": 247.579,
+          "p95": 300.737,
+          "max": 310.531,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1000
+        }
+      },
+      "query_plan": "Limit  (cost=15.49..15.49 rows=2 width=48) (actual time=49.295..49.297 rows=1 loops=1)\n  Buffers: shared hit=6032\n  ->  Sort  (cost=15.49..15.49 rows=2 width=48) (actual time=49.294..49.295 rows=1 loops=1)\n        Sort Key: id\n        Sort Method: quicksort  Memory: 25kB\n        Buffers: shared hit=6032\n        ->  Bitmap Heap Scan on properties  (cost=4.32..15.48 rows=2 width=48) (actual time=18.119..49.282 rows=1 loops=1)\n              Recheck Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n              Filter: (perchpoint.authorized_for('property.read'::text, 'property'::text, id) OR perchpoint.worker_assignment_allows(NULL::uuid, id))\n              Rows Removed by Filter: 999\n              Heap Blocks: exact=12\n              Buffers: shared hit=6029\n              ->  Bitmap Index Scan on properties_pkey  (cost=0.00..4.32 rows=4 width=0) (actual time=0.031..0.031 rows=1000 loops=1)\n                    Index Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n                    Buffers: shared hit=10\nPlanning:\n  Buffers: shared hit=5\nPlanning Time: 0.095 ms\nExecution Time: 49.312 ms",
+      "cross_org_visible": 0
+    },
+    {
+      "round": 3,
+      "connections": 25,
+      "cardinalities": {
+        "properties": 1001,
+        "spaces": 3000,
+        "parties_households": 5000,
+        "identities": 5000,
+        "active_memberships": 5000,
+        "operational_records": 25000,
+        "audit_security_rows": 250000
+      },
+      "queries": {
+        "session": {
+          "samples": 20,
+          "p50": 0.661,
+          "p95": 0.751,
+          "max": 1.332,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "decision": {
+          "samples": 20,
+          "p50": 0.674,
+          "p95": 0.732,
+          "max": 1.167,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "property-list": {
+          "samples": 20,
+          "p50": 50.222,
+          "p95": 50.624,
+          "max": 51.241,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "household-detail": {
+          "samples": 20,
+          "p50": 0.903,
+          "p95": 1.078,
+          "max": 1.638,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "vendor-list": {
+          "samples": 20,
+          "p50": 1.496,
+          "p95": 1.645,
+          "max": 1.944,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "directory": {
+          "samples": 20,
+          "p50": 117.652,
+          "p95": 118.183,
+          "max": 118.748,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "delegation": {
+          "samples": 20,
+          "p50": 0.611,
+          "p95": 0.688,
+          "max": 1.299,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1
+        },
+        "sensitive-audit": {
+          "samples": 20,
+          "p50": 0.629,
+          "p95": 1.046,
+          "max": 1.12,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "search": {
+          "samples": 20,
+          "p50": 842.355,
+          "p95": 848.552,
+          "max": 853.863,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "export": {
+          "samples": 20,
+          "p50": 845.598,
+          "p95": 847.921,
+          "max": 851.249,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "cross-org-denial": {
+          "samples": 20,
+          "p50": 0.696,
+          "p95": 0.762,
+          "max": 1.422,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 0
+        },
+        "permission-revocation": {
+          "samples": 20,
+          "p50": 105.87,
+          "p95": 119.805,
+          "max": 132.579,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "session-revocation": {
+          "samples": 20,
+          "p50": 19.701,
+          "p95": 20.772,
+          "max": 21.087,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": null
+        },
+        "concurrent-read": {
+          "samples": 25,
+          "p50": 246.745,
+          "p95": 311.177,
+          "max": 331.875,
+          "errors": 0,
+          "timeouts": 0,
+          "visible_rows": 1000
+        }
+      },
+      "query_plan": "Limit  (cost=15.49..15.49 rows=2 width=48) (actual time=49.039..49.040 rows=1 loops=1)\n  Buffers: shared hit=6032\n  ->  Sort  (cost=15.49..15.49 rows=2 width=48) (actual time=49.038..49.039 rows=1 loops=1)\n        Sort Key: id\n        Sort Method: quicksort  Memory: 25kB\n        Buffers: shared hit=6032\n        ->  Bitmap Heap Scan on properties  (cost=4.32..15.48 rows=2 width=48) (actual time=28.665..49.027 rows=1 loops=1)\n              Recheck Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n              Filter: (perchpoint.authorized_for('property.read'::text, 'property'::text, id) OR perchpoint.worker_assignment_allows(NULL::uuid, id))\n              Rows Removed by Filter: 999\n              Heap Blocks: exact=12\n              Buffers: shared hit=6029\n              ->  Bitmap Index Scan on properties_pkey  (cost=0.00..4.32 rows=4 width=0) (actual time=0.027..0.027 rows=1000 loops=1)\n                    Index Cond: (organization_id = (NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid)\n                    Buffers: shared hit=10\nPlanning:\n  Buffers: shared hit=5\nPlanning Time: 0.080 ms\nExecution Time: 49.052 ms",
+      "cross_org_visible": 0
+    }
+  ],
+  "database_removed": true
+}

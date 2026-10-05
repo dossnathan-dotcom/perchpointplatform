@@ -1,0 +1,62 @@
+{
+  "a11y_surfaces": [
+    "sign-in",
+    "invitation",
+    "mfa",
+    "password-reset",
+    "security-center",
+    "users-access",
+    "delegation",
+    "vendor-worker",
+    "access-denied",
+    "session-expired"
+  ],
+  "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+  ],
+  "command": "python scripts/phase6_evidence.py frontend",
+  "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+  "exit_code": 0,
+  "kind": "frontend",
+  "raw_artifacts": [
+    {
+      "bytes": 9415,
+      "path": "test_reports/phase6/browser-results.json",
+      "sha256": "9799b4dcff4ab08c9d7dc4c4b9ace768e6a0304f02848817e941db61e10526e1"
+    },
+    {
+      "bytes": 1178,
+      "path": "test_reports/phase6/accessibility.json",
+      "sha256": "b5f3a90775cf3ce013d33fa5c938916fb127519850f25ccf24ba6e2e405e95b8"
+    },
+    {
+      "bytes": 1022,
+      "path": "test_reports/phase6/responsive.json",
+      "sha256": "ea0db7339f99e42dcb655a0e1acf59f7a29f15aaa14a41f6aceaf2ae9077fea4"
+    }
+  ],
+  "responsive_widths": [
+    320,
+    768,
+    1024,
+    1440
+  ],
+  "schema_version": 2,
+  "source_clean": true,
+  "sources": [
+    "browser-results.json",
+    "accessibility.json",
+    "responsive.json"
+  ],
+  "timestamp": "2026-10-05T00:30:41.499147+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 486,
+    "skipped": 0,
+    "total": 486
+  },
+  "tree_hash": "122acca6d8c41067442d359b87c23c1286d9f07f",
+  "wcag_certification": false
+}

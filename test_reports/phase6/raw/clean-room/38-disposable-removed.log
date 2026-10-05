@@ -1,0 +1,8 @@
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys
+project='"'"'perchpoint-phase6-cleanroom'"'"'
+containers=subprocess.check_output(['"'"'docker'"'"','"'"'ps'"'"','"'"'-a'"'"','"'"'--filter'"'"',f'"'"'label=com.docker.compose.project={project}'"'"','"'"'--format'"'"','"'"'{{.ID}}'"'"'],text=True).strip()
+volumes=subprocess.check_output(['"'"'docker'"'"','"'"'volume'"'"','"'"'ls'"'"','"'"'--filter'"'"',f'"'"'label=com.docker.compose.project={project}'"'"','"'"'--format'"'"','"'"'{{.Name}}'"'"'],text=True).strip()
+print(f'"'"'containers={containers!r} volumes={volumes!r}'"'"')
+sys.exit(1 if containers or volumes else 0)
+'
+containers='' volumes=''

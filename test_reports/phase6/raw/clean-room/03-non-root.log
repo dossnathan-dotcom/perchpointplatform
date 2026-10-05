@@ -1,0 +1,4 @@
+$ docker run --rm --entrypoint id perchpoint-api:phase6 -u
+10001
+$ docker run --rm --entrypoint id perchpoint-web:phase6 -u
+10001

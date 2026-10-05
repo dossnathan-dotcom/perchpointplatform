@@ -1,0 +1,4 @@
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_acceptance.py --validate-report responsive.json
+responsive.json valid
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_evidence.py frontend
+wrote verified evidence: C:\Users\Admin\PerchPoint\test_reports\phase6\frontend.json

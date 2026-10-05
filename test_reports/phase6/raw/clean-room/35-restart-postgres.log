@@ -1,0 +1,11 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Restarting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - accepting connections
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN EXISTS(SELECT 1 FROM identity_sessions WHERE revoked_at IS NOT NULL) AND EXISTS(SELECT 1 FROM memberships WHERE ended_at IS NOT NULL) THEN '"'"'persistence_ok'"'"' ELSE '"'"'persistence_missing'"'"' END;'
+persistence_ok
+$ docker exec -e PGPASSWORD=local-only-not-production perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U perchpoint_runtime -d perchpoint_phase2 -At -c 'SELECT set_config('"'"'app.actor_id'"'"',(SELECT account_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false),set_config('"'"'app.organization_id'"'"',(SELECT organization_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false); SELECT CASE WHEN count(*)=0 THEN '"'"'membership_denied'"'"' ELSE '"'"'membership_leaked'"'"' END FROM properties;'
+|
+membership_denied
