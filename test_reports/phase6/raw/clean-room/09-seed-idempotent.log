@@ -1,0 +1,12 @@
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys
+counts=['"'"'docker'"'"', '"'"'exec'"'"', '"'"'perchpoint-phase6-cleanroom-postgres-1'"'"', '"'"'psql'"'"', '"'"'-v'"'"', '"'"'ON_ERROR_STOP=1'"'"', '"'"'-U'"'"', '"'"'postgres'"'"', '"'"'-d'"'"', '"'"'perchpoint_phase2'"'"', '"'"'-At'"'"', '"'"'-c'"'"', '"'"'SELECT json_build_array((SELECT count(*) FROM organizations),(SELECT count(*) FROM accounts),(SELECT count(*) FROM memberships));'"'"'];seed=['"'"'docker'"'"', '"'"'compose'"'"', '"'"'-p'"'"', '"'"'perchpoint-phase6-cleanroom'"'"', '"'"'-f'"'"', '"'"'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml'"'"', '"'"'run'"'"', '"'"'--rm'"'"', '"'"'--no-deps'"'"', '"'"'seed'"'"'];cwd='"'"'C:\\Users\\Admin\\PerchPoint'"'"'
+before=subprocess.check_output(counts,cwd=cwd,text=True).strip()
+completed=subprocess.run(seed,cwd=cwd)
+after=subprocess.check_output(counts,cwd=cwd,text=True).strip()
+print(f'"'"'before={before} after={after}'"'"')
+sys.exit(0 if completed.returncode==0 and before==after else 1)
+'
+before=[2, 15, 16] after=[2, 15, 16]
+
+ Container perchpoint-phase6-cleanroom-seed-run-e8edb805bac0 Creating 
+ Container perchpoint-phase6-cleanroom-seed-run-e8edb805bac0 Created

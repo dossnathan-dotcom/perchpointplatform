@@ -1,0 +1,2 @@
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN count(*) FILTER (WHERE c.relrowsecurity)>0 AND count(*) FILTER (WHERE c.relrowsecurity AND NOT c.relforcerowsecurity)=0 THEN '"'"'forced_rls_ok'"'"' ELSE '"'"'forced_rls_bad'"'"' END FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='"'"'public'"'"' AND c.relkind='"'"'r'"'"';'
+forced_rls_ok

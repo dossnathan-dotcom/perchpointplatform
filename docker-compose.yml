@@ -4,7 +4,7 @@
 name: perchpoint-phase3
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: local-only-not-production
@@ -32,7 +32,7 @@ services:
       PHASE2_ADMIN_URL: postgresql+psycopg://postgres:local-only-not-production@postgres:5432/postgres
       PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
       PHASE2_RUNTIME_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
-      PHASE2_JWT_SECRET: local-only-not-production-jwt
+      PHASE2_JWT_SECRET: local-only-not-production-jwt-secret-32-plus
       PHASE2_DEV_PASSWORD: local-only-not-production-password
       PHASE2_WEBHOOK_SECRET: local-only-not-production-webhook
     command: ["python", "-m", "perchpoint.bootstrap"]
@@ -60,7 +60,10 @@ services:
     build:
       context: .
       dockerfile: deploy/Dockerfile.api
-    environment: *app_env
+    environment:
+      <<: *app_env
+      PHASE6_PROCESS_ROLE: api
+      PHASE6_WORKER_CREDENTIAL: ""
     depends_on:
       seed:
         condition: service_completed_successfully
@@ -80,7 +83,9 @@ services:
     build:
       context: .
       dockerfile: deploy/Dockerfile.api
-    environment: *app_env
+    environment:
+      <<: *app_env
+      PHASE6_PROCESS_ROLE: worker
     command: ["python", "-m", "perchpoint.worker"]
     depends_on:
       seed:
@@ -113,7 +118,7 @@ services:
       - ingress
   minio:
     profiles: ["documents"]
-    image: bitnamilegacy/minio:2025.7.23
+    image: bitnamilegacy/minio:2025.7.23@sha256:8935e75fa5d11295c17171e4aa49efe390a1193cd7f12e4d21b92af9ffef09d7
     environment:
       MINIO_ROOT_USER: ${PHASE5_S3_ACCESS_KEY:-local-only-not-production}
       MINIO_ROOT_PASSWORD: ${PHASE5_S3_SECRET_KEY:-local-only-not-production}
@@ -132,7 +137,7 @@ services:
       - data
   clamav:
     profiles: ["documents"]
-    image: clamav/clamav:1.4
+    image: clamav/clamav:1.4@sha256:a5f03c12a79dbe9f6d8a527b6bb1ea053fa8dd061d3738a26897f055ee2d9303
     ports:
       - "127.0.0.1:3310:3310"
     healthcheck:

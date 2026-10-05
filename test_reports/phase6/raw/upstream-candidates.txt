@@ -1,0 +1,4 @@
+===== axllent/mailpit:v1.31.4 =====
+EXIT 0 axllent/mailpit:v1.31.4
+===== supabase/gotrue:v2.197.0 =====
+EXIT 1 supabase/gotrue:v2.197.0

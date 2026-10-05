@@ -1,0 +1,68 @@
+{
+  "command": "python scripts/phase6_evidence.py security-review --source test_reports\\phase6\\raw\\security-review-source.json",
+  "commit": "be4af22e5e7e51000ee8cb1067128ba35738327e",
+  "dispositions": [
+    {
+      "finding_id": "P6-SEC-DEV-JWT-WORKER",
+      "resolution": "0dd411c33cb27ae6adef046ccfde9fb12fc21662 rejects worker_once and post_jobs unless principal_type is service.",
+      "status": "resolved"
+    }
+  ],
+  "exit_code": 0,
+  "findings": [
+    {
+      "id": "P6-SEC-DEV-JWT-WORKER",
+      "severity": "medium",
+      "summary": "At 78ae1ba, worker routes blocked interactive cookie sessions but still accepted a legacy development JWT when PHASE6_ALLOW_DEV_JWT=1, then executed with the server worker credential. Hosted startup already refused that configuration."
+    }
+  ],
+  "kind": "security-review",
+  "raw_artifacts": [
+    {
+      "bytes": 2628,
+      "path": "test_reports/phase6/raw/security-review-source.json",
+      "sha256": "f59763ba593d07b23e66f86569c4eaa376a3a51cbf9c93cc0763da34b23a8ed7"
+    }
+  ],
+  "required_scans": {
+    "codeql": {
+      "commit": "be4af22e5e7e51000ee8cb1067128ba35738327e",
+      "status": "passed",
+      "url_or_report": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37259453397/job/111603387803"
+    },
+    "container": {
+      "commit": "1132d792ccdded5d00e74618b3308a14713f4a5b",
+      "status": "passed",
+      "url_or_report": "test_reports/phase6/raw/container-scan-application.txt"
+    },
+    "dependency": {
+      "commit": "64f45ac5e41c62e34b8440beeec086fe09f03771",
+      "status": "passed",
+      "url_or_report": "test_reports/phase6/raw/pip-audit.txt"
+    },
+    "sbom": {
+      "commit": "64f45ac5e41c62e34b8440beeec086fe09f03771",
+      "status": "passed",
+      "url_or_report": "test_reports/phase6/backend-sbom.json"
+    },
+    "secrets": {
+      "commit": "64f45ac5e41c62e34b8440beeec086fe09f03771",
+      "status": "passed",
+      "url_or_report": "test_reports/phase6/raw/gitleaks.json"
+    }
+  },
+  "review_command": "independent security review of cursor/phase-06-identity-access at 78ae1ba8118bfb0279ab4c9094ca2864d1920962",
+  "reviewer": "independent-security-review",
+  "schema_version": 2,
+  "scope": "Phase 6 identity and access on cursor/phase-06-identity-access. The independent review examined commit 78ae1ba8118bfb0279ab4c9094ca2864d1920962, covering the GoTrue boundary, server-custodied sessions, CSRF and origin checks, authorization, forced RLS, delegation and purchasing bounds, workers and service principals, and hosted fail-closed startup. Commit 0dd411c33cb27ae6adef046ccfde9fb12fc21662 requires a service principal on worker routes. Later commits e4491b4396e323d3e5fd79c112a603f37fc32782 and 64f45ac5e41c62e34b8440beeec086fe09f03771 change keyboard focus styling and upgrade libpcre2 in the application images. Commit be4af22e5e7e51000ee8cb1067128ba35738327e shows the existing portfolio controls for the seeded operations_manager membership. These later commits do not reopen the worker-route finding.",
+  "source_clean": true,
+  "source_sha": "ae99242780ed80d8ff340b15d3e1eb794c46cd74",
+  "timestamp": "2026-10-05T03:41:20.240425+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 1,
+    "skipped": 0,
+    "total": 1
+  },
+  "tree_hash": "49336a72da26195355db8a24b1ce42f5f79f4e30"
+}

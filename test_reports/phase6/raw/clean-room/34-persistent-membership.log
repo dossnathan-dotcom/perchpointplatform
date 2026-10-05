@@ -1,0 +1,2 @@
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE memberships SET ended_at=now() WHERE id=(SELECT id FROM memberships WHERE ended_at IS NULL ORDER BY effective_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '"'"'membership_ended'"'"' ELSE '"'"'membership_missing'"'"' END FROM changed;'
+membership_ended

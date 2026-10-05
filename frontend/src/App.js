@@ -18,6 +18,10 @@ import { applyDocumentTheme } from "@/design-system/theme";
 
 const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
 const Phase5Workspace = lazy(() => import("@/components/portal/Phase5Workspace").then((module) => ({ default: module.Phase5Workspace })));
+const Phase6SignIn = lazy(() => import("@/components/portal/Phase6SignIn").then((module) => ({ default: module.Phase6SignIn })));
+const Phase6IdentityFlow = lazy(() => import("@/components/portal/Phase6Identity").then((module) => ({ default: module.Phase6IdentityFlow })));
+const Phase6AccessWorkspace = lazy(() => import("@/components/portal/Phase6Access").then((module) => ({ default: module.Phase6AccessWorkspace })));
+const Phase6BoundaryPage = lazy(() => import("@/components/portal/Phase6Access").then((module) => ({ default: module.Phase6BoundaryPage })));
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
 const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
@@ -30,7 +34,7 @@ const routePending = <main id="main" className="min-h-screen bg-obsidian px-6 py
 const PortalGate = ({ onLogin }) => (
   <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-obsidian px-5 text-linen" data-testid="perchpoint-portal-gate">
     <div className="texture-grid absolute inset-0" />
-    <div className="relative max-w-xl text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center bg-copper text-white"><Building2 className="h-6 w-6" /></span><p className="mt-7 font-mono text-xs uppercase tracking-[0.24em] text-gold">PerchPoint</p><h1 className="mt-4 font-heading text-5xl font-bold">Property operations, with the right access for every role.</h1><p className="mt-5 leading-7 text-linen/60">Enter the seeded Phase 0 workspace preview. Production identity and authorization are intentionally not active yet.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Button className="bg-copper text-white hover:bg-copperDark" onClick={onLogin} data-testid="portal-gate-login-btn"><LogIn className="h-4 w-4" /> Sign in to preview</Button><Button asChild variant="outline" className="border-white/20 bg-white/5 text-linen hover:bg-white/10 hover:text-linen"><Link to="/" data-testid="portal-gate-public-site-link">Return to HawkVision</Link></Button></div></div>
+    <div className="relative max-w-xl text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center bg-copper text-white"><Building2 className="h-6 w-6" /></span><p className="mt-7 font-mono text-xs uppercase tracking-[0.24em] text-gold">PerchPoint preview</p><h1 className="mt-4 font-heading text-5xl font-bold">Explore synthetic role workspaces.</h1><p className="mt-5 leading-7 text-linen/60">This explicit preview cannot authenticate a user or create authority. Use unified sign-in for connected identity workflows.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Button className="bg-copper text-white hover:bg-copperDark" onClick={onLogin} data-testid="portal-gate-login-btn"><LogIn className="h-4 w-4" /> Open synthetic preview</Button><Button asChild variant="outline" className="border-white/20 bg-white/5 text-linen hover:bg-white/10 hover:text-linen"><Link to="/sign-in">Unified sign-in</Link></Button><Button asChild variant="outline" className="border-white/20 bg-white/5 text-linen hover:bg-white/10 hover:text-linen"><Link to="/" data-testid="portal-gate-public-site-link">Return to HawkVision</Link></Button></div></div>
   </main>
 );
 
@@ -50,7 +54,6 @@ export function AppContent() {
   const [requestIntent, setRequestIntent] = useState("showing");
   const [requestProperty, setRequestProperty] = useState(null);
 
-  // Preview overlays belong to the history entry that opened them, not to the app session.
   const loginOpen = loginLocationKey === location.key;
   const setLoginOpen = (open) => setLoginLocationKey(open ? location.key : null);
   const openLogin = (role = "resident") => { setLoginRole(role); setLoginOpen(true); };
@@ -66,11 +69,25 @@ export function AppContent() {
   return (
     <>
       <Routes>
-        <Route element={<PublicLayout onLogin={(role) => openLogin(role)} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
-        <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => openLogin("resident")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route element={<PublicLayout onLogin={() => navigate("/sign-in")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
+        <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => navigate("/sign-in")} /><Neighborhoods /><AboutHawkVision /></main>} />
         <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
+        <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
+        <Route path="/invitation" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="invitation" /></Suspense>} />
+        <Route path="/password-reset" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="password-reset" /></Suspense>} />
+        <Route path="/mfa" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="mfa" /></Suspense>} />
+        <Route path="/access/onboarding" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="onboarding" /></Suspense>} />
+        <Route path="/access/security" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="security" /></Suspense>} />
+        <Route path="/access/users-access" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="users-access" /></Suspense>} />
+        <Route path="/access/delegations" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="delegations" /></Suspense>} />
+        <Route path="/access/access-requests" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="access-requests" /></Suspense>} />
+        <Route path="/access/access-reviews" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="access-reviews" /></Suspense>} />
+        <Route path="/access/vendor-access" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="vendor-access" /></Suspense>} />
+        <Route path="/access/maintenance-history" element={<Suspense fallback={routePending}><Phase6AccessWorkspace surface="maintenance-history" /></Suspense>} />
+        <Route path="/access-denied" element={<Suspense fallback={routePending}><Phase6BoundaryPage kind="access-denied" /></Suspense>} />
+        <Route path="/session-expired" element={<Suspense fallback={routePending}><Phase6BoundaryPage kind="session-expired" /></Suspense>} />
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
         <Route path="/perchpoint/:roleId/phase5/:center" element={<Suspense fallback={routePending}><Phase5Workspace /></Suspense>} />
         <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />

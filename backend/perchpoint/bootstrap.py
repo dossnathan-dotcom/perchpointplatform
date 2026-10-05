@@ -50,8 +50,64 @@ def bootstrap(settings: Settings | None = None) -> None:
             "search_rows(text, text, text, text)",
             "search_facets(text, text, text, text)",
             "reject_held_mutation()",
+            "resolve_session(text)",
+            "record_session(uuid, text, uuid, text, text, text, text, timestamp with time zone, timestamp with time zone)",
+            "claim_invitation(text)",
+            "accept_invitation(text, text)",
+            "resolve_session(text)",
+            "record_provider_session(uuid, text, uuid, text, text, text, text, timestamp with time zone, timestamp with time zone, integer, text, text)",
+            "account_id_for_email(text)",
+            "note_auth_attempt(text)",
+            "list_memberships(uuid)",
+            "revoke_account_sessions(uuid, text)",
+            "recovery_code_material(uuid)",
+            "consume_recovery_code(uuid, uuid)",
+            "current_role()",
+            "can_read_household(uuid)",
+            "access_directory()",
+            "active_org_member(uuid)",
+            "activate_invitation(text, text, text, text)",
+            "account_id_for_subject(text)",
+            "sync_provider_email(text, text)",
+            "activate_vendor_worker(uuid, text)",
+            "set_identity_lifecycle(uuid, uuid, uuid, text, text)",
+            "recovery_provider_subject(uuid, uuid, uuid)",
+            "resolve_authority_context(uuid, uuid, uuid)",
+            "role_for_account(uuid)",
+            "has_capability(text)",
+            "scope_allows(text, uuid)",
+            "authorized_for(text, text, uuid)",
+            "property_authority_fact(uuid)",
+            "worker_assignment_allows(uuid, uuid)",
+            "search_resource_allowed(text, uuid, text)",
+            "rebuild_search_projection(uuid)",
+            "authenticate_service_credential(text, text, text)",
+            "schedule_access_review(uuid, text)",
+            "quarterly_access_reviews()",
+            "note_material_access_change()",
+            "validate_invitation_activation()",
+            "record_privileged_recovery_event()",
+            "validate_delegation_bounds()",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
+        connection.execute(
+            text(
+                "REVOKE INSERT, UPDATE, DELETE ON privileged_recovery_events "
+                "FROM perchpoint_runtime"
+            )
+        )
+        connection.execute(
+            text(
+                "REVOKE UPDATE, DELETE ON privileged_recovery_events "
+                "FROM perchpoint_definer"
+            )
+        )
+        connection.execute(
+            text(
+                "GRANT INSERT ON privileged_recovery_events "
+                "TO perchpoint_definer"
+            )
+        )
     owner.dispose()
 
 

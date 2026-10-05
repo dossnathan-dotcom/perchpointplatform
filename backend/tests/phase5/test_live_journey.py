@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 
 from perchpoint.routes import create_app
 from tests.phase5.test_canonical import _auth, _login
-from tests.phase5.test_closeout import _property, _upload
+from tests.phase5.test_closeout import _property, _upload, _worker_headers
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("PHASE5_LIVE_SERVICES") != "1",
@@ -37,8 +37,8 @@ def test_live_api_access_export_and_ocr(monkeypatch, caplog):
     monkeypatch.setenv("PHASE5_S3_SECRET_KEY", os.environ.get("PHASE5_S3_SECRET_KEY", "local-only-not-production"))
     monkeypatch.setenv("PHASE5_S3_BUCKET", "perchpoint-documents")
     monkeypatch.setenv("PHASE5_SCANNER_MODE", "live")
-    monkeypatch.setenv("PHASE5_CLAMAV_HOST", "127.0.0.1")
-    monkeypatch.setenv("PHASE5_CLAMAV_PORT", "3310")
+    monkeypatch.setenv("PHASE5_CLAMAV_HOST", os.environ.get("PHASE5_CLAMAV_HOST", "127.0.0.1"))
+    monkeypatch.setenv("PHASE5_CLAMAV_PORT", os.environ.get("PHASE5_CLAMAV_PORT", "3310"))
     monkeypatch.setenv("PHASE5_TESSERACT_IMAGE", "perchpoint-api:phase5-closeout")
     caplog.set_level(logging.INFO, logger="perchpoint")
     client = TestClient(create_app())
@@ -50,7 +50,7 @@ def test_live_api_access_export_and_ocr(monkeypatch, caplog):
     assert image_upload.status_code == 201, image_upload.text
     assert image_upload.json()["lifecycle"] == "available"
     for _ in range(6):
-        processed = client.post("/api/v2/phase5/jobs/process", headers=_auth(token))
+        processed = client.post("/api/v2/phase5/jobs/process", headers=_worker_headers())
         assert processed.status_code == 200, processed.text
     found = client.get("/api/v2/search", headers=_auth(token), params={"q": "Hawthorn"})
     assert found.status_code == 200, found.text

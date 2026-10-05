@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout, cursor/phase-05-canonical-data-documents, cursor/phase-05-definitive-closeout, cursor/phase-05-acceptance-reconciliation]
+    branches: [main, cursor/phase-03-environments, cursor/phase-03-docker-closeout, cursor/phase-04-design-system, cursor/phase-04-evidence-closeout, cursor/phase-04-performance-closeout, cursor/phase-05-canonical-data-documents, cursor/phase-05-definitive-closeout, cursor/phase-05-acceptance-reconciliation, cursor/phase-06-identity-access]
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -24,6 +24,10 @@ jobs:
       - run: python scripts/validate_phase4_answers.py
       - run: python scripts/validate_phase4_completeness.py
       - run: python scripts/validate_phase5_answers.py
+      - run: python scripts/validate_phase6_answers.py
+      - run: python -m unittest discover -s scripts -p "test_*.py"
+      - run: python scripts/phase6_acceptance.py --check --mode pr
+      - run: python -m compileall -q scripts
       - run: python scripts/phase5_staging_preflight.py
   contracts:
     name: contracts
@@ -50,7 +54,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
         env:
           POSTGRES_PASSWORD: ci-only-not-production
         ports: ["5432:5432"]
@@ -84,6 +88,7 @@ jobs:
         working-directory: backend
       - run: python -m perchpoint.seed
         working-directory: backend
+      - run: python scripts/phase6_auth_up.py
       - run: python -m pytest -q --tb=line
         working-directory: backend
   frontend:
@@ -119,7 +124,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
         env:
           POSTGRES_PASSWORD: ci-only-not-production
         ports: ["5432:5432"]
@@ -138,6 +143,7 @@ jobs:
       PHASE2_DEV_PASSWORD: ci-only-not-production-password
       PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
       CI: "true"
+      PHASE6_ALLOW_DEV_JWT: "1"
       REACT_APP_PHASE3_ENVIRONMENT: local
       REACT_APP_SHOW_DEMO_LABELS: "true"
       REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
@@ -153,6 +159,9 @@ jobs:
       - run: python -m perchpoint.bootstrap
         working-directory: backend
       - run: python -m perchpoint.seed
+        working-directory: backend
+      - run: python scripts/phase6_auth_up.py
+      - run: python -m perchpoint.phase6_provision
         working-directory: backend
       - run: corepack yarn install --frozen-lockfile --non-interactive
         working-directory: frontend
@@ -200,14 +209,18 @@ jobs:
         with:
           languages: javascript, python
       - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
-      - run: pip install cyclonedx-bom
+      - run: pip install cyclonedx-bom==7.5.0 pip-audit==2.10.1
+      - run: python -m pip_audit -r backend/requirements.txt
       - run: cyclonedx-py requirements backend/requirements.txt -o backend-sbom.json
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
       - run: corepack yarn install --frozen-lockfile --non-interactive
         working-directory: frontend
-      - run: npx --yes @cyclonedx/cdxgen@11.11.0 -t javascript -o frontend-sbom.json
+      - run: corepack yarn audit --groups dependencies --level high
+        working-directory: frontend
+      - run: corepack yarn global add @cyclonedx/cdxgen@11.11.0
+      - run: $(corepack yarn global bin)/cdxgen -t javascript -o frontend-sbom.json
         working-directory: frontend
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -226,10 +239,28 @@ jobs:
       - run: docker build -f deploy/Dockerfile.api -t perchpoint-api:ci .
       - run: docker build -f deploy/Dockerfile.web -t perchpoint-web:ci .
       - run: docker compose -f docker-compose.yml config > /dev/null
-      - name: Scan API image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-api:ci
-      - name: Scan web image
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.58.1 image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL perchpoint-web:ci
+      - run: docker compose -f docker-compose.phase6-closeout.yml config --quiet
+      - name: Scan built application images
+        run: |
+          scanner="aquasec/trivy@sha256:ab70a02200597efa04748f210f793936eb647cbcdb0ea69cc30b226d6f5a22c7"
+          for image in perchpoint-api:ci perchpoint-web:ci; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" \
+              image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL "$image"
+          done
+      - name: Record digest-pinned publisher image scans
+        run: |
+          scanner="aquasec/trivy@sha256:ab70a02200597efa04748f210f793936eb647cbcdb0ea69cc30b226d6f5a22c7"
+          for image in \
+            postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54 \
+            axllent/mailpit@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68 \
+            supabase/gotrue@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf \
+            bitnamilegacy/minio:2025.7.23@sha256:8935e75fa5d11295c17171e4aa49efe390a1193cd7f12e4d21b92af9ffef09d7 \
+            clamav/clamav:1.4@sha256:a5f03c12a79dbe9f6d8a527b6bb1ea053fa8dd061d3738a26897f055ee2d9303
+          do
+            docker pull "$image"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" \
+              image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL "$image" || true
+          done
   phase4-smoke:
     name: phase4-smoke
     runs-on: ubuntu-24.04
@@ -269,7 +300,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
         env:
           POSTGRES_PASSWORD: ci-only-not-production
         ports: ["5432:5432"]

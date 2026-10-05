@@ -1,4 +1,4 @@
-FROM node:22-bookworm AS build
+FROM node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7 AS build
 WORKDIR /app
 COPY frontend/package.json frontend/yarn.lock /app/
 RUN corepack enable && corepack yarn install --frozen-lockfile --non-interactive
@@ -9,9 +9,12 @@ ENV REACT_APP_SHOW_DEMO_LABELS=true
 ENV REACT_APP_ENABLE_SEEDED_PREVIEWS=true
 RUN corepack yarn build
 
-FROM python:3.13-slim
+FROM python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f
 COPY deploy/purge_old_packages.py /tmp/purge_old_packages.py
-RUN python /tmp/purge_old_packages.py --remove-packaging-tools \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --only-upgrade libpcre2-8-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && python /tmp/purge_old_packages.py --remove-packaging-tools \
     && rm /tmp/purge_old_packages.py \
     && useradd --create-home --uid 10001 perchpoint
 COPY deploy/static_server.py /srv/static_server.py

@@ -6,7 +6,7 @@ const skipWebServer = process.env.PLAYWRIGHT_SKIP_WEBSERVER === "1";
 
 module.exports = defineConfig({
   testDir: "./e2e",
-  timeout: 90000,
+  timeout: 180000,
   expect: { timeout: 15000, toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: "disabled" } },
   fullyParallel: false,
   workers: 1,

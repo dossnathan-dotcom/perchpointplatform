@@ -1,0 +1,966 @@
+
+[compose-config]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' config --quiet
+
+[image-build]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' build --pull migrate web
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.04kB done
+#1 DONE 0.0s
+
+#2 [migrate internal] load build definition from Dockerfile.api
+#2 transferring dockerfile: 956B done
+#2 DONE 0.0s
+
+#3 [web internal] load build definition from Dockerfile.web
+#3 transferring dockerfile: 995B done
+#3 DONE 0.0s
+
+#4 [web internal] load metadata for docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f
+#4 ...
+
+#5 [auth] library/node:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [auth] library/python:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [web internal] load metadata for docker.io/library/node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7
+#7 ...
+
+#4 [migrate internal] load metadata for docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f
+#4 DONE 6.1s
+
+#8 [migrate internal] load .dockerignore
+#8 transferring context: 313B done
+#8 DONE 0.0s
+
+#9 [migrate 1/7] FROM docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f
+#9 resolve docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f 0.0s done
+#9 DONE 0.0s
+
+#10 [migrate internal] load build context
+#10 ...
+
+#8 [web internal] load .dockerignore
+#8 transferring context: 313B done
+#8 DONE 0.0s
+
+#9 [web 1/7] FROM docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f
+#9 resolve docker.io/library/python:3.13-slim@sha256:3dd7cc108ec1493442514f5c2a871af6af0ec31d768ff6e378a93340c3b3db5f 0.0s done
+#9 DONE 0.0s
+
+#7 [web internal] load metadata for docker.io/library/node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7
+#7 DONE 7.8s
+
+#11 [web build 1/6] FROM docker.io/library/node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7
+#11 resolve docker.io/library/node:22-bookworm@sha256:363e1587494626837fa7f9a23bdb453d13b0ff3c67c705c2805cfc69c2d2fad7 0.0s done
+#11 DONE 0.0s
+
+#10 [migrate internal] load build context
+#10 transferring context: 45.09MB 5.0s
+#10 ...
+
+#12 [web internal] load build context
+#12 transferring context: 21.70MB 3.5s done
+#12 DONE 3.5s
+
+#13 [web build 2/6] WORKDIR /app
+#13 CACHED
+
+#14 [web build 3/6] COPY frontend/package.json frontend/yarn.lock /app/
+#14 CACHED
+
+#15 [web build 4/6] RUN corepack enable && corepack yarn install --frozen-lockfile --non-interactive
+#15 CACHED
+
+#10 [migrate internal] load build context
+#10 ...
+
+#16 [web build 5/6] COPY frontend /app
+#16 DONE 0.1s
+
+#10 [migrate internal] load build context
+#10 transferring context: 50.89MB 5.5s done
+#10 DONE 5.5s
+
+#17 [migrate 4/7] COPY deploy/purge_old_packages.py /tmp/purge_old_packages.py
+#17 CACHED
+
+#18 [migrate 2/7] WORKDIR /app
+#18 CACHED
+
+#19 [migrate 3/7] COPY backend/requirements.txt /app/requirements.txt
+#19 CACHED
+
+#20 [migrate 5/7] RUN apt-get update     && apt-get install -y --no-install-recommends tesseract-ocr     && rm -rf /var/lib/apt/lists/*     && pip install --no-cache-dir -r /app/requirements.txt     && python -m pip install --no-cache-dir --upgrade "setuptools==84.0.0" "wheel==0.46.2" "jaraco.context==6.1.0" "msgpack==1.2.1"     && python /tmp/purge_old_packages.py     && rm /tmp/purge_old_packages.py     && useradd --create-home --uid 10001 perchpoint
+#20 CACHED
+
+#21 [migrate 6/7] COPY backend /app
+#21 CACHED
+
+#22 [migrate 7/7] RUN chown -R perchpoint:perchpoint /app
+#22 CACHED
+
+#23 [migrate] exporting to image
+#23 exporting layers done
+#23 exporting manifest sha256:810a027de47d85fb64c390ed49400b47c7256be3b09d0caa3b4fccdd1c24cfe5 done
+#23 exporting config sha256:5fa1a32a150ccbd27e20fd68915bf8ad26121d46b6c6d592ec6625042bed952c done
+#23 exporting attestation manifest sha256:ced3a2dbe572661776a6de5e99e4b8ef05a6055aff97e4854a0cef5128bd85a7 0.0s done
+#23 exporting manifest list sha256:d95f30b7d3f8e7ed05b32401c7f6e704577a2c42adf7e44f52b60d342494ebf6
+#23 exporting manifest list sha256:d95f30b7d3f8e7ed05b32401c7f6e704577a2c42adf7e44f52b60d342494ebf6 0.0s done
+#23 naming to docker.io/library/perchpoint-api:phase6 done
+#23 unpacking to docker.io/library/perchpoint-api:phase6 done
+#23 DONE 0.1s
+
+#24 [migrate] resolving provenance for metadata file
+#24 DONE 0.0s
+
+#25 [web build 6/6] RUN corepack yarn build
+#25 0.354 yarn run v1.22.22
+#25 0.377 $ craco build && node scripts/prerender-public.cjs && node scripts/compress-build.cjs
+#25 1.335 Creating an optimized production build...
+#25 13.13 Compiled successfully.
+#25 13.13 
+#25 13.13 File sizes after gzip:
+#25 13.13 
+#25 13.16   105.38 kB  build/static/js/main.884cb534.js
+#25 13.16   24.53 kB   build/static/js/648.8b2b4ccd.chunk.js
+#25 13.16   19.13 kB   build/static/js/951.efa96726.chunk.js
+#25 13.16   18.15 kB   build/static/js/426.f52eac64.chunk.js
+#25 13.16   14.91 kB   build/static/js/181.6c066d86.chunk.js
+#25 13.16   13.71 kB   build/static/js/204.a3f7f8e3.chunk.js
+#25 13.16   13.06 kB   build/static/css/main.11383c52.css
+#25 13.16   11.31 kB   build/static/js/929.c6ac4d12.chunk.js
+#25 13.16   9.41 kB    build/static/js/829.9e205569.chunk.js
+#25 13.16   3.58 kB    build/static/js/239.ea903e1a.chunk.js
+#25 13.16   3.48 kB    build/static/js/125.f1e67b24.chunk.js
+#25 13.16   2.89 kB    build/static/js/198.08d4791d.chunk.js
+#25 13.16   2.7 kB     build/static/js/727.3f93276c.chunk.js
+#25 13.16   2.54 kB    build/static/js/882.5f9615cf.chunk.js
+#25 13.16   1.98 kB    build/static/js/593.69e5a788.chunk.js
+#25 13.16   1.89 kB    build/static/js/462.35de8ba3.chunk.js
+#25 13.16   1.36 kB    build/static/js/293.671b7184.chunk.js
+#25 13.16 
+#25 13.16 The project was built assuming it is hosted at /.
+#25 13.16 You can control this with the homepage field in your package.json.
+#25 13.16 
+#25 13.16 The build folder is ready to be deployed.
+#25 13.16 You may serve it with a static server:
+#25 13.16 
+#25 13.16   yarn global add serve
+#25 13.16   serve -s build
+#25 13.16 
+#25 13.16 Find out more about deployment here:
+#25 13.16 
+#25 13.16   https://cra.link/deployment
+#25 13.16 
+#25 13.52 prerendered homepage 38749 characters
+#25 18.80 {"files":48,"raw":4570632,"gzip":1081328,"brotli":912790}
+#25 18.80 Done in 18.45s.
+#25 DONE 18.9s
+
+#26 [web stage-1 2/6] COPY deploy/purge_old_packages.py /tmp/purge_old_packages.py
+#26 CACHED
+
+#27 [web stage-1 3/6] RUN python /tmp/purge_old_packages.py --remove-packaging-tools     && rm /tmp/purge_old_packages.py     && useradd --create-home --uid 10001 perchpoint
+#27 CACHED
+
+#28 [web stage-1 4/6] COPY deploy/static_server.py /srv/static_server.py
+#28 CACHED
+
+#29 [web stage-1 5/6] COPY --from=build /app/build /srv/web
+#29 DONE 0.0s
+
+#30 [web stage-1 6/6] RUN chown -R perchpoint:perchpoint /srv
+#30 DONE 0.4s
+
+#31 [web] exporting to image
+#31 exporting layers
+#31 exporting layers 0.4s done
+#31 exporting manifest sha256:33050dba1bfc00347d9d08cd9e3f5412439905da362bf776d83279e951aaf0db done
+#31 exporting config sha256:d5f0be2eed2b07a21fd018e7d6944f597b0e5e040c60664508478394ce08d9bb done
+#31 exporting attestation manifest sha256:ec97c162516a7dfba6d2b9f877af3bdc3f77dadd28685bd83f04e749605a3626 0.0s done
+#31 exporting manifest list sha256:b3ca22f64d3b3c51cd565cd5071ea6a96be10440db76a34827b8d41d28ba2461 done
+#31 naming to docker.io/library/perchpoint-web:phase6 done
+#31 unpacking to docker.io/library/perchpoint-web:phase6 0.1s done
+#31 DONE 0.6s
+
+#32 [web] resolving provenance for metadata file
+#32 DONE 0.0s
+
+ Image perchpoint-web:phase6 Building 
+ Image perchpoint-api:phase6 Building 
+ Image perchpoint-api:phase6 Built 
+ Image perchpoint-web:phase6 Built
+
+[non-root]
+$ docker run --rm --entrypoint id perchpoint-api:phase6 -u
+10001
+
+[non-root]
+$ docker run --rm --entrypoint id perchpoint-web:phase6 -u
+10001
+
+[empty-migrate]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' up -d postgres
+
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Creating 
+ Network perchpoint-phase6-cleanroom_data Creating 
+ Network perchpoint-phase6-cleanroom_data Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Created 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Created 
+ Network perchpoint-phase6-cleanroom_data Created 
+ Network perchpoint-phase6-cleanroom_data Created 
+ Container perchpoint-phase6-cleanroom-postgres-1 Creating 
+ Container perchpoint-phase6-cleanroom-postgres-1 Created 
+ Container perchpoint-phase6-cleanroom-postgres-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+
+[empty-migrate]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - no response
+/var/run/postgresql:5432 - accepting connections
+
+[empty-migrate]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE ROLE perchpoint_migrator LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '"'"'local-only-not-production'"'"';CREATE ROLE perchpoint_runtime LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '"'"'local-only-not-production'"'"';CREATE ROLE perchpoint_definer NOLOGIN BYPASSRLS NOSUPERUSER;'
+CREATE ROLE
+CREATE ROLE
+CREATE ROLE
+
+[empty-migrate]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase2;'
+CREATE DATABASE
+
+[empty-migrate]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase2 TO perchpoint_migrator;GRANT CONNECT ON DATABASE perchpoint_phase2 TO perchpoint_runtime;'
+GRANT
+GRANT
+
+[empty-migrate]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;'
+GRANT
+GRANT ROLE
+
+[empty-migrate]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m alembic upgrade head
+
+ Container perchpoint-phase6-cleanroom-migrate-run-b36ffd26b912 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-b36ffd26b912 Created
+
+[empty-migrate]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT version_num FROM alembic_version;'
+0031_phase6_authz_remediation
+
+[phase5-upgrade]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase5_upgrade;'
+CREATE DATABASE
+
+[phase5-upgrade]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase5_upgrade TO perchpoint_migrator;'
+GRANT
+
+[phase5-upgrade]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;'
+GRANT
+GRANT ROLE
+
+NOTICE:  role "perchpoint_migrator" has already been granted membership in role "perchpoint_definer" by role "postgres"
+
+[phase5-upgrade]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade 0011_phase5_hold_guard
+
+ Container perchpoint-phase6-cleanroom-migrate-run-6c123a626010 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-6c123a626010 Created
+
+[phase5-upgrade]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade head
+
+ Container perchpoint-phase6-cleanroom-migrate-run-8ae87ad9c246 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-8ae87ad9c246 Created
+
+[phase5-upgrade]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'SELECT version_num FROM alembic_version;'
+0031_phase6_authz_remediation
+
+[forced-rls]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN count(*) FILTER (WHERE c.relrowsecurity)>0 AND count(*) FILTER (WHERE c.relrowsecurity AND NOT c.relforcerowsecurity)=0 THEN '"'"'forced_rls_ok'"'"' ELSE '"'"'forced_rls_bad'"'"' END FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='"'"'public'"'"' AND c.relkind='"'"'r'"'"';'
+forced_rls_ok
+
+[restricted-roles]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'SELECT rolname,rolsuper,rolbypassrls,rolcanlogin FROM pg_roles WHERE rolname IN ('"'"'perchpoint_runtime'"'"','"'"'perchpoint_migrator'"'"','"'"'perchpoint_definer'"'"') ORDER BY rolname;'
+perchpoint_definer|f|t|f
+perchpoint_migrator|f|f|t
+perchpoint_runtime|f|f|t
+
+[seed-once]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps seed
+
+ Container perchpoint-phase6-cleanroom-seed-run-1693f14e18f7 Creating 
+ Container perchpoint-phase6-cleanroom-seed-run-1693f14e18f7 Created
+
+[seed-idempotent]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys
+counts=['"'"'docker'"'"', '"'"'exec'"'"', '"'"'perchpoint-phase6-cleanroom-postgres-1'"'"', '"'"'psql'"'"', '"'"'-v'"'"', '"'"'ON_ERROR_STOP=1'"'"', '"'"'-U'"'"', '"'"'postgres'"'"', '"'"'-d'"'"', '"'"'perchpoint_phase2'"'"', '"'"'-At'"'"', '"'"'-c'"'"', '"'"'SELECT json_build_array((SELECT count(*) FROM organizations),(SELECT count(*) FROM accounts),(SELECT count(*) FROM memberships));'"'"'];seed=['"'"'docker'"'"', '"'"'compose'"'"', '"'"'-p'"'"', '"'"'perchpoint-phase6-cleanroom'"'"', '"'"'-f'"'"', '"'"'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml'"'"', '"'"'run'"'"', '"'"'--rm'"'"', '"'"'--no-deps'"'"', '"'"'seed'"'"'];cwd='"'"'C:\\Users\\Admin\\PerchPoint'"'"'
+before=subprocess.check_output(counts,cwd=cwd,text=True).strip()
+completed=subprocess.run(seed,cwd=cwd)
+after=subprocess.check_output(counts,cwd=cwd,text=True).strip()
+print(f'"'"'before={before} after={after}'"'"')
+sys.exit(0 if completed.returncode==0 and before==after else 1)
+'
+before=[2, 15, 16] after=[2, 15, 16]
+
+ Container perchpoint-phase6-cleanroom-seed-run-e8edb805bac0 Creating 
+ Container perchpoint-phase6-cleanroom-seed-run-e8edb805bac0 Created
+
+[auth-health]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' up -d mailpit auth-db-init auth minio clamav api worker web
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Running 
+ Container perchpoint-phase6-cleanroom-migrate-1 Creating 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Creating 
+ Container perchpoint-phase6-cleanroom-clamav-1 Creating 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Creating 
+ Network perchpoint-phase6-cleanroom_ingress Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Creating 
+ Network perchpoint-phase6-cleanroom_ingress Creating 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Created 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Created 
+ Container perchpoint-phase6-cleanroom-minio-1 Creating 
+ Network perchpoint-phase6-cleanroom_ingress Created 
+ Network perchpoint-phase6-cleanroom_ingress Created 
+ Container perchpoint-phase6-cleanroom-minio-1 Created 
+ Container perchpoint-phase6-cleanroom-migrate-1 Created 
+ Container perchpoint-phase6-cleanroom-seed-1 Creating 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Created 
+ Container perchpoint-phase6-cleanroom-clamav-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-1 Creating 
+ Container perchpoint-phase6-cleanroom-seed-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-1 Created 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Creating 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Created 
+ Container perchpoint-phase6-cleanroom-worker-1 Creating 
+ Container perchpoint-phase6-cleanroom-api-1 Creating 
+ Container perchpoint-phase6-cleanroom-worker-1 Created 
+ Container perchpoint-phase6-cleanroom-api-1 Created 
+ Container perchpoint-phase6-cleanroom-web-1 Creating 
+ Container perchpoint-phase6-cleanroom-web-1 Created 
+ Container perchpoint-phase6-cleanroom-clamav-1 Starting 
+ Container perchpoint-phase6-cleanroom-minio-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Waiting 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Waiting 
+ Container perchpoint-phase6-cleanroom-clamav-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Started 
+ Container perchpoint-phase6-cleanroom-postgres-1 Healthy 
+ Container perchpoint-phase6-cleanroom-postgres-1 Healthy 
+ Container perchpoint-phase6-cleanroom-migrate-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Starting 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Started 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Exited 
+ Container perchpoint-phase6-cleanroom-auth-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-1 Started 
+ Container perchpoint-phase6-cleanroom-migrate-1 Exited 
+ Container perchpoint-phase6-cleanroom-seed-1 Starting 
+ Container perchpoint-phase6-cleanroom-seed-1 Started 
+ Container perchpoint-phase6-cleanroom-seed-1 Waiting 
+ Container perchpoint-phase6-cleanroom-seed-1 Exited 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Waiting 
+ Container perchpoint-phase6-cleanroom-clamav-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Waiting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Exited 
+ Container perchpoint-phase6-cleanroom-worker-1 Starting 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Exited 
+ Container perchpoint-phase6-cleanroom-worker-1 Started 
+ Container perchpoint-phase6-cleanroom-minio-1 Healthy 
+ Container perchpoint-phase6-cleanroom-clamav-1 Healthy 
+ Container perchpoint-phase6-cleanroom-api-1 Starting 
+ Container perchpoint-phase6-cleanroom-api-1 Started 
+ Container perchpoint-phase6-cleanroom-api-1 Waiting 
+ Container perchpoint-phase6-cleanroom-api-1 Healthy 
+ Container perchpoint-phase6-cleanroom-web-1 Starting 
+ Container perchpoint-phase6-cleanroom-web-1 Started
+
+[auth-health]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:9998/health'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:9998/health
+
+[auth-health]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:8010/api/v2/health/ready
+
+[auth-health]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import json,urllib.request
+body=json.dumps({'"'"'email'"'"':'"'"'ann.synthetic@example.com'"'"','"'"'password'"'"':'"'"'local-only-not-production-password'"'"'}).encode()
+request=urllib.request.Request('"'"'http://127.0.0.1:8010/api/v2/auth/sign-in'"'"',data=body,headers={'"'"'content-type'"'"':'"'"'application/json'"'"'},method='"'"'POST'"'"')
+with urllib.request.urlopen(request,timeout=10) as response:
+ print(f'"'"'sign_in_ready status={response.status}'"'"')
+'
+sign_in_ready status=200
+
+[auth-health]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_evidence.py rls
+wrote verified evidence: C:\Users\Admin\PerchPoint\test_reports\phase6\rls.json
+
+[full-backend]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps --volume 'C:\Users\Admin\PerchPoint:/workspace' --workdir /workspace/backend migrate python -m pytest -q --tb=line tests
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 44%]
+........................................................................ [ 89%]
+....ss.s.........                                                        [100%]
+=============================== warnings summary ===============================
+../../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+server.py:125
+server.py:125
+  /workspace/backend/server.py:125: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+../../usr/local/lib/python3.13/site-packages/fastapi/applications.py:4681
+../../usr/local/lib/python3.13/site-packages/fastapi/applications.py:4681
+  /usr/local/lib/python3.13/site-packages/fastapi/applications.py:4681: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_perchpoint_api.py: 3 warnings
+tests/test_phase0_public_api_matrix.py: 8 warnings
+  /usr/local/lib/python3.13/site-packages/httpx/_client.py:1053: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
+    return self.request(
+
+tests/test_perchpoint_api.py::test_create_showing_lead
+tests/test_perchpoint_api.py::test_create_application_interest_lead
+tests/test_perchpoint_api.py::test_create_maintenance_request
+tests/test_perchpoint_api.py::test_create_lead_rejects_unit_property_mismatch
+tests/test_perchpoint_api.py::test_lead_rejects_non_example_domain
+tests/test_perchpoint_api.py::test_auth_endpoint_absent_by_design
+tests/test_perchpoint_api.py::test_maintenance_validation_error
+  /usr/local/lib/python3.13/site-packages/httpx/_client.py:1144: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
+    return self.request(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+158 passed, 3 skipped, 25 warnings in 33.57s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-2dfc9cedf2c0 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-2dfc9cedf2c0 Created
+
+[mailpit]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:8125/api/v1/info'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:8125/api/v1/info
+
+[minio-live]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_live_services.py::test_live_minio_presign_is_private_and_cleaned_up
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 1.29s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-6c258c9824cf Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-6c258c9824cf Created
+
+[clamav-live]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_live_services.py::test_live_clamav_detects_eicar_and_outage_is_not_clean
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 0.94s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-9727b77657ec Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-9727b77657ec Created
+
+[sign-in]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 2.26s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-ce4d1c85b56f Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-ce4d1c85b56f Created
+
+[totp]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 9.14s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-d1b66a0dc539 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-d1b66a0dc539 Created
+
+[invitation]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_resident_cannot_use_staff_invitation_route tests/phase6/test_identity.py::test_privileged_roles_cannot_be_created_through_invitations
+bringing up nodes...
+bringing up nodes...
+
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 3 warnings in 2.87s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-d0709d834401 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-d0709d834401 Created
+
+[password-reset]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_password_reset_does_not_sign_in_and_rejects_replay
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 2.57s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-1dc314f246e2 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-1dc314f246e2 Created
+
+[sessions]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_sessions_access_requests_and_self_recovery_are_enforced tests/phase6/test_identity.py::test_provider_refresh_reuse_revokes_the_application_session
+bringing up nodes...
+bringing up nodes...
+
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 3 warnings in 3.26s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-0890d99ef03b Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-0890d99ef03b Created
+
+[context]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_origin_is_bound_to_the_session_csrf_token tests/phase6/test_identity.py::test_runtime_role_without_actor_context_sees_no_identity_rows
+bringing up nodes...
+bringing up nodes...
+
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 3 warnings in 2.12s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-c61a6c10eae2 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-c61a6c10eae2 Created
+
+[delegation]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_delegation_usage_enforces_scope_decision_amount_and_split_detection
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 3.15s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-d758330a305c Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-d758330a305c Created
+
+[owner-threshold]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_financial_thresholds_and_authority_boundaries
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 1.58s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-5845c687c2ec Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-5845c687c2ec Created
+
+[vendor-isolation]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_vendor_admin_proposes_operations_approves_and_worker_assignment_activates tests/phase6/test_identity.py::test_restricted_rls_enforces_household_and_worker_assignment_relationships
+bringing up nodes...
+bringing up nodes...
+
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 3 warnings in 3.38s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-0d1acabc950a Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-0d1acabc950a Created
+
+[search-export-storage]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_canonical.py::test_search_does_not_leak_another_organization tests/phase5/test_live_journey.py::test_live_api_access_export_and_ocr
+bringing up nodes...
+bringing up nodes...
+
+..                                                                       [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 3 warnings in 4.31s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-802bea393b4c Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-802bea393b4c Created
+
+[audit-lineage]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_maintenance_recommendation_and_management_variance_are_append_only
+bringing up nodes...
+bringing up nodes...
+
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+../usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 3 warnings in 3.08s
+
+ Container perchpoint-phase6-cleanroom-migrate-run-cf278092a694 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-cf278092a694 Created
+
+[worker]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' ps worker
+NAME                                   IMAGE                   COMMAND                  SERVICE   CREATED         STATUS                   PORTS
+perchpoint-phase6-cleanroom-worker-1   perchpoint-api:phase6   "/bin/sh -ec 'while …"   worker    2 minutes ago   Up 2 minutes (healthy)   8000/tcp
+
+[worker]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T worker python -m perchpoint.worker
+{'processed': 0}
+{'claimed': True, 'status': 'delivered', 'id': 'd5f3e57c-70bf-4379-bf87-ae1b63b69a79', 'synthetic': True, 'exactly_once': False}
+
+[browser]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_browser_evidence.py
+Phase 6 browser evidence passed: 162/162
+
+[accessibility]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_acceptance.py --validate-report accessibility.json
+accessibility.json valid
+
+[responsive]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_acceptance.py --validate-report responsive.json
+responsive.json valid
+
+[responsive]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_evidence.py frontend
+wrote verified evidence: C:\Users\Admin\PerchPoint\test_reports\phase6\frontend.json
+
+[restart-auth]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart auth
+
+ Container perchpoint-phase6-cleanroom-auth-1 Restarting 
+ Container perchpoint-phase6-cleanroom-auth-1 Started
+
+[restart-auth]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:9998/health'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:9998/health
+
+[restart-api]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart api
+
+ Container perchpoint-phase6-cleanroom-api-1 Restarting 
+ Container perchpoint-phase6-cleanroom-api-1 Started
+
+[restart-api]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:8010/api/v2/health/ready
+
+[restart-worker]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart worker
+
+ Container perchpoint-phase6-cleanroom-worker-1 Restarting 
+ Container perchpoint-phase6-cleanroom-worker-1 Started
+
+[restart-worker]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys,time
+name='"'"'perchpoint-phase6-cleanroom-worker-1'"'"'
+for _ in range(120):
+ p=subprocess.run(['"'"'docker'"'"','"'"'inspect'"'"','"'"'--format'"'"','"'"'{{.State.Health.Status}}'"'"',name],text=True,capture_output=True)
+ if p.returncode==0 and p.stdout.strip()=='"'"'healthy'"'"':print(f'"'"'healthy {name}'"'"');sys.exit(0)
+ time.sleep(2)
+print(f'"'"'not healthy: {name}'"'"',file=sys.stderr);sys.exit(1)
+'
+healthy perchpoint-phase6-cleanroom-worker-1
+
+[persistent-revocation]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE identity_sessions SET revoked_at=now() WHERE id=(SELECT id FROM identity_sessions ORDER BY created_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '"'"'revocation_written'"'"' ELSE '"'"'revocation_missing'"'"' END FROM changed;'
+revocation_written
+
+[persistent-membership]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE memberships SET ended_at=now() WHERE id=(SELECT id FROM memberships WHERE ended_at IS NULL ORDER BY effective_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '"'"'membership_ended'"'"' ELSE '"'"'membership_missing'"'"' END FROM changed;'
+membership_ended
+
+[restart-postgres]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Restarting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+
+[restart-postgres]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - accepting connections
+
+[restart-postgres]
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN EXISTS(SELECT 1 FROM identity_sessions WHERE revoked_at IS NOT NULL) AND EXISTS(SELECT 1 FROM memberships WHERE ended_at IS NOT NULL) THEN '"'"'persistence_ok'"'"' ELSE '"'"'persistence_missing'"'"' END;'
+persistence_ok
+
+[restart-postgres]
+$ docker exec -e PGPASSWORD=local-only-not-production perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U perchpoint_runtime -d perchpoint_phase2 -At -c 'SELECT set_config('"'"'app.actor_id'"'"',(SELECT account_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false),set_config('"'"'app.organization_id'"'"',(SELECT organization_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false); SELECT CASE WHEN count(*)=0 THEN '"'"'membership_denied'"'"' ELSE '"'"'membership_leaked'"'"' END FROM properties;'
+|
+membership_denied
+
+[fail-closed-outage]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' stop postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopping 
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopped
+
+[fail-closed-outage]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys;p=subprocess.run(sys.argv[1:]);print('"'"'denied'"'"' if p.returncode else '"'"'unexpected success'"'"');sys.exit(0 if p.returncode else 1)' 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import urllib.request; urllib.request.urlopen('"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"',timeout=5)'
+denied
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/v2/health/ready',timeout=5)
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 495, in open
+    response = meth(req, response)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\urllib\request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 503: Service Unavailable
+
+[fail-closed-outage]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' start postgres
+
+ Container perchpoint-phase6-cleanroom-postgres-1 Starting 
+ Container perchpoint-phase6-cleanroom-postgres-1 Started
+
+[fail-closed-outage]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'
+/var/run/postgresql:5432 - accepting connections
+
+[teardown]
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' down --volumes --remove-orphans
+
+ Container perchpoint-phase6-cleanroom-web-1 Stopping 
+ Container perchpoint-phase6-cleanroom-worker-1 Stopping 
+ Container perchpoint-phase6-cleanroom-worker-1 Stopped 
+ Container perchpoint-phase6-cleanroom-worker-1 Removing 
+ Container perchpoint-phase6-cleanroom-worker-1 Removed 
+ Container perchpoint-phase6-cleanroom-web-1 Stopped 
+ Container perchpoint-phase6-cleanroom-web-1 Removing 
+ Container perchpoint-phase6-cleanroom-web-1 Removed 
+ Container perchpoint-phase6-cleanroom-api-1 Stopping 
+ Container perchpoint-phase6-cleanroom-api-1 Stopped 
+ Container perchpoint-phase6-cleanroom-api-1 Removing 
+ Container perchpoint-phase6-cleanroom-api-1 Removed 
+ Container perchpoint-phase6-cleanroom-minio-1 Stopping 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Stopping 
+ Container perchpoint-phase6-cleanroom-clamav-1 Stopping 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Stopped 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Removing 
+ Container perchpoint-phase6-cleanroom-auth-provision-1 Removed 
+ Container perchpoint-phase6-cleanroom-seed-1 Stopping 
+ Container perchpoint-phase6-cleanroom-auth-1 Stopping 
+ Container perchpoint-phase6-cleanroom-seed-1 Stopped 
+ Container perchpoint-phase6-cleanroom-seed-1 Removing 
+ Container perchpoint-phase6-cleanroom-seed-1 Removed 
+ Container perchpoint-phase6-cleanroom-migrate-1 Stopping 
+ Container perchpoint-phase6-cleanroom-migrate-1 Stopped 
+ Container perchpoint-phase6-cleanroom-migrate-1 Removing 
+ Container perchpoint-phase6-cleanroom-migrate-1 Removed 
+ Container perchpoint-phase6-cleanroom-minio-1 Stopped 
+ Container perchpoint-phase6-cleanroom-minio-1 Removing 
+ Container perchpoint-phase6-cleanroom-minio-1 Removed 
+ Container perchpoint-phase6-cleanroom-auth-1 Stopped 
+ Container perchpoint-phase6-cleanroom-auth-1 Removing 
+ Container perchpoint-phase6-cleanroom-auth-1 Removed 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Stopping 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Stopping 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Stopped 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Removing 
+ Container perchpoint-phase6-cleanroom-auth-db-init-1 Removed 
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopping 
+ Container perchpoint-phase6-cleanroom-clamav-1 Stopped 
+ Container perchpoint-phase6-cleanroom-clamav-1 Removing 
+ Container perchpoint-phase6-cleanroom-clamav-1 Removed 
+ Container perchpoint-phase6-cleanroom-postgres-1 Stopped 
+ Container perchpoint-phase6-cleanroom-postgres-1 Removing 
+ Container perchpoint-phase6-cleanroom-postgres-1 Removed 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Stopped 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Removing 
+ Container perchpoint-phase6-cleanroom-mailpit-1 Removed 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Removing 
+ Network perchpoint-phase6-cleanroom_data Removing 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Removing 
+ Network perchpoint-phase6-cleanroom_ingress Removing 
+ Volume perchpoint-phase6-cleanroom_phase6_postgres Removed 
+ Volume perchpoint-phase6-cleanroom_phase6_minio Removed 
+ Network perchpoint-phase6-cleanroom_data Removed 
+ Network perchpoint-phase6-cleanroom_ingress Removed
+
+[disposable-removed]
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import subprocess,sys
+project='"'"'perchpoint-phase6-cleanroom'"'"'
+containers=subprocess.check_output(['"'"'docker'"'"','"'"'ps'"'"','"'"'-a'"'"','"'"'--filter'"'"',f'"'"'label=com.docker.compose.project={project}'"'"','"'"'--format'"'"','"'"'{{.ID}}'"'"'],text=True).strip()
+volumes=subprocess.check_output(['"'"'docker'"'"','"'"'volume'"'"','"'"'ls'"'"','"'"'--filter'"'"',f'"'"'label=com.docker.compose.project={project}'"'"','"'"'--format'"'"','"'"'{{.Name}}'"'"'],text=True).strip()
+print(f'"'"'containers={containers!r} volumes={volumes!r}'"'"')
+sys.exit(1 if containers or volumes else 0)
+'
+containers='' volumes=''

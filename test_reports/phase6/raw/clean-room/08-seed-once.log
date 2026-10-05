@@ -1,0 +1,4 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps seed
+
+ Container perchpoint-phase6-cleanroom-seed-run-1693f14e18f7 Creating 
+ Container perchpoint-phase6-cleanroom-seed-run-1693f14e18f7 Created

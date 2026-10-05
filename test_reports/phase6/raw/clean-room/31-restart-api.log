@@ -1,0 +1,15 @@
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' restart api
+
+ Container perchpoint-phase6-cleanroom-api-1 Restarting 
+ Container perchpoint-phase6-cleanroom-api-1 Started
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' -c 'import sys,time,urllib.request
+url='"'"'http://127.0.0.1:8010/api/v2/health/ready'"'"'
+last=None
+for _ in range(120):
+ try:
+  with urllib.request.urlopen(url,timeout=3) as r:
+   print(f'"'"'ready status={r.status} url={url}'"'"');sys.exit(0)
+ except Exception as e:last=e;time.sleep(2)
+print(f'"'"'not ready: {last}'"'"',file=sys.stderr);sys.exit(1)
+'
+ready status=200 url=http://127.0.0.1:8010/api/v2/health/ready

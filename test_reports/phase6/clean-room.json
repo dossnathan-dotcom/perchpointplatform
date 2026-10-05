@@ -1,0 +1,633 @@
+{
+  "command": "python scripts/phase6_clean_room.py --execute",
+  "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+  "empty_volumes": true,
+  "executions": [
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' config --quiet",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:21:53.823118+00:00",
+      "output_bytes": 129,
+      "output_path": "test_reports/phase6/raw/clean-room/01-compose-config.log",
+      "output_sha256": "108754bd071618c109980dd49bfe26d71f1e1389c0f0a1b1f92d61fcbe137c31",
+      "started_at": "2026-10-05T00:21:53.698014+00:00",
+      "step": "compose-config"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' build --pull migrate web",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:27.445089+00:00",
+      "output_bytes": 7812,
+      "output_path": "test_reports/phase6/raw/clean-room/02-image-build.log",
+      "output_sha256": "9ce79ef37a0030b08174cd587d924903150ef4a0bd8c6abb63c673c18f15f0b4",
+      "started_at": "2026-10-05T00:21:53.823229+00:00",
+      "step": "image-build"
+    },
+    {
+      "command": "docker run --rm --entrypoint id perchpoint-api:phase6 -u && docker run --rm --entrypoint id perchpoint-web:phase6 -u",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:28.239679+00:00",
+      "output_bytes": 130,
+      "output_path": "test_reports/phase6/raw/clean-room/03-non-root.log",
+      "output_sha256": "d124b49a717c7e5780b558a4d2175e70c219f55f87a6055eb8eaef96cdb05c4c",
+      "started_at": "2026-10-05T00:22:27.445193+00:00",
+      "step": "non-root"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' up -d postgres && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE ROLE perchpoint_migrator LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '\"'\"'local-only-not-production'\"'\"';CREATE ROLE perchpoint_runtime LOGIN NOBYPASSRLS NOSUPERUSER PASSWORD '\"'\"'local-only-not-production'\"'\"';CREATE ROLE perchpoint_definer NOLOGIN BYPASSRLS NOSUPERUSER;' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase2;' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase2 TO perchpoint_migrator;GRANT CONNECT ON DATABASE perchpoint_phase2 TO perchpoint_runtime;' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;' && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m alembic upgrade head && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT version_num FROM alembic_version;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:38.443750+00:00",
+      "output_bytes": 2726,
+      "output_path": "test_reports/phase6/raw/clean-room/04-empty-migrate.log",
+      "output_sha256": "82990d1c0904a77fb74086800b8ff3112dba0310a0e62301c48d9cd8630be660",
+      "started_at": "2026-10-05T00:22:34.517816+00:00",
+      "step": "empty-migrate"
+    },
+    {
+      "command": "docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase5_upgrade;' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase5_upgrade TO perchpoint_migrator;' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;' && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade 0011_phase5_hold_guard && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade head && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'SELECT version_num FROM alembic_version;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:41.566977+00:00",
+      "output_bytes": 2103,
+      "output_path": "test_reports/phase6/raw/clean-room/05-phase5-upgrade.log",
+      "output_sha256": "4fa124cfe9be598083a434cc3741887dfb64dd3fa1e2b1c01fceeae4b0f11019",
+      "started_at": "2026-10-05T00:22:38.443866+00:00",
+      "step": "phase5-upgrade"
+    },
+    {
+      "command": "docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN count(*) FILTER (WHERE c.relrowsecurity)>0 AND count(*) FILTER (WHERE c.relrowsecurity AND NOT c.relforcerowsecurity)=0 THEN '\"'\"'forced_rls_ok'\"'\"' ELSE '\"'\"'forced_rls_bad'\"'\"' END FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='\"'\"'public'\"'\"' AND c.relkind='\"'\"'r'\"'\"';'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:41.672011+00:00",
+      "output_bytes": 453,
+      "output_path": "test_reports/phase6/raw/clean-room/06-forced-rls.log",
+      "output_sha256": "a683c1afcd569d01f5773ca4d1835654ced3024aadcf3b94bf20218c21766d45",
+      "started_at": "2026-10-05T00:22:41.567082+00:00",
+      "step": "forced-rls"
+    },
+    {
+      "command": "docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'SELECT rolname,rolsuper,rolbypassrls,rolcanlogin FROM pg_roles WHERE rolname IN ('\"'\"'perchpoint_runtime'\"'\"','\"'\"'perchpoint_migrator'\"'\"','\"'\"'perchpoint_definer'\"'\"') ORDER BY rolname;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:41.776708+00:00",
+      "output_bytes": 374,
+      "output_path": "test_reports/phase6/raw/clean-room/07-restricted-roles.log",
+      "output_sha256": "0b2ffe920c1512ad779c048458f2c074da24ed0d9d37c802690e8415d8220db1",
+      "started_at": "2026-10-05T00:22:41.672111+00:00",
+      "step": "restricted-roles"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps seed",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:43.145906+00:00",
+      "output_bytes": 279,
+      "output_path": "test_reports/phase6/raw/clean-room/08-seed-once.log",
+      "output_sha256": "8479441a84f8a66b736de4da34cfc2f0b2df53c697e629b961bb1264e7cc2e4e",
+      "started_at": "2026-10-05T00:22:41.776819+00:00",
+      "step": "seed-once"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import subprocess,sys\ncounts=['\"'\"'docker'\"'\"', '\"'\"'exec'\"'\"', '\"'\"'perchpoint-phase6-cleanroom-postgres-1'\"'\"', '\"'\"'psql'\"'\"', '\"'\"'-v'\"'\"', '\"'\"'ON_ERROR_STOP=1'\"'\"', '\"'\"'-U'\"'\"', '\"'\"'postgres'\"'\"', '\"'\"'-d'\"'\"', '\"'\"'perchpoint_phase2'\"'\"', '\"'\"'-At'\"'\"', '\"'\"'-c'\"'\"', '\"'\"'SELECT json_build_array((SELECT count(*) FROM organizations),(SELECT count(*) FROM accounts),(SELECT count(*) FROM memberships));'\"'\"'];seed=['\"'\"'docker'\"'\"', '\"'\"'compose'\"'\"', '\"'\"'-p'\"'\"', '\"'\"'perchpoint-phase6-cleanroom'\"'\"', '\"'\"'-f'\"'\"', '\"'\"'C:\\\\Users\\\\Admin\\\\PerchPoint\\\\docker-compose.phase6-closeout.yml'\"'\"', '\"'\"'run'\"'\"', '\"'\"'--rm'\"'\"', '\"'\"'--no-deps'\"'\"', '\"'\"'seed'\"'\"'];cwd='\"'\"'C:\\\\Users\\\\Admin\\\\PerchPoint'\"'\"'\nbefore=subprocess.check_output(counts,cwd=cwd,text=True).strip()\ncompleted=subprocess.run(seed,cwd=cwd)\nafter=subprocess.check_output(counts,cwd=cwd,text=True).strip()\nprint(f'\"'\"'before={before} after={after}'\"'\"')\nsys.exit(0 if completed.returncode==0 and before==after else 1)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:22:44.748545+00:00",
+      "output_bytes": 1249,
+      "output_path": "test_reports/phase6/raw/clean-room/09-seed-idempotent.log",
+      "output_sha256": "91b6e212d5d9098aeb8ba1d31d5421b16de8f2c1f1fce9c0f40ae4ea9a06a1e3",
+      "started_at": "2026-10-05T00:22:43.146038+00:00",
+      "step": "seed-idempotent"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' up -d mailpit auth-db-init auth minio clamav api worker web && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import sys,time,urllib.request\nurl='\"'\"'http://127.0.0.1:9998/health'\"'\"'\nlast=None\nfor _ in range(120):\n try:\n  with urllib.request.urlopen(url,timeout=3) as r:\n   print(f'\"'\"'ready status={r.status} url={url}'\"'\"');sys.exit(0)\n except Exception as e:last=e;time.sleep(2)\nprint(f'\"'\"'not ready: {last}'\"'\"',file=sys.stderr);sys.exit(1)\n' && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import sys,time,urllib.request\nurl='\"'\"'http://127.0.0.1:8010/api/v2/health/ready'\"'\"'\nlast=None\nfor _ in range(120):\n try:\n  with urllib.request.urlopen(url,timeout=3) as r:\n   print(f'\"'\"'ready status={r.status} url={url}'\"'\"');sys.exit(0)\n except Exception as e:last=e;time.sleep(2)\nprint(f'\"'\"'not ready: {last}'\"'\"',file=sys.stderr);sys.exit(1)\n' && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import json,urllib.request\nbody=json.dumps({'\"'\"'email'\"'\"':'\"'\"'ann.synthetic@example.com'\"'\"','\"'\"'password'\"'\"':'\"'\"'local-only-not-production-password'\"'\"'}).encode()\nrequest=urllib.request.Request('\"'\"'http://127.0.0.1:8010/api/v2/auth/sign-in'\"'\"',data=body,headers={'\"'\"'content-type'\"'\"':'\"'\"'application/json'\"'\"'},method='\"'\"'POST'\"'\"')\nwith urllib.request.urlopen(request,timeout=10) as response:\n print(f'\"'\"'sign_in_ready status={response.status}'\"'\"')\n' && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' scripts/phase6_evidence.py rls",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:11.972277+00:00",
+      "output_bytes": 6112,
+      "output_path": "test_reports/phase6/raw/clean-room/10-auth-health.log",
+      "output_sha256": "3a8db3caf6918b90fe076303fa0e1bf73c32256cac3521bf8802d8c434725245",
+      "started_at": "2026-10-05T00:22:44.748644+00:00",
+      "step": "auth-health"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps --volume 'C:\\Users\\Admin\\PerchPoint:/workspace' --workdir /workspace/backend migrate python -m pytest -q --tb=line tests",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:47.386556+00:00",
+      "output_bytes": 3261,
+      "output_path": "test_reports/phase6/raw/clean-room/11-full-backend.log",
+      "output_sha256": "948795409745c1d22e0a01db665fbc4c950beeac0871b75fc41c000a477bac4f",
+      "started_at": "2026-10-05T00:23:11.972387+00:00",
+      "step": "full-backend"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import sys,time,urllib.request\nurl='\"'\"'http://127.0.0.1:8125/api/v1/info'\"'\"'\nlast=None\nfor _ in range(120):\n try:\n  with urllib.request.urlopen(url,timeout=3) as r:\n   print(f'\"'\"'ready status={r.status} url={url}'\"'\"');sys.exit(0)\n except Exception as e:last=e;time.sleep(2)\nprint(f'\"'\"'not ready: {last}'\"'\"',file=sys.stderr);sys.exit(1)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:49.656629+00:00",
+      "output_bytes": 473,
+      "output_path": "test_reports/phase6/raw/clean-room/12-mailpit.log",
+      "output_sha256": "91d429f5f53202c44a56d08f359270daa540b735c860e6e357880a386e8ddcd2",
+      "started_at": "2026-10-05T00:23:47.386668+00:00",
+      "step": "mailpit"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_live_services.py::test_live_minio_presign_is_private_and_cleaned_up",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:52.559540+00:00",
+      "output_bytes": 1184,
+      "output_path": "test_reports/phase6/raw/clean-room/13-minio-live.log",
+      "output_sha256": "912f90a5f9685efc4cf184047a0dfd7340d04a35c215bf12bcbceaf6676a7d12",
+      "started_at": "2026-10-05T00:23:49.656731+00:00",
+      "step": "minio-live"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_live_services.py::test_live_clamav_detects_eicar_and_outage_is_not_clean",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:55.186952+00:00",
+      "output_bytes": 1189,
+      "output_path": "test_reports/phase6/raw/clean-room/14-clamav-live.log",
+      "output_sha256": "284d4b680bff87f52170ad20cdc9015846d2af2bef44add6aa9081ae415e980f",
+      "started_at": "2026-10-05T00:23:52.559660+00:00",
+      "step": "clamav-live"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_interactive_sign_in_uses_cookie_and_rejects_missing_csrf",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:23:59.088714+00:00",
+      "output_bytes": 1165,
+      "output_path": "test_reports/phase6/raw/clean-room/15-sign-in.log",
+      "output_sha256": "5fbdf3df8ec00f874ae71340c1420376b24a935983522b2f2e1fef9a3eafddfb",
+      "started_at": "2026-10-05T00:23:55.187069+00:00",
+      "step": "sign-in"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_invitation_is_single_use_and_totp_secret_is_not_stored_in_plaintext",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:09.895512+00:00",
+      "output_bytes": 1176,
+      "output_path": "test_reports/phase6/raw/clean-room/16-totp.log",
+      "output_sha256": "5328d271472cc0911ff2ef37ca8a4e0c4ae521b99e065bbfef95fa233aed1154",
+      "started_at": "2026-10-05T00:23:59.088821+00:00",
+      "step": "totp"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_resident_cannot_use_staff_invitation_route tests/phase6/test_identity.py::test_privileged_roles_cannot_be_created_through_invitations",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:14.383416+00:00",
+      "output_bytes": 1242,
+      "output_path": "test_reports/phase6/raw/clean-room/17-invitation.log",
+      "output_sha256": "471c7eccb07ddb27985b5391ab920c98689578e0be34b77b42db6ca9431bf8ca",
+      "started_at": "2026-10-05T00:24:09.895668+00:00",
+      "step": "invitation"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_password_reset_does_not_sign_in_and_rejects_replay",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:18.609346+00:00",
+      "output_bytes": 1159,
+      "output_path": "test_reports/phase6/raw/clean-room/18-password-reset.log",
+      "output_sha256": "d23848ea7c7968afc5c8bcea9b8896afc133b83ad8935e9ca5020fd8062fb079",
+      "started_at": "2026-10-05T00:24:14.383509+00:00",
+      "step": "password-reset"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_sessions_access_requests_and_self_recovery_are_enforced tests/phase6/test_identity.py::test_provider_refresh_reuse_revokes_the_application_session",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:23.475389+00:00",
+      "output_bytes": 1255,
+      "output_path": "test_reports/phase6/raw/clean-room/19-sessions.log",
+      "output_sha256": "35fd0a138f99c4fbb132a165d48d174c3b03ceb9b8386d4c342f03565124f923",
+      "started_at": "2026-10-05T00:24:18.609445+00:00",
+      "step": "sessions"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_origin_is_bound_to_the_session_csrf_token tests/phase6/test_identity.py::test_runtime_role_without_actor_context_sees_no_identity_rows",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:27.227095+00:00",
+      "output_bytes": 1243,
+      "output_path": "test_reports/phase6/raw/clean-room/20-context.log",
+      "output_sha256": "43c5ebe927f782e4b5a4c447ba5cd17f852644604f52e83210a188b52d91b833",
+      "started_at": "2026-10-05T00:24:23.475536+00:00",
+      "step": "context"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_delegation_usage_enforces_scope_decision_amount_and_split_detection",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:31.992268+00:00",
+      "output_bytes": 1176,
+      "output_path": "test_reports/phase6/raw/clean-room/21-delegation.log",
+      "output_sha256": "bc6f96c079f031fad84a7d82a6f170ec1427a2fbf2fb0b42d9009ae959baf7f4",
+      "started_at": "2026-10-05T00:24:27.227215+00:00",
+      "step": "delegation"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_financial_thresholds_and_authority_boundaries",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:35.134268+00:00",
+      "output_bytes": 1154,
+      "output_path": "test_reports/phase6/raw/clean-room/22-owner-threshold.log",
+      "output_sha256": "2e4e9bf7ca250c3d421b0389de763d6c7ae83b54eb61298e1845f77e1841c314",
+      "started_at": "2026-10-05T00:24:31.992390+00:00",
+      "step": "owner-threshold"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_vendor_admin_proposes_operations_approves_and_worker_assignment_activates tests/phase6/test_identity.py::test_restricted_rls_enforces_household_and_worker_assignment_relationships",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:40.116973+00:00",
+      "output_bytes": 1288,
+      "output_path": "test_reports/phase6/raw/clean-room/23-vendor-isolation.log",
+      "output_sha256": "2bd7566ae2c04620e5afb0a9733150103e6225b3831a38d11d2e20f33e7764f9",
+      "started_at": "2026-10-05T00:24:35.134402+00:00",
+      "step": "vendor-isolation"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE5_LIVE_SERVICES=1 migrate python -m pytest -q --tb=line tests/phase5/test_canonical.py::test_search_does_not_leak_another_organization tests/phase5/test_live_journey.py::test_live_api_access_export_and_ocr",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:46.017912+00:00",
+      "output_bytes": 1248,
+      "output_path": "test_reports/phase6/raw/clean-room/24-search-export-storage.log",
+      "output_sha256": "28ff17563f8bb228bbc56e8a655bb8d29a4edb3c9f65205b6236e0b58c851604",
+      "started_at": "2026-10-05T00:24:40.117096+00:00",
+      "step": "search-export-storage"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' run --rm --no-deps migrate python -m pytest -q --tb=line tests/phase6/test_identity.py::test_maintenance_recommendation_and_management_variance_are_append_only",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:50.741510+00:00",
+      "output_bytes": 1175,
+      "output_path": "test_reports/phase6/raw/clean-room/25-audit-lineage.log",
+      "output_sha256": "80d8d9df05645cd87abc611bc18da741052a01727be8985ba5ebf59040c6d365",
+      "started_at": "2026-10-05T00:24:46.018030+00:00",
+      "step": "audit-lineage"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' ps worker && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' exec -T worker python -m perchpoint.worker",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:24:51.635112+00:00",
+      "output_bytes": 722,
+      "output_path": "test_reports/phase6/raw/clean-room/26-worker.log",
+      "output_sha256": "aea779bef384ef3e86b9ce5d4f4706e489424fbdc6676622e2fb0fd0ce53a05a",
+      "started_at": "2026-10-05T00:24:50.741619+00:00",
+      "step": "worker"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' scripts/phase6_browser_evidence.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:30:40.938953+00:00",
+      "output_bytes": 146,
+      "output_path": "test_reports/phase6/raw/clean-room/27-browser.log",
+      "output_sha256": "7fe9e7da0a4a1a1757c0735bd933717f5276edd163335601a132da5626d2491f",
+      "started_at": "2026-10-05T00:24:51.635204+00:00",
+      "step": "browser"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' scripts/phase6_acceptance.py --validate-report accessibility.json",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:30:41.088545+00:00",
+      "output_bytes": 161,
+      "output_path": "test_reports/phase6/raw/clean-room/28-accessibility.log",
+      "output_sha256": "e43769fbc5a8fed302e34b4f0ea2ea6c07eda06b4dcfc9e0d16f996f38a11fcb",
+      "started_at": "2026-10-05T00:30:40.939069+00:00",
+      "step": "accessibility"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' scripts/phase6_acceptance.py --validate-report responsive.json && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' scripts/phase6_evidence.py frontend",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:30:41.509369+00:00",
+      "output_bytes": 346,
+      "output_path": "test_reports/phase6/raw/clean-room/29-responsive.log",
+      "output_sha256": "abef541bf026834dc0e74646c01dde1e7b8fe9d73a74c901b9facb1bc7fd1b91",
+      "started_at": "2026-10-05T00:30:41.088633+00:00",
+      "step": "responsive"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' restart auth && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import sys,time,urllib.request\nurl='\"'\"'http://127.0.0.1:9998/health'\"'\"'\nlast=None\nfor _ in range(120):\n try:\n  with urllib.request.urlopen(url,timeout=3) as r:\n   print(f'\"'\"'ready status={r.status} url={url}'\"'\"');sys.exit(0)\n except Exception as e:last=e;time.sleep(2)\nprint(f'\"'\"'not ready: {last}'\"'\"',file=sys.stderr);sys.exit(1)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:30:42.408853+00:00",
+      "output_bytes": 703,
+      "output_path": "test_reports/phase6/raw/clean-room/30-restart-auth.log",
+      "output_sha256": "da4394ac7cfab7b8c45fb7dd9a81f1f9112bcc5fc76f13b6b6d791153ea7d08d",
+      "started_at": "2026-10-05T00:30:41.509480+00:00",
+      "step": "restart-auth"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' restart api && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import sys,time,urllib.request\nurl='\"'\"'http://127.0.0.1:8010/api/v2/health/ready'\"'\"'\nlast=None\nfor _ in range(120):\n try:\n  with urllib.request.urlopen(url,timeout=3) as r:\n   print(f'\"'\"'ready status={r.status} url={url}'\"'\"');sys.exit(0)\n except Exception as e:last=e;time.sleep(2)\nprint(f'\"'\"'not ready: {last}'\"'\"',file=sys.stderr);sys.exit(1)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:30:45.859433+00:00",
+      "output_bytes": 726,
+      "output_path": "test_reports/phase6/raw/clean-room/31-restart-api.log",
+      "output_sha256": "192186ac374d5272c6ef306a1e4e91c5f7b9bdf8ce3965eca334bc3cb389ee6f",
+      "started_at": "2026-10-05T00:30:42.408967+00:00",
+      "step": "restart-api"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' restart worker && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import subprocess,sys,time\nname='\"'\"'perchpoint-phase6-cleanroom-worker-1'\"'\"'\nfor _ in range(120):\n p=subprocess.run(['\"'\"'docker'\"'\"','\"'\"'inspect'\"'\"','\"'\"'--format'\"'\"','\"'\"'{{.State.Health.Status}}'\"'\"',name],text=True,capture_output=True)\n if p.returncode==0 and p.stdout.strip()=='\"'\"'healthy'\"'\"':print(f'\"'\"'healthy {name}'\"'\"');sys.exit(0)\n time.sleep(2)\nprint(f'\"'\"'not healthy: {name}'\"'\"',file=sys.stderr);sys.exit(1)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:01.683429+00:00",
+      "output_bytes": 798,
+      "output_path": "test_reports/phase6/raw/clean-room/32-restart-worker.log",
+      "output_sha256": "979c2b18bb619bf5c502399f97dc496b178098c8712a4a74def803db32abb477",
+      "started_at": "2026-10-05T00:30:45.859538+00:00",
+      "step": "restart-worker"
+    },
+    {
+      "command": "docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE identity_sessions SET revoked_at=now() WHERE id=(SELECT id FROM identity_sessions ORDER BY created_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '\"'\"'revocation_written'\"'\"' ELSE '\"'\"'revocation_missing'\"'\"' END FROM changed;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:01.793371+00:00",
+      "output_bytes": 401,
+      "output_path": "test_reports/phase6/raw/clean-room/33-persistent-revocation.log",
+      "output_sha256": "a7dc82053c7a024ed45ce4c9f0a35d3b6d7fd20ec8205aa81f0e9cd1928b811b",
+      "started_at": "2026-10-05T00:31:01.683534+00:00",
+      "step": "persistent-revocation"
+    },
+    {
+      "command": "docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE memberships SET ended_at=now() WHERE id=(SELECT id FROM memberships WHERE ended_at IS NULL ORDER BY effective_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '\"'\"'membership_ended'\"'\"' ELSE '\"'\"'membership_missing'\"'\"' END FROM changed;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:01.903120+00:00",
+      "output_bytes": 408,
+      "output_path": "test_reports/phase6/raw/clean-room/34-persistent-membership.log",
+      "output_sha256": "dc12a337edde83391c59c5edb3a2974a20d6a7e207566ba8da84a38e0b2f34ac",
+      "started_at": "2026-10-05T00:31:01.793480+00:00",
+      "step": "persistent-membership"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' restart postgres && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done' && docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'SELECT CASE WHEN EXISTS(SELECT 1 FROM identity_sessions WHERE revoked_at IS NOT NULL) AND EXISTS(SELECT 1 FROM memberships WHERE ended_at IS NOT NULL) THEN '\"'\"'persistence_ok'\"'\"' ELSE '\"'\"'persistence_missing'\"'\"' END;' && docker exec -e PGPASSWORD=local-only-not-production perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U perchpoint_runtime -d perchpoint_phase2 -At -c 'SELECT set_config('\"'\"'app.actor_id'\"'\"',(SELECT account_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false),set_config('\"'\"'app.organization_id'\"'\"',(SELECT organization_id::text FROM memberships WHERE ended_at IS NOT NULL ORDER BY ended_at DESC LIMIT 1),false); SELECT CASE WHEN count(*)=0 THEN '\"'\"'membership_denied'\"'\"' ELSE '\"'\"'membership_leaked'\"'\"' END FROM properties;'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:03.351092+00:00",
+      "output_bytes": 1493,
+      "output_path": "test_reports/phase6/raw/clean-room/35-restart-postgres.log",
+      "output_sha256": "3b6c156374449337c9cee6f26a8cb25cacbc6eb4b8e32e80f54bd1a35d36609e",
+      "started_at": "2026-10-05T00:31:01.903222+00:00",
+      "step": "restart-postgres"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' stop postgres && 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import subprocess,sys;p=subprocess.run(sys.argv[1:]);print('\"'\"'denied'\"'\"' if p.returncode else '\"'\"'unexpected success'\"'\"');sys.exit(0 if p.returncode else 1)' 'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import urllib.request; urllib.request.urlopen('\"'\"'http://127.0.0.1:8010/api/v2/health/ready'\"'\"',timeout=5)' && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' start postgres && docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' exec -T postgres sh -ec 'i=0; until pg_isready -U postgres; do i=$((i+1)); [ $i -lt 60 ] || exit 1; sleep 1; done'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:08.494021+00:00",
+      "output_bytes": 2565,
+      "output_path": "test_reports/phase6/raw/clean-room/36-fail-closed-outage.log",
+      "output_sha256": "3ef4bcdac7ad100dc8ca8e8ac9611fb657db3f68963ec70d5e8a6f75218ab628",
+      "started_at": "2026-10-05T00:31:03.351201+00:00",
+      "step": "fail-closed-outage"
+    },
+    {
+      "command": "docker compose -p perchpoint-phase6-cleanroom -f 'C:\\Users\\Admin\\PerchPoint\\docker-compose.phase6-closeout.yml' down --volumes --remove-orphans",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:14.572128+00:00",
+      "output_bytes": 3386,
+      "output_path": "test_reports/phase6/raw/clean-room/37-teardown.log",
+      "output_sha256": "cf6227cc059684fcef481b962511c82208969e01cccacdd4a734bbfd4a363c87",
+      "started_at": "2026-10-05T00:31:08.494140+00:00",
+      "step": "teardown"
+    },
+    {
+      "command": "'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -c 'import subprocess,sys\nproject='\"'\"'perchpoint-phase6-cleanroom'\"'\"'\ncontainers=subprocess.check_output(['\"'\"'docker'\"'\"','\"'\"'ps'\"'\"','\"'\"'-a'\"'\"','\"'\"'--filter'\"'\"',f'\"'\"'label=com.docker.compose.project={project}'\"'\"','\"'\"'--format'\"'\"','\"'\"'{{.ID}}'\"'\"'],text=True).strip()\nvolumes=subprocess.check_output(['\"'\"'docker'\"'\"','\"'\"'volume'\"'\"','\"'\"'ls'\"'\"','\"'\"'--filter'\"'\"',f'\"'\"'label=com.docker.compose.project={project}'\"'\"','\"'\"'--format'\"'\"','\"'\"'{{.Name}}'\"'\"'],text=True).strip()\nprint(f'\"'\"'containers={containers!r} volumes={volumes!r}'\"'\"')\nsys.exit(1 if containers or volumes else 0)\n'",
+      "exit_code": 0,
+      "finished_at": "2026-10-05T00:31:14.714407+00:00",
+      "output_bytes": 698,
+      "output_path": "test_reports/phase6/raw/clean-room/38-disposable-removed.log",
+      "output_sha256": "0c63d9a25aa571a704a5d4a5571a4bec23abcef2e99d26d37324016dfef06e04",
+      "started_at": "2026-10-05T00:31:14.572217+00:00",
+      "step": "disposable-removed"
+    }
+  ],
+  "exit_code": 0,
+  "kind": "clean-room",
+  "project": "perchpoint-phase6-cleanroom",
+  "raw_artifacts": [
+    {
+      "bytes": 129,
+      "path": "test_reports/phase6/raw/clean-room/01-compose-config.log",
+      "sha256": "108754bd071618c109980dd49bfe26d71f1e1389c0f0a1b1f92d61fcbe137c31"
+    },
+    {
+      "bytes": 7812,
+      "path": "test_reports/phase6/raw/clean-room/02-image-build.log",
+      "sha256": "9ce79ef37a0030b08174cd587d924903150ef4a0bd8c6abb63c673c18f15f0b4"
+    },
+    {
+      "bytes": 130,
+      "path": "test_reports/phase6/raw/clean-room/03-non-root.log",
+      "sha256": "d124b49a717c7e5780b558a4d2175e70c219f55f87a6055eb8eaef96cdb05c4c"
+    },
+    {
+      "bytes": 2726,
+      "path": "test_reports/phase6/raw/clean-room/04-empty-migrate.log",
+      "sha256": "82990d1c0904a77fb74086800b8ff3112dba0310a0e62301c48d9cd8630be660"
+    },
+    {
+      "bytes": 2103,
+      "path": "test_reports/phase6/raw/clean-room/05-phase5-upgrade.log",
+      "sha256": "4fa124cfe9be598083a434cc3741887dfb64dd3fa1e2b1c01fceeae4b0f11019"
+    },
+    {
+      "bytes": 453,
+      "path": "test_reports/phase6/raw/clean-room/06-forced-rls.log",
+      "sha256": "a683c1afcd569d01f5773ca4d1835654ced3024aadcf3b94bf20218c21766d45"
+    },
+    {
+      "bytes": 374,
+      "path": "test_reports/phase6/raw/clean-room/07-restricted-roles.log",
+      "sha256": "0b2ffe920c1512ad779c048458f2c074da24ed0d9d37c802690e8415d8220db1"
+    },
+    {
+      "bytes": 279,
+      "path": "test_reports/phase6/raw/clean-room/08-seed-once.log",
+      "sha256": "8479441a84f8a66b736de4da34cfc2f0b2df53c697e629b961bb1264e7cc2e4e"
+    },
+    {
+      "bytes": 1249,
+      "path": "test_reports/phase6/raw/clean-room/09-seed-idempotent.log",
+      "sha256": "91b6e212d5d9098aeb8ba1d31d5421b16de8f2c1f1fce9c0f40ae4ea9a06a1e3"
+    },
+    {
+      "bytes": 6112,
+      "path": "test_reports/phase6/raw/clean-room/10-auth-health.log",
+      "sha256": "3a8db3caf6918b90fe076303fa0e1bf73c32256cac3521bf8802d8c434725245"
+    },
+    {
+      "bytes": 3261,
+      "path": "test_reports/phase6/raw/clean-room/11-full-backend.log",
+      "sha256": "948795409745c1d22e0a01db665fbc4c950beeac0871b75fc41c000a477bac4f"
+    },
+    {
+      "bytes": 473,
+      "path": "test_reports/phase6/raw/clean-room/12-mailpit.log",
+      "sha256": "91d429f5f53202c44a56d08f359270daa540b735c860e6e357880a386e8ddcd2"
+    },
+    {
+      "bytes": 1184,
+      "path": "test_reports/phase6/raw/clean-room/13-minio-live.log",
+      "sha256": "912f90a5f9685efc4cf184047a0dfd7340d04a35c215bf12bcbceaf6676a7d12"
+    },
+    {
+      "bytes": 1189,
+      "path": "test_reports/phase6/raw/clean-room/14-clamav-live.log",
+      "sha256": "284d4b680bff87f52170ad20cdc9015846d2af2bef44add6aa9081ae415e980f"
+    },
+    {
+      "bytes": 1165,
+      "path": "test_reports/phase6/raw/clean-room/15-sign-in.log",
+      "sha256": "5fbdf3df8ec00f874ae71340c1420376b24a935983522b2f2e1fef9a3eafddfb"
+    },
+    {
+      "bytes": 1176,
+      "path": "test_reports/phase6/raw/clean-room/16-totp.log",
+      "sha256": "5328d271472cc0911ff2ef37ca8a4e0c4ae521b99e065bbfef95fa233aed1154"
+    },
+    {
+      "bytes": 1242,
+      "path": "test_reports/phase6/raw/clean-room/17-invitation.log",
+      "sha256": "471c7eccb07ddb27985b5391ab920c98689578e0be34b77b42db6ca9431bf8ca"
+    },
+    {
+      "bytes": 1159,
+      "path": "test_reports/phase6/raw/clean-room/18-password-reset.log",
+      "sha256": "d23848ea7c7968afc5c8bcea9b8896afc133b83ad8935e9ca5020fd8062fb079"
+    },
+    {
+      "bytes": 1255,
+      "path": "test_reports/phase6/raw/clean-room/19-sessions.log",
+      "sha256": "35fd0a138f99c4fbb132a165d48d174c3b03ceb9b8386d4c342f03565124f923"
+    },
+    {
+      "bytes": 1243,
+      "path": "test_reports/phase6/raw/clean-room/20-context.log",
+      "sha256": "43c5ebe927f782e4b5a4c447ba5cd17f852644604f52e83210a188b52d91b833"
+    },
+    {
+      "bytes": 1176,
+      "path": "test_reports/phase6/raw/clean-room/21-delegation.log",
+      "sha256": "bc6f96c079f031fad84a7d82a6f170ec1427a2fbf2fb0b42d9009ae959baf7f4"
+    },
+    {
+      "bytes": 1154,
+      "path": "test_reports/phase6/raw/clean-room/22-owner-threshold.log",
+      "sha256": "2e4e9bf7ca250c3d421b0389de763d6c7ae83b54eb61298e1845f77e1841c314"
+    },
+    {
+      "bytes": 1288,
+      "path": "test_reports/phase6/raw/clean-room/23-vendor-isolation.log",
+      "sha256": "2bd7566ae2c04620e5afb0a9733150103e6225b3831a38d11d2e20f33e7764f9"
+    },
+    {
+      "bytes": 1248,
+      "path": "test_reports/phase6/raw/clean-room/24-search-export-storage.log",
+      "sha256": "28ff17563f8bb228bbc56e8a655bb8d29a4edb3c9f65205b6236e0b58c851604"
+    },
+    {
+      "bytes": 1175,
+      "path": "test_reports/phase6/raw/clean-room/25-audit-lineage.log",
+      "sha256": "80d8d9df05645cd87abc611bc18da741052a01727be8985ba5ebf59040c6d365"
+    },
+    {
+      "bytes": 722,
+      "path": "test_reports/phase6/raw/clean-room/26-worker.log",
+      "sha256": "aea779bef384ef3e86b9ce5d4f4706e489424fbdc6676622e2fb0fd0ce53a05a"
+    },
+    {
+      "bytes": 146,
+      "path": "test_reports/phase6/raw/clean-room/27-browser.log",
+      "sha256": "7fe9e7da0a4a1a1757c0735bd933717f5276edd163335601a132da5626d2491f"
+    },
+    {
+      "bytes": 161,
+      "path": "test_reports/phase6/raw/clean-room/28-accessibility.log",
+      "sha256": "e43769fbc5a8fed302e34b4f0ea2ea6c07eda06b4dcfc9e0d16f996f38a11fcb"
+    },
+    {
+      "bytes": 346,
+      "path": "test_reports/phase6/raw/clean-room/29-responsive.log",
+      "sha256": "abef541bf026834dc0e74646c01dde1e7b8fe9d73a74c901b9facb1bc7fd1b91"
+    },
+    {
+      "bytes": 703,
+      "path": "test_reports/phase6/raw/clean-room/30-restart-auth.log",
+      "sha256": "da4394ac7cfab7b8c45fb7dd9a81f1f9112bcc5fc76f13b6b6d791153ea7d08d"
+    },
+    {
+      "bytes": 726,
+      "path": "test_reports/phase6/raw/clean-room/31-restart-api.log",
+      "sha256": "192186ac374d5272c6ef306a1e4e91c5f7b9bdf8ce3965eca334bc3cb389ee6f"
+    },
+    {
+      "bytes": 798,
+      "path": "test_reports/phase6/raw/clean-room/32-restart-worker.log",
+      "sha256": "979c2b18bb619bf5c502399f97dc496b178098c8712a4a74def803db32abb477"
+    },
+    {
+      "bytes": 401,
+      "path": "test_reports/phase6/raw/clean-room/33-persistent-revocation.log",
+      "sha256": "a7dc82053c7a024ed45ce4c9f0a35d3b6d7fd20ec8205aa81f0e9cd1928b811b"
+    },
+    {
+      "bytes": 408,
+      "path": "test_reports/phase6/raw/clean-room/34-persistent-membership.log",
+      "sha256": "dc12a337edde83391c59c5edb3a2974a20d6a7e207566ba8da84a38e0b2f34ac"
+    },
+    {
+      "bytes": 1493,
+      "path": "test_reports/phase6/raw/clean-room/35-restart-postgres.log",
+      "sha256": "3b6c156374449337c9cee6f26a8cb25cacbc6eb4b8e32e80f54bd1a35d36609e"
+    },
+    {
+      "bytes": 2565,
+      "path": "test_reports/phase6/raw/clean-room/36-fail-closed-outage.log",
+      "sha256": "3ef4bcdac7ad100dc8ca8e8ac9611fb657db3f68963ec70d5e8a6f75218ab628"
+    },
+    {
+      "bytes": 3386,
+      "path": "test_reports/phase6/raw/clean-room/37-teardown.log",
+      "sha256": "cf6227cc059684fcef481b962511c82208969e01cccacdd4a734bbfd4a363c87"
+    },
+    {
+      "bytes": 698,
+      "path": "test_reports/phase6/raw/clean-room/38-disposable-removed.log",
+      "sha256": "0c63d9a25aa571a704a5d4a5571a4bec23abcef2e99d26d37324016dfef06e04"
+    }
+  ],
+  "schema_version": 2,
+  "source_clean": true,
+  "steps": [
+    "compose-config",
+    "image-build",
+    "non-root",
+    "empty-migrate",
+    "phase5-upgrade",
+    "forced-rls",
+    "restricted-roles",
+    "seed-once",
+    "seed-idempotent",
+    "auth-health",
+    "full-backend",
+    "mailpit",
+    "minio-live",
+    "clamav-live",
+    "sign-in",
+    "totp",
+    "invitation",
+    "password-reset",
+    "sessions",
+    "context",
+    "delegation",
+    "owner-threshold",
+    "vendor-isolation",
+    "search-export-storage",
+    "audit-lineage",
+    "worker",
+    "browser",
+    "accessibility",
+    "responsive",
+    "restart-auth",
+    "restart-api",
+    "restart-worker",
+    "restart-postgres",
+    "persistent-revocation",
+    "persistent-membership",
+    "fail-closed-outage",
+    "teardown",
+    "disposable-removed"
+  ],
+  "timestamp": "2026-10-05T00:31:14.741718+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 38,
+    "skipped": 0,
+    "total": 38
+  },
+  "tree_hash": "122acca6d8c41067442d359b87c23c1286d9f07f",
+  "volumes_removed": true
+}

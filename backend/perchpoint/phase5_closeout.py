@@ -30,10 +30,6 @@ from .settings import Settings
 
 TAG = re.compile(r"<[^>]+>")
 FORMULA = re.compile(r"^[=+\-@]")
-OPERATE = {"leasing", "platform_admin"}
-READ = {"leasing", "platform_admin", "owner"}
-
-
 def enqueue_processing(connection, organization, actor, document_id, version_id, correlation) -> None:
     for kind in ("extract", "preview"):
         connection.execute(
@@ -56,20 +52,50 @@ def enqueue_processing(connection, organization, actor, document_id, version_id,
     _ = version_id
 
 
-def process_document_jobs(settings: Settings, limit: int = 10) -> dict:
+def process_document_jobs(
+    settings: Settings,
+    limit: int = 10,
+    *,
+    worker_name: str | None = None,
+    credential: str | None = None,
+) -> dict:
+    from .phase6_identity import authenticate_service_credential
+
+    worker_name = worker_name or os.environ.get(
+        "PHASE6_WORKER_NAME", "synthetic-worker"
+    )
+    credential = credential or os.environ.get(
+        "PHASE6_WORKER_CREDENTIAL", "local-only-not-production-worker-credential"
+    )
+    principal = authenticate_service_credential(
+        settings,
+        credential,
+        audience="perchpoint-worker",
+        worker_name=worker_name,
+    )
+    if principal is None:
+        raise CommandError(401, "service_credential_invalid", "Worker authentication failed")
     processed = 0
     for _ in range(limit):
-        with runtime_transaction(settings, None, None, uuid4()) as connection:
-            row = connection.execute(text("SELECT * FROM perchpoint.claim_document_job('phase5')")).mappings().first()
+        with runtime_transaction(
+            settings,
+            principal["id"],
+            principal["organization_id"],
+            uuid4(),
+        ) as connection:
+            row = connection.execute(
+                text("SELECT * FROM perchpoint.claim_document_job(:worker)"),
+                {"worker": worker_name},
+            ).mappings().first()
         if not row or not row["job_id"]:
             break
-        _finish_job(settings, row)
+        _finish_job(settings, row, principal)
         processed += 1
     return {"processed": processed}
 
 
-def _finish_job(settings: Settings, claimed) -> None:
-    actor = claimed["actor_id"]
+def _finish_job(settings: Settings, claimed, principal: dict) -> None:
+    actor = principal["id"]
     organization = claimed["organization_id"]
     try:
         with runtime_transaction(settings, actor, organization, claimed["job_id"]) as connection:
@@ -432,21 +458,17 @@ def reconcile_orphans(settings: Settings, actor: UUID, organization: UUID) -> di
     return {"removed_staged": removed}
 
 
-def _role(connection, actor: UUID) -> str:
-    row = connection.execute(text("SELECT * FROM perchpoint.current_membership(:account)"), {"account": actor}).mappings().first()
-    return "" if not row else row["role_name"]
-
-
-def _require(connection, actor: UUID, allowed: set[str]) -> str:
-    role = _role(connection, actor)
-    if role not in allowed:
+def _require(connection, capability: str) -> None:
+    if connection.execute(
+        text("SELECT perchpoint.has_capability(:capability)"),
+        {"capability": capability},
+    ).scalar() is not True:
         raise CommandError(404, "not_found", "Document was not found")
-    return role
 
 
 def list_documents(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "document.read")
         rows = connection.execute(
             text(
                 """
@@ -472,7 +494,7 @@ def list_documents(settings: Settings, actor: UUID, organization: UUID) -> dict:
 def mint_access(settings: Settings, actor: UUID, organization: UUID, document_id: UUID, purpose: str) -> dict:
     seconds = int(os.environ.get("PHASE5_ACCESS_SECONDS", "300"))
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "document.read")
         row = connection.execute(
             text("SELECT lifecycle, classification, published FROM documents WHERE organization_id = :org AND id = :id"),
             {"org": organization, "id": document_id},
@@ -569,7 +591,7 @@ def create_export(settings: Settings, actor: UUID, organization: UUID, document_
 
 
 def _export(connection, organization, actor, document_ids, correlation) -> dict:
-    _require(connection, actor, OPERATE)
+    _require(connection, "export.create")
     if len(document_ids) > 20:
         raise CommandError(409, "export_limited", "Export volume exceeds the local limit")
     export_id = uuid4()
@@ -622,12 +644,12 @@ def _export(connection, organization, actor, document_ids, correlation) -> dict:
         },
     )
     _audit_outbox(connection, organization, actor, "document.exported", export_id, correlation, "document.exported.v1", {"count": len(included)})
-    return {"id": str(export_id), "count": len(included), "expires_at": expires.isoformat(), "role": _role(connection, actor)}
+    return {"id": str(export_id), "count": len(included), "expires_at": expires.isoformat()}
 
 
 def read_export(settings: Settings, actor: UUID, organization: UUID, export_id: UUID) -> tuple[bytes, dict]:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "export.create")
         row = connection.execute(
             text(
                 """
@@ -672,7 +694,7 @@ def save_search(settings: Settings, actor: UUID, organization: UUID, name: str, 
 
 
 def _save_search(connection, organization, actor, name, query, correlation) -> dict:
-    _require(connection, actor, READ)
+    _require(connection, "search.read")
     search_id = uuid4()
     connection.execute(
         text(
@@ -714,7 +736,7 @@ def _share_search(connection, organization, actor, search_id, visibility, correl
 
 def list_saved(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "search.read")
         rows = connection.execute(
             text("SELECT id, name, query_text, visibility FROM saved_searches ORDER BY created_at DESC")
         ).mappings().all()
@@ -775,7 +797,7 @@ def approve_import(settings: Settings, actor: UUID, organization: UUID, batch_id
 
 
 def _approve_import(connection, organization, actor, batch_id, correlation) -> dict:
-    _require(connection, actor, OPERATE)
+    _require(connection, "audit.read")
     blockers = connection.execute(
         text("SELECT count(*) FROM import_rows WHERE organization_id = :org AND batch_id = :id AND finding = 'blocker'"),
         {"org": organization, "id": batch_id},
@@ -800,7 +822,7 @@ def _approve_import(connection, organization, actor, batch_id, correlation) -> d
 
 def dry_run_import(settings: Settings, actor: UUID, organization: UUID, batch_id: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, OPERATE)
+        _require(connection, "audit.read")
         counts = connection.execute(
             text("SELECT finding, count(*) FROM import_rows WHERE organization_id = :org AND batch_id = :id GROUP BY finding"),
             {"org": organization, "id": batch_id},
@@ -818,7 +840,7 @@ def rollback_import(settings: Settings, actor: UUID, organization: UUID, batch_i
 
 
 def _rollback_import(connection, organization, actor, batch_id, correlation) -> dict:
-    _require(connection, actor, OPERATE)
+    _require(connection, "audit.read")
     batch = connection.execute(
         text("SELECT status FROM import_batches WHERE organization_id = :org AND id = :id FOR UPDATE"),
         {"org": organization, "id": batch_id},
@@ -849,7 +871,7 @@ def _rollback_import(connection, organization, actor, batch_id, correlation) -> 
 
 def list_imports(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "audit.read")
         rows = connection.execute(
             text(
                 """
@@ -876,7 +898,7 @@ def list_imports(settings: Settings, actor: UUID, organization: UUID) -> dict:
 
 def import_report(settings: Settings, actor: UUID, organization: UUID, batch_id: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, READ)
+        _require(connection, "audit.read")
         batch = connection.execute(
             text("SELECT status, content_sha256, mapping_version FROM import_batches WHERE organization_id = :org AND id = :id"),
             {"org": organization, "id": batch_id},
@@ -898,8 +920,8 @@ def import_report(settings: Settings, actor: UUID, organization: UUID, batch_id:
 
 def list_quality(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        role = _require(connection, actor, READ)
-        clause = "AND severity = 'blocker'" if role == "owner" else ""
+        _require(connection, "audit.read")
+        clause = ""
         rows = connection.execute(
             text(
                 f"""
@@ -933,7 +955,7 @@ def resolve_quality(settings: Settings, actor: UUID, organization: UUID, finding
 
 
 def _resolve_quality(connection, organization, actor, finding_id, reason, correlation) -> dict:
-    _require(connection, actor, OPERATE)
+    _require(connection, "audit.read")
     updated = connection.execute(
         text(
             """
@@ -952,7 +974,7 @@ def _resolve_quality(connection, organization, actor, finding_id, reason, correl
 
 def list_audit(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        role = _require(connection, actor, READ)
+        _require(connection, "audit.read")
         rows = connection.execute(
             text(
                 """
@@ -968,8 +990,6 @@ def list_audit(settings: Settings, actor: UUID, organization: UUID) -> dict:
         ).mappings().first()
     events = []
     for row in rows:
-        if role == "owner" and row["action"] not in {"document.disposed", "document.hold_placed", "quality.resolved", "document.exported"}:
-            continue
         events.append(
             {
                 "id": str(row["id"]),
@@ -987,68 +1007,13 @@ def list_audit(settings: Settings, actor: UUID, organization: UUID) -> dict:
 
 def replay_projection(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, {"platform_admin"})
-        connection.execute(text("DELETE FROM search_documents WHERE organization_id = :org"), {"org": organization})
-        connection.execute(
-            text(
-                """
-                INSERT INTO search_documents (organization_id, id, resource_type, resource_id, title, body, classification)
-                SELECT organization_id, gen_random_uuid(), 'party', id, display_name, party_kind, 'internal' FROM parties
-                WHERE organization_id = :org
-                """
-            ),
+        _require(connection, "platform.configure")
+        counts = connection.execute(
+            text("SELECT * FROM perchpoint.rebuild_search_projection(:org)"),
             {"org": organization},
-        )
-        connection.execute(
-            text(
-                """
-                INSERT INTO search_documents (organization_id, id, resource_type, resource_id, title, body, classification)
-                SELECT organization_id, gen_random_uuid(), 'property', id, name, property_type, 'internal'
-                FROM properties WHERE organization_id = :org
-                """
-            ),
-            {"org": organization},
-        )
-        connection.execute(
-            text(
-                """
-                INSERT INTO search_documents (organization_id, id, resource_type, resource_id, title, body, classification)
-                SELECT organization_id, gen_random_uuid(), 'listing', id, property_name || ' ' || label, publication,
-                  CASE WHEN publication = 'published' THEN 'public' ELSE 'internal' END
-                FROM listings WHERE organization_id = :org
-                """
-            ),
-            {"org": organization},
-        )
-        connection.execute(
-            text(
-                """
-                INSERT INTO search_documents (organization_id, id, resource_type, resource_id, title, body, classification)
-                SELECT d.organization_id, gen_random_uuid(), 'document', d.id, d.title, coalesce(a.extracted_text, ''), d.classification
-                FROM documents d
-                LEFT JOIN LATERAL (
-                  SELECT extracted_text FROM document_artifacts
-                  WHERE document_id = d.id AND artifact_kind = 'ocr' AND status = 'ready'
-                  ORDER BY created_at DESC LIMIT 1
-                ) a ON true
-                WHERE d.organization_id = :org AND d.lifecycle = 'available' AND d.classification <> 'restricted'
-                """
-            ),
-            {"org": organization},
-        )
-        actual = connection.execute(text("SELECT count(*) FROM search_documents WHERE organization_id = :org"), {"org": organization}).scalar()
-        expected = connection.execute(
-            text(
-                """
-                SELECT
-                  (SELECT count(*) FROM parties WHERE organization_id = :org) +
-                  (SELECT count(*) FROM properties WHERE organization_id = :org) +
-                  (SELECT count(*) FROM listings WHERE organization_id = :org) +
-                  (SELECT count(*) FROM documents WHERE organization_id = :org AND lifecycle = 'available' AND classification <> 'restricted')
-                """
-            ),
-            {"org": organization},
-        ).scalar()
+        ).mappings().one()
+        expected = counts["expected_count"]
+        actual = counts["actual_count"]
         status = "reconciled" if actual == expected else "dead"
         connection.execute(
             text(
@@ -1064,7 +1029,7 @@ def replay_projection(settings: Settings, actor: UUID, organization: UUID) -> di
 
 def diagnostics(settings: Settings, actor: UUID, organization: UUID) -> dict:
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
-        _require(connection, actor, {"platform_admin"})
+        _require(connection, "platform.configure")
         dead = connection.execute(text("SELECT count(*) FROM document_jobs WHERE status = 'dead'")).scalar()
         leased = connection.execute(text("SELECT count(*) FROM document_jobs WHERE status = 'leased' AND lease_until < now()")).scalar()
     return {

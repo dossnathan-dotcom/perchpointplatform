@@ -1,0 +1,19 @@
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'CREATE DATABASE perchpoint_phase5_upgrade;'
+CREATE DATABASE
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'GRANT CONNECT,CREATE ON DATABASE perchpoint_phase5_upgrade TO perchpoint_migrator;'
+GRANT
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;'
+GRANT
+GRANT ROLE
+
+NOTICE:  role "perchpoint_migrator" has already been granted membership in role "perchpoint_definer" by role "postgres"
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade 0011_phase5_hold_guard
+
+ Container perchpoint-phase6-cleanroom-migrate-run-6c123a626010 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-6c123a626010 Created
+$ docker compose -p perchpoint-phase6-cleanroom -f 'C:\Users\Admin\PerchPoint\docker-compose.phase6-closeout.yml' run --rm --no-deps -e PHASE2_MIGRATOR_URL=postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade -e PHASE2_RUNTIME_URL=postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase5_upgrade migrate python -m alembic upgrade head
+
+ Container perchpoint-phase6-cleanroom-migrate-run-8ae87ad9c246 Creating 
+ Container perchpoint-phase6-cleanroom-migrate-run-8ae87ad9c246 Created
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase5_upgrade -At -c 'SELECT version_num FROM alembic_version;'
+0031_phase6_authz_remediation

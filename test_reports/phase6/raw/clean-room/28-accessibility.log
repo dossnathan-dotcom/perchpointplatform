@@ -1,0 +1,2 @@
+$ 'C:\Users\Admin\AppData\Local\Programs\Python\Python313\python.exe' scripts/phase6_acceptance.py --validate-report accessibility.json
+accessibility.json valid

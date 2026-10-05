@@ -25,6 +25,7 @@ os.environ.setdefault("CORS_ORIGINS", "http://localhost:3000")
 os.environ.setdefault("PHASE0_ENABLED", "true")
 os.environ.setdefault("PHASE5_SCANNER_MODE", "signature")
 os.environ.setdefault("PHASE5_OBJECT_STORE", "filesystem")
+os.environ.setdefault("PHASE6_ALLOW_DEV_JWT", "1")
 
 load_dotenv(REPOSITORY_ROOT / "frontend/.env")
 

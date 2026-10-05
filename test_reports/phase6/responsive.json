@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "commit": "e4491b4396e323d3e5fd79c112a603f37fc32782",
+  "tree_hash": "122acca6d8c41067442d359b87c23c1286d9f07f",
+  "source_clean": true,
+  "command": "C:\\Users\\Admin\\PerchPoint\\frontend\\node_modules\\.bin\\playwright.cmd test e2e/phase6-engines.spec.js --reporter=json",
+  "timestamp": "2026-10-05T00:30:40.923176+00:00",
+  "exit_code": 0,
+  "total": 162,
+  "passed": 162,
+  "failed": 0,
+  "skipped": 0,
+  "raw_artifacts": [
+    {
+      "path": "test_reports/phase6/browser.txt",
+      "sha256": "736ddc06cb1743c9fa46934a587164d38e9bf5b608632baad37ecddd82d1b032",
+      "bytes": 183405
+    }
+  ],
+  "kind": "responsive",
+  "totals": {
+    "total": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+  ],
+  "widths": [
+    320,
+    768,
+    1024,
+    1440
+  ],
+  "pages": [
+    "sign-in",
+    "security-center",
+    "users-access",
+    "delegation",
+    "access-denied"
+  ]
+}

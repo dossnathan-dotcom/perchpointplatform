@@ -1,0 +1,2 @@
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d perchpoint_phase2 -At -c 'WITH changed AS (UPDATE identity_sessions SET revoked_at=now() WHERE id=(SELECT id FROM identity_sessions ORDER BY created_at LIMIT 1) RETURNING id) SELECT CASE WHEN count(*)=1 THEN '"'"'revocation_written'"'"' ELSE '"'"'revocation_missing'"'"' END FROM changed;'
+revocation_written

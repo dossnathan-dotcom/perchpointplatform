@@ -153,5 +153,20 @@ Source paths:
 - Decision owner: Nathan.
 - Resolution status: **resolved by removal** under PP-DEC-065 and PP-DEC-068.
 
+## CONFLICT-014 — Emergency preservation ceiling
+- Claims: `PP-MAINT-007` retains a provisional historical $2,500 Ann emergency limit.
+  Approved Phase 6 Q118 limits Ann's immediate life-safety or property-preservation authority
+  to $1,200 inclusive and requires documented act-and-notify escalation above that amount.
+- Consequence: applying the older provisional amount would create unauthorized spending
+  authority and contradict the ordinary Phase 6 owner threshold.
+- Safe assumption: enforce the narrower $1,200 Phase 6 ceiling; do not fabricate ordinary
+  approval above it. Preserve unavoidable imminent-harm response as a separately documented
+  act-and-notify event.
+- Decision owner: Faruk (business authority); Nathan implements the policy.
+- Continue safely: yes, because the narrower rule reduces authority and Q118 has higher Phase 6
+  precedence.
+- Resolution status: **resolved for Phase 6 local implementation** by Q118. Faruk remains the
+  acceptance authority for production activation.
+
 Existing listing, accounting, communications, provider, human-approval, and
 production-activation boundaries remain controlling.

@@ -1,0 +1,243 @@
+name: perchpoint-phase6
+services:
+  postgres:
+    image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local-only-not-production
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:54339:5432"
+    volumes:
+      - phase6_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    networks: [data]
+
+  auth-db-init:
+    image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
+    environment:
+      PGPASSWORD: local-only-not-production
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        until pg_isready -h postgres -U postgres; do sleep 1; done
+        exists="$$(psql -h postgres -U postgres -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='perchpoint_auth'")"
+        if [ "$$exists" != "1" ]; then psql -h postgres -U postgres -d postgres -c "CREATE DATABASE perchpoint_auth"; fi
+        psql -h postgres -U postgres -d perchpoint_auth -c "CREATE SCHEMA IF NOT EXISTS auth"
+        psql -h postgres -U postgres -d perchpoint_auth -c "ALTER DATABASE perchpoint_auth SET search_path TO auth, public"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [data]
+
+  mailpit:
+    image: axllent/mailpit@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    user: "10001:10001"
+    ports:
+      - "127.0.0.1:8125:8025"
+      - "127.0.0.1:1125:1025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [data]
+
+  auth:
+    image: supabase/gotrue@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: "9999"
+      API_EXTERNAL_URL: http://127.0.0.1:9998
+      GOTRUE_SITE_URL: http://127.0.0.1:3010
+      GOTRUE_URI_ALLOW_LIST: http://127.0.0.1:3010
+      GOTRUE_DB_DRIVER: postgres
+      DATABASE_URL: postgres://postgres:local-only-not-production@postgres:5432/perchpoint_auth
+      GOTRUE_JWT_SECRET: local-only-not-production-gotrue-jwt-secret
+      GOTRUE_JWT_ISSUER: perchpoint-local-auth
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_SMTP_HOST: mailpit
+      GOTRUE_SMTP_PORT: "1025"
+      GOTRUE_SMTP_ADMIN_EMAIL: noreply@perchpoint.local
+    ports:
+      - "127.0.0.1:9998:9999"
+    depends_on:
+      auth-db-init:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+    networks: [data]
+
+  migrate:
+    image: perchpoint-api:phase6
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    environment: &app_env
+      PHASE3_ENVIRONMENT: local
+      PHASE3_COMMIT: ${PHASE3_COMMIT:-local}
+      PHASE2_LOCAL_AUTH: development
+      PHASE2_ADMIN_URL: postgresql+psycopg://postgres:local-only-not-production@postgres:5432/postgres
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_migrator:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_RUNTIME_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_JWT_SECRET: local-only-not-production-jwt-secret-32-plus
+      PHASE2_DEV_PASSWORD: local-only-not-production-password
+      PHASE2_WEBHOOK_SECRET: local-only-not-production-webhook
+      PHASE6_SESSION_KEY: local-only-not-production-phase6-session-encryption-key
+      PHASE6_PROVIDER_JWT_SECRET: local-only-not-production-gotrue-jwt-secret
+      PHASE6_AUTH_URL: http://auth:9999
+      PHASE6_MAILPIT_URL: http://mailpit:8025
+      PHASE6_SMTP_HOST: mailpit
+      PHASE6_SMTP_PORT: "1025"
+      PHASE6_WORKER_NAME: synthetic-worker
+      PHASE6_WORKER_CREDENTIAL: local-only-not-production-worker-credential
+      PHASE6_ALLOWED_ORIGINS: http://127.0.0.1:3010,http://testserver
+      PHASE5_OBJECT_STORE: s3
+      PHASE5_S3_ENDPOINT: http://minio:9000
+      PHASE5_S3_ACCESS_KEY: local-only-not-production
+      PHASE5_S3_SECRET_KEY: local-only-not-production
+      PHASE5_S3_BUCKET: perchpoint-documents
+      PHASE5_SCANNER_MODE: live
+      PHASE5_CLAMAV_HOST: clamav
+      PHASE5_CLAMAV_PORT: "3310"
+    command: ["python", "-m", "perchpoint.bootstrap"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [data]
+
+  seed:
+    image: perchpoint-api:phase6
+    environment: *app_env
+    command: ["python", "-m", "perchpoint.seed"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    networks: [data]
+
+  auth-provision:
+    image: perchpoint-api:phase6
+    environment: *app_env
+    command: ["python", "-m", "perchpoint.phase6_provision"]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      auth:
+        condition: service_started
+    restart: "no"
+    networks: [data]
+
+  minio:
+    image: bitnamilegacy/minio:2025.7.23@sha256:8935e75fa5d11295c17171e4aa49efe390a1193cd7f12e4d21b92af9ffef09d7
+    environment:
+      MINIO_ROOT_USER: local-only-not-production
+      MINIO_ROOT_PASSWORD: local-only-not-production
+      MINIO_DEFAULT_BUCKETS: perchpoint-documents
+    ports:
+      - "127.0.0.1:9100:9000"
+      - "127.0.0.1:9101:9001"
+    volumes:
+      - phase6_minio:/bitnami/minio/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [data]
+
+  clamav:
+    image: clamav/clamav:1.4@sha256:a5f03c12a79dbe9f6d8a527b6bb1ea053fa8dd061d3738a26897f055ee2d9303
+    ports:
+      - "127.0.0.1:3410:3310"
+    healthcheck:
+      test: ["CMD-SHELL", "echo PING | nc 127.0.0.1 3310 | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+    networks: [data]
+
+  api:
+    image: perchpoint-api:phase6
+    environment:
+      <<: *app_env
+      PHASE6_PROCESS_ROLE: api
+      PHASE6_WORKER_CREDENTIAL: ""
+      PHASE2_ADMIN_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+    ports:
+      - "127.0.0.1:8010:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v2/health/ready')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+    depends_on:
+      auth-provision:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    networks: [data, ingress]
+
+  worker:
+    image: perchpoint-api:phase6
+    environment:
+      <<: *app_env
+      PHASE6_PROCESS_ROLE: worker
+      PHASE2_ADMIN_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+      PHASE2_MIGRATOR_URL: postgresql+psycopg://perchpoint_runtime:local-only-not-production@postgres:5432/perchpoint_phase2
+    command: ["/bin/sh", "-ec", "while true; do python -m perchpoint.worker; sleep 30; done"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "from perchpoint.settings import Settings; from perchpoint.db import engine_for; e=engine_for(Settings.load().runtime_url); c=e.connect(); c.exec_driver_sql('SELECT 1'); c.close(); e.dispose()"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      auth-provision:
+        condition: service_completed_successfully
+    networks: [data]
+
+  web:
+    image: perchpoint-web:phase6
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    environment:
+      API_UPSTREAM: http://api:8000
+    ports:
+      - "127.0.0.1:3010:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [ingress]
+
+volumes:
+  phase6_postgres:
+  phase6_minio:
+
+networks:
+  data:
+  ingress:

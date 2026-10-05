@@ -1,0 +1,12 @@
+perchpoint-api:phase6 (debian 13.7)
+Total: 0 (HIGH: 0, CRITICAL: 0)
+EXIT 0 perchpoint-api:phase6
+
+perchpoint-web:phase6 (debian 13.7)
+Total: 0 (HIGH: 0, CRITICAL: 0)
+EXIT 0 perchpoint-web:phase6
+
+Scanner: aquasec/trivy@sha256:ab70a02200597efa04748f210f793936eb647cbcdb0ea69cc30b226d6f5a22c7
+Flags: image --timeout 30m --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL
+Commit: 64f45ac5e41c62e34b8440beeec086fe09f03771
+Publisher image output: test_reports/phase6/raw/container-scan.txt

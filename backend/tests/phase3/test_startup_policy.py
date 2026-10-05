@@ -87,6 +87,65 @@ def test_hosted_refuses_disposable_credentials(monkeypatch):
         Settings.load()
 
 
+def test_hosted_refuses_any_weak_rotated_session_key(monkeypatch):
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "production")
+    monkeypatch.setenv("PHASE2_LOCAL_AUTH", "disabled")
+    monkeypatch.setenv("PHASE2_ADMIN_URL", "postgresql://admin:strong-password@db.example.com/postgres")
+    monkeypatch.setenv("PHASE2_MIGRATOR_URL", "postgresql://migrator:strong-password@db.example.com/perchpoint")
+    monkeypatch.setenv("PHASE2_RUNTIME_URL", "postgresql://runtime:strong-password@db.example.com/perchpoint")
+    monkeypatch.setenv("PHASE2_JWT_SECRET", "a" * 40)
+    monkeypatch.setenv("PHASE2_DEV_PASSWORD", "b" * 40)
+    monkeypatch.setenv("PHASE2_WEBHOOK_SECRET", "c" * 40)
+    monkeypatch.setenv("PHASE4_ABUSE_PROVIDER", "redis")
+    monkeypatch.setenv("PHASE6_SESSION_KEYS", f"{'d' * 40},weak")
+    monkeypatch.setenv("PHASE6_PROVIDER_JWT_SECRET", "e" * 40)
+    monkeypatch.setenv("PHASE6_AUTH_URL", "https://identity.example.com")
+    monkeypatch.setenv("PHASE6_ALLOWED_ORIGINS", "https://app.example.com")
+    monkeypatch.setenv("PHASE6_REDIRECT_ALLOWLIST", "https://app.example.com/auth/callback")
+    with pytest.raises(Phase2ConfigurationError, match="session encryption keys"):
+        Settings.load()
+
+
+def _configure_valid_hosted_environment(monkeypatch):
+    monkeypatch.setenv("PHASE3_ENVIRONMENT", "production")
+    monkeypatch.setenv("PHASE2_LOCAL_AUTH", "disabled")
+    monkeypatch.setenv("PHASE2_ADMIN_URL", "postgresql://admin:strong-password@db.example.com/postgres")
+    monkeypatch.setenv("PHASE2_MIGRATOR_URL", "postgresql://migrator:strong-password@db.example.com/perchpoint")
+    monkeypatch.setenv("PHASE2_RUNTIME_URL", "postgresql://runtime:strong-password@db.example.com/perchpoint")
+    monkeypatch.setenv("PHASE2_JWT_SECRET", "a" * 40)
+    monkeypatch.setenv("PHASE2_DEV_PASSWORD", "b" * 40)
+    monkeypatch.setenv("PHASE2_WEBHOOK_SECRET", "c" * 40)
+    monkeypatch.setenv("PHASE4_ABUSE_PROVIDER", "redis")
+    monkeypatch.setenv("PHASE6_SESSION_KEYS", "d" * 40)
+    monkeypatch.setenv("PHASE6_PROVIDER_JWT_SECRET", "e" * 40)
+    monkeypatch.setenv("PHASE6_AUTH_URL", "https://identity.example.com")
+    monkeypatch.setenv("PHASE6_ALLOWED_ORIGINS", "https://app.example.com")
+    monkeypatch.setenv("PHASE6_REDIRECT_ALLOWLIST", "https://app.example.com/auth/callback")
+
+
+def test_hosted_api_refuses_a_worker_credential(monkeypatch):
+    _configure_valid_hosted_environment(monkeypatch)
+    monkeypatch.setenv("PHASE6_PROCESS_ROLE", "api")
+    monkeypatch.setenv("PHASE6_WORKER_CREDENTIAL", "f" * 40)
+    with pytest.raises(
+        Phase2ConfigurationError,
+        match="worker credential exposed to non-worker process",
+    ):
+        Settings.load()
+
+
+def test_hosted_worker_refuses_a_disposable_credential(monkeypatch):
+    _configure_valid_hosted_environment(monkeypatch)
+    monkeypatch.setenv("PHASE6_PROCESS_ROLE", "worker")
+    monkeypatch.setenv("PHASE6_WORKER_NAME", "document-worker")
+    monkeypatch.setenv(
+        "PHASE6_WORKER_CREDENTIAL",
+        "local-only-not-production-worker-credential",
+    )
+    with pytest.raises(Phase2ConfigurationError, match="worker credential"):
+        Settings.load()
+
+
 def test_sentry_stays_disabled_without_a_dsn(monkeypatch):
     monkeypatch.delenv("SENTRY_DSN", raising=False)
     from perchpoint.telemetry import init_sentry, sentry_enabled

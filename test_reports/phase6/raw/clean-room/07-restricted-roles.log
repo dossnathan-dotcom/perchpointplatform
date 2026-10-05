@@ -1,0 +1,4 @@
+$ docker exec perchpoint-phase6-cleanroom-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d postgres -At -c 'SELECT rolname,rolsuper,rolbypassrls,rolcanlogin FROM pg_roles WHERE rolname IN ('"'"'perchpoint_runtime'"'"','"'"'perchpoint_migrator'"'"','"'"'perchpoint_definer'"'"') ORDER BY rolname;'
+perchpoint_definer|f|t|f
+perchpoint_migrator|f|f|t
+perchpoint_runtime|f|f|t

@@ -19,6 +19,17 @@ HOSTED_ENVIRONMENTS = {"staging", "production"}
 DISPOSABLE_MARKERS = ("replace-", "changeme", "local-only-not-production", "ci-only-not-production")
 
 
+def configured_session_keys() -> list[str]:
+    raw = os.environ.get("PHASE6_SESSION_KEYS") or os.environ.get(
+        "PHASE6_SESSION_KEY",
+        "local-only-not-production-session-key",
+    )
+    keys = [item.strip() for item in raw.split(",") if item.strip()]
+    if not keys:
+        raise Phase2ConfigurationError("Missing session encryption key")
+    return keys
+
+
 def use_psycopg(url: str) -> str:
     """The supported driver is psycopg 3. A bare postgresql:// URL selects psycopg2."""
     if url.startswith("postgresql://"):
@@ -60,12 +71,60 @@ class Settings:
                 reasons.append("synthetic credentials")
             if os.environ.get("PHASE3_PERMISSIVE_ORIGINS") == "1":
                 reasons.append("permissive origins")
+            if os.environ.get("PHASE6_ALLOW_DEV_JWT") == "1":
+                reasons.append("development JWT")
+            if os.environ.get("PHASE3_DEBUG_IDENTITY_BOOTSTRAP") == "1":
+                reasons.append("debug identity bootstrap")
             for name, value in values.items():
                 lowered = value.lower()
                 if not value or any(marker in lowered for marker in DISPOSABLE_MARKERS) or lowered in {"development", "secret", "password"}:
                     reasons.append(name)
             if os.environ.get("PHASE4_ABUSE_PROVIDER", "") == "":
                 reasons.append("distributed abuse protection")
+            session_keys = configured_session_keys()
+            if any(
+                len(key) < 32
+                or any(marker in key.lower() for marker in DISPOSABLE_MARKERS)
+                for key in session_keys
+            ):
+                reasons.append("session encryption keys")
+            provider_secret = os.environ.get("PHASE6_PROVIDER_JWT_SECRET", "")
+            if len(provider_secret) < 32 or any(marker in provider_secret.lower() for marker in DISPOSABLE_MARKERS):
+                reasons.append("identity provider secret")
+            provider_url = os.environ.get("PHASE6_AUTH_URL", "")
+            if not provider_url.startswith("https://") or "localhost" in provider_url or "127.0.0.1" in provider_url:
+                reasons.append("identity provider")
+            origins = [item.strip() for item in os.environ.get("PHASE6_ALLOWED_ORIGINS", "").split(",") if item.strip()]
+            if not origins or any(origin == "*" or not origin.startswith("https://") for origin in origins):
+                reasons.append("identity origin allowlist")
+            redirects = [item.strip() for item in os.environ.get("PHASE6_REDIRECT_ALLOWLIST", "").split(",") if item.strip()]
+            if not redirects or any(redirect == "*" or not redirect.startswith("https://") for redirect in redirects):
+                reasons.append("identity redirect allowlist")
+            if provider_secret and provider_secret in session_keys:
+                reasons.append("separate identity and session keys")
+            process_role = os.environ.get("PHASE6_PROCESS_ROLE", "api")
+            worker_name = os.environ.get("PHASE6_WORKER_NAME", "")
+            worker_credential = os.environ.get("PHASE6_WORKER_CREDENTIAL", "")
+            if process_role == "worker":
+                if not worker_name:
+                    reasons.append("worker name")
+                if (
+                    len(worker_credential) < 32
+                    or any(
+                        marker in worker_credential.lower()
+                        for marker in DISPOSABLE_MARKERS
+                    )
+                ):
+                    reasons.append("worker credential")
+                if worker_credential in {
+                    *session_keys,
+                    provider_secret,
+                    values["jwt_secret"],
+                    values["webhook_secret"],
+                }:
+                    reasons.append("separate worker credential")
+            elif worker_credential:
+                reasons.append("worker credential exposed to non-worker process")
             if reasons:
                 raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":
