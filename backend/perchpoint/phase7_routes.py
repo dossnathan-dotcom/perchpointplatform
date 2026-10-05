@@ -916,3 +916,36 @@ def list_redirects(current=Depends(actor), current_settings: Settings = Depends(
             {"org": current["organization_id"]},
         ).mappings().all()
     return {"redirects": [_jsonable(row) for row in rows], "synthetic": True}
+
+
+@router.get("/content/items/{item_id}/history")
+def content_history(item_id: UUID, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    with runtime_transaction(current_settings, current["id"], current["organization_id"], uuid4()) as connection:
+        _require_content(connection, "content.read", "This session cannot read content history.")
+        revisions = connection.execute(
+            text(
+                """
+                SELECT id, version, reason, created_at
+                FROM content_revisions
+                WHERE organization_id = :org AND item_id = :item
+                ORDER BY version
+                """
+            ),
+            {"org": current["organization_id"], "item": item_id},
+        ).mappings().all()
+        publications = connection.execute(
+            text(
+                """
+                SELECT id, revision_id, slug, published_at, superseded_at
+                FROM content_publications
+                WHERE organization_id = :org AND item_id = :item
+                ORDER BY published_at
+                """
+            ),
+            {"org": current["organization_id"], "item": item_id},
+        ).mappings().all()
+    return {
+        "revisions": [_jsonable(row) for row in revisions],
+        "publications": [_jsonable(row) for row in publications],
+        "synthetic": True,
+    }

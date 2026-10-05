@@ -372,6 +372,10 @@ def test_content_dashboard_is_staff_only_and_lists_pages():
     slugs = {item["slug"] for item in listed.json()["items"]}
     assert "about" in slugs
     assert "internal-draft" in slugs
+    history = client.get(f"/api/v2/content/items/{next(item['id'] for item in listed.json()['items'] if item['slug'] == 'about')}/history", headers=_auth(ann))
+    assert history.status_code == 200, history.text
+    assert history.json()["revisions"]
+    assert history.json()["publications"]
     jobs = client.get("/api/v2/content/jobs", headers=_auth(ann))
     redirects = client.get("/api/v2/content/redirects", headers=_auth(ann))
     assert jobs.status_code == 200

@@ -222,6 +222,34 @@ export function StaffContent() {
   const [navigation, setNavigation] = useState([]);
   const [notice, setNotice] = useState("");
   const [preview, setPreview] = useState("");
+  const [history, setHistory] = useState(null);
+
+  async function act(path, payload) {
+    const { response, body } = await staffRequest(path, { method: "POST", body: JSON.stringify(payload) });
+    if (response.status === 409) {
+      setNotice("This content changed. Reload it and try again.");
+    } else if (!response.ok) {
+      setNotice(body.detail?.message || "The change was not saved.");
+    } else if (body.published) {
+      setNotice("Published.");
+    } else if (body.unpublished) {
+      setNotice("Unpublished.");
+    } else if (body.scheduled) {
+      setNotice("Scheduled. The job will recheck authority when it runs.");
+    } else {
+      setNotice("The content change was recorded.");
+    }
+    await load();
+  }
+
+  async function openHistory(item) {
+    const { response, body } = await staffRequest(`/api/v2/content/items/${item.id}/history`);
+    if (!response.ok) {
+      setNotice(body.detail?.message || "History is not available.");
+      return;
+    }
+    setHistory({ item, ...body });
+  }
 
   async function load() {
     setState("loading");
@@ -319,12 +347,51 @@ export function StaffContent() {
                 <span>{item.risk_class}</span>
                 <span>v{item.version}</span>
                 <button className="underline" type="button" onClick={() => showPreview(item.slug)}>Preview exact revision</button>
+                <button className="underline" type="button" onClick={() => act(`/api/v2/content/${item.id}/publish`, { expected_version: item.version })}>Publish</button>
+                <button className="underline" type="button" onClick={() => act(`/api/v2/content/${item.id}/unpublish`, { expected_version: item.version })}>Unpublish</button>
+                <button className="underline" type="button" onClick={() => openHistory(item)}>History</button>
               </li>
             ))}
           </ul>
         )}
       </section>
       {preview && <p data-testid="content-preview">{preview}</p>}
+      {history && (
+        <section aria-labelledby="history-heading" data-testid="content-history">
+          <h2 id="history-heading" className="font-heading text-2xl">History for {history.item.slug}</h2>
+          {history.revisions?.length ? (
+            <ul>
+              {history.revisions.map((revision) => (
+                <li key={revision.id}>
+                  Version {revision.version}: {revision.reason}
+                  <button className="ml-3 underline" type="button" onClick={() => act(`/api/v2/content/${history.item.id}/rollback`, { expected_version: history.item.version, revision_id: revision.id, reason: "Restore an earlier approved revision" })}>Roll back to this revision</button>
+                </li>
+              ))}
+            </ul>
+          ) : <p>No revisions are recorded.</p>}
+          <h3 className="font-heading text-xl">Publication record</h3>
+          {history.publications?.length ? (
+            <ul>{history.publications.map((row) => <li key={row.id}>{row.slug} published {row.published_at}{row.superseded_at ? `, superseded ${row.superseded_at}` : ", current"}</li>)}</ul>
+          ) : <p>This item has not been published.</p>}
+          <form className="grid gap-3" onSubmit={(event) => {
+            event.preventDefault();
+            const form = new FormData(event.currentTarget);
+            act(`/api/v2/content/${history.item.id}/schedule`, {
+              expected_version: history.item.version,
+              run_at: new Date(form.get("run_at")).toISOString(),
+              time_zone: "America/New_York",
+              action: form.get("action"),
+            });
+          }}>
+            <h3 className="font-heading text-xl">Schedule</h3>
+            <label>When<input className="mt-1 w-full border px-3 py-2" name="run_at" type="datetime-local" required /></label>
+            <label>Action
+              <select name="action" className="mt-1 w-full border px-3 py-2"><option value="publish">Publish</option><option value="expire">Expire</option></select>
+            </label>
+            <button className="w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Schedule</button>
+          </form>
+        </section>
+      )}
       <form className="grid gap-3" onSubmit={saveDraft} aria-labelledby="draft-heading">
         <h2 id="draft-heading" className="font-heading text-2xl">New draft</h2>
         <label>Slug<input className="mt-1 w-full border px-3 py-2" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" /></label>
