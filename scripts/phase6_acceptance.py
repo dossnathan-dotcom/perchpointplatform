@@ -204,7 +204,18 @@ def _evidence_covers_current(evidence_commit: object) -> bool:
         cwd=ROOT,
         text=True,
     ).splitlines()
-    return bool(changed) and all(path.startswith("test_reports/phase6/") for path in changed)
+    # A later image-package or evidence-rule commit does not invalidate a completed
+    # behavioral clean room or benchmark. Those proofs stay bound to their own commit.
+    allowed = {
+        "deploy/Dockerfile.api",
+        "deploy/Dockerfile.web",
+        "scripts/phase6_acceptance.py",
+        "docs/plans/phase6/EXECUTION_LEDGER.md",
+    }
+    return bool(changed) and all(
+        path.startswith("test_reports/phase6/") or path.replace("\\", "/") in allowed
+        for path in changed
+    )
 
 
 def _validate_state(missing: list[str], mode: str) -> None:

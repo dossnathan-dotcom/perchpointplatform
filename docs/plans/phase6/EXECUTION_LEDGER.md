@@ -65,3 +65,8 @@ security events, UI/accessibility, verification/benchmark/clean-room/runbook, AD
 inventory, and substantive Q1–Q160 traceability. P6-R14 remains `IN_PROGRESS` until the
 repository validator and documentation/link review run on the current commit and their evidence
 is recorded outside this documentation-only change.
+
+Behavioral clean-room, browser, RLS, and benchmark evidence remains bound to
+`e4491b4396e323d3e5fd79c112a603f37fc32782`. A later image-package upgrade for the
+fixed `libpcre2-8-0` finding does not replace that proof. Requirements:
+`PP-SEC-001`, `PP-NFR-002`, `PP-ACCEPT-001`.
