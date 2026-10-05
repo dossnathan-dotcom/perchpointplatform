@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -50,7 +51,8 @@ def _env() -> dict[str, str]:
 
 
 def _run(command: list[str], cwd: Path, env: dict[str, str] | None = None) -> tuple[int, str]:
-    completed = subprocess.run(command, cwd=cwd, env=env or _env(), text=True, capture_output=True, check=False)
+    executable = shutil.which(command[0]) or command[0]
+    completed = subprocess.run([executable, *command[1:]], cwd=cwd, env=env or _env(), text=True, capture_output=True, check=False)
     output = (completed.stdout or "") + (completed.stderr or "")
     return completed.returncode, output[-20000:]
 
