@@ -16,9 +16,11 @@ async function main() {
   const types = await compile(schema, 'FoundationContracts', { bannerComment: '/* Generated from Pydantic Phase 0 schemas. Do not edit. */', unreachableDefinitions: true });
   const target = path.resolve(__dirname, '../src/contracts/generated.d.ts');
   fs.mkdirSync(path.dirname(target), { recursive: true });
+  const normalized = types.replace(/\r\n/g, '\n');
   if (process.argv.includes('--check')) {
-    if (fs.readFileSync(target, 'utf8') !== types) throw new Error('Stale generated TypeScript contracts');
+    const current = fs.existsSync(target) ? fs.readFileSync(target, 'utf8').replace(/\r\n/g, '\n') : '';
+    if (current !== normalized) throw new Error('Stale generated TypeScript contracts');
     console.log('Generated TypeScript contracts match source schemas.');
-  } else { fs.writeFileSync(target, types); console.log('Generated TypeScript foundation contracts.'); }
+  } else { fs.writeFileSync(target, normalized); console.log('Generated TypeScript foundation contracts.'); }
 }
 main().catch((e) => { console.error(e); process.exit(1); });
