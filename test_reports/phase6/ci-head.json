@@ -1,0 +1,75 @@
+{
+  "branch": "cursor/phase-06-identity-access",
+  "command": "python scripts/phase6_evidence.py ci-head",
+  "commit": "be4af22e5e7e51000ee8cb1067128ba35738327e",
+  "exit_code": 0,
+  "kind": "ci-head",
+  "raw_artifacts": [
+    {
+      "bytes": 1038,
+      "path": "test_reports/phase6/raw/ci-head.json",
+      "sha256": "e12b805f2662a05e16d47f07ba53a0b4399290446a0956a8c31962cb9c8c7e2c"
+    }
+  ],
+  "run": {
+    "conclusion": "success",
+    "databaseId": 37259453397,
+    "event": "pull_request",
+    "headBranch": "cursor/phase-06-identity-access",
+    "headSha": "be4af22e5e7e51000ee8cb1067128ba35738327e",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "browser"
+      },
+      {
+        "conclusion": "success",
+        "name": "supply-chain"
+      },
+      {
+        "conclusion": "success",
+        "name": "governance"
+      },
+      {
+        "conclusion": "success",
+        "name": "contracts"
+      },
+      {
+        "conclusion": "success",
+        "name": "phase4-performance"
+      },
+      {
+        "conclusion": "success",
+        "name": "backend"
+      },
+      {
+        "conclusion": "success",
+        "name": "phase4-smoke"
+      },
+      {
+        "conclusion": "success",
+        "name": "frontend"
+      },
+      {
+        "conclusion": "success",
+        "name": "secrets"
+      },
+      {
+        "conclusion": "success",
+        "name": "containers"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37259453397"
+  },
+  "schema_version": 2,
+  "source_clean": true,
+  "timestamp": "2026-10-05T03:41:04.567593+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 10,
+    "skipped": 0,
+    "total": 10
+  },
+  "tree_hash": "49336a72da26195355db8a24b1ce42f5f79f4e30"
+}

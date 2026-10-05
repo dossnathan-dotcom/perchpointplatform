@@ -1,8 +1,8 @@
 {
   "reviewer": "independent-security-review",
-  "scope": "Phase 6 identity and access on cursor/phase-06-identity-access. The independent review examined commit 78ae1ba8118bfb0279ab4c9094ca2864d1920962, covering the GoTrue boundary, server-custodied sessions, CSRF and origin checks, authorization, forced RLS, delegation and purchasing bounds, workers and service principals, and hosted fail-closed startup. Commit 0dd411c33cb27ae6adef046ccfde9fb12fc21662 requires a service principal on worker routes. Later commits e4491b4396e323d3e5fd79c112a603f37fc32782 and 64f45ac5e41c62e34b8440beeec086fe09f03771 change keyboard focus styling and upgrade libpcre2 in the application images. They do not reopen the worker-route finding.",
+  "scope": "Phase 6 identity and access on cursor/phase-06-identity-access. The independent review examined commit 78ae1ba8118bfb0279ab4c9094ca2864d1920962, covering the GoTrue boundary, server-custodied sessions, CSRF and origin checks, authorization, forced RLS, delegation and purchasing bounds, workers and service principals, and hosted fail-closed startup. Commit 0dd411c33cb27ae6adef046ccfde9fb12fc21662 requires a service principal on worker routes. Later commits e4491b4396e323d3e5fd79c112a603f37fc32782 and 64f45ac5e41c62e34b8440beeec086fe09f03771 change keyboard focus styling and upgrade libpcre2 in the application images. Commit be4af22e5e7e51000ee8cb1067128ba35738327e shows the existing portfolio controls for the seeded operations_manager membership. These later commits do not reopen the worker-route finding.",
   "command": "independent security review of cursor/phase-06-identity-access at 78ae1ba8118bfb0279ab4c9094ca2864d1920962",
-  "reviewed_commit": "1132d792ccdded5d00e74618b3308a14713f4a5b",
+  "reviewed_commit": "be4af22e5e7e51000ee8cb1067128ba35738327e",
   "findings": [
     {
       "id": "P6-SEC-DEV-JWT-WORKER",
@@ -39,9 +39,9 @@
       "url_or_report": "test_reports/phase6/raw/container-scan-application.txt"
     },
     "codeql": {
-      "status": "not_run",
-      "commit": "64f45ac5e41c62e34b8440beeec086fe09f03771",
-      "url_or_report": "pending-github-codeql"
+      "status": "passed",
+      "commit": "be4af22e5e7e51000ee8cb1067128ba35738327e",
+      "url_or_report": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37259453397/job/111603387803"
     }
   }
 }
