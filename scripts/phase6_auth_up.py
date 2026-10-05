@@ -67,6 +67,18 @@ def _provision(settings: Settings) -> None:
         "ann.synthetic@example.com",
         "nathan.synthetic@example.com",
         "faruk.synthetic@example.com",
+        "resident.synthetic@example.com",
+        "isolation.synthetic@example.com",
+        "expired.synthetic@example.com",
+        "accounting.synthetic@example.com",
+        "maintenance.synthetic@example.com",
+        "vendor.admin.synthetic@example.com",
+        "technician.synthetic@example.com",
+        "cleaner.synthetic@example.com",
+        "applicant.synthetic@example.com",
+        "guarantor.synthetic@example.com",
+        "former.synthetic@example.com",
+        "suspended.synthetic@example.com",
     )
     for email in emails:
         try:

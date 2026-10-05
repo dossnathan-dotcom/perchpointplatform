@@ -180,7 +180,6 @@ def test_worker_failure_then_recovery_and_dead_letter():
         )
     admin.dispose()
     client = TestClient(create_app())
-    token = _login(client, "ann.synthetic@example.com")
     seen = {}
     for _ in range(8):
         result = client.post("/api/v2/worker/once", headers=_worker_headers()).json()

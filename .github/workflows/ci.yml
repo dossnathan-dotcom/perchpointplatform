@@ -143,6 +143,7 @@ jobs:
       PHASE2_DEV_PASSWORD: ci-only-not-production-password
       PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
       CI: "true"
+      PHASE6_ALLOW_DEV_JWT: "1"
       REACT_APP_PHASE3_ENVIRONMENT: local
       REACT_APP_SHOW_DEMO_LABELS: "true"
       REACT_APP_ENABLE_SEEDED_PREVIEWS: "true"
