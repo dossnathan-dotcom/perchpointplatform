@@ -35,7 +35,7 @@ export function Phase2Kernel({ previewRole }) {
   const [canonicalQuery, setCanonicalQuery] = useState("");
   const [canonicalResults, setCanonicalResults] = useState([]);
   const [canonicalStatus, setCanonicalStatus] = useState("Type at least two characters.");
-  const canWrite = roleName === "leasing" || roleName === "platform_admin";
+  const canWrite = roleName === "leasing" || roleName === "operations_manager" || roleName === "platform_admin";
   const canOperate = roleName === "platform_admin";
   const headers = { Authorization: `Bearer ${token}` };
 
