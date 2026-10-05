@@ -13,8 +13,8 @@
   "raw_artifacts": [
     {
       "path": "test_reports/phase6/browser.txt",
-      "sha256": "736ddc06cb1743c9fa46934a587164d38e9bf5b608632baad37ecddd82d1b032",
-      "bytes": 183405
+      "sha256": "1857f81e37f10042efc084f8bd435eed5614f966f353b9144f0d6ae8f7206593",
+      "bytes": 177790
     }
   ],
   "kind": "responsive",

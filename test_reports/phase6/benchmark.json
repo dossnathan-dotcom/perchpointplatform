@@ -452,8 +452,8 @@
   "raw_artifacts": [
     {
       "path": "test_reports/phase6/benchmark.raw.json",
-      "sha256": "50bf839f12170d949eafd18506850d2c36997d8731b76e5e9f4f1fe479223d2e",
-      "bytes": 14317
+      "sha256": "0a6aba85ce0faf663dc4a11f544ec40ae19217a304d14aaceb92be1636272426",
+      "bytes": 13883
     }
   ]
 }

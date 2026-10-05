@@ -1,0 +1,76 @@
+{
+  "branch": "main",
+  "command": "python scripts/phase6_evidence.py merged-main",
+  "commit": "914ef143d539023e45db4c15a4df497f574d4d86",
+  "exit_code": 0,
+  "kind": "merged-main",
+  "origin_main": "914ef143d539023e45db4c15a4df497f574d4d86",
+  "raw_artifacts": [
+    {
+      "bytes": 1003,
+      "path": "test_reports/phase6/raw/merged-main.json",
+      "sha256": "db204b7579204143cbe8559c1a1fa7e04340cd535352074aad54839d3d5e3807"
+    }
+  ],
+  "run": {
+    "conclusion": "success",
+    "databaseId": 37262139570,
+    "event": "push",
+    "headBranch": "main",
+    "headSha": "914ef143d539023e45db4c15a4df497f574d4d86",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "governance"
+      },
+      {
+        "conclusion": "success",
+        "name": "phase4-smoke"
+      },
+      {
+        "conclusion": "success",
+        "name": "phase4-performance"
+      },
+      {
+        "conclusion": "success",
+        "name": "supply-chain"
+      },
+      {
+        "conclusion": "success",
+        "name": "frontend"
+      },
+      {
+        "conclusion": "success",
+        "name": "secrets"
+      },
+      {
+        "conclusion": "success",
+        "name": "contracts"
+      },
+      {
+        "conclusion": "success",
+        "name": "containers"
+      },
+      {
+        "conclusion": "success",
+        "name": "browser"
+      },
+      {
+        "conclusion": "success",
+        "name": "backend"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37262139570"
+  },
+  "schema_version": 2,
+  "source_clean": true,
+  "timestamp": "2026-10-05T04:19:58.964689+00:00",
+  "totals": {
+    "failed": 0,
+    "passed": 10,
+    "skipped": 0,
+    "total": 10
+  },
+  "tree_hash": "19cdd6a46734c91a951dd7ab73c6cbdb2f802345"
+}

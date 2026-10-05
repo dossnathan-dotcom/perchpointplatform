@@ -14,9 +14,9 @@
   "kind": "rls",
   "raw_artifacts": [
     {
-      "bytes": 1058,
+      "bytes": 1041,
       "path": "test_reports/phase6/raw/rls.log",
-      "sha256": "947c6fd2abc220cd8e2f89cb2b5b22b7adf683fad147bdc99052a2dcb683f8ee"
+      "sha256": "55e0009a74ac834ff92bb0a0681dddecf6c1d585c22cf34ff7635eca607c2c5d"
     }
   ],
   "schema_version": 2,

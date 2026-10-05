@@ -22,19 +22,19 @@
   "kind": "frontend",
   "raw_artifacts": [
     {
-      "bytes": 9415,
+      "bytes": 9158,
       "path": "test_reports/phase6/browser-results.json",
-      "sha256": "9799b4dcff4ab08c9d7dc4c4b9ace768e6a0304f02848817e941db61e10526e1"
+      "sha256": "32803554411f3ec1c476b338266d3640cbb342e4ae141cf33b530a17d611837b"
     },
     {
-      "bytes": 1178,
+      "bytes": 1129,
       "path": "test_reports/phase6/accessibility.json",
-      "sha256": "b5f3a90775cf3ce013d33fa5c938916fb127519850f25ccf24ba6e2e405e95b8"
+      "sha256": "17468a134a5c1ec94a4375338787a6bd0ff5a4c15a9668fb03828151021757ba"
     },
     {
-      "bytes": 1022,
+      "bytes": 977,
       "path": "test_reports/phase6/responsive.json",
-      "sha256": "ea0db7339f99e42dcb655a0e1acf59f7a29f15aaa14a41f6aceaf2ae9077fea4"
+      "sha256": "583a38503be09b02d6e064fc595ce100c8ceb6d125574aac7f07fed695df317c"
     }
   ],
   "responsive_widths": [
