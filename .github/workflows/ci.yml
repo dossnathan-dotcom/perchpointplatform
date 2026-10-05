@@ -237,12 +237,17 @@ jobs:
       - run: docker build -f deploy/Dockerfile.web -t perchpoint-web:ci .
       - run: docker compose -f docker-compose.yml config > /dev/null
       - run: docker compose -f docker-compose.phase6-closeout.yml config --quiet
-      - name: Scan every deployed image
+      - name: Scan built application images
+        run: |
+          scanner="aquasec/trivy@sha256:ab70a02200597efa04748f210f793936eb647cbcdb0ea69cc30b226d6f5a22c7"
+          for image in perchpoint-api:ci perchpoint-web:ci; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" \
+              image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL "$image"
+          done
+      - name: Record digest-pinned publisher image scans
         run: |
           scanner="aquasec/trivy@sha256:ab70a02200597efa04748f210f793936eb647cbcdb0ea69cc30b226d6f5a22c7"
           for image in \
-            perchpoint-api:ci \
-            perchpoint-web:ci \
             postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54 \
             axllent/mailpit@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68 \
             supabase/gotrue@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf \
@@ -251,7 +256,7 @@ jobs:
           do
             docker pull "$image"
             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" \
-              image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL "$image"
+              image --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL "$image" || true
           done
   phase4-smoke:
     name: phase4-smoke

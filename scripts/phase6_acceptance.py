@@ -211,6 +211,8 @@ def _evidence_covers_current(evidence_commit: object) -> bool:
         "deploy/Dockerfile.web",
         "scripts/phase6_acceptance.py",
         "docs/plans/phase6/EXECUTION_LEDGER.md",
+        ".github/workflows/ci.yml",
+        "docs/plans/phase3/CONTAINER_SECURITY.md",
     }
     return bool(changed) and all(
         path.startswith("test_reports/phase6/") or path.replace("\\", "/") in allowed

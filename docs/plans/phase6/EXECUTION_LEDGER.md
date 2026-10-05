@@ -68,5 +68,7 @@ is recorded outside this documentation-only change.
 
 Behavioral clean-room, browser, RLS, and benchmark evidence remains bound to
 `e4491b4396e323d3e5fd79c112a603f37fc32782`. A later image-package upgrade for the
-fixed `libpcre2-8-0` finding does not replace that proof. Requirements:
-`PP-SEC-001`, `PP-NFR-002`, `PP-ACCEPT-001`.
+fixed `libpcre2-8-0` finding does not replace that proof. The built API and web images
+then scanned clean. Digest-pinned publisher images still report fixed findings in
+publisher binaries; those scans are retained and do not replace the behavioral proof.
+Requirements: `PP-SEC-001`, `PP-NFR-002`, `PP-ACCEPT-001`.
