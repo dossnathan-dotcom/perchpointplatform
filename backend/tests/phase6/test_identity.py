@@ -2037,6 +2037,16 @@ def test_restricted_rls_enforces_household_and_worker_assignment_relationships()
                 "property": property_id,
             },
         )
+        unassigned_property = uuid4()
+        connection.execute(
+            sql_text(
+                """
+                INSERT INTO properties (organization_id, id, name, property_type)
+                VALUES (:org, :id, 'Synthetic unassigned property', 'mixed_use')
+                """
+            ),
+            {"org": organization, "id": unassigned_property},
+        )
     database.dispose()
     with runtime_transaction(settings, resident_a, organization, uuid4()) as connection:
         visible_households = set(connection.execute(sql_text("SELECT id FROM households")).scalars())
@@ -2045,6 +2055,7 @@ def test_restricted_rls_enforces_household_and_worker_assignment_relationships()
         visible_workers = set(connection.execute(sql_text("SELECT worker_account_id FROM worker_assignments")).scalars())
         visible_properties = set(connection.execute(sql_text("SELECT id FROM properties")).scalars())
     assert visible_workers == {worker_a}
+    assert unassigned_property not in visible_properties
     assert visible_properties == {property_id}
 
 
@@ -2062,9 +2073,26 @@ def test_worker_routes_are_limited_to_active_assignment_properties():
     assert signed.status_code == 200
     _mark_current_session_aal2(client, signed.json())
 
+    unassigned_property = uuid4()
+    database = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with database.begin() as connection:
+        connection.execute(
+            sql_text(
+                """
+                INSERT INTO properties (organization_id, id, name, property_type)
+                VALUES (:org, :id, 'Synthetic property outside the technician assignment', 'mixed_use')
+                """
+            ),
+            {"org": signed.json()["organization_id"], "id": unassigned_property},
+        )
+    database.dispose()
     properties = client.get("/api/v2/properties")
     assert properties.status_code == 200
-    assert [item["id"] for item in properties.json()["properties"]] == [str(sid("property-elm"))]
+    visible = [item["id"] for item in properties.json()["properties"]]
+    assert str(unassigned_property) not in visible
+    assert str(sid("property-phase6-firefox")) not in visible
+    assert str(sid("property-phase6-webkit")) not in visible
+    assert visible == [str(sid("property-elm"))]
 
     households = client.get("/api/v2/households")
     assert households.status_code == 200

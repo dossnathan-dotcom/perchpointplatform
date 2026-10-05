@@ -210,6 +210,16 @@ def _route_capability(request: Request) -> str:
         return "resident.read" if request.method == "GET" else "party.create"
     if path.startswith("/listings"):
         return "property.manage"
+    if path.startswith("/content"):
+        if request.method == "GET":
+            return "content.read"
+        if path.endswith(("/publish", "/unpublish", "/rollback")):
+            return "content.publish"
+        if path.endswith("/schedule") or path.endswith("/jobs/run"):
+            return "content.schedule"
+        if path.endswith("/redirects"):
+            return "content.redirect"
+        return "content.edit"
     raise HTTPException(403, {"code": "route_unclassified", "message": "This protected route has no authority mapping.", "retryable": False})
 
 

@@ -362,3 +362,42 @@ def test_listings_keep_a_public_slug():
     assert listed.status_code == 200, listed.text
     match = next(item for item in listed.json()["listings"] if item["property_name"] == "Example Elm Court")
     assert match["public_slug"] == "example-elm-court"
+
+
+def test_content_dashboard_is_staff_only_and_lists_pages():
+    client = TestClient(create_app())
+    ann = _login(client, "ann.synthetic@example.com")
+    listed = client.get("/api/v2/content/items", headers=_auth(ann))
+    assert listed.status_code == 200, listed.text
+    slugs = {item["slug"] for item in listed.json()["items"]}
+    assert "about" in slugs
+    assert "internal-draft" in slugs
+    jobs = client.get("/api/v2/content/jobs", headers=_auth(ann))
+    redirects = client.get("/api/v2/content/redirects", headers=_auth(ann))
+    assert jobs.status_code == 200
+    assert redirects.status_code == 200
+    resident = _login(client, "resident.synthetic@example.com")
+    denied = client.get("/api/v2/content/items", headers=_auth(resident))
+    assert denied.status_code == 403
+
+
+def test_property_visibility_policy_includes_worker_assignments():
+    from sqlalchemy import create_engine, text
+
+    from perchpoint.settings import Settings
+
+    settings = Settings.load()
+    database = create_engine(settings.admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
+    with database.connect() as connection:
+        expression = connection.execute(
+            text(
+                """
+                SELECT pg_get_expr(polqual, polrelid)
+                FROM pg_policy
+                WHERE polrelid = 'properties'::regclass AND polname = 'property_capability_scope'
+                """
+            )
+        ).scalar_one()
+    database.dispose()
+    assert "worker_assignment_allows" in expression
+    assert "authorized_for" in expression

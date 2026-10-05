@@ -845,4 +845,74 @@ def conversions(current=Depends(actor), current_settings: Settings = Depends(set
             ),
             {"org": current["organization_id"]},
         ).mappings().all()
-    return {"definitions": "accepted public submissions by intent", "freshness": "transactional", "totals": [dict(row) for row in rows], "synthetic": True}
+    return {"definitions": "accepted public submissions by intent", "freshness": "transactional", "totals": [_jsonable(row) for row in rows], "synthetic": True}
+
+
+def _jsonable(row) -> dict:
+    item = dict(row)
+    for key, value in item.items():
+        if isinstance(value, UUID):
+            item[key] = str(value)
+        elif hasattr(value, "isoformat"):
+            item[key] = value.isoformat()
+    return item
+
+
+def _require_content(connection, capability: str, message: str) -> None:
+    allowed = connection.execute(text("SELECT perchpoint.has_capability(:capability)"), {"capability": capability}).scalar()
+    if not allowed:
+        raise HTTPException(403, {"code": "denied", "message": message, "retryable": False})
+
+
+@router.get("/content/items")
+def list_content(current=Depends(actor), current_settings: Settings = Depends(settings)):
+    with runtime_transaction(current_settings, current["id"], current["organization_id"], uuid4()) as connection:
+        _require_content(connection, "content.read", "This session cannot read content.")
+        rows = connection.execute(
+            text(
+                """
+                SELECT id, slug, kind, risk_class, status, version
+                FROM content_items
+                WHERE organization_id = :org
+                ORDER BY slug
+                """
+            ),
+            {"org": current["organization_id"]},
+        ).mappings().all()
+    return {"items": [_jsonable(row) for row in rows], "synthetic": True}
+
+
+@router.get("/content/jobs")
+def list_jobs(current=Depends(actor), current_settings: Settings = Depends(settings)):
+    with runtime_transaction(current_settings, current["id"], current["organization_id"], uuid4()) as connection:
+        _require_content(connection, "content.read", "This session cannot read publication jobs.")
+        rows = connection.execute(
+            text(
+                """
+                SELECT id, item_id, action, status, last_error, run_at, time_zone, attempts
+                FROM content_jobs
+                WHERE organization_id = :org
+                ORDER BY run_at DESC
+                """
+            ),
+            {"org": current["organization_id"]},
+        ).mappings().all()
+    return {"jobs": [_jsonable(row) for row in rows], "synthetic": True}
+
+
+@router.get("/content/redirects")
+def list_redirects(current=Depends(actor), current_settings: Settings = Depends(settings)):
+    with runtime_transaction(current_settings, current["id"], current["organization_id"], uuid4()) as connection:
+        _require_content(connection, "content.read", "This session cannot read redirects.")
+        rows = connection.execute(
+            text(
+                """
+                SELECT id, source_path, destination_path, status_code
+                FROM content_redirects
+                WHERE organization_id = :org
+                ORDER BY source_path
+                """
+            ),
+            {"org": current["organization_id"]},
+        ).mappings().all()
+    return {"redirects": [_jsonable(row) for row in rows], "synthetic": True}

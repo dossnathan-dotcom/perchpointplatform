@@ -20,18 +20,19 @@ export const Navbar = ({ onLoginClick }) => {
   useEffect(() => {
     if (!menuOpen) return undefined;
     const menu = mobileMenu.current;
+    const button = menuButton.current;
     const previous = document.activeElement;
     menu?.querySelector("a, button")?.focus();
     function onKeyDown(event) {
       if (event.key === "Escape") {
         setMenuOpen(false);
-        menuButton.current?.focus();
+        button?.focus();
       }
     }
     menu?.addEventListener("keydown", onKeyDown);
     return () => {
       menu?.removeEventListener("keydown", onKeyDown);
-      if (previous === menuButton.current) previous.focus();
+      if (previous === button) previous.focus();
     };
   }, [menuOpen]);
 
