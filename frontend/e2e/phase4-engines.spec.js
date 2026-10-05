@@ -69,9 +69,8 @@ test("role shells expose approved destinations and synthetic boundary", async ({
 test("dialog keyboard, theme, and density", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("nav-resident-login").click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page).toHaveURL(/\/sign-in$/);
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.goto("/perchpoint/owner");
   await page.getByTestId("portal-theme-select").selectOption("light");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");

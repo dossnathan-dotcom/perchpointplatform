@@ -161,6 +161,8 @@ jobs:
       - run: python -m perchpoint.seed
         working-directory: backend
       - run: python scripts/phase6_auth_up.py
+      - run: python -m perchpoint.phase6_provision
+        working-directory: backend
       - run: corepack yarn install --frozen-lockfile --non-interactive
         working-directory: frontend
       - run: corepack yarn playwright install --with-deps chromium firefox webkit

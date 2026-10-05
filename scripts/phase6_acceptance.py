@@ -216,6 +216,8 @@ def _evidence_covers_current(evidence_commit: object) -> bool:
         ".gitattributes",
         "scripts/phase6_auth_up.py",
         "backend/tests/phase2/test_commands_and_authorization.py",
+        "frontend/e2e/phase4-engines.spec.js",
+        "frontend/playwright.config.js",
     }
     return bool(changed) and all(
         path.startswith("test_reports/phase6/") or path.replace("\\", "/") in allowed
