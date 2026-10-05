@@ -322,6 +322,7 @@ def _public_listing(row: dict) -> dict:
         "availability": row["availability"],
         "amount_minor": row["amount_minor"],
         "currency": row["currency"],
+        "public_slug": row.get("public_slug"),
         "synthetic": True,
     }
 
@@ -3571,6 +3572,7 @@ def create_app():
             "/api/v2/auth/invitations/accept",
             "/api/v2/auth/password/reset-request",
             "/api/v2/auth/password/reset",
+            "/api/v2/public/submissions",
         }
         try:
             if (
@@ -3622,7 +3624,10 @@ def create_app():
         log.info(json.dumps({"event": "request", "request_id": request_id, "method": request.method, "path": request.url.path, "status": response.status_code}))
         return response
 
+    from .phase7_routes import router as phase7_router
+
     app.include_router(router)
+    app.include_router(phase7_router)
     return app
 
 

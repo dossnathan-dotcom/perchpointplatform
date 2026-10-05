@@ -25,6 +25,11 @@ const Phase6BoundaryPage = lazy(() => import("@/components/portal/Phase6Access")
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
 const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
+const RentalsIndex = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.RentalsIndex })));
+const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
+const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
+const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
+const StaffContent = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.StaffContent })));
 const LoginModal = lazy(() => import("@/components/LoginModal").then((module) => ({ default: module.LoginModal })));
 const TourModal = lazy(() => import("@/components/TourModal").then((module) => ({ default: module.TourModal })));
 const MaintenanceModal = lazy(() => import("@/components/MaintenanceModal").then((module) => ({ default: module.MaintenanceModal })));
@@ -71,6 +76,16 @@ export function AppContent() {
       <Routes>
         <Route element={<PublicLayout onLogin={() => navigate("/sign-in")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
         <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => navigate("/sign-in")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route path="/rentals" element={<Suspense fallback={routePending}><RentalsIndex /></Suspense>} />
+        <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
+        <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
+        <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
+        <Route path="/maintenance" element={<Suspense fallback={routePending}><ManagedPage slug="maintenance" testId="maintenance-page" /></Suspense>} />
+        <Route path="/about" element={<Suspense fallback={routePending}><ManagedPage slug="about" testId="about-page" /></Suspense>} />
+        <Route path="/contact" element={<Suspense fallback={routePending}><ContactPage /></Suspense>} />
+        <Route path="/privacy" element={<Suspense fallback={routePending}><ManagedPage slug="privacy" testId="privacy-page" /></Suspense>} />
+        <Route path="/terms" element={<Suspense fallback={routePending}><ManagedPage slug="terms" testId="terms-page" /></Suspense>} />
+        <Route path="/staff/content" element={<Suspense fallback={routePending}><StaffContent /></Suspense>} />
         <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>

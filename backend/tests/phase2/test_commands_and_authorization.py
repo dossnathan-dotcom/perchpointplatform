@@ -444,9 +444,9 @@ def test_reference_path_listing_inquiry_and_isolation(client):
 def test_empty_database_migration_and_repeatable_seed():
     admin = engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/postgres")
     with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
-        exists = connection.execute(text("SELECT 1 FROM pg_database WHERE datname = 'perchpoint_phase2_empty'")).scalar()
-        if not exists:
-            connection.execute(text("CREATE DATABASE perchpoint_phase2_empty"))
+        connection.execute(text("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'perchpoint_phase2_empty' AND pid <> pg_backend_pid()"))
+        connection.execute(text("DROP DATABASE IF EXISTS perchpoint_phase2_empty"))
+        connection.execute(text("CREATE DATABASE perchpoint_phase2_empty"))
         connection.execute(text("GRANT CONNECT, CREATE ON DATABASE perchpoint_phase2_empty TO perchpoint_migrator"))
     admin.dispose()
     empty = engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2_empty")
@@ -473,7 +473,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0031_phase6_authz_remediation"
+    assert revision == "0034_phase7_publication_jobs"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

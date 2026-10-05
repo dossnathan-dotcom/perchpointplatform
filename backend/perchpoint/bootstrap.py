@@ -88,6 +88,12 @@ def bootstrap(settings: Settings | None = None) -> None:
             "validate_invitation_activation()",
             "record_privileged_recovery_event()",
             "validate_delegation_bounds()",
+            "published_page(text)",
+            "published_navigation()",
+            "accept_public_submission(text, jsonb, text, text, text, text, text, text, text, uuid)",
+            "guard_content_publication()",
+            "published_redirect(text)",
+            "record_public_analytics(text, text, jsonb)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(

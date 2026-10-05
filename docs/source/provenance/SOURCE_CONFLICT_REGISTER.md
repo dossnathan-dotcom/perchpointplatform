@@ -170,3 +170,13 @@ Source paths:
 
 Existing listing, accounting, communications, provider, human-approval, and
 production-activation boundaries remain controlling.
+
+## CONFLICT-015 — Roadmap phase count display
+- Claims: the requested execution index lists 26 phases numbered 1–26. The master roadmap
+  source also contains Phase 0 and a later tail, Phases 27–30.
+- Consequence: documentation display count only. No product scope change.
+- Safe assumption: Phase 0 stays an inherited prerequisite, Phases 1–26 stay the requested
+  implementation index, and Phases 27–30 stay future work outside Phase 7. Do not renumber
+  or delete either source.
+- Decision owner: Nathan.
+- Continue safely: yes. Status: recorded, not blocking Phase 7.
