@@ -492,7 +492,7 @@ def worker_once(
     current=Depends(actor),
     settings: Settings = Depends(settings),
 ):
-    if current["principal_type"] == "interactive":
+    if current["principal_type"] != "service":
         raise HTTPException(
             403,
             {
@@ -501,18 +501,10 @@ def worker_once(
                 "retryable": False,
             },
         )
-    service_request = current["principal_type"] == "service"
     return claim_and_deliver(
         settings,
-        request.headers.get("x-perchpoint-worker", "")
-        if service_request
-        else os.environ.get("PHASE6_WORKER_NAME", "synthetic-worker"),
-        request.headers.get("authorization", "").removeprefix("Service ")
-        if service_request
-        else os.environ.get(
-            "PHASE6_WORKER_CREDENTIAL",
-            "local-only-not-production-worker-credential",
-        ),
+        request.headers.get("x-perchpoint-worker", ""),
+        request.headers.get("authorization", "").removeprefix("Service "),
     )
 
 
@@ -852,7 +844,7 @@ def post_jobs(
 ):
     from .phase5_closeout import process_document_jobs
 
-    if current["principal_type"] == "interactive":
+    if current["principal_type"] != "service":
         raise HTTPException(
             403,
             {
@@ -861,19 +853,10 @@ def post_jobs(
                 "retryable": False,
             },
         )
-    service_request = current["principal_type"] == "service"
     return process_document_jobs(
         settings,
-        worker_name=(
-            request.headers.get("x-perchpoint-worker", "")
-            if service_request
-            else None
-        ),
-        credential=(
-            request.headers.get("authorization", "").removeprefix("Service ")
-            if service_request
-            else None
-        ),
+        worker_name=request.headers.get("x-perchpoint-worker", ""),
+        credential=request.headers.get("authorization", "").removeprefix("Service "),
     )
 
 

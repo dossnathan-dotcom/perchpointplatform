@@ -24,6 +24,14 @@ def _settings() -> Settings:
     return Settings.load()
 
 
+def _worker_headers() -> dict[str, str]:
+    credential = os.environ.get("PHASE6_WORKER_CREDENTIAL", "local-only-not-production-worker-credential")
+    return {
+        "authorization": f"Service {credential}",
+        "x-perchpoint-worker": os.environ.get("PHASE6_WORKER_NAME", "synthetic-worker"),
+    }
+
+
 def _admin():
     return engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2")
 
@@ -175,7 +183,7 @@ def test_worker_failure_then_recovery_and_dead_letter():
     token = _login(client, "ann.synthetic@example.com")
     seen = {}
     for _ in range(8):
-        result = client.post("/api/v2/worker/once", headers=_auth(token)).json()
+        result = client.post("/api/v2/worker/once", headers=_worker_headers()).json()
         if result.get("id"):
             seen[result["id"]] = result["status"]
         if result.get("status") == "retry":
@@ -425,7 +433,7 @@ def test_reference_path_listing_inquiry_and_isolation(client):
     assert triaged.status_code == 200 and stale.status_code == 409 and note.status_code == 201
     history = client.get(f"/api/v2/activity?resource_id={property_id}", headers=headers)
     assert history.json()["activity"]
-    worker = client.post("/api/v2/worker/once", headers=headers)
+    worker = client.post("/api/v2/worker/once", headers=_worker_headers())
     assert worker.status_code == 200
     isolation = _login(client, "isolation.synthetic@example.com")
     denied = client.get("/api/v2/inquiries", headers=_auth(isolation))

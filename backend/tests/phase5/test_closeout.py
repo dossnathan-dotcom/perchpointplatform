@@ -1,4 +1,5 @@
 """Phase 5 closeout paths: processing, access, export, search, import, and replay."""
+import os
 from uuid import uuid4
 
 import fitz
@@ -13,6 +14,14 @@ from perchpoint.phase5_closeout import _safe_csv, sanitize_text
 from perchpoint.routes import create_app
 from perchpoint.settings import Settings
 from tests.phase5.test_canonical import _auth, _login
+
+
+def _worker_headers() -> dict[str, str]:
+    credential = os.environ.get("PHASE6_WORKER_CREDENTIAL", "local-only-not-production-worker-credential")
+    return {
+        "authorization": f"Service {credential}",
+        "x-perchpoint-worker": os.environ.get("PHASE6_WORKER_NAME", "synthetic-worker"),
+    }
 
 
 def _property(client, token):
@@ -61,7 +70,7 @@ def test_extraction_preview_access_and_disposition(tmp_path, monkeypatch):
     assert uploaded.status_code == 201, uploaded.text
     assert uploaded.json()["lifecycle"] == "available"
     document_id = uploaded.json()["id"]
-    processed = client.post("/api/v2/phase5/jobs/process", headers=_auth(token))
+    processed = client.post("/api/v2/phase5/jobs/process", headers=_worker_headers())
     assert processed.status_code == 200, processed.text
     found = client.get("/api/v2/search", headers=_auth(token), params={"q": "boiler"})
     assert found.status_code == 200
