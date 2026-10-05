@@ -96,7 +96,7 @@
     "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.2.0",
     "globals": "15.15.0",
-    "json-schema-to-typescript": "15.0.4",
+    "json-schema-to-typescript": "16.0.0",
     "lighthouse": "12.8.2",
     "postcss": "8.5.28",
     "react-scripts": "5.0.1",
