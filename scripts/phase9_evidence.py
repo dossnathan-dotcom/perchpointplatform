@@ -191,7 +191,7 @@ def write_reports() -> None:
     (docs / "ACCEPTANCE_REPORT.md").write_text(
         "\n".join(
             [
-                "# Phase 8 acceptance report",
+                "# Phase 9 acceptance report",
                 "",
                 f"Behavior commit: `{behavior}`.",
                 "",
@@ -201,7 +201,7 @@ def write_reports() -> None:
                 "",
                 "P9-R17 and P9-R18 are not local gates. They are recorded after the protected pull request and the merged main workflows.",
                 "",
-                "Hosted Supabase, Faruk and Ann stakeholder acceptance, qualified legal and fair-housing review, real-data migration, and production deployment are not granted. Phase 9 was not started.",
+                "Hosted Supabase, Faruk and Ann stakeholder acceptance, qualified legal and fair-housing review, real-data migration, production providers, advertising, and production deployment are not granted. Phase 10 was not started. External syndication was not activated.",
                 "",
             ]
         ),
@@ -211,22 +211,24 @@ def write_reports() -> None:
     (docs / "REVIEW_FINDINGS.md").write_text(
         "\n".join(
             [
-                "# Phase 8 review findings",
+                "# Phase 9 review findings",
                 "",
-                f"Reviewed against behavior commit `{behavior}`. `python scripts/phase9_review.py` reported no critical or high findings.",
+                f"Reviewed against behavior commit `{behavior}`. `python scripts/phase9_review.py` reported no critical or high findings. Reviewer identity: `phase9-independent-review`.",
                 "",
                 "## Resolved",
                 "",
-                "- P7-M1 media administration is now in Phase 8. Intake rejects unsafe content, approval requires licensed rights and alt text, and unapproved media is not part of the public snapshot.",
-                "- Material asking-price changes are owner-reserved. A non-owner change is stored as a prepared exception and does not replace the open price.",
-                "- Publication requires an offerable space, an open asking price, approved primary media, no open hold, a current available statement, and no occupied contradiction.",
-                "- Public snapshot payloads reject organization, resident, cost, access-code, and internal-note keys.",
+                "- Discovery projections are derived from the current published Phase 8 snapshot. A replay of the same content hash does not create a second current projection.",
+                "- External syndication targets, including Zillow, are rejected. Owned targets are the discovery index, public page, sitemap, link preview, and listing health.",
+                "- Unknown bedroom, bathroom, and area values stay null and do not match a minimum filter. Assistance-animal values cannot be stored as an ordinary pet policy.",
+                "- Accessibility features require a verification date and the public payload states they are not a compliance or suitability determination.",
+                "- A distribution job is claimed for one projection. A mismatched version is recorded as stale, a terminal failure is dead-lettered, and an expired lease can be reclaimed.",
+                "- Discovery events reject personal data, suppress optional analytics when Sec-GPC is set, and exclude bot traffic from counted metrics.",
                 "",
                 "## Separate verdicts",
                 "",
-                "This technical review does not grant hosted Supabase acceptance, stakeholder acceptance, qualified legal or fair-housing acceptance, real-data migration acceptance, or production deployment.",
+                "This technical review does not grant hosted Supabase acceptance, stakeholder acceptance, qualified legal or fair-housing acceptance, privacy-counsel acceptance, real-data migration acceptance, production-provider acceptance, advertising acceptance, or production deployment.",
                 "",
-                "No critical or high finding remains open inside Phase 8.",
+                "No critical or high finding remains open inside Phase 9.",
                 "",
             ]
         ),
@@ -236,7 +238,7 @@ def write_reports() -> None:
     (docs / "ENVIRONMENT.md").write_text(
         "\n".join(
             [
-                "# Phase 8 acceptance environment",
+                "# Phase 9 acceptance environment",
                 "",
                 "Local gates used the disposable Docker project `perchpoint-phase8-accept`. Postgres is published on `127.0.0.1:54339`, GoTrue on `127.0.0.1:9998`, Mailpit on `127.0.0.1:8125`, MinIO on `127.0.0.1:9100`, and ClamAV on `127.0.0.1:3410`. The database name is `perchpoint_phase2`.",
                 "",
