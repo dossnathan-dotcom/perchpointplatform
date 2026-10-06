@@ -911,29 +911,39 @@ test("[keyboard-focus-all-identity] every identity page exposes a visible keyboa
       document.body.removeAttribute("tabindex");
     });
     await page.keyboard.press("Tab");
-    const focused = page.locator(":focus:not(body):not(html)");
-    for (let attempt = 0; attempt < 30; attempt += 1) {
-      const tabbable = await page.evaluate(() => {
-        const element = document.activeElement;
-        return Boolean(element && element !== document.body && element !== document.documentElement && element.tabIndex >= 0);
-      });
-      if (tabbable && await focused.isVisible()) break;
-      await page.keyboard.press("Tab");
+    let focusStyle = null;
+    let visibleIndicator = false;
+    for (let attempt = 0; attempt < 30 && !visibleIndicator; attempt += 1) {
+      focusStyle = await page.evaluate(() => new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          const element = document.activeElement;
+          if (!element || element === document.body || element === document.documentElement) {
+            resolve(null);
+            return;
+          }
+          const style = getComputedStyle(element);
+          const box = element.getBoundingClientRect();
+          resolve({
+            outlineStyle: style.outlineStyle,
+            outlineWidth: style.outlineWidth,
+            boxShadow: style.boxShadow,
+            tag: element.tagName,
+            tabIndex: element.tabIndex,
+            visible: box.width > 0 && box.height > 0,
+          });
+        });
+      }));
+      visibleIndicator = Boolean(
+        focusStyle
+        && focusStyle.visible
+        && focusStyle.tabIndex >= 0
+        && (
+          (focusStyle.outlineStyle !== "none" && focusStyle.outlineWidth !== "0px")
+          || (focusStyle.boxShadow && focusStyle.boxShadow !== "none")
+        ),
+      );
+      if (!visibleIndicator) await page.keyboard.press("Tab");
     }
-    await expect(focused, `${path} did not expose keyboard focus`).toBeVisible();
-    const focusStyle = await focused.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        outlineStyle: style.outlineStyle,
-        outlineWidth: style.outlineWidth,
-        boxShadow: style.boxShadow,
-        tag: element.tagName,
-        tabIndex: element.tabIndex,
-      };
-    });
-    const visibleIndicator =
-      (focusStyle.outlineStyle !== "none" && focusStyle.outlineWidth !== "0px")
-      || focusStyle.boxShadow !== "none";
     expect(visibleIndicator, `${path} did not render a focus indicator: ${JSON.stringify(focusStyle)}`).toBe(true);
   }
 });
