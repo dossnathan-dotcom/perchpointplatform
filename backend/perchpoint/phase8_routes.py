@@ -10,6 +10,7 @@ from .commands import CommandError
 from .phase8_portfolio import (
     apply_asking_price,
     archive_property,
+    bulk_apply,
     bulk_dry_run,
     inventory,
     place_hold,
@@ -109,6 +110,9 @@ class ArchiveBody(BaseModel):
 class BulkBody(BaseModel):
     space_ids: list[str]
     amount_minor: int = Field(ge=0)
+    effective_on: str = "2026-12-01"
+    reason: str = "Synthetic bulk asking rent."
+    idempotency_key: str = ""
 
 
 def _call(operation):
@@ -194,6 +198,17 @@ def portfolio_archive(body: ArchiveBody, current=Depends(actor), current_setting
 @router.post("/portfolio/bulk/dry-run")
 def portfolio_bulk(body: BulkBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
     return bulk_dry_run(current_settings, current["id"], current["organization_id"], body.model_dump())
+
+
+@router.post("/portfolio/bulk/apply")
+def portfolio_bulk_apply(body: BulkBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key") or _key_fallback()
+    return _call(lambda: bulk_apply(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+def _key_fallback() -> str:
+    return "bulk-" + uuid4().hex
 
 
 @router.get("/public/listing-snapshots/{slug}")

@@ -246,6 +246,20 @@ def test_portfolio_truth_publication_and_denial(client):
     assert dry.status_code == 200
     assert dry.json()["applied"] is False
     assert dry.json()["eligible"] and dry.json()["ineligible"]
+    blocked_bulk = client.post(
+        "/api/v2/portfolio/bulk/apply",
+        headers=headers,
+        json={"space_ids": [space_id], "amount_minor": 100000, "effective_on": "2026-12-01", "reason": "Material bulk reduction.", "idempotency_key": _key("bulk-block")},
+    )
+    assert blocked_bulk.status_code == 200
+    assert blocked_bulk.json()["results"][0]["applied"] is False
+    applied_bulk = client.post(
+        "/api/v2/portfolio/bulk/apply",
+        headers=headers,
+        json={"space_ids": [space_id], "amount_minor": 200000, "effective_on": "2026-12-01", "reason": "Routine bulk confirmation.", "idempotency_key": _key("bulk-apply")},
+    )
+    assert applied_bulk.status_code == 200, applied_bulk.text
+    assert applied_bulk.json()["results"][0]["applied"] is True
     removed = client.post(
         "/api/v2/portfolio/snapshots/unpublish",
         headers=headers,

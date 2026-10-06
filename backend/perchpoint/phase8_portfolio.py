@@ -577,6 +577,50 @@ def bulk_dry_run(settings, actor, organization, body) -> dict:
     return {"eligible": eligible, "ineligible": ineligible, "applied": False, "synthetic": True}
 
 
+def bulk_apply(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        role = _role(connection, actor)
+        results = []
+        for space_id in body["space_ids"]:
+            visible = connection.execute(text("SELECT id FROM spaces WHERE id = :space"), {"space": space_id}).first()
+            if not visible:
+                results.append({"space_id": space_id, "applied": False, "reason": "outside_scope"})
+                continue
+            current = connection.execute(
+                text("SELECT id, amount_minor FROM asking_prices WHERE organization_id = :org AND space_id = :space AND ended_on IS NULL"),
+                {"org": organization, "space": space_id},
+            ).mappings().first()
+            proposed = int(body["amount_minor"])
+            if current and _material(int(current["amount_minor"]), proposed) and role != "owner":
+                results.append({"space_id": space_id, "applied": False, "reason": "owner_exception"})
+                continue
+            if current:
+                connection.execute(
+                    text("UPDATE asking_prices SET ended_on = :effective WHERE id = :id"),
+                    {"effective": body["effective_on"], "id": current["id"]},
+                )
+            price_id = uuid4()
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO asking_prices (
+                      organization_id, id, space_id, amount_minor, currency, period, effective_on, reason, actor_id, approval_state
+                    ) VALUES (
+                      :org, :id, :space, :amount, 'USD', 'monthly', :effective, :reason, :actor, 'routine'
+                    )
+                    """
+                ),
+                {"org": organization, "id": price_id, "space": space_id, "amount": proposed, "effective": body["effective_on"], "reason": body["reason"], "actor": actor},
+            )
+            results.append({"space_id": space_id, "applied": True, "id": str(price_id)})
+        result = {"results": results, "applied": True, "synthetic": True}
+        _audit_outbox(connection, organization, actor, "pricing.bulk_applied", uuid4(), correlation, "pricing.bulk_applied.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "pricing.bulk_applied", write)
+
+
 def record_fee(settings, actor, organization, body, key, correlation) -> dict:
     def write(connection, _fp):
         _require(connection, "property.manage")
