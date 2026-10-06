@@ -95,6 +95,10 @@ def bootstrap(settings: Settings | None = None) -> None:
             "published_redirect(text)",
             "record_public_analytics(text, text, jsonb)",
             "published_listing_snapshot(text)",
+            "search_discovery(jsonb)",
+            "published_discovery_listing(text)",
+            "discovery_sitemap()",
+            "record_discovery_event(text, text, text, text, text, text, text, boolean, text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(

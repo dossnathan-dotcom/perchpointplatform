@@ -86,6 +86,15 @@ export function ManagedPage({ slug, testId }) {
 export function RentalsIndex() {
   const [state, setState] = useState("loading");
   const [listings, setListings] = useState([]);
+  const [discovery, setDiscovery] = useState([]);
+  const [notice, setNotice] = useState("");
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      return JSON.parse(window.localStorage.getItem("pp-discovery-favorites") || "[]");
+    } catch {
+      return [];
+    }
+  });
   useEffect(() => {
     let active = true;
     phase2("/api/v2/listings").then(({ response, body }) => {
@@ -99,9 +108,57 @@ export function RentalsIndex() {
     }).catch(() => { if (active) setState("unavailable"); });
     return () => { active = false; };
   }, []);
+  async function search(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const params = new URLSearchParams();
+    for (const [key, value] of form.entries()) {
+      if (String(value).trim()) params.set(key, String(value).trim());
+    }
+    setNotice("Searching approved listings.");
+    try {
+      const { response, body } = await phase2(`/api/v2/public/discovery/search?${params.toString()}`);
+      if (!response.ok) {
+        setNotice("Search is temporarily unavailable. The published list below is unchanged.");
+        return;
+      }
+      setDiscovery(body.records || []);
+      setNotice(body.total ? `${body.total} approved listings match.` : "No listings match. Remove one filter and search again.");
+    } catch {
+      setNotice("Search is temporarily unavailable. The published list below is unchanged.");
+    }
+  }
+  function favorite(slug) {
+    const next = favorites.includes(slug) ? favorites.filter((item) => item !== slug) : [...favorites, slug].slice(0, 3);
+    setFavorites(next);
+    window.localStorage.setItem("pp-discovery-favorites", JSON.stringify(next));
+  }
   return (
     <PageFrame title="Rentals" testId="rentals-index">
       <p>Available homes come from the current public listing projection. The CMS cannot change rent, fees, or availability.</p>
+      <form className="space-y-3" onSubmit={search}>
+        <label className="block text-sm font-semibold" htmlFor="discovery-city">City</label>
+        <input id="discovery-city" name="city" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        <label className="block text-sm font-semibold" htmlFor="discovery-use">Use</label>
+        <select id="discovery-use" name="use_code" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }}>
+          <option value="">Any approved use</option>
+          <option value="residential">Residential</option>
+          <option value="commercial">Commercial</option>
+        </select>
+        <button className="underline" type="submit">Search approved listings</button>
+      </form>
+      <p role="status">{notice}</p>
+      {discovery.length > 0 && (
+        <ul className="space-y-3">
+          {discovery.map((row) => (
+            <li key={row.public_slug}>
+              <Link className="underline" to={`/rentals/${row.public_slug}`}>{row.payload.property_name} — {row.payload.label}</Link>
+              <button className="ml-3 underline" type="button" onClick={() => favorite(row.public_slug)}>Save on this device</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {favorites.length > 0 && <p>Saved on this device: {favorites.join(", ")}. Nothing was sent to the server.</p>}
       {state === "loading" && <p role="status">Loading published listings.</p>}
       {state === "unavailable" && <p role="alert">Published listings could not be loaded.</p>}
       {state === "ready" && listings.length === 0 && <p>No homes are published right now.</p>}

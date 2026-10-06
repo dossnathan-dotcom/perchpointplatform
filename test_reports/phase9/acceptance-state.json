@@ -1,0 +1,159 @@
+{
+  "behavior_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023",
+  "gates": {
+    "P9-R0": {
+      "command": "git merge-base --is-ancestor c60cc82a0bf29657ffa50e1c85cca5b48808d985 HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:17.780555+00:00",
+      "gate": "P9-R0",
+      "output_sha256": "f287fa67bc97fe8d64d51086e8b6071a8316ea17e83ef47ee4c4670cc674f582",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase9_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:17.871257+00:00",
+      "gate": "P9-R1",
+      "output_sha256": "e63fa7d7e17b7677acb116708916fc88ab4e02e5f42fa08ec9dc36ba0a451303",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase9_discovery.py perchpoint/phase9_routes.py tests/phase9 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:17:44.969712+00:00",
+      "gate": "P9-R10",
+      "output_sha256": "dc59a5a55d518e09ee84cf1ef4ad87766b9b9bdeede1b8df4b2530631f60bd26",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:19:00.675037+00:00",
+      "gate": "P9-R11",
+      "output_sha256": "8987fb2b34ec0268cb50e1976a48073028327c9fc56dcb131b1a854c81cf3eb9",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R12": {
+      "command": "corepack yarn playwright test e2e/phase9-discovery.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:19:24.581742+00:00",
+      "gate": "P9-R12",
+      "output_sha256": "e8fa5c7b1f6237783d8690f6e6845ffb30b6a77daf0b7cd91a42a9cf34cf8466",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R13": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase9_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:19:29.682742+00:00",
+      "gate": "P9-R13",
+      "output_sha256": "7e2fc35848059c4592820a7148341135fd90e1d5f5bbf8831cafd1726f314634",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:20:24.897856+00:00",
+      "gate": "P9-R14",
+      "output_sha256": "35d3c6a39cf0ea34ec1619586519589a51b8ac3be1d9073c338397c84459d567",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase9_clean_room.py --execute",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:21:51.584379+00:00",
+      "gate": "P9-R15",
+      "output_sha256": "8ab97e8a4668c95b81f441f7b7894adeda3da079907f68048156b3b014f2bd47",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase9_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:21:51.677250+00:00",
+      "gate": "P9-R16",
+      "output_sha256": "f16d93624f55ee841d88acfda820c73a9b1733c5cb393527ffdbbd8e69f17915",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:18.808698+00:00",
+      "gate": "P9-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:23.123737+00:00",
+      "gate": "P9-R3",
+      "output_sha256": "6c83b9894f0fb51fc937d4da0f7deb841d6b9e78523ff4eae474066314572cea",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:29.747748+00:00",
+      "gate": "P9-R4",
+      "output_sha256": "838bcf312e7e37cccaf2892c74b11c47391c1bd473866316d8455b8474bb9180",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:16:36.458019+00:00",
+      "gate": "P9-R5",
+      "output_sha256": "32f28a2f3830674adf75a7aa3de961a4a69038586f96ac846af0a6aee61d2d30",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R6": {
+      "command": "corepack yarn playwright test e2e/phase9-discovery.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:17:00.403267+00:00",
+      "gate": "P9-R6",
+      "output_sha256": "829707a6dc509bb4fb76cc868c9f6d62d0b614b34c967d5bb254e7198a24139f",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:17:06.945233+00:00",
+      "gate": "P9-R7",
+      "output_sha256": "76a9b0794a82f671e70b69379e2a5ae0cf301bcd11f51f992ec32a5e99a32639",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:17:13.656502+00:00",
+      "gate": "P9-R8",
+      "output_sha256": "3b3a8c67db4fb5da6c7657bec3407cec6ecb13e5ed996d467750360b7da3fedb",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    },
+    "P9-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T20:17:20.234753+00:00",
+      "gate": "P9-R9",
+      "output_sha256": "e170f335877ccc0dc53de3ab53ff5d65d54287f9aaa0ec5423739bef02d748e3",
+      "result": "passed",
+      "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+    }
+  },
+  "schema": 1
+}

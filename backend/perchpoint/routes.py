@@ -212,6 +212,8 @@ def _route_capability(request: Request) -> str:
         return "resident.read" if request.method == "GET" else "party.create"
     if path.startswith("/listings"):
         return "property.manage"
+    if path.startswith("/discovery"):
+        return "property.read" if request.method == "GET" else "property.manage"
     if path.startswith("/content"):
         if request.method == "GET":
             return "content.read"
@@ -3655,6 +3657,9 @@ def create_app():
     app.include_router(router)
     app.include_router(phase7_router)
     app.include_router(phase8_router)
+    from .phase9_routes import router as phase9_router
+
+    app.include_router(phase9_router)
     return app
 
 
