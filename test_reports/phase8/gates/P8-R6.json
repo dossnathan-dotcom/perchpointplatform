@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k published or public -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:24:58.661678+00:00",
+  "gate": "P8-R6",
+  "output_sha256": "15f1cf4d78715df8d3cd0daacc17442cb9617d95e641a8ef926b8de1fdb2a9c7",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}

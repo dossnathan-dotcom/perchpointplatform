@@ -180,3 +180,23 @@ production-activation boundaries remain controlling.
   or delete either source.
 - Decision owner: Nathan.
 - Continue safely: yes. Status: recorded, not blocking Phase 7.
+
+## CONFLICT-016 — Phase 8 listing distribution
+- Claims: roadmap Phase 8D describes Zillow and Facebook coexistence. The approved Phase 8
+  directive makes the HawkVision site the exclusive listing destination and defers discovery
+  and syndication to later phases that are not authorized now.
+- Consequence: publication and integration scope.
+- Safe assumption: Phase 8 publishes immutable snapshots to the HawkVision public site only.
+  No feed, marketplace, or external listing workspace is implemented.
+- Decision owner: Nathan for this implementation; Faruk retains production publication authority.
+- Continue safely: yes. Status: resolved for Phase 8 local implementation by Q1 and Q91.
+
+## CONFLICT-017 — Pricing materiality versus the procurement ceiling
+- Claims: the accepted $1,200 threshold governs commitments and procurement. Phase 8 Q40 and
+  Q74 require configurable absolute and percentage bands for rent and fee materiality.
+- Consequence: who may change asking rent without owner approval.
+- Safe assumption: do not reuse $1,200 as a rent-change threshold. Seed only synthetic bands
+  of 10 percent or 15000 minor units. Those bands are not production policy.
+- Decision owner: Faruk for production policy; Nathan for the local synthetic control.
+- Continue safely: yes. Status: resolved for Phase 8 local implementation. Stakeholder
+  acceptance of the bands remains separate.

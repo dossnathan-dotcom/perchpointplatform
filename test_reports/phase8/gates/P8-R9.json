@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py::test_portfolio_truth_publication_and_denial -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:25:14.473936+00:00",
+  "gate": "P8-R9",
+  "output_sha256": "e9b77dec94e9c1a81b10e6da0980a54002b4f3269598887d603f23fb8a195a09",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}

@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase5/test_live_services.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:25:08.554302+00:00",
+  "gate": "P8-R8",
+  "output_sha256": "f745a6e14b8e9de1b7c0fe59f9a6150913123eea128821a6dbdd134c0e082b36",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}

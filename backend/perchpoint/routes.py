@@ -202,6 +202,8 @@ def _route_capability(request: Request) -> str:
         return "document.read" if request.method == "GET" else "document.manage"
     if path.startswith("/inquiries"):
         return "inquiry.manage"
+    if path.startswith("/portfolio"):
+        return "property.read" if request.method == "GET" else "property.manage"
     if path.startswith(("/properties", "/buildings", "/spaces", "/activity")):
         return "property.read" if request.method == "GET" else "property.manage"
     if path.startswith(("/imports", "/quality", "/audit", "/replay", "/phase5", "/worker")):
@@ -346,12 +348,25 @@ def listings(settings: Settings = Depends(settings)):
 
 @router.get("/listings/{listing_id}")
 def listing_detail(listing_id: UUID, settings: Settings = Depends(settings)):
+    snapshot = None
     with runtime_transaction(settings, None, None, uuid4()) as connection:
         rows = connection.execute(text("SELECT * FROM perchpoint.published_listings()")).mappings().all()
-    match = next((dict(row) for row in rows if row["listing_id"] == listing_id), None)
+        match = next((dict(row) for row in rows if row["listing_id"] == listing_id), None)
+        if match and match.get("public_slug"):
+            snapshot = connection.execute(
+                text("SELECT perchpoint.published_listing_snapshot(:slug)"),
+                {"slug": match["public_slug"]},
+            ).scalar()
     if not match:
         raise HTTPException(404, "That listing is not public")
-    return _public_listing(match)
+    public = _public_listing(match)
+    if isinstance(snapshot, str):
+        snapshot = json.loads(snapshot)
+    if isinstance(snapshot, dict):
+        for key in ("amount_minor", "estimate_minor", "estimate_disclaimer", "description", "alt_text"):
+            if key in snapshot:
+                public[key] = snapshot[key]
+    return public
 
 
 @router.post("/properties", status_code=201)
@@ -3635,9 +3650,11 @@ def create_app():
         return response
 
     from .phase7_routes import router as phase7_router
+    from .phase8_routes import router as phase8_router
 
     app.include_router(router)
     app.include_router(phase7_router)
+    app.include_router(phase8_router)
     return app
 
 

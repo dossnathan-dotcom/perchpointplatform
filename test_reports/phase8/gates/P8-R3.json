@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:24:42.124849+00:00",
+  "gate": "P8-R3",
+  "output_sha256": "53e68a1681e73eb9be9960b3468eb9c7d0cf8d59786ad191f8947080eb7d4439",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}

@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:24:50.000105+00:00",
+  "gate": "P8-R5",
+  "output_sha256": "39e2c50a4c13f58b2a161838db19db278060f06de4d6f71515df128be38e32f7",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}

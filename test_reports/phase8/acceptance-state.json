@@ -1,0 +1,181 @@
+{
+  "behavior_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e",
+  "gates": {
+    "P8-R0": {
+      "command": "git merge-base --is-ancestor 1a4e1c25880df87eb9fb0f81c186de1b67294477 HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:36.951178+00:00",
+      "gate": "P8-R0",
+      "output_sha256": "92491baad7e179528f3e0c5a693248ff685a6daf06909f4333eed2d8976da206",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase8_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:37.036435+00:00",
+      "gate": "P8-R1",
+      "output_sha256": "fcb540d07da4f5cc9e3e2b1c09f39ae3c843cec14eed269e59b44727541e4d35",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase8_portfolio.py perchpoint/phase8_routes.py tests/phase8 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:25:41.967043+00:00",
+      "gate": "P8-R10",
+      "output_sha256": "97668fd58104fd87f851b76c45856b137f8471dbd89be2150c635b0a5279072a",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:26:51.341034+00:00",
+      "gate": "P8-R11",
+      "output_sha256": "f8d2310d977b3a45d02f9202ad5c5b66303523aacb7f70c0719efbc060fc4e83",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R12": {
+      "command": "corepack yarn playwright test e2e/phase8-portfolio.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:27:14.333379+00:00",
+      "gate": "P8-R12",
+      "output_sha256": "6faa8434d1ac06eaea0c37e1745418dbeca7b0b12a224c742f44c51dc3134834",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R13": {
+      "command": "corepack yarn playwright test e2e/phase8-portfolio.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:27:37.052976+00:00",
+      "gate": "P8-R13",
+      "output_sha256": "72e5b079106a1fba03cf68bce292533dd74dd566a9bfb098a1575f88311a3ad9",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase8_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:27:42.227295+00:00",
+      "gate": "P8-R14",
+      "output_sha256": "09ff45c8a21126c42d534f0c3aa2ee58ed70c4c237aaaf21cac2284ef3818eaa",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase8_clean_room.py --execute",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:29:05.153468+00:00",
+      "gate": "P8-R15",
+      "output_sha256": "5a88112591facb12c9458116192e640e4ce7f88759ef6b84e09a3411eb3008d4",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase8_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:29:05.251207+00:00",
+      "gate": "P8-R16",
+      "output_sha256": "9871f5c51164b9f497a6af7f25882d6eda8ddbf57f2152167177744026cc2a18",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R17": {
+      "ci_runs": [
+        "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181606",
+        "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181437"
+      ],
+      "command": "gh pr checks 33",
+      "exit_code": 0,
+      "gate": "P8-R17",
+      "required_checks": [
+        "CodeQL",
+        "backend",
+        "browser",
+        "containers",
+        "contracts",
+        "frontend",
+        "governance",
+        "secrets",
+        "supply-chain"
+      ],
+      "result": "passed",
+      "tested_commit": "17c8b31481a4a56195dedc52502b6ac17dc1c9ee"
+    },
+    "P8-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:37.938675+00:00",
+      "gate": "P8-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:42.124849+00:00",
+      "gate": "P8-R3",
+      "output_sha256": "53e68a1681e73eb9be9960b3468eb9c7d0cf8d59786ad191f8947080eb7d4439",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py -q --tb=line -k runtime or inventory -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:44.251739+00:00",
+      "gate": "P8-R4",
+      "output_sha256": "0b1862bd8f4c1a3f83c77325a6fbaf01c5385ceb55fd728d5bc59b8cbe77d0dd",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:50.000105+00:00",
+      "gate": "P8-R5",
+      "output_sha256": "39e2c50a4c13f58b2a161838db19db278060f06de4d6f71515df128be38e32f7",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R6": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k published or public -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:24:58.661678+00:00",
+      "gate": "P8-R6",
+      "output_sha256": "15f1cf4d78715df8d3cd0daacc17442cb9617d95e641a8ef926b8de1fdb2a9c7",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py::test_portfolio_truth_publication_and_denial -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:25:04.596295+00:00",
+      "gate": "P8-R7",
+      "output_sha256": "944859d93bca8d4c208df163755a5f3aeda61cfb9e7bb55314c28bacf618a7f6",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase5/test_live_services.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:25:08.554302+00:00",
+      "gate": "P8-R8",
+      "output_sha256": "f745a6e14b8e9de1b7c0fe59f9a6150913123eea128821a6dbdd134c0e082b36",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    },
+    "P8-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase8/test_property_availability.py::test_portfolio_truth_publication_and_denial -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T15:25:14.473936+00:00",
+      "gate": "P8-R9",
+      "output_sha256": "e9b77dec94e9c1a81b10e6da0980a54002b4f3269598887d603f23fb8a195a09",
+      "result": "passed",
+      "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+    }
+  },
+  "schema": 1
+}

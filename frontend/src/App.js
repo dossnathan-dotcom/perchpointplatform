@@ -18,6 +18,7 @@ import { applyDocumentTheme } from "@/design-system/theme";
 
 const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then((module) => ({ default: module.PerchPointPortal })));
 const Phase5Workspace = lazy(() => import("@/components/portal/Phase5Workspace").then((module) => ({ default: module.Phase5Workspace })));
+const PortfolioAdmin = lazy(() => import("@/components/portal/PortfolioAdmin").then((module) => ({ default: module.PortfolioAdmin })));
 const Phase6SignIn = lazy(() => import("@/components/portal/Phase6SignIn").then((module) => ({ default: module.Phase6SignIn })));
 const Phase6IdentityFlow = lazy(() => import("@/components/portal/Phase6Identity").then((module) => ({ default: module.Phase6IdentityFlow })));
 const Phase6AccessWorkspace = lazy(() => import("@/components/portal/Phase6Access").then((module) => ({ default: module.Phase6AccessWorkspace })));
@@ -109,6 +110,7 @@ export function AppContent() {
         <Route path="/session-expired" element={<Suspense fallback={routePending}><Phase6BoundaryPage kind="session-expired" /></Suspense>} />
         <Route path="/perchpoint" element={<PortalGate onLogin={() => openLogin("owner")} />} />
         <Route path="/perchpoint/:roleId/phase5/:center" element={<Suspense fallback={routePending}><Phase5Workspace /></Suspense>} />
+        <Route path="/perchpoint/:roleId/listing-administration" element={<Suspense fallback={routePending}><PortfolioAdmin /></Suspense>} />
         <Route path="/perchpoint/:roleId/:viewId?" element={<Suspense fallback={routePending}><PerchPointPortal key={location.key} /></Suspense>} />
         <Route path="/perchpoint/*" element={<PageNotFound />} />
         <Route path="/foundation/:sectionId?" element={<Suspense fallback={routePending}><FoundationPage key={location.key} /></Suspense>} />

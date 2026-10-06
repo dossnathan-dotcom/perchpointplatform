@@ -1,0 +1,6 @@
+cardinalities {'properties': 1001, 'spaces': 3003, 'prices': 3003, 'audit': 250000, 'runtime_visible_properties': 1001}
+inventory {'p50_ms': 69.0275999950245, 'p95_ms': 69.30439999268856, 'max_ms': 69.30439999268856, 'samples_ms': [69.028, 68.21, 69.304], 'errors': 0, 'timeouts': 0}
+detail {'p50_ms': 70.33099999534898, 'p95_ms': 71.15830000839196, 'max_ms': 71.15830000839196, 'samples_ms': [71.158, 68.956, 70.331], 'errors': 0, 'timeouts': 0}
+snapshot {'p50_ms': 0.9448000055272132, 'p95_ms': 1.0780000011436641, 'max_ms': 1.0780000011436641, 'samples_ms': [1.078, 0.945, 0.925], 'errors': 0, 'timeouts': 0}
+plan ['Limit  (cost=585.42..585.54 rows=50 width=10)', '  ->  Sort  (cost=585.42..586.81 rows=556 width=10)', '        Sort Key: name', '        ->  Result  (cost=0.01..566.95 rows=556 width=10)', "              One-Time Filter: ((NULLIF(current_setting('app.organization_id'::text, true), ''::text))::uuid = '52a5859c-b63b-4f24-b54c-e2fa1b0bd8c0'::uuid)", '              ->  Seq Scan on properties property  (cost=0.01..566.95 rows=556 width=10)', "                    Filter: ((organization_id = '52a5859c-b63b-4f24-b54c-e2fa1b0bd8c0'::uuid) AND (perchpoint.authorized_for('property.read'::text, 'property'::text, id) OR perchpoint.worker_assignment_allows(NULL::uuid, id)))"]
+teardown perchpoint_phase8_bench dropped
