@@ -1,0 +1,20 @@
+{
+  "ci_runs": [
+    "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37414571809",
+    "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37414572127"
+  ],
+  "gate": "P7-R17",
+  "required_checks": [
+    "CodeQL",
+    "backend",
+    "browser",
+    "containers",
+    "contracts",
+    "frontend",
+    "governance",
+    "secrets",
+    "supply-chain"
+  ],
+  "result": "passed",
+  "tested_commit": "7c1fa212fe89519e9256d33cc31aab097983e6c6"
+}
