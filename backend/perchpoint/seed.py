@@ -1,6 +1,7 @@
 """Synthetic seed. Runs as the local superuser because forced RLS blocks unscoped inserts."""
 from __future__ import annotations
 
+import json
 import os
 import uuid
 
@@ -375,6 +376,101 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
                 "id": sid("service-credential-worker"),
                 "principal": sid("service-principal-worker"),
                 "verifier": _hash(worker_secret),
+            },
+        )
+        connection.execute(
+            text("UPDATE listings SET public_slug = 'example-elm-court' WHERE id = :id"),
+            {"id": sid("listing-reference-published")},
+        )
+        ann = sid("account-phase2-ann")
+        pages = [
+            ("about", "About HawkVision", "EXAMPLE ONLY. HawkVision Homes operates rental homes in Greater Cincinnati. This synthetic page is not an approved public claim."),
+            ("apply", "Application guidance", "EXAMPLE ONLY. This page explains how to start. It is not a complete application and it does not reserve a home."),
+            ("resources", "Renter resources", "EXAMPLE ONLY. Managed guidance for applicants and residents. Review dates are synthetic."),
+            ("faq", "Common questions", "EXAMPLE ONLY. Structured answers stay with their owner and review date."),
+            ("maintenance", "Maintenance guidance", "EXAMPLE ONLY. Web submission is not an emergency-monitored channel. Use the approved urgent contact for immediate danger."),
+            ("contact", "Contact HawkVision", "EXAMPLE ONLY. Choose a purpose. Personal staff channels are not published here."),
+            ("privacy", "Privacy notice", "EXAMPLE ONLY. This synthetic notice is not legal advice and is not an approved privacy policy."),
+            ("terms", "Terms of use", "EXAMPLE ONLY. This synthetic text is not an approved terms document."),
+        ]
+        for slug, title, body in pages:
+            item_id = sid(f"content-{slug}")
+            revision_id = sid(f"content-revision-{slug}")
+            publication_id = sid(f"content-publication-{slug}")
+            snapshot = json.dumps({"schema": 1, "title": title, "blocks": [{"type": "prose", "text": body}]})
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO content_items (
+                      organization_id, id, kind, slug, risk_class, owner_account_id, status, review_on
+                    ) VALUES (
+                      :org, :id, 'page', :slug, 'routine', :owner, 'published', DATE '2027-01-01'
+                    ) ON CONFLICT (organization_id, id) DO NOTHING
+                    """
+                ),
+                {"org": org, "id": item_id, "slug": slug, "owner": ann},
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO content_revisions (
+                      organization_id, id, item_id, version, blocks, author_id, reason
+                    ) VALUES (
+                      :org, :id, :item, 1, CAST(:blocks AS jsonb), :author, 'synthetic seed'
+                    ) ON CONFLICT (organization_id, id) DO NOTHING
+                    """
+                ),
+                {"org": org, "id": revision_id, "item": item_id, "blocks": snapshot, "author": ann},
+            )
+            connection.execute(
+                text(
+                    """
+                    INSERT INTO content_publications (
+                      organization_id, id, item_id, revision_id, slug, snapshot, actor_id
+                    ) VALUES (
+                      :org, :id, :item, :revision, :slug, CAST(:snapshot AS jsonb), :actor
+                    ) ON CONFLICT (organization_id, id) DO NOTHING
+                    """
+                ),
+                {
+                    "org": org,
+                    "id": publication_id,
+                    "item": item_id,
+                    "revision": revision_id,
+                    "slug": slug,
+                    "snapshot": snapshot,
+                    "actor": ann,
+                },
+            )
+        draft_id = sid("content-internal-draft")
+        connection.execute(
+            text(
+                """
+                INSERT INTO content_items (
+                  organization_id, id, kind, slug, risk_class, owner_account_id, status
+                ) VALUES (
+                  :org, :id, 'page', 'internal-draft', 'routine', :owner, 'draft'
+                ) ON CONFLICT (organization_id, id) DO NOTHING
+                """
+            ),
+            {"org": org, "id": draft_id, "owner": ann},
+        )
+        connection.execute(
+            text(
+                """
+                INSERT INTO content_revisions (
+                  organization_id, id, item_id, version, blocks, author_id, reason
+                ) VALUES (
+                  :org, :id, :item, 1, CAST(:blocks AS jsonb), :author, 'synthetic draft'
+                ) ON CONFLICT (organization_id, id) DO NOTHING
+                """
+            ),
+            {
+                "org": org,
+                "id": sid("content-revision-internal-draft"),
+                "item": draft_id,
+                "blocks": json.dumps({"schema": 1, "title": "Internal draft", "blocks": [{"type": "prose", "text": "resident access code 9999"}]}),
+                "author": ann,
             },
         )
     admin.dispose()

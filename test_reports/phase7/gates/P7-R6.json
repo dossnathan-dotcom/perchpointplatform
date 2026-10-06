@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py::test_published_page_is_public_and_draft_is_not tests/phase7/test_public_content.py::test_honeypot_sitemap_preview_redirect_and_privacy -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T04:32:26.069393+00:00",
+  "gate": "P7-R6",
+  "output_sha256": "0f5be6ff4aeaa86e9e66181ce0ae7279c31048fc0050e46a1c33f652a5afc4a7",
+  "result": "passed",
+  "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+}

@@ -17,16 +17,20 @@ COMMON_PASSWORDS = {
     "changemechangeme",
 }
 
+_CONTENT = frozenset({
+    "content.read", "content.edit", "content.preview", "content.publish", "content.schedule",
+    "content.report", "content.redirect",
+})
 _OPERATIONS = frozenset({
     "identity.profile.read", "session.read", "session.revoke", "invitation.create", "membership.read",
     "access.request", "leasing.coordinate", "maintenance.coordinate", "work.assign", "property.read",
     "property.manage", "inquiry.manage", "document.read", "document.manage", "search.read",
     "expense.approve", "resident.read", "household.read", "vendor.admin", "vendor.worker.approve",
     "delegation.grant", "delegation.revoke",
-})
+}) | _CONTENT
 _RESIDENT = frozenset({"identity.profile.read", "session.read", "session.revoke", "resident.read", "household.read", "document.read", "mfa.enroll"})
 BUNDLES = {
-    "owner": _OPERATIONS | frozenset({"approval.owner", "delegation.grant", "delegation.revoke", "access.approve", "audit.read", "security.read", "legal.read", "export.create", "accounting.read", "import.manage"}),
+    "owner": _OPERATIONS | frozenset({"approval.owner", "delegation.grant", "delegation.revoke", "access.approve", "audit.read", "security.read", "legal.read", "export.create", "accounting.read", "import.manage", "content.approve", "content.emergency", "content.export"}),
     "platform_admin": frozenset({"identity.profile.read", "session.read", "session.revoke", "membership.read", "membership.grant", "role.manage", "scope.manage", "platform.configure", "security.read", "service.manage", "audit.read", "invitation.create"}),
     "project_manager": _OPERATIONS | frozenset({"access.approve", "security.read", "import.manage"}),
     "operations_manager": _OPERATIONS | frozenset({"access.approve", "security.read", "import.manage"}),

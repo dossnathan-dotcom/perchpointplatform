@@ -30,7 +30,7 @@ module.exports = defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /phase4-production\.spec\.js/ },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /engines\.spec\.js/ },
-    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /engines\.spec\.js/ },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js/ },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js/ },
   ],
 });

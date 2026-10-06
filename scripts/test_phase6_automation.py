@@ -37,6 +37,15 @@ class EvidenceSchemaTests(unittest.TestCase):
         for step in CLEAN_ROOM_STEPS:
             self.assertIn(f'"{step}"', source)
 
+    def test_full_backend_pauses_the_live_outbox_worker(self) -> None:
+        source = (Path(__file__).parent / "phase6_clean_room.py").read_text(encoding="utf-8")
+        full = source.split('"full-backend"', 1)[1].split("driver.step(", 1)[0]
+        stop = full.index('"stop", "worker"')
+        pytest_call = full.index("_full_pytest()")
+        start = full.index('"start", "worker"')
+        self.assertLess(stop, pytest_call)
+        self.assertLess(pytest_call, start)
+
     def test_provenance_rejects_skip_and_stale_commit(self) -> None:
         report = provenance()
         report["totals"]["passed"] = 1

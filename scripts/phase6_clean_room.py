@@ -116,6 +116,19 @@ def _compose(*arguments: str) -> list[str]:
     return [*COMPOSE, *arguments]
 
 
+def _lineage(database: str) -> list[str]:
+    prefix = "postgresql+psycopg://"
+    url = f"{prefix}perchpoint_migrator:local-only-not-production@postgres:5432/{database}"
+    return _compose(
+        "run", "--rm", "--no-deps",
+        "--volume", f"{ROOT}:/workspace",
+        "--workdir", "/workspace",
+        "migrate",
+        "python", "scripts/phase6_migration_lineage.py",
+        "--database-url", url,
+    )
+
+
 def _psql(sql: str, database: str = "postgres") -> list[str]:
     return [
         "docker", "exec", POSTGRES, "psql", "-v", "ON_ERROR_STOP=1",
@@ -281,9 +294,9 @@ def run() -> dict:
                 _psql(grants),
                 _psql("GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;", "perchpoint_phase2"),
                 _compose("run", "--rm", "--no-deps", "migrate", "python", "-m", "alembic", "upgrade", "head"),
-                _psql("SELECT version_num FROM alembic_version;", "perchpoint_phase2"),
+                _lineage("perchpoint_phase2"),
             ],
-            require="0031_phase6_authz_remediation",
+            require="phase6_ancestry=confirmed",
         )
         upgrade_db = "perchpoint_phase5_upgrade"
         driver.step(
@@ -294,9 +307,9 @@ def run() -> dict:
                 _psql("GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;", upgrade_db),
                 _compose("run", "--rm", "--no-deps", *_migration_env(upgrade_db), "migrate", "python", "-m", "alembic", "upgrade", "0011_phase5_hold_guard"),
                 _compose("run", "--rm", "--no-deps", *_migration_env(upgrade_db), "migrate", "python", "-m", "alembic", "upgrade", "head"),
-                _psql("SELECT version_num FROM alembic_version;", upgrade_db),
+                _lineage(upgrade_db),
             ],
-            require="0031_phase6_authz_remediation",
+            require="phase6_ancestry=confirmed",
         )
         driver.step(
             "forced-rls",
@@ -321,7 +334,15 @@ def run() -> dict:
             ],
             require=("status=200", "sign_in_ready status=200"),
         )
-        driver.step("full-backend", [_full_pytest()], require="passed")
+        driver.step(
+            "full-backend",
+            [
+                _compose("stop", "worker"),
+                _full_pytest(),
+                _compose("start", "worker"),
+            ],
+            require="passed",
+        )
         driver.step("mailpit", [_wait_url("http://127.0.0.1:8125/api/v1/info")], require="status=200")
         driver.step("minio-live", [_pytest("tests/phase5/test_live_services.py::test_live_minio_presign_is_private_and_cleaned_up", live=True)], require="1 passed")
         driver.step("clamav-live", [_pytest("tests/phase5/test_live_services.py::test_live_clamav_detects_eicar_and_outage_is_not_clean", live=True)], require="1 passed")

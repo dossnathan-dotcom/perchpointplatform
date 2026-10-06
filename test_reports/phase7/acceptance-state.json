@@ -1,0 +1,159 @@
+{
+  "behavior_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee",
+  "gates": {
+    "P7-R0": {
+      "command": "git merge-base --is-ancestor 2f49cfa6ade9b21e9411b10cbfa2b91cb0f2898b HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:10.353178+00:00",
+      "gate": "P7-R0",
+      "output_sha256": "fcb5037918bca143f3d129172712f1cc321c793d6fb33b33ffdeeeae051e4688",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase7_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:10.436681+00:00",
+      "gate": "P7-R1",
+      "output_sha256": "166a2d534766481fb9e478d4ef0e5dde933481a38fc9a1e1f1f548d9533db5d0",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase7_routes.py tests/phase7 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:33:13.492522+00:00",
+      "gate": "P7-R10",
+      "output_sha256": "620ae0e059f46bfdd43343c9a1700b0fff577ffaec91dd46301c0a066469737f",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m mypy perchpoint --ignore-missing-imports && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn tsc -p tsconfig.contracts.json && corepack yarn eslint src --max-warnings 0 && node --test scripts/compress-build.test.cjs && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:34:20.389338+00:00",
+      "gate": "P7-R11",
+      "output_sha256": "d9ca03232a1d8fc3c3b1f82f70d0388db472fa3d296a36115b7056915e59b066",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R12": {
+      "command": "corepack yarn playwright test e2e/phase7-public.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:35:00.229368+00:00",
+      "gate": "P7-R12",
+      "output_sha256": "7bcd0e23831b5e06d8834a5b8b2db6df0dd92734be4177c734fa0c99f25ebfc4",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R13": {
+      "command": "corepack yarn playwright test e2e/phase7-public.spec.js --reporter=line -g accessibility",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:35:16.871087+00:00",
+      "gate": "P7-R13",
+      "output_sha256": "d4677ab0df0758445bc17393db7df5758a1fa61a977ea4ced4e7d88621f670bc",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase7_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:35:18.242568+00:00",
+      "gate": "P7-R14",
+      "output_sha256": "a7d2cc24ade2d894045104fd439667a0141fb66a1faeefce773e080c1bca9f63",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase7_clean_room.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:35:19.450310+00:00",
+      "gate": "P7-R15",
+      "output_sha256": "ed0685de98cf6d2e6015e5c99708e0970f7266e482b7e7d8b8444e5954a94083",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase7_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:35:19.541876+00:00",
+      "gate": "P7-R16",
+      "output_sha256": "bda1661dd7939e346c06b4651a27c3c10583f279d085bcdc230f0e074c0020f9",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:11.335622+00:00",
+      "gate": "P7-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\Admin\\PerchPoint\\scripts\\phase7_db_preflight.py && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:15.557976+00:00",
+      "gate": "P7-R3",
+      "output_sha256": "a7d771c71da6cae9608426a2e2f3aad824cf9749a9af85c9d9f25aea69150b46",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase6/test_identity.py::test_restricted_rls_enforces_household_and_worker_assignment_relationships tests/phase6/test_identity.py::test_worker_routes_are_limited_to_active_assignment_properties tests/phase7/test_public_content.py::test_property_visibility_policy_includes_worker_assignments -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:18.990544+00:00",
+      "gate": "P7-R4",
+      "output_sha256": "b20960c7792bd1729f1b9a791ee2770e818cdccf993ec2e07e1103d6b0dac3de",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k publish or lifecycle or schedule or rollback -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:23.152432+00:00",
+      "gate": "P7-R5",
+      "output_sha256": "823eb7295e5d84e2eeebc9533d519e233a60c7b1b1c075bb4e30edf90996234c",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R6": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py::test_published_page_is_public_and_draft_is_not tests/phase7/test_public_content.py::test_honeypot_sitemap_preview_redirect_and_privacy -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:26.069393+00:00",
+      "gate": "P7-R6",
+      "output_sha256": "0f5be6ff4aeaa86e9e66181ce0ae7279c31048fc0050e46a1c33f652a5afc4a7",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k submission or inquiry or idempotency or attachment -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:28.830905+00:00",
+      "gate": "P7-R7",
+      "output_sha256": "1cef220a7ffee45ba90c6876f9538a7300c56bcc5d6d9f7f06d81a196a4cce29",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py::test_honeypot_sitemap_preview_redirect_and_privacy -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:31.642492+00:00",
+      "gate": "P7-R8",
+      "output_sha256": "0aefe6ea02a5daad76e9ca7e4c5c7ac074a0c2fe74b7f42506381f50ae0f0415",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    },
+    "P7-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k analytics or privacy or gpc -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-06T04:32:34.417865+00:00",
+      "gate": "P7-R9",
+      "output_sha256": "c549635a9a7cdc27aa56ef192a027ab39b1ee16d3060908c68fdd5f393ad4fa9",
+      "result": "passed",
+      "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
+    }
+  },
+  "schema": 1
+}

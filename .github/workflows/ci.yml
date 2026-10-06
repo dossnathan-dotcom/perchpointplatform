@@ -25,6 +25,7 @@ jobs:
       - run: python scripts/validate_phase4_completeness.py
       - run: python scripts/validate_phase5_answers.py
       - run: python scripts/validate_phase6_answers.py
+      - run: python scripts/validate_phase7_answers.py
       - run: python -m unittest discover -s scripts -p "test_*.py"
       - run: python scripts/phase6_acceptance.py --check --mode pr
       - run: python -m compileall -q scripts

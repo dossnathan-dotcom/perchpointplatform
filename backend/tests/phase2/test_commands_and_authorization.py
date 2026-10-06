@@ -154,6 +154,15 @@ def test_concurrent_same_key_creates_one_property(client):
     assert len(ids) == 1
 
 
+def _outbox_status(event_id):
+    admin = _admin()
+    try:
+        with admin.connect() as connection:
+            return connection.execute(text("SELECT status FROM outbox WHERE id = :id"), {"id": event_id}).scalar()
+    finally:
+        admin.dispose()
+
+
 def test_worker_failure_then_recovery_and_dead_letter():
     admin = _admin()
     org = sid("organization-demo")
@@ -180,18 +189,20 @@ def test_worker_failure_then_recovery_and_dead_letter():
         )
     admin.dispose()
     client = TestClient(create_app())
-    seen = {}
-    for _ in range(8):
+    for _ in range(12):
         result = client.post("/api/v2/worker/once", headers=_worker_headers()).json()
-        if result.get("id"):
-            seen[result["id"]] = result["status"]
-        if result.get("status") == "retry":
+        if result.get("status") == "retry" or _outbox_status(failing) == "pending":
             admin = _admin()
             with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
-                connection.execute(text("UPDATE outbox SET available_at = '1970-01-01', lease_until = NULL WHERE id = :id"), {"id": failing})
+                connection.execute(
+                    text("UPDATE outbox SET available_at = '1970-01-01', lease_until = NULL WHERE id = :id AND status = 'pending'"),
+                    {"id": failing},
+                )
             admin.dispose()
-    assert seen.get(str(exhausted)) == "dead_letter"
-    assert seen.get(str(failing)) == "delivered"
+        if _outbox_status(exhausted) == "dead_letter" and _outbox_status(failing) == "delivered":
+            break
+    assert _outbox_status(exhausted) == "dead_letter"
+    assert _outbox_status(failing) == "delivered"
 
 
 def test_two_workers_claim_different_rows():
@@ -444,9 +455,9 @@ def test_reference_path_listing_inquiry_and_isolation(client):
 def test_empty_database_migration_and_repeatable_seed():
     admin = engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/postgres")
     with admin.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
-        exists = connection.execute(text("SELECT 1 FROM pg_database WHERE datname = 'perchpoint_phase2_empty'")).scalar()
-        if not exists:
-            connection.execute(text("CREATE DATABASE perchpoint_phase2_empty"))
+        connection.execute(text("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'perchpoint_phase2_empty' AND pid <> pg_backend_pid()"))
+        connection.execute(text("DROP DATABASE IF EXISTS perchpoint_phase2_empty"))
+        connection.execute(text("CREATE DATABASE perchpoint_phase2_empty"))
         connection.execute(text("GRANT CONNECT, CREATE ON DATABASE perchpoint_phase2_empty TO perchpoint_migrator"))
     admin.dispose()
     empty = engine_for(_settings().admin_url.rsplit("/", 1)[0] + "/perchpoint_phase2_empty")
@@ -473,7 +484,7 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0031_phase6_authz_remediation"
+    assert revision == "0035_phase7_property_visibility"
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

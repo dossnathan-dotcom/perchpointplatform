@@ -25,6 +25,12 @@ const Phase6BoundaryPage = lazy(() => import("@/components/portal/Phase6Access")
 const FoundationPage = lazy(() => import("@/components/FoundationPage"));
 const ReferenceOperations = lazy(() => import("@/components/ReferenceOperations").then((module) => ({ default: module.ReferenceOperations })));
 const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").then((module) => ({ default: module.PropertyDetailPage })));
+const RentalsIndex = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.RentalsIndex })));
+const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
+const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
+const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
+const StaffContent = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.StaffContent })));
+const PublicStatus = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.PublicStatus })));
 const LoginModal = lazy(() => import("@/components/LoginModal").then((module) => ({ default: module.LoginModal })));
 const TourModal = lazy(() => import("@/components/TourModal").then((module) => ({ default: module.TourModal })));
 const MaintenanceModal = lazy(() => import("@/components/MaintenanceModal").then((module) => ({ default: module.MaintenanceModal })));
@@ -71,6 +77,19 @@ export function AppContent() {
       <Routes>
         <Route element={<PublicLayout onLogin={() => navigate("/sign-in")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
         <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => navigate("/sign-in")} /><Neighborhoods /><AboutHawkVision /></main>} />
+        <Route path="/rentals" element={<Suspense fallback={routePending}><RentalsIndex /></Suspense>} />
+        <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
+        <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
+        <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
+        <Route path="/maintenance" element={<Suspense fallback={routePending}><ManagedPage slug="maintenance" testId="maintenance-page" /></Suspense>} />
+        <Route path="/about" element={<Suspense fallback={routePending}><ManagedPage slug="about" testId="about-page" /></Suspense>} />
+        <Route path="/contact" element={<Suspense fallback={routePending}><ContactPage /></Suspense>} />
+        <Route path="/privacy" element={<Suspense fallback={routePending}><ManagedPage slug="privacy" testId="privacy-page" /></Suspense>} />
+        <Route path="/terms" element={<Suspense fallback={routePending}><ManagedPage slug="terms" testId="terms-page" /></Suspense>} />
+        <Route path="/staff/content" element={<Suspense fallback={routePending}><StaffContent /></Suspense>} />
+        <Route path="/status/410" element={<Suspense fallback={routePending}><PublicStatus code="410" title="This page has been removed" message="The address is gone. No draft is shown." testId="gone-page" /></Suspense>} />
+        <Route path="/status/429" element={<Suspense fallback={routePending}><PublicStatus code="429" title="Too many requests" message="Wait and try again. Nothing was saved." testId="limited-page" /></Suspense>} />
+        <Route path="/status/503" element={<Suspense fallback={routePending}><PublicStatus code="503" title="Temporarily unavailable" message="The public site cannot complete this request." testId="unavailable-page" /></Suspense>} />
         <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
