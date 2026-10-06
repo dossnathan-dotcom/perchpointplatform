@@ -200,3 +200,15 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk for production policy; Nathan for the local synthetic control.
 - Continue safely: yes. Status: resolved for Phase 8 local implementation. Stakeholder
   acceptance of the bands remains separate.
+
+## CONFLICT-018 — Phase 9 distribution versus early marketplace examples
+- Claims: early roadmap text names Zillow, Facebook, feeds, or advertising as listing
+  distribution. Approved Phase 8 and Phase 9 decisions make the HawkVision website the
+  exclusive listing destination.
+- Consequence: discovery and distribution scope.
+- Safe assumption: Phase 9 propagates eligible snapshots only to HawkVision-owned search,
+  detail, sitemap, cache, link-preview, and health surfaces. External syndication is
+  disabled by policy and is not implemented as dormant vendor code.
+- Decision owner: Faruk Atmaca for any future channel reversal; Nathan for this local
+  implementation.
+- Continue safely: yes. Status: resolved for Phase 9 local implementation by Q1 and Q4.
