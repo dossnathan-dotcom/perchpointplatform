@@ -18,7 +18,8 @@ export const AboutHawkVision = () => (
           <div className="absolute bottom-0 left-0 max-w-md p-7 text-linen sm:p-10"><p className="font-mono text-xs uppercase tracking-[0.25em] text-gold">HawkVision Homes</p><p className="mt-4 font-heading text-3xl font-bold">Local property stewardship, connected through PerchPoint.</p></div>
         </div>
         <div>
-          <p className="kicker-line font-mono text-xs uppercase tracking-[0.28em] text-copper">How we operate</p>
+          <p className="kicker-line font-mono text-xs uppercase tracking-[0.28em] text-copper">About HawkVision</p>
+          <p className="mt-3 font-mono text-xs uppercase tracking-[0.28em] text-copper">How we operate</p>
           <h2 className="mt-5 font-heading text-4xl font-bold leading-tight sm:text-5xl">Professional systems should make property care feel more human.</h2>
           <div className="mt-9 grid gap-3">
             {standards.map(([Icon, title, copy]) => <article key={title} className="grid grid-cols-[auto_1fr] gap-4 border-t border-stone-200 py-5" data-testid={`operating-standard-${title.toLowerCase().replaceAll(" ", "-")}`}><Icon className="mt-1 h-5 w-5 text-copper" /><div><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-stone-600">{copy}</p></div></article>)}

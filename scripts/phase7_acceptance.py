@@ -85,6 +85,7 @@ def _changed_since(behavior: str, head: str) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--mode", choices=("pr", "local"), default="local")
     args = parser.parse_args()
     if not args.check:
         parser.error("use --check")
@@ -95,6 +96,23 @@ def main() -> int:
     if set(answers) != expected or set(trace) != expected:
         errors.append("P7-R1 answer or trace coverage is incomplete")
     errors.extend(f"P7-R1 {item}" for item in validate_substance(answers, trace))
+    if args.mode == "pr":
+        for relative in (
+            "scripts/phase6_clean_room.py",
+            "scripts/phase6_migration_lineage.py",
+            "scripts/validate_phase4_completeness.py",
+        ):
+            if not (ROOT / relative).is_file():
+                errors.append(f"required automation missing: {relative}")
+        if errors:
+            print("phase7 pr acceptance incomplete:")
+            for error in errors:
+                print("-", error)
+            return 1
+        print("phase7 pr acceptance passed")
+        print("answers:", len(answers), "trace:", len(trace))
+        print("external: hosted BLOCKED; stakeholder BLOCKED; legal BLOCKED; production NOT AUTHORIZED")
+        return 0
     head = _git_output(["rev-parse", "HEAD"])
     state = None
     if not EVIDENCE.exists():

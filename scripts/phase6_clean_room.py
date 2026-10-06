@@ -116,6 +116,17 @@ def _compose(*arguments: str) -> list[str]:
     return [*COMPOSE, *arguments]
 
 
+def _lineage(database: str) -> list[str]:
+    return [
+        sys.executable,
+        "scripts/phase6_migration_lineage.py",
+        "--container",
+        POSTGRES,
+        "--database",
+        database,
+    ]
+
+
 def _psql(sql: str, database: str = "postgres") -> list[str]:
     return [
         "docker", "exec", POSTGRES, "psql", "-v", "ON_ERROR_STOP=1",
@@ -281,9 +292,9 @@ def run() -> dict:
                 _psql(grants),
                 _psql("GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;", "perchpoint_phase2"),
                 _compose("run", "--rm", "--no-deps", "migrate", "python", "-m", "alembic", "upgrade", "head"),
-                _psql("SELECT version_num FROM alembic_version;", "perchpoint_phase2"),
+                _lineage("perchpoint_phase2"),
             ],
-            require="0031_phase6_authz_remediation",
+            require="phase6_ancestry=confirmed",
         )
         upgrade_db = "perchpoint_phase5_upgrade"
         driver.step(
@@ -294,9 +305,9 @@ def run() -> dict:
                 _psql("GRANT ALL ON SCHEMA public TO perchpoint_migrator; GRANT perchpoint_definer TO perchpoint_migrator;", upgrade_db),
                 _compose("run", "--rm", "--no-deps", *_migration_env(upgrade_db), "migrate", "python", "-m", "alembic", "upgrade", "0011_phase5_hold_guard"),
                 _compose("run", "--rm", "--no-deps", *_migration_env(upgrade_db), "migrate", "python", "-m", "alembic", "upgrade", "head"),
-                _psql("SELECT version_num FROM alembic_version;", upgrade_db),
+                _lineage(upgrade_db),
             ],
-            require="0031_phase6_authz_remediation",
+            require="phase6_ancestry=confirmed",
         )
         driver.step(
             "forced-rls",

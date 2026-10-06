@@ -5,8 +5,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-NAV = {
-    "frontend/src/components/Navbar.jsx": ["Rentals", "Commercial", "About HawkVision", "Contact", "Apply", "Resident Login", "Staff Login"],
+# Phase 4 baseline. Commercial moved to the footer, which phase4-engines still
+# requires as a visible link. About HawkVision remains the homepage section.
+PHASE4_SURFACES = {
+    "frontend/src/components/Navbar.jsx": ["Rentals", "Contact", "Apply", "Resident Login", "Staff Login"],
+    "frontend/src/components/Footer.jsx": ["Commercial"],
+    "frontend/src/components/AboutHawkVision.jsx": ["About HawkVision"],
     "frontend/src/data/portalData.js": [
         "Overview", "Application", "Household", "Documents", "Messages", "Appointments", "Status",
         "Home", "Payments", "Lease", "Maintenance",
@@ -18,6 +22,37 @@ NAV = {
         "Organizations", "Users", "Roles", "Policies", "Integrations", "Feature Flags", "Environments", "Audit", "System Health", "Configuration",
     ],
 }
+
+# Additive Phase 7 public navigation. These do not replace the baseline above.
+PHASE7_SURFACES = {
+    "frontend/src/components/Navbar.jsx": ["Home", "Resources", "Maintenance", "About"],
+}
+
+
+def required_destinations(*groups: dict[str, list[str]]) -> dict[str, list[str]]:
+    required: dict[str, list[str]] = {}
+    for group in groups:
+        for relative, labels in group.items():
+            current = required.setdefault(relative, [])
+            for label in labels:
+                if label not in current:
+                    current.append(label)
+    return required
+
+
+def label_present(text: str, label: str) -> bool:
+    return f"'{label}'" in text or f'"{label}"' in text or f">{label}<" in text
+
+
+def destination_gaps(root: Path, inventory: dict[str, list[str]]) -> list[str]:
+    missing = []
+    for relative, labels in inventory.items():
+        path = root / relative
+        text = path.read_text(encoding="utf-8") if path.is_file() else ""
+        for label in labels:
+            if not label_present(text, label):
+                missing.append(f"{relative} missing {label}")
+    return missing
 
 COMPONENTS = [
     "Button", "IconButton", "ButtonGroup", "ExternalLink", "CopyAction", "DestructiveConfirm",
@@ -33,12 +68,8 @@ COMPONENTS = [
 
 
 def main() -> None:
-    missing = []
-    for relative, labels in NAV.items():
-        text = (ROOT / relative).read_text(encoding="utf-8")
-        for label in labels:
-            if f"'{label}'" not in text and f'"{label}"' not in text and f">{label}<" not in text:
-                missing.append(f"{relative} missing {label}")
+    inventory = required_destinations(PHASE4_SURFACES, PHASE7_SURFACES)
+    missing = destination_gaps(ROOT, inventory)
     sources = "\n".join((ROOT / "frontend/src").joinpath(path).read_text(encoding="utf-8") for path in [
         "design-system/library.jsx", "design-system/components.jsx", "components/ui/dialog.jsx", "components/ui/progress.jsx",
     ])
@@ -62,7 +93,8 @@ def main() -> None:
         missing.append("optimized images")
     if missing:
         raise SystemExit("Phase 4 completeness failed:\n" + "\n".join(missing))
-    print(f"phase4 completeness passed: {len(NAV['frontend/src/data/portalData.js']) + len(NAV['frontend/src/components/Navbar.jsx'])} destinations, {len(COMPONENTS)} components")
+    destinations = sum(len(labels) for labels in inventory.values())
+    print(f"phase4 completeness passed: {destinations} destinations, {len(COMPONENTS)} components")
 
 
 if __name__ == "__main__":
