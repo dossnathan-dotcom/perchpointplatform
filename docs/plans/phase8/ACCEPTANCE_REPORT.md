@@ -8,6 +8,6 @@ P8-R11 backend result: 179 passed, 0 failed, 0 skipped. Frontend unit tests: 36 
 
 The clean room reached migration head `0036_phase8_availability`, confirmed ancestors `0035_phase7_property_visibility` and `0031_phase6_authz_remediation` (lineage length 36), recorded runtime `false,false` for superuser and bypassrls, forced row security on 98 of 98 enabled tables, and passed the same 179 backend tests before removing the clean-room containers and volumes.
 
-P8-R17 and P8-R18 are not local gates. They are recorded after the protected pull request and the merged main workflows.
+P8-R17 passed for pull-request head `17c8b31481a4a56195dedc52502b6ac17dc1c9ee`. Required checks on that commit passed in [run 37488181606](https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181606) (10 jobs) and the Phase 6 clean room passed in [run 37488181437](https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181437) (1 job). CodeQL passed. Supabase Preview stayed skipped. P8-R18 is recorded from the merged main workflows.
 
 Hosted Supabase, Faruk and Ann stakeholder acceptance, qualified legal and fair-housing review, real-data migration, and production deployment are not granted. Phase 9 was not started.

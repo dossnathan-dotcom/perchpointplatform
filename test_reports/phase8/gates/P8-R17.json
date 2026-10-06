@@ -1,0 +1,22 @@
+{
+  "ci_runs": [
+    "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181606",
+    "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/37488181437"
+  ],
+  "command": "gh pr checks 33",
+  "exit_code": 0,
+  "gate": "P8-R17",
+  "required_checks": [
+    "CodeQL",
+    "backend",
+    "browser",
+    "containers",
+    "contracts",
+    "frontend",
+    "governance",
+    "secrets",
+    "supply-chain"
+  ],
+  "result": "passed",
+  "tested_commit": "17c8b31481a4a56195dedc52502b6ac17dc1c9ee"
+}
