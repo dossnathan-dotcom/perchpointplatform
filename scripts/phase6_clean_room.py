@@ -334,7 +334,15 @@ def run() -> dict:
             ],
             require=("status=200", "sign_in_ready status=200"),
         )
-        driver.step("full-backend", [_full_pytest()], require="passed")
+        driver.step(
+            "full-backend",
+            [
+                _compose("stop", "worker"),
+                _full_pytest(),
+                _compose("start", "worker"),
+            ],
+            require="passed",
+        )
         driver.step("mailpit", [_wait_url("http://127.0.0.1:8125/api/v1/info")], require="status=200")
         driver.step("minio-live", [_pytest("tests/phase5/test_live_services.py::test_live_minio_presign_is_private_and_cleaned_up", live=True)], require="1 passed")
         driver.step("clamav-live", [_pytest("tests/phase5/test_live_services.py::test_live_clamav_detects_eicar_and_outage_is_not_clean", live=True)], require="1 passed")
