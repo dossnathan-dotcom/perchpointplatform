@@ -74,6 +74,7 @@ class EventBody(BaseModel):
 
 
 class ClaimBody(BaseModel):
+    projection_id: UUID | None = None
     idempotency_key: str
 
 

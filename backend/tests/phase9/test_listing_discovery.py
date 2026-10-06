@@ -92,7 +92,7 @@ def test_discovery_projects_search_withdraws_and_denies(client):
     assert projected.status_code == 201, projected.text
     claimed = []
     for index in range(5):
-        job = client.post("/api/v2/discovery/jobs/claim", headers=headers, json={"idempotency_key": _key(f"claim-{index}")})
+        job = client.post("/api/v2/discovery/jobs/claim", headers=headers, json={"projection_id": projected.json()["id"], "idempotency_key": _key(f"claim-{index}")})
         assert job.status_code == 200 and job.json()["claimed"] is True, job.text
         claimed.append(job.json())
     assert len({item["id"] for item in claimed}) == 5
@@ -100,7 +100,7 @@ def test_discovery_projects_search_withdraws_and_denies(client):
     with engine.begin() as connection:
         connection.execute(text("UPDATE distribution_operations SET lease_expires = now() - interval '1 minute' WHERE id = :id"), {"id": claimed[0]["id"]})
     engine.dispose()
-    reclaimed = client.post("/api/v2/discovery/jobs/claim", headers=headers, json={"idempotency_key": _key("reclaim")})
+    reclaimed = client.post("/api/v2/discovery/jobs/claim", headers=headers, json={"projection_id": projected.json()["id"], "idempotency_key": _key("reclaim")})
     assert reclaimed.status_code == 200 and reclaimed.json()["id"] == claimed[0]["id"] and reclaimed.json()["attempts"] >= 2
     stale = client.post(
         "/api/v2/discovery/jobs/complete",

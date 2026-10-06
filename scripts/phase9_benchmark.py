@@ -271,7 +271,7 @@ def main() -> None:
                 {"criteria": '{"use_code":"residential","limit":"1"}'},
             )
             detail_discovery = _timed(connection, "SELECT perchpoint.published_discovery_listing(:slug)", {"slug": slug})
-            admin = _timed(connection, "SELECT count(*) FROM discovery_projections WHERE current AND eligibility = 'eligible'", {})
+            admin_read = _timed(connection, "SELECT count(*) FROM discovery_projections WHERE current AND eligibility = 'eligible'", {})
             plan = connection.execute(text("EXPLAIN SELECT property.name FROM properties property WHERE property.organization_id = :org ORDER BY property.name LIMIT 50"), {"org": organization}).all()
             discovery_plan = connection.execute(text("EXPLAIN SELECT public_slug FROM discovery_projections WHERE current AND eligibility = 'eligible' AND use_code = 'residential' ORDER BY sort_rank, public_slug LIMIT 20")).all()
         print("cardinalities", {"properties": counts[0], "spaces": counts[1], "prices": counts[2], "audit": counts[3], "runtime_visible_properties": visible})
@@ -281,11 +281,11 @@ def main() -> None:
         print("discovery", discovery)
         print("facets", facets)
         print("discovery_detail", detail_discovery)
-        print("admin", admin)
+        print("admin", admin_read)
         print("plan", [row[0] for row in plan])
         print("discovery_plan", [row[0] for row in discovery_plan])
-        if discovery["p95_ms"] >= 300 or facets["p95_ms"] >= 400 or detail_discovery["p95_ms"] >= 200 or admin["p95_ms"] >= 300:
-            raise SystemExit(f"discovery budget missed: search={discovery} facets={facets} detail={detail_discovery} admin={admin}")
+        if discovery["p95_ms"] >= 300 or facets["p95_ms"] >= 400 or detail_discovery["p95_ms"] >= 200 or admin_read["p95_ms"] >= 300:
+            raise SystemExit(f"discovery budget missed: search={discovery} facets={facets} detail={detail_discovery} admin={admin_read}")
         if discovery["errors"] or discovery["timeouts"]:
             raise SystemExit(f"discovery search missed its budget: {discovery}")
     finally:

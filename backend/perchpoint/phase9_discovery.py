@@ -357,19 +357,20 @@ def claim_job(settings, actor, organization, body, key, correlation) -> dict:
                 WHERE organization_id = :org AND id = (
                   SELECT id FROM distribution_operations
                   WHERE organization_id = :org
+                    AND (CAST(:projection AS uuid) IS NULL OR projection_id = CAST(:projection AS uuid))
                     AND (state = 'pending' OR (state = 'leased' AND lease_expires < now()))
                   ORDER BY priority ASC, id
                   FOR UPDATE SKIP LOCKED
                   LIMIT 1
                 )
-                RETURNING id, projection_version, attempts, state, target_code
+                RETURNING id, projection_id, projection_version, attempts, state, target_code
                 """
             ),
-            {"org": organization, "actor": str(actor)},
+            {"org": organization, "actor": str(actor), "projection": body.get("projection_id")},
         ).mappings().first()
         result = {"claimed": bool(row), "synthetic": True}
         if row:
-            result.update({"id": str(row["id"]), "projection_version": int(row["projection_version"]), "attempts": int(row["attempts"]), "state": row["state"], "target_code": row["target_code"]})
+            result.update({"id": str(row["id"]), "projection_id": str(row["projection_id"]), "projection_version": int(row["projection_version"]), "attempts": int(row["attempts"]), "state": row["state"], "target_code": row["target_code"]})
         _audit_outbox(connection, organization, actor, "discovery.job_claimed", row["id"] if row else uuid4(), correlation, "discovery.job_claimed.v1", result)
         return result
 
