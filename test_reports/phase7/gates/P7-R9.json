@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k analytics or privacy or gpc -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-06T03:52:53.983218+00:00",
+  "finished_at": "2026-10-06T04:32:34.417865+00:00",
   "gate": "P7-R9",
-  "output_sha256": "87097866d42b046112726d9112735f6f143093deeb28724bc7fa616bbc1c18fb",
+  "output_sha256": "c549635a9a7cdc27aa56ef192a027ab39b1ee16d3060908c68fdd5f393ad4fa9",
   "result": "passed",
-  "tested_commit": "d0849d02994d5ed617e7ada017fb7eb3855ac67d"
+  "tested_commit": "976b3ec5ba9b131e20a44d7187e280e83f1dfcee"
 }
