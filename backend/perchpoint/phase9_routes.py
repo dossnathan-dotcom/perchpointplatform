@@ -10,7 +10,10 @@ from .commands import CommandError
 from .phase9_discovery import (
     OWNED_TARGETS,
     approve_ranking,
+    claim_job,
+    complete_job,
     health,
+    marketed_interval,
     project_listing,
     public_listing,
     reconcile,
@@ -28,6 +31,17 @@ router = APIRouter(prefix="/api/v2")
 class ProjectBody(BaseModel):
     snapshot_id: UUID
     bedrooms: int | None = None
+    bathrooms: float | None = None
+    area_sqft: int | None = None
+    neighborhood: str = ""
+    postal_code: str = ""
+    pet_policy: str = ""
+    amenities: list[str] = Field(default_factory=list)
+    accessibility_features: list[str] = Field(default_factory=list)
+    verification_on: str = ""
+    latitude: float | None = None
+    longitude: float | None = None
+    available_on: str = ""
     target: str = ""
     idempotency_key: str
 
@@ -55,6 +69,18 @@ class EventBody(BaseModel):
     source: str = ""
     medium: str = ""
     campaign: str = ""
+    classification: str = ""
+    idempotency_key: str
+
+
+class ClaimBody(BaseModel):
+    idempotency_key: str
+
+
+class CompleteBody(BaseModel):
+    operation_id: UUID
+    expected_version: int
+    terminal: bool = False
     idempotency_key: str
 
 
@@ -73,6 +99,17 @@ def discovery_search(
     postal_code: str = "",
     max_amount: str = "",
     min_bedrooms: str = "",
+    max_bedrooms: str = "",
+    min_bathrooms: str = "",
+    min_area: str = "",
+    neighborhood: str = "",
+    pet_policy: str = "",
+    amenity: str = "",
+    accessibility: str = "",
+    move_in: str = "",
+    origin_lat: str = "",
+    origin_lon: str = "",
+    radius_km: str = "",
     query: str = "",
     sort: str = "",
     limit: int = 20,
@@ -87,6 +124,17 @@ def discovery_search(
         "postal_code": postal_code,
         "max_amount": max_amount,
         "min_bedrooms": min_bedrooms,
+        "max_bedrooms": max_bedrooms,
+        "min_bathrooms": min_bathrooms,
+        "min_area": min_area,
+        "neighborhood": neighborhood,
+        "pet_policy": pet_policy,
+        "amenity": amenity,
+        "accessibility": accessibility,
+        "move_in": move_in,
+        "origin_lat": origin_lat,
+        "origin_lon": origin_lon,
+        "radius_km": radius_km,
         "query": query,
         "sort": sort,
         "limit": limit,
@@ -152,6 +200,25 @@ def discovery_reconcile(body: ReconcileBody, current=Depends(actor), current_set
     payload = body.model_dump(mode="json")
     key = payload.pop("idempotency_key")
     return _call(lambda: reconcile(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/discovery/jobs/claim")
+def discovery_claim(body: ClaimBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: claim_job(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/discovery/jobs/complete")
+def discovery_complete(body: CompleteBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: complete_job(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.get("/discovery/marketed")
+def discovery_marketed(public_slug: str, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    return _call(lambda: marketed_interval(current_settings, current["id"], current["organization_id"], public_slug))
 
 
 @router.get("/discovery/health")

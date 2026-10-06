@@ -21,7 +21,15 @@ CREATE TABLE discovery_projections (
   currency text NOT NULL,
   period text NOT NULL,
   bedrooms integer,
+  bathrooms numeric,
+  area_sqft integer,
+  pet_policy text NOT NULL DEFAULT '',
+  amenities text[] NOT NULL DEFAULT '{}',
+  accessibility_features text[] NOT NULL DEFAULT '{}',
+  latitude double precision,
+  longitude double precision,
   available_on date,
+  marketed_through timestamptz,
   sort_rank integer NOT NULL,
   version integer NOT NULL DEFAULT 1 CHECK (version >= 1),
   current boolean NOT NULL DEFAULT true,
@@ -34,7 +42,8 @@ CREATE TABLE discovery_projections (
     AND NOT (payload ? 'access_code')
     AND NOT (payload ? 'internal_note')
     AND NOT (payload ? 'cost_minor')
-  )
+  ),
+  CHECK (pet_policy NOT IN ('assistance', 'assistance_animal', 'service_animal'))
 );
 
 CREATE UNIQUE INDEX discovery_current_listing
@@ -57,6 +66,9 @@ CREATE TABLE distribution_operations (
   priority integer NOT NULL,
   state text NOT NULL CHECK (state IN ('pending', 'leased', 'done', 'dead_letter', 'stale')),
   attempts integer NOT NULL DEFAULT 0,
+  lease_owner text NOT NULL DEFAULT '',
+  lease_expires timestamptz,
+  last_error text NOT NULL DEFAULT '',
   observed_hash text NOT NULL DEFAULT '',
   PRIMARY KEY (organization_id, id),
   UNIQUE (organization_id, idempotency_key),
@@ -144,7 +156,7 @@ RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp AS $$
   WITH matched AS (
     SELECT projection.public_slug, projection.payload, projection.sort_rank, projection.amount_minor,
-           projection.use_code, projection.city, projection.version, projection.content_hash
+           projection.use_code, projection.city, projection.version, projection.content_hash, projection.latitude, projection.longitude
     FROM discovery_projections projection
     WHERE projection.current
       AND projection.eligibility = 'eligible'
@@ -152,7 +164,29 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp AS $$
       AND (COALESCE(criteria->>'city', '') = '' OR lower(projection.city) = lower(criteria->>'city'))
       AND (COALESCE(criteria->>'postal_code', '') = '' OR projection.postal_code = criteria->>'postal_code')
       AND (COALESCE(criteria->>'max_amount', '') = '' OR projection.amount_minor <= (criteria->>'max_amount')::integer)
-      AND (COALESCE(criteria->>'min_bedrooms', '') = '' OR projection.bedrooms >= (criteria->>'min_bedrooms')::integer)
+      AND (COALESCE(criteria->>'neighborhood', '') = '' OR lower(projection.neighborhood) = lower(criteria->>'neighborhood'))
+      AND (COALESCE(criteria->>'min_bedrooms', '') = '' OR (projection.bedrooms IS NOT NULL AND projection.bedrooms >= (criteria->>'min_bedrooms')::integer))
+      AND (COALESCE(criteria->>'max_bedrooms', '') = '' OR (projection.bedrooms IS NOT NULL AND projection.bedrooms <= (criteria->>'max_bedrooms')::integer))
+      AND (COALESCE(criteria->>'min_bathrooms', '') = '' OR (projection.bathrooms IS NOT NULL AND projection.bathrooms >= (criteria->>'min_bathrooms')::numeric))
+      AND (COALESCE(criteria->>'min_area', '') = '' OR (projection.area_sqft IS NOT NULL AND projection.area_sqft >= (criteria->>'min_area')::integer))
+      AND (COALESCE(criteria->>'pet_policy', '') = '' OR projection.pet_policy = criteria->>'pet_policy')
+      AND (COALESCE(criteria->>'amenity', '') = '' OR projection.amenities @> ARRAY[criteria->>'amenity'])
+      AND (COALESCE(criteria->>'accessibility', '') = '' OR projection.accessibility_features @> ARRAY[criteria->>'accessibility'])
+      AND (COALESCE(criteria->>'move_in', '') = '' OR (projection.available_on IS NOT NULL AND projection.available_on <= (criteria->>'move_in')::date))
+      AND (
+        COALESCE(criteria->>'radius_km', '') = ''
+        OR (
+          projection.latitude IS NOT NULL
+          AND projection.longitude IS NOT NULL
+          AND (
+            6371 * acos(least(1::float8, greatest(-1::float8,
+              cos(radians((criteria->>'origin_lat')::float8)) * cos(radians(projection.latitude))
+              * cos(radians(projection.longitude) - radians((criteria->>'origin_lon')::float8))
+              + sin(radians((criteria->>'origin_lat')::float8)) * sin(radians(projection.latitude))
+            )))
+          ) <= (criteria->>'radius_km')::float8
+        )
+      )
       AND (
         COALESCE(criteria->>'query', '') = ''
         OR to_tsvector('simple', projection.search_text) @@ plainto_tsquery('simple', criteria->>'query')
@@ -171,12 +205,14 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp AS $$
         'content_hash', row.content_hash
       ) ORDER BY
         CASE WHEN criteria->>'sort' = 'price_asc' THEN row.amount_minor END ASC,
+        CASE WHEN criteria->>'sort' = 'newest' THEN row.version END DESC,
         row.sort_rank ASC,
         row.public_slug ASC)
       FROM (
         SELECT * FROM matched
         ORDER BY
           CASE WHEN criteria->>'sort' = 'price_asc' THEN amount_minor END ASC,
+          CASE WHEN criteria->>'sort' = 'newest' THEN version END DESC,
           sort_rank ASC,
           public_slug ASC
         LIMIT LEAST(GREATEST(COALESCE(NULLIF(criteria->>'limit', '')::integer, 20), 1), 50)
@@ -207,7 +243,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp AS $$
 $$;
 
 CREATE FUNCTION perchpoint.record_discovery_event(
-  slug text, event_name text, session_ref text, source text, medium text, campaign text, idempotency_key text, gpc boolean
+  slug text, event_name text, session_ref text, source text, medium text, campaign text, idempotency_key text, gpc boolean, classification text
 ) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 DECLARE
@@ -215,6 +251,11 @@ DECLARE
   existing_id uuid;
   existing_counted boolean;
   event_id uuid := gen_random_uuid();
+  stored text := CASE
+    WHEN classification IN ('bot', 'health', 'test', 'preview', 'staff') THEN classification
+    WHEN gpc THEN 'suppressed'
+    ELSE 'prospect'
+  END;
 BEGIN
   SELECT organization_id INTO org FROM discovery_projections WHERE public_slug = slug AND current LIMIT 1;
   IF org IS NULL THEN
@@ -228,11 +269,11 @@ BEGIN
   INSERT INTO discovery_events (
     organization_id, id, event_name, listing_slug, session_ref, classification, source, medium, campaign, context, idempotency_key, counted
   ) VALUES (
-    org, event_id, event_name, slug, session_ref, CASE WHEN gpc THEN 'suppressed' ELSE 'prospect' END,
+    org, event_id, event_name, slug, session_ref, stored,
     left(source, 40), left(medium, 40), left(campaign, 40),
-    jsonb_build_object('schema', 1, 'event_name', event_name), record_discovery_event.idempotency_key, NOT gpc
+    jsonb_build_object('schema', 1, 'event_name', event_name), record_discovery_event.idempotency_key, stored = 'prospect'
   );
-  RETURN jsonb_build_object('id', event_id, 'classification', CASE WHEN gpc THEN 'suppressed' ELSE 'prospect' END, 'counted', NOT gpc);
+  RETURN jsonb_build_object('id', event_id, 'classification', stored, 'counted', stored = 'prospect');
 END $$;
 
 REVOKE ALL ON FUNCTION perchpoint.search_discovery(jsonb) FROM PUBLIC;
@@ -241,5 +282,5 @@ REVOKE ALL ON FUNCTION perchpoint.discovery_sitemap() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION perchpoint.search_discovery(jsonb) TO perchpoint_runtime, perchpoint_definer;
 GRANT EXECUTE ON FUNCTION perchpoint.published_discovery_listing(text) TO perchpoint_runtime, perchpoint_definer;
 GRANT EXECUTE ON FUNCTION perchpoint.discovery_sitemap() TO perchpoint_runtime, perchpoint_definer;
-REVOKE ALL ON FUNCTION perchpoint.record_discovery_event(text, text, text, text, text, text, text, boolean) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION perchpoint.record_discovery_event(text, text, text, text, text, text, text, boolean) TO perchpoint_runtime, perchpoint_definer;
+REVOKE ALL ON FUNCTION perchpoint.record_discovery_event(text, text, text, text, text, text, text, boolean, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION perchpoint.record_discovery_event(text, text, text, text, text, text, text, boolean, text) TO perchpoint_runtime, perchpoint_definer;

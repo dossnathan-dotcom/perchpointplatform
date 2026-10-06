@@ -180,13 +180,18 @@ def main() -> None:
                       organization_id, id, listing_id, space_id, public_slug, schema_version, content_hash, payload, actor_id
                     )
                     SELECT listing.organization_id, gen_random_uuid(), listing.id, listing.space_id, listing.public_slug, 1, 'bench',
-                           '{"property_name":"Bench","label":"Home","municipality":"Cincinnati","state":"OH","availability":"available","amount_minor":150000,"currency":"USD","synthetic":true,"schema_version":1}'::jsonb,
+                           CAST(:payload AS jsonb),
                            :actor
                     FROM listings listing
-                    WHERE listing.organization_id = :org AND listing.public_slug LIKE 'bench-%'
+                    WHERE listing.organization_id = :org AND listing.public_slug LIKE 'bench-%' AND listing.public_slug <> :slug
                     """
                 ),
-                {"org": organization, "actor": actor},
+                {
+                    "org": organization,
+                    "actor": actor,
+                    "slug": slug,
+                    "payload": '{"property_name":"Bench","label":"Home","municipality":"Cincinnati","state":"OH","availability":"available","amount_minor":150000,"currency":"USD","synthetic":true,"schema_version":1}',
+                },
             )
             connection.execute(
                 text(
@@ -226,7 +231,7 @@ def main() -> None:
                 {"actor": str(actor), "org": str(organization)},
             )
             # Superuser bypasses RLS. Switch to the runtime role for the timed reads.
-            connection.execute(text("ANALYZE properties, spaces, asking_prices, listing_snapshots, audit_events"))
+            connection.execute(text("ANALYZE properties, spaces, asking_prices, listing_snapshots, discovery_projections, audit_events"))
             connection.execute(text("SET ROLE perchpoint_runtime"))
             visible = connection.execute(text("SELECT count(*) FROM properties"), {}).scalar()
             if visible != 1001:
@@ -260,14 +265,28 @@ def main() -> None:
                 "SELECT perchpoint.search_discovery(CAST(:criteria AS jsonb))",
                 {"criteria": '{"city":"Cincinnati","use_code":"residential","limit":"20"}'},
             )
+            facets = _timed(
+                connection,
+                "SELECT perchpoint.search_discovery(CAST(:criteria AS jsonb))",
+                {"criteria": '{"use_code":"residential","limit":"1"}'},
+            )
+            detail_discovery = _timed(connection, "SELECT perchpoint.published_discovery_listing(:slug)", {"slug": slug})
+            admin = _timed(connection, "SELECT count(*) FROM discovery_projections WHERE current AND eligibility = 'eligible'", {})
             plan = connection.execute(text("EXPLAIN SELECT property.name FROM properties property WHERE property.organization_id = :org ORDER BY property.name LIMIT 50"), {"org": organization}).all()
+            discovery_plan = connection.execute(text("EXPLAIN SELECT public_slug FROM discovery_projections WHERE current AND eligibility = 'eligible' AND use_code = 'residential' ORDER BY sort_rank, public_slug LIMIT 20")).all()
         print("cardinalities", {"properties": counts[0], "spaces": counts[1], "prices": counts[2], "audit": counts[3], "runtime_visible_properties": visible})
         print("inventory", inventory)
         print("detail", detail)
         print("snapshot", public)
         print("discovery", discovery)
+        print("facets", facets)
+        print("discovery_detail", detail_discovery)
+        print("admin", admin)
         print("plan", [row[0] for row in plan])
-        if discovery["p95_ms"] >= 300 or discovery["errors"] or discovery["timeouts"]:
+        print("discovery_plan", [row[0] for row in discovery_plan])
+        if discovery["p95_ms"] >= 300 or facets["p95_ms"] >= 400 or detail_discovery["p95_ms"] >= 200 or admin["p95_ms"] >= 300:
+            raise SystemExit(f"discovery budget missed: search={discovery} facets={facets} detail={detail_discovery} admin={admin}")
+        if discovery["errors"] or discovery["timeouts"]:
             raise SystemExit(f"discovery search missed its budget: {discovery}")
     finally:
         engine.dispose()
