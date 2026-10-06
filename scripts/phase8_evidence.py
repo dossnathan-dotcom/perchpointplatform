@@ -94,9 +94,9 @@ def gate_commands(gate: str) -> list[tuple[list[str], Path]]:
         "P8-R4": [([*pytest, phase8, "-q", "--tb=line", "-k", "runtime or inventory", "-n", "0"], backend)],
         "P8-R5": [([*pytest, phase8, "-q", "--tb=line", "-n", "0"], backend)],
         "P8-R6": [([*pytest, "tests/phase7/test_public_content.py", "-q", "--tb=line", "-k", "published or public", "-n", "0"], backend)],
-        "P8-R7": [([*pytest, phase8, "-q", "--tb=line", "-k", "connected", "-n", "0"], backend)],
+        "P8-R7": [([*pytest, phase8 + "::test_portfolio_truth_publication_and_denial", "-q", "--tb=line", "-n", "0"], backend)],
         "P8-R8": [([*pytest, "tests/phase5/test_live_services.py", "-q", "--tb=line", "-n", "0"], backend)],
-        "P8-R9": [([*pytest, phase8, "-q", "--tb=line", "-k", "connected", "-n", "0"], backend)],
+        "P8-R9": [([*pytest, phase8 + "::test_portfolio_truth_publication_and_denial", "-q", "--tb=line", "-n", "0"], backend)],
         "P8-R10": [
             ([sys.executable, "-m", "ruff", "check", "perchpoint/phase8_portfolio.py", "perchpoint/phase8_routes.py", "tests/phase8"], backend),
             ([sys.executable, "-m", "pip_audit", "-r", "requirements.txt"], backend),
