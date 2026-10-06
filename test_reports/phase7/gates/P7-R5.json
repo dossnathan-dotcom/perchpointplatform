@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k publish or lifecycle or schedule or rollback -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-05T20:34:34.796749+00:00",
+  "finished_at": "2026-10-06T03:37:16.667976+00:00",
   "gate": "P7-R5",
-  "output_sha256": "5b1ff9fdde96ff5c646670d858b414d263c0ccb3fa713af4531b223ef72577f2",
+  "output_sha256": "150e2a70165e3b0c864d1ea48b2d4451fa0eff3449a2201386c9484cd7be2e9c",
   "result": "passed",
-  "tested_commit": "5a948762b3126d01704e4811c8ccecd24e7b9ee6"
+  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
 }

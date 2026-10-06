@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py -q --tb=line -k submission or inquiry or idempotency or attachment -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-05T20:34:40.917227+00:00",
+  "finished_at": "2026-10-06T03:37:22.363535+00:00",
   "gate": "P7-R7",
-  "output_sha256": "b89e8d5f3c5889c023f3ec500d863367f4859ccbcb215c100f249c6c7141ab96",
+  "output_sha256": "fda3156eec3a258c2192554fb121539ab675ae02451c062c0d205fb84520ae01",
   "result": "passed",
-  "tested_commit": "5a948762b3126d01704e4811c8ccecd24e7b9ee6"
+  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
 }

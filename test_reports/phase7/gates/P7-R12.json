@@ -1,9 +1,9 @@
 {
   "command": "corepack yarn playwright test e2e/phase7-public.spec.js --reporter=line",
   "exit_code": 0,
-  "finished_at": "2026-10-05T20:37:04.952003+00:00",
+  "finished_at": "2026-10-06T03:43:09.621676+00:00",
   "gate": "P7-R12",
-  "output_sha256": "d08cd3af84ebdbda10bd8346700b5f4ac6b3a78b5f6b5b26e9228e53ab9e6734",
+  "output_sha256": "c6eccea0d350a49e495459c9f519a789f3aadd781dfa9ed36d1030cac6122a6a",
   "result": "passed",
-  "tested_commit": "5a948762b3126d01704e4811c8ccecd24e7b9ee6"
+  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
 }
