@@ -484,7 +484,27 @@ def test_empty_database_migration_and_repeatable_seed():
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
     empty.dispose()
     assert count == 1
-    assert revision == "0035_phase7_property_visibility"
+    import sys
+    from pathlib import Path
+
+    scripts = Path(__file__).resolve().parents[3] / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    from phase6_migration_lineage import PHASE6_REVISION, assess, load_repository_graph
+
+    graph = load_repository_graph()
+    proof = assess(graph, revision)
+    assert proof["ancestry"] == "confirmed"
+    assert proof["reached_head"] == revision
+    assert proof["required_revision"] == PHASE6_REVISION
+    assert graph["0035_phase7_property_visibility"] == "0034_phase7_publication_jobs"
+    seen: set[str] = set()
+    cursor = revision
+    while isinstance(cursor, str) and cursor not in seen:
+        seen.add(cursor)
+        cursor = graph.get(cursor)
+    assert "0035_phase7_property_visibility" in seen
+    assert PHASE6_REVISION in seen
 
 
 def test_pooled_connection_does_not_keep_previous_scope():

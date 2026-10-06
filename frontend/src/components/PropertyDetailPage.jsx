@@ -53,6 +53,8 @@ export const PropertyDetailPage = () => {
       <h1 className="mt-4 font-heading text-5xl font-bold">{listing.property_name}</h1>
       <p className="mt-4">{listing.label} · {listing.municipality}, {listing.state}</p>
       <p className="mt-6 font-heading text-3xl">{moneyMinor(listing.amount_minor, listing.currency)} <span className="font-body text-base">/ month</span></p>
+      {listing.estimate_disclaimer && <p className="mt-4 max-w-2xl text-sm" data-testid="listing-estimate-disclaimer">{listing.estimate_disclaimer}{listing.estimate_minor != null ? ` Estimated move-in ${moneyMinor(listing.estimate_minor, listing.currency)}.` : ""}</p>}
+      {listing.description && <p className="mt-4 max-w-2xl">{listing.description}</p>}
     </div></section>
     <section className="bg-linen py-16"><div className="mx-auto max-w-xl px-5">
       <h2 className="font-heading text-3xl">Request a showing</h2>
