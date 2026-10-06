@@ -159,6 +159,8 @@ def test_discovery_projects_search_withdraws_and_denies(client):
     )
     assert media_two.status_code == 201, media_two.text
     slug_two = f"phase9b-{uuid4().hex[:8]}"
+    postal = f"9{uuid4().hex[:5]}"
+    neighborhood = f"clifton-{uuid4().hex[:6]}"
     published_two = client.post(
         "/api/v2/portfolio/snapshots",
         headers=headers,
@@ -170,8 +172,8 @@ def test_discovery_projects_search_withdraws_and_denies(client):
         headers=headers,
         json={
             "snapshot_id": published_two.json()["id"],
-            "neighborhood": "Clifton",
-            "postal_code": "45220",
+            "neighborhood": neighborhood,
+            "postal_code": postal,
             "pet_policy": "cats",
             "amenities": ["parking"],
             "accessibility_features": ["step_free"],
@@ -183,18 +185,18 @@ def test_discovery_projects_search_withdraws_and_denies(client):
         },
     )
     assert projected_two.status_code == 201, projected_two.text
-    unknown_beds = client.get("/api/v2/public/discovery/search", params={"postal_code": "45220", "min_bedrooms": 1})
+    unknown_beds = client.get("/api/v2/public/discovery/search", params={"postal_code": postal, "min_bedrooms": 1})
     assert all(row["public_slug"] != slug_two for row in unknown_beds.json()["records"])
-    located = client.get("/api/v2/public/discovery/search", params={"neighborhood": "Clifton", "postal_code": "45220", "pet_policy": "cats", "amenity": "parking", "accessibility": "step_free"})
+    located = client.get("/api/v2/public/discovery/search", params={"neighborhood": neighborhood, "postal_code": postal, "pet_policy": "cats", "amenity": "parking", "accessibility": "step_free"})
     assert any(row["public_slug"] == slug_two for row in located.json()["records"])
     located_body = json.dumps(located.json())
     assert "not a compliance or suitability determination" in located_body
     assert "ADA" not in located_body
-    early = client.get("/api/v2/public/discovery/search", params={"postal_code": "45220", "move_in": "2026-10-01"})
+    early = client.get("/api/v2/public/discovery/search", params={"postal_code": postal, "move_in": "2026-10-01"})
     assert all(row["public_slug"] != slug_two for row in early.json()["records"])
-    later = client.get("/api/v2/public/discovery/search", params={"postal_code": "45220", "move_in": "2026-11-01"})
+    later = client.get("/api/v2/public/discovery/search", params={"postal_code": postal, "move_in": "2026-11-01"})
     assert any(row["public_slug"] == slug_two for row in later.json()["records"])
-    nearby = client.get("/api/v2/public/discovery/search", params={"origin_lat": "39.132", "origin_lon": "-84.512", "radius_km": "2"})
+    nearby = client.get("/api/v2/public/discovery/search", params={"postal_code": postal, "origin_lat": "39.132", "origin_lon": "-84.512", "radius_km": "2"})
     assert any(row["public_slug"] == slug_two for row in nearby.json()["records"])
     distant = client.get("/api/v2/public/discovery/search", params={"origin_lat": "41.000", "origin_lon": "-84.512", "radius_km": "2"})
     assert all(row["public_slug"] != slug_two for row in distant.json()["records"])
