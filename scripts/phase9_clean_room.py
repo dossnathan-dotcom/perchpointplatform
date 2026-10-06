@@ -161,7 +161,7 @@ def main() -> int:
         _compose("down", "--volumes", "--remove-orphans", check=False)
         _assert_removed()
         if accept_was_up:
-            _run(["docker", "compose", "-p", ACCEPT, "-f", str(COMPOSE_FILE), "start"], check=False)
+            _run(["docker", "compose", "-p", ACCEPT, "-f", str(COMPOSE_FILE), "up", "-d"], check=False)
 
 
 if __name__ == "__main__":
