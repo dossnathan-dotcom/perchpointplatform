@@ -1,0 +1,9 @@
+{
+  "command": "corepack yarn playwright test e2e/phase9-discovery.spec.js --reporter=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T20:17:00.403267+00:00",
+  "gate": "P9-R6",
+  "output_sha256": "829707a6dc509bb4fb76cc868c9f6d62d0b614b34c967d5bb254e7198a24139f",
+  "result": "passed",
+  "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+}

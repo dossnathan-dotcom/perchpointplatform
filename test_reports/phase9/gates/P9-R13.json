@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase9_benchmark.py",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T20:19:29.682742+00:00",
+  "gate": "P9-R13",
+  "output_sha256": "7e2fc35848059c4592820a7148341135fd90e1d5f5bbf8831cafd1726f314634",
+  "result": "passed",
+  "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+}

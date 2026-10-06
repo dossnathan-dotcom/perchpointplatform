@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase9/test_listing_discovery.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T20:17:06.945233+00:00",
+  "gate": "P9-R7",
+  "output_sha256": "76a9b0794a82f671e70b69379e2a5ae0cf301bcd11f51f992ec32a5e99a32639",
+  "result": "passed",
+  "tested_commit": "0d983f3590f14cc4f8866c3193f7ef90cbe61023"
+}
