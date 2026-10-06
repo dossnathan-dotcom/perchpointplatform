@@ -95,6 +95,20 @@ def load_repository_graph(root: Path = ROOT) -> dict[str, str | None]:
     return revisions
 
 
+def read_database_revision_url(url: str) -> str:
+    from sqlalchemy import create_engine, text
+
+    engine = create_engine(url)
+    try:
+        with engine.connect() as connection:
+            rows = list(connection.execute(text("SELECT version_num FROM alembic_version")).scalars())
+    finally:
+        engine.dispose()
+    if len(rows) != 1:
+        raise LineageError(f"expected one alembic_version row, found {rows}")
+    return str(rows[0])
+
+
 def read_database_revision(container: str, database: str) -> str:
     completed = subprocess.run(
         [
@@ -120,15 +134,22 @@ def read_database_revision(container: str, database: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--revision", help="revision already read from the migrated database")
-    parser.add_argument("--container", help="disposable Postgres container to query")
+    parser.add_argument("--container", help="disposable Postgres container to query from the host")
     parser.add_argument("--database", help="database name inside that container")
+    parser.add_argument("--database-url", help="SQLAlchemy URL used when this check runs inside the migrate image")
     args = parser.parse_args(argv)
-    if bool(args.revision) == bool(args.container):
-        parser.error("pass exactly one of --revision or --container")
+    selected = sum(bool(value) for value in (args.revision, args.container, args.database_url))
+    if selected != 1:
+        parser.error("pass exactly one of --revision, --container, or --database-url")
     if args.container and not args.database:
         parser.error("--container requires --database")
     try:
-        reached = args.revision or read_database_revision(args.container, args.database)
+        if args.revision:
+            reached = args.revision
+        elif args.database_url:
+            reached = read_database_revision_url(args.database_url)
+        else:
+            reached = read_database_revision(args.container, args.database)
         result = assess(load_repository_graph(), reached)
     except LineageError as exc:
         print(f"phase6 lineage failed: {exc}", file=sys.stderr)

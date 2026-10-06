@@ -117,14 +117,16 @@ def _compose(*arguments: str) -> list[str]:
 
 
 def _lineage(database: str) -> list[str]:
-    return [
-        sys.executable,
-        "scripts/phase6_migration_lineage.py",
-        "--container",
-        POSTGRES,
-        "--database",
-        database,
-    ]
+    prefix = "postgresql+psycopg://"
+    url = f"{prefix}perchpoint_migrator:local-only-not-production@postgres:5432/{database}"
+    return _compose(
+        "run", "--rm", "--no-deps",
+        "--volume", f"{ROOT}:/workspace",
+        "--workdir", "/workspace",
+        "migrate",
+        "python", "scripts/phase6_migration_lineage.py",
+        "--database-url", url,
+    )
 
 
 def _psql(sql: str, database: str = "postgres") -> list[str]:

@@ -87,6 +87,8 @@ class MigrationLineageTests(unittest.TestCase):
         source = (Path(__file__).parent / "phase6_clean_room.py").read_text(encoding="utf-8")
         self.assertEqual(source.count('"alembic", "upgrade", "head"'), 2)
         self.assertIn("phase6_migration_lineage.py", source)
+        self.assertEqual(source.count("--database-url"), 1)
+        self.assertIn('"migrate",\n        "python", "scripts/phase6_migration_lineage.py"', source)
         self.assertEqual(source.count("_lineage("), 3)
         self.assertNotIn('require="0031_phase6_authz_remediation"', source)
         self.assertNotIn('require="0034_phase7_publication_jobs"', source)
