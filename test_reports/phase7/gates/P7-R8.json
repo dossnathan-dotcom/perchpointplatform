@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase7/test_public_content.py::test_honeypot_sitemap_preview_redirect_and_privacy -q --tb=line -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-06T03:37:25.100089+00:00",
+  "finished_at": "2026-10-06T03:52:51.156039+00:00",
   "gate": "P7-R8",
-  "output_sha256": "5ad953e93510c70ec1d3b96ded4179d4836c1ab601ff7ebd67e090951623b7cc",
+  "output_sha256": "0aefe6ea02a5daad76e9ca7e4c5c7ac074a0c2fe74b7f42506381f50ae0f0415",
   "result": "passed",
-  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
+  "tested_commit": "d0849d02994d5ed617e7ada017fb7eb3855ac67d"
 }

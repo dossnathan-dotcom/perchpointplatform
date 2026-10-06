@@ -1,6 +1,6 @@
 # Phase 7 acceptance report
 
-Behavior commit: `b4065b33523f58b2d9c7ca6c29e7c95dd0774a89`.
+Behavior commit: `d0849d02994d5ed617e7ada017fb7eb3855ac67d`.
 
 `python scripts/phase7_evidence.py --all` recorded P7-R0 through P7-R16 as passed with exit code 0. The structured record is `test_reports/phase7/acceptance-state.json`. Each gate stores the command, the behavior commit, the exit code, and the output digest.
 

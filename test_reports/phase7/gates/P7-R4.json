@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase6/test_identity.py::test_restricted_rls_enforces_household_and_worker_assignment_relationships tests/phase6/test_identity.py::test_worker_routes_are_limited_to_active_assignment_properties tests/phase7/test_public_content.py::test_property_visibility_policy_includes_worker_assignments -q --tb=line -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-06T03:37:12.428403+00:00",
+  "finished_at": "2026-10-06T03:52:38.521114+00:00",
   "gate": "P7-R4",
-  "output_sha256": "453c28135d56b7b08fce8501d5eb503ec76b6c9ac4c31b93be5eb0da30e7023f",
+  "output_sha256": "4cab18e2f48c033e8749e9389e68c6d603a198d47b8a7cf89aeb845f442f0472",
   "result": "passed",
-  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
+  "tested_commit": "d0849d02994d5ed617e7ada017fb7eb3855ac67d"
 }

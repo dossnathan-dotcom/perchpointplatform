@@ -1,9 +1,9 @@
 {
   "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe C:\\Users\\Admin\\PerchPoint\\scripts\\phase7_db_preflight.py && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
   "exit_code": 0,
-  "finished_at": "2026-10-06T03:37:08.941472+00:00",
+  "finished_at": "2026-10-06T03:52:35.292568+00:00",
   "gate": "P7-R3",
-  "output_sha256": "e7f0fbfaad0c6340226352beb7d692075353c8a126f19f9e72566c3a58f016eb",
+  "output_sha256": "bc47c16b70be900e9157c34cd30d4757942e9c189dd0aaa9ad9d2ad47dc1e25d",
   "result": "passed",
-  "tested_commit": "b4065b33523f58b2d9c7ca6c29e7c95dd0774a89"
+  "tested_commit": "d0849d02994d5ed617e7ada017fb7eb3855ac67d"
 }
