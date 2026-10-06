@@ -84,7 +84,7 @@ def _workspace(client, token):
 def test_portfolio_truth_publication_and_denial(client):
     ann = _login(client, "ann.synthetic@example.com")
     headers, property_id, space_id, listing_id = _workspace(client, ann)
-    inventory = client.get("/api/v2/portfolio/inventory", headers=headers)
+    inventory = client.get("/api/v2/portfolio/inventory", headers=headers, params={"limit": 100})
     assert inventory.status_code == 200
     assert any(row["space_id"] == space_id for row in inventory.json()["records"])
     readiness = client.post(
@@ -113,6 +113,20 @@ def test_portfolio_truth_publication_and_denial(client):
         },
     )
     assert available.status_code == 201, available.text
+    offered = client.post(
+        "/api/v2/portfolio/availability",
+        headers=headers,
+        json={
+            "space_id": space_id,
+            "availability": "available",
+            "effective_on": "2026-10-15",
+            "confidence": "exact",
+            "source": "manager_confirmation",
+            "reason": "Synthetic availability is confirmed.",
+            "idempotency_key": _key("avail-open"),
+        },
+    )
+    assert offered.status_code == 201, offered.text
     price_key = _key("price")
     price = client.post(
         "/api/v2/portfolio/prices",
@@ -161,6 +175,32 @@ def test_portfolio_truth_publication_and_denial(client):
         },
     )
     assert fee.status_code == 201, fee.text
+    utility = client.post(
+        "/api/v2/portfolio/utilities",
+        headers=headers,
+        json={
+            "space_id": space_id,
+            "utility_code": "electric",
+            "responsibility": "tenant_paid",
+            "explanation": "EXAMPLE ONLY. Separately metered electric.",
+            "effective_on": "2026-10-01",
+            "idempotency_key": _key("utility"),
+        },
+    )
+    assert utility.status_code == 201, utility.text
+    concession = client.post(
+        "/api/v2/portfolio/concessions",
+        headers=headers,
+        json={
+            "space_id": space_id,
+            "label": "Synthetic first month",
+            "amount_minor": 5000,
+            "effective_on": "2026-10-01",
+            "ended_on": "2026-11-01",
+            "idempotency_key": _key("concession"),
+        },
+    )
+    assert concession.status_code == 201, concession.text
     media = client.post(
         "/api/v2/portfolio/media",
         headers=headers,
@@ -189,6 +229,15 @@ def test_portfolio_truth_publication_and_denial(client):
         },
     )
     assert malicious.status_code == 201 and malicious.json()["status"] == "rejected"
+    retired = client.post(
+        "/api/v2/portfolio/media/retire",
+        headers=headers,
+        json={"asset_id": malicious.json()["id"], "idempotency_key": _key("retire")},
+    )
+    assert retired.status_code == 200 and retired.json()["status"] == "retired"
+    preview = client.post("/api/v2/portfolio/snapshots/preview", headers=headers, json={"listing_id": listing_id})
+    assert preview.status_code == 200 and preview.json()["noindex"] is True
+    assert preview.headers["cache-control"] == "no-store"
     unsafe_copy = client.post(
         "/api/v2/portfolio/snapshots",
         headers=headers,
@@ -268,6 +317,34 @@ def test_portfolio_truth_publication_and_denial(client):
     assert removed.status_code == 200, removed.text
     hidden = client.get(f"/api/v2/public/listing-snapshots/{slug}")
     assert hidden.status_code == 404
+    rolled = client.post(
+        "/api/v2/portfolio/snapshots/rollback",
+        headers=headers,
+        json={"snapshot_id": published.json()["id"], "expected_version": removed.json().get("version", 3), "idempotency_key": _key("rollback")},
+    )
+    # Unpublish does not return the listing version. Read it from a failed stale rollback if needed.
+    if rolled.status_code == 409:
+        current = client.get("/api/v2/portfolio/inventory", headers=headers, params={"limit": 100})
+        version = next(row["listing_version"] for row in current.json()["records"] if row["listing_id"] == listing_id)
+        rolled = client.post(
+            "/api/v2/portfolio/snapshots/rollback",
+            headers=headers,
+            json={"snapshot_id": published.json()["id"], "expected_version": version, "idempotency_key": _key("rollback-2")},
+        )
+    assert rolled.status_code == 201, rolled.text
+    restored = client.get(f"/api/v2/public/listing-snapshots/{slug}")
+    assert restored.status_code == 200
+    client.post(
+        "/api/v2/portfolio/snapshots/unpublish",
+        headers=headers,
+        json={"public_slug": slug, "idempotency_key": _key("unpublish-2")},
+    )
+    copied = client.post(
+        "/api/v2/portfolio/duplicate",
+        headers=headers,
+        json={"property_id": property_id, "idempotency_key": _key("duplicate")},
+    )
+    assert copied.status_code == 201 and copied.json()["copied_listings"] == 0
     stale = client.post(
         "/api/v2/portfolio/archive",
         headers=headers,

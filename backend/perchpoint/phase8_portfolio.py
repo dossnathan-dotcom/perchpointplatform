@@ -65,9 +65,10 @@ def _role(connection, actor: UUID) -> str | None:
     return connection.execute(text("SELECT perchpoint.role_for_account(:actor)"), {"actor": actor}).scalar()
 
 
-def inventory(settings, actor: UUID, organization: UUID) -> dict:
+def inventory(settings, actor: UUID, organization: UUID, *, limit: int = 50, lifecycle: str | None = None) -> dict:
     from .db import runtime_transaction
 
+    bounded = min(max(int(limit), 1), 100)
     with runtime_transaction(settings, actor, organization, uuid4()) as connection:
         rows = connection.execute(
             text(
@@ -78,11 +79,14 @@ def inventory(settings, actor: UUID, organization: UUID) -> dict:
                 FROM properties property
                 JOIN spaces space ON space.organization_id = property.organization_id AND space.property_id = property.id
                 LEFT JOIN listings listing ON listing.organization_id = space.organization_id AND listing.space_id = space.id
+                WHERE (:lifecycle = '' OR property.lifecycle = :lifecycle)
                 ORDER BY property.name, space.label
+                LIMIT :limit
                 """
-            )
+            ),
+            {"lifecycle": lifecycle or "", "limit": bounded},
         ).mappings().all()
-    return {"records": [dict(row) for row in rows], "synthetic": True}
+    return {"records": [dict(row) for row in rows], "limit": bounded, "synthetic": True}
 
 
 def set_readiness(settings, actor, organization, body, key, correlation) -> dict:
@@ -414,6 +418,27 @@ def publish_snapshot(settings, actor, organization, body, key, correlation) -> d
         ).first()
         if hold:
             blockers.append("open_hold")
+        statement = connection.execute(
+            text(
+                """
+                SELECT availability, confirmed_at FROM availability_statements
+                WHERE organization_id = :org AND space_id = :space AND current
+                """
+            ),
+            {"org": organization, "space": listing["space_id"]},
+        ).mappings().first()
+        if not statement or statement["availability"] != "available":
+            blockers.append("availability_statement")
+        elif statement["confirmed_at"] is not None:
+            age = connection.execute(text("SELECT now() - :confirmed > interval '30 days'"), {"confirmed": statement["confirmed_at"]}).scalar()
+            if age:
+                blockers.append("stale_availability")
+        occupancy = connection.execute(
+            text("SELECT occupancy FROM space_states WHERE organization_id = :org AND space_id = :space AND current"),
+            {"org": organization, "space": listing["space_id"]},
+        ).scalar()
+        if occupancy == "occupied":
+            blockers.append("occupied")
         description = body.get("description") or "EXAMPLE ONLY. Synthetic listing facts."
         if any(phrase in description.lower() for phrase in PROHIBITED):
             blockers.append("fair_housing_review")
@@ -655,3 +680,191 @@ def record_fee(settings, actor, organization, body, key, correlation) -> dict:
         return result
 
     return _command(settings, actor, organization, key, body, correlation, "pricing.fee_recorded", write)
+
+
+def record_utility(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        _visible_space(connection, body["space_id"])
+        utility_id = uuid4()
+        connection.execute(
+            text(
+                """
+                INSERT INTO utility_responsibilities (
+                  organization_id, id, space_id, utility_code, responsibility, explanation, effective_on
+                ) VALUES (:org, :id, :space, :code, :responsibility, :explanation, :effective)
+                """
+            ),
+            {
+                "org": organization,
+                "id": utility_id,
+                "space": body["space_id"],
+                "code": body["utility_code"],
+                "responsibility": body["responsibility"],
+                "explanation": body["explanation"],
+                "effective": body["effective_on"],
+            },
+        )
+        result = {"id": str(utility_id), "synthetic": True}
+        _audit_outbox(connection, organization, actor, "pricing.utility_recorded", utility_id, correlation, "pricing.utility_recorded.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "pricing.utility_recorded", write)
+
+
+def record_concession(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        _visible_space(connection, body["space_id"])
+        concession_id = uuid4()
+        connection.execute(
+            text(
+                """
+                INSERT INTO concessions (
+                  organization_id, id, space_id, label, amount_minor, currency, effective_on, ended_on
+                ) VALUES (:org, :id, :space, :label, :amount, :currency, :effective, :ended)
+                """
+            ),
+            {
+                "org": organization,
+                "id": concession_id,
+                "space": body["space_id"],
+                "label": body["label"],
+                "amount": body["amount_minor"],
+                "currency": body.get("currency", "USD"),
+                "effective": body["effective_on"],
+                "ended": body["ended_on"],
+            },
+        )
+        result = {"id": str(concession_id), "synthetic": True}
+        _audit_outbox(connection, organization, actor, "pricing.concession_recorded", concession_id, correlation, "pricing.concession_recorded.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "pricing.concession_recorded", write)
+
+
+def retire_media(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        row = connection.execute(
+            text(
+                """
+                UPDATE listing_media_assets
+                SET status = 'retired', primary_asset = false, review_state = 'rejected'
+                WHERE organization_id = :org AND id = :id AND status <> 'retired'
+                RETURNING id
+                """
+            ),
+            {"org": organization, "id": body["asset_id"]},
+        ).first()
+        if not row:
+            raise CommandError(404, "not_found", "Media asset was not found")
+        result = {"id": str(row.id), "status": "retired", "synthetic": True}
+        _audit_outbox(connection, organization, actor, "media.retired", row.id, correlation, "media.retired.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "media.retired", write)
+
+
+def duplicate_property(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        source = connection.execute(
+            text("SELECT name, property_type FROM properties WHERE organization_id = :org AND id = :id"),
+            {"org": organization, "id": body["property_id"]},
+        ).mappings().first()
+        if not source:
+            raise CommandError(404, "not_found", "Property was not found")
+        property_id = uuid4()
+        connection.execute(
+            text("INSERT INTO properties (organization_id, id, name, property_type) VALUES (:org, :id, :name, :kind)"),
+            {"org": organization, "id": property_id, "name": source["name"] + " copy", "kind": source["property_type"]},
+        )
+        result = {"id": str(property_id), "copied_listings": 0, "synthetic": True}
+        _audit_outbox(connection, organization, actor, "property.duplicated", property_id, correlation, "property.duplicated.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "property.duplicated", write)
+
+
+def preview_snapshot(settings, actor, organization, body) -> dict:
+    from .db import runtime_transaction
+
+    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+        _require(connection, "property.manage")
+        listing = connection.execute(
+            text("SELECT id, property_name, label FROM listings WHERE organization_id = :org AND id = :id"),
+            {"org": organization, "id": body["listing_id"]},
+        ).mappings().first()
+        if not listing:
+            raise CommandError(404, "not_found", "Listing was not found")
+    return {
+        "preview": True,
+        "public": False,
+        "noindex": True,
+        "property_name": listing["property_name"],
+        "label": listing["label"],
+        "synthetic": True,
+    }
+
+
+def rollback_snapshot(settings, actor, organization, body, key, correlation) -> dict:
+    def write(connection, _fp):
+        _require(connection, "property.manage")
+        prior = connection.execute(
+            text(
+                """
+                SELECT id, listing_id, space_id, public_slug, content_hash, payload
+                FROM listing_snapshots
+                WHERE organization_id = :org AND id = :id
+                """
+            ),
+            {"org": organization, "id": body["snapshot_id"]},
+        ).mappings().first()
+        if not prior:
+            raise CommandError(404, "not_found", "Snapshot was not found")
+        listing = connection.execute(
+            text("SELECT version FROM listings WHERE organization_id = :org AND id = :id"),
+            {"org": organization, "id": prior["listing_id"]},
+        ).mappings().first()
+        if not listing or int(listing["version"]) != int(body["expected_version"]):
+            raise CommandError(409, "stale_version", "The listing changed. Reload and try again.", retryable=True)
+        connection.execute(
+            text("UPDATE listing_snapshots SET superseded_at = now() WHERE organization_id = :org AND public_slug = :slug AND superseded_at IS NULL"),
+            {"org": organization, "slug": prior["public_slug"]},
+        )
+        snapshot_id = uuid4()
+        payload = prior["payload"]
+        encoded = payload if isinstance(payload, str) else json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        connection.execute(
+            text(
+                """
+                INSERT INTO listing_snapshots (
+                  organization_id, id, listing_id, space_id, public_slug, schema_version, content_hash, payload, actor_id
+                ) VALUES (
+                  :org, :id, :listing, :space, :slug, 1, :digest, CAST(:payload AS jsonb), :actor
+                )
+                """
+            ),
+            {
+                "org": organization,
+                "id": snapshot_id,
+                "listing": prior["listing_id"],
+                "space": prior["space_id"],
+                "slug": prior["public_slug"],
+                "digest": prior["content_hash"],
+                "payload": encoded,
+                "actor": actor,
+            },
+        )
+        updated = connection.execute(
+            text("UPDATE listings SET publication = 'published', version = version + 1 WHERE organization_id = :org AND id = :id AND version = :expected RETURNING version"),
+            {"org": organization, "id": prior["listing_id"], "expected": body["expected_version"]},
+        ).first()
+        if not updated:
+            raise CommandError(409, "stale_version", "The listing changed. Reload and try again.", retryable=True)
+        result = {"id": str(snapshot_id), "restored_from": str(prior["id"]), "version": updated.version, "synthetic": True}
+        _audit_outbox(connection, organization, actor, "listing.snapshot_rolled_forward", snapshot_id, correlation, "listing.snapshot_rolled_forward.v1", result)
+        return result
+
+    return _command(settings, actor, organization, key, body, correlation, "listing.snapshot_rolled_forward", write)

@@ -14,11 +14,17 @@ from .phase8_portfolio import (
     bulk_dry_run,
     inventory,
     place_hold,
+    duplicate_property,
+    preview_snapshot,
     public_snapshot,
     publish_snapshot,
+    record_concession,
     record_fee,
+    record_utility,
     register_media,
     release_due_holds,
+    retire_media,
+    rollback_snapshot,
     set_availability,
     set_readiness,
     unpublish_snapshot,
@@ -107,6 +113,45 @@ class ArchiveBody(BaseModel):
     idempotency_key: str
 
 
+class UtilityBody(BaseModel):
+    space_id: UUID
+    utility_code: str
+    responsibility: str
+    explanation: str
+    effective_on: str
+    idempotency_key: str
+
+
+class ConcessionBody(BaseModel):
+    space_id: UUID
+    label: str
+    amount_minor: int = Field(ge=0)
+    effective_on: str
+    ended_on: str
+    currency: str = "USD"
+    idempotency_key: str
+
+
+class RetireBody(BaseModel):
+    asset_id: UUID
+    idempotency_key: str
+
+
+class DuplicateBody(BaseModel):
+    property_id: UUID
+    idempotency_key: str
+
+
+class PreviewBody(BaseModel):
+    listing_id: UUID
+
+
+class RollbackBody(BaseModel):
+    snapshot_id: UUID
+    expected_version: int = Field(ge=1)
+    idempotency_key: str
+
+
 class BulkBody(BaseModel):
     space_ids: list[str]
     amount_minor: int = Field(ge=0)
@@ -123,8 +168,8 @@ def _call(operation):
 
 
 @router.get("/portfolio/inventory")
-def portfolio_inventory(current=Depends(actor), current_settings: Settings = Depends(settings)):
-    return inventory(current_settings, current["id"], current["organization_id"])
+def portfolio_inventory(limit: int = 50, lifecycle: str = "", current=Depends(actor), current_settings: Settings = Depends(settings)):
+    return inventory(current_settings, current["id"], current["organization_id"], limit=limit, lifecycle=lifecycle or None)
 
 
 @router.post("/portfolio/readiness", status_code=201)
@@ -146,6 +191,48 @@ def portfolio_price(body: PriceBody, current=Depends(actor), current_settings: S
     payload = body.model_dump(mode="json")
     key = payload.pop("idempotency_key")
     return _call(lambda: apply_asking_price(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/portfolio/utilities", status_code=201)
+def portfolio_utility(body: UtilityBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: record_utility(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/portfolio/concessions", status_code=201)
+def portfolio_concession(body: ConcessionBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: record_concession(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/portfolio/media/retire")
+def portfolio_retire(body: RetireBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: retire_media(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/portfolio/duplicate", status_code=201)
+def portfolio_duplicate(body: DuplicateBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: duplicate_property(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
+
+
+@router.post("/portfolio/snapshots/preview")
+def portfolio_preview(body: PreviewBody, response: Response, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    response.headers["cache-control"] = "no-store"
+    response.headers["x-robots-tag"] = "noindex"
+    return _call(lambda: preview_snapshot(current_settings, current["id"], current["organization_id"], body.model_dump(mode="json")))
+
+
+@router.post("/portfolio/snapshots/rollback", status_code=201)
+def portfolio_rollback(body: RollbackBody, current=Depends(actor), current_settings: Settings = Depends(settings)):
+    payload = body.model_dump(mode="json")
+    key = payload.pop("idempotency_key")
+    return _call(lambda: rollback_snapshot(current_settings, current["id"], current["organization_id"], payload, key, uuid4()))
 
 
 @router.post("/portfolio/fees", status_code=201)
