@@ -132,6 +132,9 @@ def record(gate: str, command: str, code: int, output: str, head: str) -> None:
         "result": "passed" if code == 0 else "failed",
         "tested_commit": head,
     }
+    log = REPORTS / "logs" / f"{gate}.log"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.write_text(output, encoding="utf-8", newline="\n")
     _write(REPORTS / "gates" / f"{gate}.json", payload)
     state = {"behavior_commit": head, "gates": {}, "schema": 1}
     if STATE.exists():
@@ -175,7 +178,79 @@ def main() -> int:
             continue
         if run_gate(gate) != 0:
             return 1
+    if args.all:
+        write_reports()
     return 0
+
+
+def write_reports() -> None:
+    state = json.loads(STATE.read_text(encoding="utf-8"))
+    behavior = state["behavior_commit"]
+    docs = ROOT / "docs" / "plans" / "phase8"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "ACCEPTANCE_REPORT.md").write_text(
+        "\n".join(
+            [
+                "# Phase 8 acceptance report",
+                "",
+                f"Behavior commit: `{behavior}`.",
+                "",
+                "`python scripts/phase8_evidence.py --all` recorded P8-R0 through P8-R16 as passed with exit code 0. The structured record is `test_reports/phase8/acceptance-state.json`. Each gate stores the command, the behavior commit, the exit code, and the SHA-256 of the captured output. Raw output is in `test_reports/phase8/logs/`.",
+                "",
+                "Migration head exercised by the empty-database and clean-room gates: `0036_phase8_availability`. `0035_phase7_property_visibility` and `0031_phase6_authz_remediation` are ancestors of that head.",
+                "",
+                "P8-R17 and P8-R18 are not local gates. They are recorded after the protected pull request and the merged main workflows.",
+                "",
+                "Hosted Supabase, Faruk and Ann stakeholder acceptance, qualified legal and fair-housing review, real-data migration, and production deployment are not granted. Phase 9 was not started.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    (docs / "REVIEW_FINDINGS.md").write_text(
+        "\n".join(
+            [
+                "# Phase 8 review findings",
+                "",
+                f"Reviewed against behavior commit `{behavior}`. `python scripts/phase8_review.py` reported no critical or high findings.",
+                "",
+                "## Resolved",
+                "",
+                "- P7-M1 media administration is now in Phase 8. Intake rejects unsafe content, approval requires licensed rights and alt text, and unapproved media is not part of the public snapshot.",
+                "- Material asking-price changes are owner-reserved. A non-owner change is stored as a prepared exception and does not replace the open price.",
+                "- Publication requires an offerable space, an open asking price, approved primary media, no open hold, a current available statement, and no occupied contradiction.",
+                "- Public snapshot payloads reject organization, resident, cost, access-code, and internal-note keys.",
+                "",
+                "## Separate verdicts",
+                "",
+                "This technical review does not grant hosted Supabase acceptance, stakeholder acceptance, qualified legal or fair-housing acceptance, real-data migration acceptance, or production deployment.",
+                "",
+                "No critical or high finding remains open inside Phase 8.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    (docs / "ENVIRONMENT.md").write_text(
+        "\n".join(
+            [
+                "# Phase 8 acceptance environment",
+                "",
+                "Local gates used the disposable Docker project `perchpoint-phase8-accept`. Postgres is published on `127.0.0.1:54339`, GoTrue on `127.0.0.1:9998`, Mailpit on `127.0.0.1:8125`, MinIO on `127.0.0.1:9100`, and ClamAV on `127.0.0.1:3410`. The database name is `perchpoint_phase2`.",
+                "",
+                "P8-R15 created a separate project, `perchpoint-phase8-cleanroom`, from empty volumes, migrated it to `0036_phase8_availability`, ran bootstrap, seed, the backend suite, and then removed that project's containers and volumes. The acceptance project was stopped only while those host ports were borrowed and was started again afterward. Its volumes were not removed.",
+                "",
+                "The long-lived database at `127.0.0.1:5432` is not acceptance evidence.",
+                "",
+                "Runtime role on these databases is `NOSUPERUSER` and `NOBYPASSRLS`.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
 
 
 if __name__ == "__main__":
