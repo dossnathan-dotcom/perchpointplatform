@@ -1,0 +1,101 @@
+yarn run v1.22.22
+$ C:\Users\Admin\PerchPoint\frontend\node_modules\.bin\playwright test e2e/phase8-portfolio.spec.js --reporter=line
+
+
+
+Running 12 tests using 1 worker
+
+
+
+
+
+[1A[2K[1/12] [chromium] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 320px
+
+
+
+[1A[2K[2/12] [chromium] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 768px
+
+
+[1A[2K[3/12] [chromium] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1024px
+
+
+[1A[2K[4/12] [chromium] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1440px
+
+
+
+
+
+
+[1A[2K[5/12] [firefox] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 320px
+
+
+[1A[2K[6/12] [firefox] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 768px
+
+
+[1A[2K[7/12] [firefox] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1024px
+
+
+[1A[2K[8/12] [firefox] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1440px
+
+
+
+
+
+
+[1A[2K[9/12] [webkit] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 320px
+
+
+[1A[2K[10/12] [webkit] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 768px
+
+
+[1A[2K[11/12] [webkit] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1024px
+
+
+[1A[2K[12/12] [webkit] â€º e2e\phase8-portfolio.spec.js:5:3 â€º portfolio administration stays usable at 1440px
+
+
+[1A[2K  12 passed (21.7s)
+Done in 22.50s.
+[1A[2K[WebServer] (node:23420) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+[WebServer] (Use `node --trace-deprecation ...` to show where the warning was created)
+[1A[2K[WebServer] (node:23420) [DEP_WEBPACK_COMPILATION_ASSETS] DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated.
+[WebServer] BREAKING CHANGE: No more changes should happen to Compilation.assets after sealing the Compilation.
+[WebServer] 		Do changes to assets earlier, e. g. in Compilation.hooks.processAssets.
+[WebServer] 		Make sure to select an appropriate stage from Compilation.PROCESS_ASSETS_STAGE_*.
+[1A[2K(node:24656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K(node:24656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[WebServer] (node:23420) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K(node:4640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K(node:4640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K(node:3320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K(node:3320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/portfolio/inventory to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)

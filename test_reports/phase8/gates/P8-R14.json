@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase8_benchmark.py",
+  "exit_code": 0,
+  "finished_at": "2026-10-06T15:27:42.227295+00:00",
+  "gate": "P8-R14",
+  "output_sha256": "09ff45c8a21126c42d534f0c3aa2ee58ed70c4c237aaaf21cac2284ef3818eaa",
+  "result": "passed",
+  "tested_commit": "bf314cb5349bd57ffc251f99b4c287ec6396f95e"
+}
