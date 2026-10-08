@@ -236,3 +236,15 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk Atmaca for any future provider or access reversal; Nathan for this
   local implementation.
 - Continue safely: yes. Status: resolved for Phase 11 local implementation by Q1, Q3, and Q13.
+
+## CONFLICT-021 — Phase 12 applications versus screening, fees, and leases in the form
+- Claims: early examples collect an application fee, ask screening questions, or treat the
+  submitted form as a lease or housing decision. Approved Phase 12 decisions keep PerchPoint
+  as the application record, model a fee without collecting it, and leave screening, adverse
+  action, leases, and payments to later phases.
+- Consequence: application completeness, document handling, and the Phase 13 boundary.
+- Safe assumption: Phase 12 stores a household application, disclosures, and scanned documents.
+  It does not score an applicant, call a screening provider, or create a lease.
+- Decision owner: Faruk Atmaca for any future screening or payment reversal; Nathan for this
+  local implementation.
+- Continue safely: yes. Status: resolved for Phase 12 local implementation by Q1, Q7, and Q158.

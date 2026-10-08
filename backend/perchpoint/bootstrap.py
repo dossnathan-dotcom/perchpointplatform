@@ -107,6 +107,12 @@ def bootstrap(settings: Settings | None = None) -> None:
             "apply_calendar_callback(text, text, text)",
             "showing_resource_no_cycle()",
             "showing_seats_within_capacity()",
+            "start_application(jsonb, text, text, text)",
+            "save_application_answer(text, text, text, integer)",
+            "finalize_application_document(text, text, text, text, integer, text, boolean)",
+            "submit_application(text, text, text, integer)",
+            "withdraw_application(text)",
+            "invite_application_participant(text, text, text, text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(

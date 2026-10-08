@@ -29,6 +29,7 @@ const PropertyDetailPage = lazy(() => import("@/components/PropertyDetailPage").
 const RentalsIndex = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.RentalsIndex })));
 const LeasingDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.LeasingDesk })));
 const ShowingDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ShowingDesk })));
+const ApplicationDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplicationDesk })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -83,6 +84,7 @@ export function AppContent() {
         <Route path="/rentals" element={<Suspense fallback={routePending}><RentalsIndex /></Suspense>} />
         <Route path="/leasing-desk" element={<Suspense fallback={routePending}><LeasingDesk /></Suspense>} />
         <Route path="/showings" element={<Suspense fallback={routePending}><ShowingDesk /></Suspense>} />
+        <Route path="/applications" element={<Suspense fallback={routePending}><ApplicationDesk /></Suspense>} />
         <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
         <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
         <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
