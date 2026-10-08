@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T13:23:38.902812+00:00",
+  "gate": "P10-R14",
+  "output_sha256": "af6099c10f4a20d9db2e4aaeaf80e03016f6c648533fd957958a08a7abc77aa0",
+  "result": "passed",
+  "tested_commit": "6e7c4304b26e4fbdcb5e6b87547c9891817f42d6"
+}
