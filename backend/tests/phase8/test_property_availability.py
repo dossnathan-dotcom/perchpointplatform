@@ -39,7 +39,7 @@ def _workspace(client, token):
     created = client.post(
         "/api/v2/properties",
         headers=headers,
-        json={"name": "Phase 8 Synthetic Court", "property_type": "mixed_use", "idempotency_key": _key("prop")},
+        json={"name": f"A8 {uuid4().hex[:8]} Synthetic Court", "property_type": "mixed_use", "idempotency_key": _key("prop")},
     )
     assert created.status_code == 201, created.text
     property_id = created.json()["id"]
