@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase10_crm.py perchpoint/phase10_routes.py tests/phase10 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T13:20:00.747909+00:00",
+  "gate": "P10-R10",
+  "output_sha256": "92857dc9c0908d9e7f22c7f2f2c7deb54dfdb174db50f1724ceb1ddc5b2b0d46",
+  "result": "passed",
+  "tested_commit": "6e7c4304b26e4fbdcb5e6b87547c9891817f42d6"
+}

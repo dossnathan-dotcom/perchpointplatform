@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase10/test_leasing_crm.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T13:17:26.316827+00:00",
+  "gate": "P10-R5",
+  "output_sha256": "e57a3b4aba324f2472bf8142492c48a7bf16f2722a04290ea4399f27e6c881d1",
+  "result": "passed",
+  "tested_commit": "6e7c4304b26e4fbdcb5e6b87547c9891817f42d6"
+}

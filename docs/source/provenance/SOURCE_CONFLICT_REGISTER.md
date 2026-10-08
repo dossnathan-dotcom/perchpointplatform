@@ -212,3 +212,16 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk Atmaca for any future channel reversal; Nathan for this local
   implementation.
 - Continue safely: yes. Status: resolved for Phase 9 local implementation by Q1 and Q4.
+
+## CONFLICT-019 — Phase 10 CRM versus early marketplace and lead examples
+- Claims: early roadmap text describes external lead marketplaces, syndication, or a generic
+  CRM. Approved Phase 10 decisions keep HawkVision website intake and authorized manual entry
+  as the only acquisition paths, and they keep the $1,200 figure in procurement rather than
+  prospect priority.
+- Consequence: inquiry scope and operational priority.
+- Safe assumption: Phase 10 stores prospects, inquiries, consent, assignment, clocks, and next
+  actions in PerchPoint. It does not ingest an external lead workspace or rank people by
+  predicted housing value.
+- Decision owner: Faruk Atmaca for any future channel reversal; Nathan for this local
+  implementation.
+- Continue safely: yes. Status: resolved for Phase 10 local implementation by Q1, Q6, and Q11.

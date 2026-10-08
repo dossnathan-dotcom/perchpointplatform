@@ -200,7 +200,7 @@ def _route_capability(request: Request) -> str:
         return "export.create"
     if path.startswith("/documents"):
         return "document.read" if request.method == "GET" else "document.manage"
-    if path.startswith("/inquiries"):
+    if path.startswith("/inquiries") or path.startswith("/leasing"):
         return "inquiry.manage"
     if path.startswith("/portfolio"):
         return "property.read" if request.method == "GET" else "property.manage"
@@ -3658,8 +3658,10 @@ def create_app():
     app.include_router(phase7_router)
     app.include_router(phase8_router)
     from .phase9_routes import router as phase9_router
+    from .phase10_routes import router as phase10_router
 
     app.include_router(phase9_router)
+    app.include_router(phase10_router)
     return app
 
 

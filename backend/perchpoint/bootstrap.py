@@ -99,6 +99,8 @@ def bootstrap(settings: Settings | None = None) -> None:
             "published_discovery_listing(text)",
             "discovery_sitemap()",
             "record_discovery_event(text, text, text, text, text, text, text, boolean, text)",
+            "capture_leasing_inquiry(jsonb, text, text, boolean)",
+            "leasing_deadline(timestamptz, uuid)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(

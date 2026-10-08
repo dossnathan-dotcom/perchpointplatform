@@ -28,6 +28,59 @@ async function staffRequest(path, options = {}) {
   });
 }
 
+export function LeasingDesk() {
+  const [state, setState] = useState("idle");
+  const [rows, setRows] = useState([]);
+  async function load(event) {
+    event.preventDefault();
+    setState("loading");
+    try {
+      const { response, body } = await staffRequest("/api/v2/leasing/queue");
+      if (response.status === 401 || response.status === 403) {
+        setState("denied");
+        return;
+      }
+      if (!response.ok) {
+        setState("unavailable");
+        return;
+      }
+      setRows(body.inquiries || []);
+      setState(body.inquiries?.length ? "ready" : "empty");
+    } catch {
+      setState("unavailable");
+    }
+  }
+  return (
+    <PageFrame title="Leasing queue" testId="leasing-desk">
+      <p>Operational work only. This desk does not approve housing, schedule a showing, or open an application.</p>
+      <form onSubmit={load}>
+        <button className="underline" type="submit">Refresh queue</button>
+      </form>
+      {state === "loading" && <p role="status">Loading the queue.</p>}
+      {state === "denied" && <p role="alert">This queue is not available for the current session.</p>}
+      {state === "unavailable" && <p role="alert">The leasing queue is temporarily unavailable.</p>}
+      {state === "empty" && <p>No open inquiries are in this queue.</p>}
+      {state === "ready" && (
+        <table className="w-full text-left">
+          <caption className="sr-only">Open leasing inquiries</caption>
+          <thead>
+            <tr><th scope="col">Stage</th><th scope="col">Next action</th><th scope="col">Due</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.public_receipt}>
+                <td>{row.stage}</td>
+                <td>{row.next_action}</td>
+                <td>{row.unassigned ? "Unassigned" : "Assigned"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </PageFrame>
+  );
+}
+
 export function PublicStatus({ code, title, message, testId }) {
   return (
     <PageFrame title={title} testId={testId}>
@@ -88,6 +141,8 @@ export function RentalsIndex() {
   const [listings, setListings] = useState([]);
   const [discovery, setDiscovery] = useState([]);
   const [notice, setNotice] = useState("");
+  const [inquiryState, setInquiryState] = useState("idle");
+  const [receipt, setReceipt] = useState("");
   const [favorites, setFavorites] = useState(() => {
     try {
       return JSON.parse(window.localStorage.getItem("pp-discovery-favorites") || "[]");
@@ -128,6 +183,36 @@ export function RentalsIndex() {
       setNotice("Search is temporarily unavailable. The published list below is unchanged.");
     }
   }
+  async function inquire(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    if (!form.get("disclosure")) {
+      setInquiryState("invalid");
+      return;
+    }
+    setInquiryState("loading");
+    try {
+      const { response, body } = await phase2("/api/v2/public/leasing/inquiries", {
+        method: "POST",
+        body: JSON.stringify({
+          name: String(form.get("name") || ""),
+          email: String(form.get("email") || ""),
+          message: String(form.get("message") || ""),
+          disclosure: true,
+          honeypot: String(form.get("company") || ""),
+          idempotency_key: `web-${crypto.randomUUID()}`,
+        }),
+      });
+      if (!response.ok) {
+        setInquiryState("invalid");
+        return;
+      }
+      setReceipt(body.receipt || "");
+      setInquiryState("received");
+    } catch {
+      setInquiryState("unavailable");
+    }
+  }
   function favorite(slug) {
     const next = favorites.includes(slug) ? favorites.filter((item) => item !== slug) : [...favorites, slug].slice(0, 3);
     setFavorites(next);
@@ -159,6 +244,29 @@ export function RentalsIndex() {
         </ul>
       )}
       {favorites.length > 0 && <p>Saved on this device: {favorites.join(", ")}. Nothing was sent to the server.</p>}
+      <form className="space-y-3" onSubmit={inquire} data-testid="leasing-inquiry">
+        <h2 className="font-heading text-2xl font-bold">Ask about a home</h2>
+        <p>This records leasing interest only. It does not schedule a showing or start an application.</p>
+        <label className="block text-sm font-semibold" htmlFor="inquiry-name">Name</label>
+        <input id="inquiry-name" name="name" required className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        <label className="block text-sm font-semibold" htmlFor="inquiry-email">Email</label>
+        <input id="inquiry-email" name="email" type="email" required autoComplete="email" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        <label className="block text-sm font-semibold" htmlFor="inquiry-message">Message</label>
+        <textarea id="inquiry-message" name="message" required className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        <label className="block text-sm font-semibold" htmlFor="inquiry-disclosure">
+          <input id="inquiry-disclosure" name="disclosure" type="checkbox" className="mr-2" />
+          I understand HawkVision will use this message to respond about leasing.
+        </label>
+        <div className="absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
+          <label htmlFor="inquiry-company">Company</label>
+          <input id="inquiry-company" name="company" tabIndex={-1} autoComplete="off" />
+        </div>
+        <button className="underline" type="submit">Send inquiry</button>
+      </form>
+      {inquiryState === "loading" && <p role="status">Sending the inquiry.</p>}
+      {inquiryState === "invalid" && <p role="alert">The inquiry could not be accepted. Check the name, email, message, and acknowledgement.</p>}
+      {inquiryState === "unavailable" && <p role="alert">Inquiry intake is temporarily unavailable.</p>}
+      {inquiryState === "received" && <p role="status">Inquiry received. Reference {receipt}. No staff notes or other records are shown.</p>}
       {state === "loading" && <p role="status">Loading published listings.</p>}
       {state === "unavailable" && <p role="alert">Published listings could not be loaded.</p>}
       {state === "ready" && listings.length === 0 && <p>No homes are published right now.</p>}
