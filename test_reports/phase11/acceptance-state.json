@@ -1,158 +1,158 @@
 {
-  "behavior_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc",
+  "behavior_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1",
   "gates": {
     "P11-R0": {
       "command": "git merge-base --is-ancestor 9a503e2c5e1a2725f9aeedd41f7f6365c6dc1125 HEAD",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:02.843757+00:00",
+      "finished_at": "2026-10-08T17:06:24.557304+00:00",
       "gate": "P11-R0",
-      "output_sha256": "f8539ecfd6c1993443f88c0e43745271e1168c81405b007d9a4a9d5e08792347",
+      "output_sha256": "88d2f3bb961f8884bfd4d4e9d9676d320d1f28c6b92bdf042f6ba9d90610a6e1",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R1": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase11_answers.py",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:02.934009+00:00",
+      "finished_at": "2026-10-08T17:06:24.644972+00:00",
       "gate": "P11-R1",
       "output_sha256": "d50081a91309c6a6c552087cd87c21f8cb9d7e261f9f154a32fea2ab3a78cf14",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R10": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase11_scheduling.py perchpoint/phase11_routes.py tests/phase11 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:46:27.897666+00:00",
+      "finished_at": "2026-10-08T17:08:01.062790+00:00",
       "gate": "P11-R10",
-      "output_sha256": "69c0fc3dfbeb9413314a08a5e0f534da92465224dd4313805a529dee153664e1",
+      "output_sha256": "6e597daea444efbb962ca28d628ec03ce22a8d445f467dfedae613b586a7e400",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R11": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:47:56.991607+00:00",
+      "finished_at": "2026-10-08T17:09:34.424747+00:00",
       "gate": "P11-R11",
-      "output_sha256": "16fec52c7a1fe2dea595bd05eb4507e46e8d421fcdaaddb90825173b217587c7",
+      "output_sha256": "f2f4c5468e5c3b4200805f3d7380321d66bb68e7d334297cecf039ff3e3e9c05",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R12": {
       "command": "corepack yarn playwright test e2e/phase11-showing.spec.js --reporter=line",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:48:21.964702+00:00",
+      "finished_at": "2026-10-08T17:09:59.426574+00:00",
       "gate": "P11-R12",
-      "output_sha256": "9957ba70285d57fe5a14b283c27ddcbce8aac1cf169ce8d2d3b10b3922e68a80",
+      "output_sha256": "9d3564c13b4f6c67c7d04561e532ca0bef292c4ca6cfd93c2888661ab3c1b5a8",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R13": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase11_benchmark.py",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:48:37.026442+00:00",
+      "finished_at": "2026-10-08T17:10:15.032537+00:00",
       "gate": "P11-R13",
-      "output_sha256": "491c5d20f40696f31eb4d2a9c751cec4ef2cb7e83c60f4e33c06aefdbb2ddf70",
+      "output_sha256": "91beb20aa4d7fda98c59eca7e44475f0e60185d8ab0b44e2d47987ebd6edf20b",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R14": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:49:44.359211+00:00",
+      "finished_at": "2026-10-08T17:11:18.939094+00:00",
       "gate": "P11-R14",
-      "output_sha256": "417108bc6b0b43d360abf0fd0bb77192c93327841fcc9a682c1ce80481fef68d",
+      "output_sha256": "63e10dc47d073d7c531e6e84caed417a932adfc53a8743c013accfd7b8a240ef",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R15": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase11_clean_room.py --execute",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:51:16.038611+00:00",
+      "finished_at": "2026-10-08T17:12:52.095633+00:00",
       "gate": "P11-R15",
-      "output_sha256": "c32a0f76446bf1e95fcfce54f4e38633d8e5fdb14fce6e97f66fcf1c6da40486",
+      "output_sha256": "312cc5f37a99519738465a2d1931969866de30b66330c8aee862336e28320aa6",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R16": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase11_review.py",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:51:16.132469+00:00",
+      "finished_at": "2026-10-08T17:12:52.182890+00:00",
       "gate": "P11-R16",
       "output_sha256": "e078ae3132697d0d3047b413566a569fc026e2459f0045871d59eb4d9cf9a5c7",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R2": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:03.830304+00:00",
+      "finished_at": "2026-10-08T17:06:25.550133+00:00",
       "gate": "P11-R2",
       "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R3": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:08.284605+00:00",
+      "finished_at": "2026-10-08T17:06:30.062235+00:00",
       "gate": "P11-R3",
-      "output_sha256": "4415638bb48b7dc6cad1c9c0bdedc69f1e9c52f4b8dfd8f178221f81fb464c68",
+      "output_sha256": "fa210b66496a06acd38a461d4b46da7b99e8ce072dfb4c76652cf1fe2debfb4d",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R4": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:13.639981+00:00",
+      "finished_at": "2026-10-08T17:06:35.309461+00:00",
       "gate": "P11-R4",
-      "output_sha256": "dafc30d731002e742ea797364cd099a7d9e993b62dfccf74a9fb950c9c0caa26",
+      "output_sha256": "2fb81106c160db2424d54175e742ff53b9257f1e0bd6868cfe8f3b3f6f2dc7ca",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R5": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:18.593004+00:00",
+      "finished_at": "2026-10-08T17:06:40.268458+00:00",
       "gate": "P11-R5",
-      "output_sha256": "ad750bdbeca123cc4ce042ddefeb64116827a20ef7db5885473d20ace9d827a8",
+      "output_sha256": "2b6038ff32fa5af5b82363e95eba1e8dd9e78a108aab70a7799116e797d6d7f8",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R6": {
       "command": "corepack yarn playwright test e2e/phase11-showing.spec.js --reporter=line",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:43.541270+00:00",
+      "finished_at": "2026-10-08T17:07:05.300294+00:00",
       "gate": "P11-R6",
-      "output_sha256": "775fdd62292711279e44cee76feca9172bb81559107ba4ab7ecad1e61fec09b8",
+      "output_sha256": "822ec82d2ffda96746480be144ae799945a5bfb6ae5e2272f2957ff72a1b1627",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R7": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:48.493854+00:00",
+      "finished_at": "2026-10-08T17:07:10.609513+00:00",
       "gate": "P11-R7",
-      "output_sha256": "02aee50af07c0cbeeb873391da22feac6ba8ecc967cff560b03cfa87e484a494",
+      "output_sha256": "84ee3d147bbb4c314a923ec1e19b672beb1c1be672eb171447f131d9c0f96784",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R8": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:53.409667+00:00",
+      "finished_at": "2026-10-08T17:07:15.916842+00:00",
       "gate": "P11-R8",
-      "output_sha256": "2d6d640b4b05f93342d58ac21af96f0feb2e57f4e5d4834cb04dab9157bfb64a",
+      "output_sha256": "f46093ebcffb7989739325a1e9d0324ee2fa3b051cfa83b8639607243ba96c1c",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     },
     "P11-R9": {
       "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
       "exit_code": 0,
-      "finished_at": "2026-10-08T16:45:58.270627+00:00",
+      "finished_at": "2026-10-08T17:07:21.157364+00:00",
       "gate": "P11-R9",
-      "output_sha256": "f8bc93d066b4a42833d8d6b1409aa94e58dd460c20114580792502f236613e97",
+      "output_sha256": "203d074a1d389710465c0b23bff790fa74f4221d023e35231b83ad4a576adb63",
       "result": "passed",
-      "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+      "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
     }
   },
   "schema": 1

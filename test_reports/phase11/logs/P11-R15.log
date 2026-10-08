@@ -55,7 +55,7 @@ tests/test_perchpoint_api.py::test_maintenance_validation_error
     return self.request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-183 passed, 25 warnings in 50.89s
+183 passed, 25 warnings in 54.28s
 
 clean_room=passed
 containers='' volumes=''

@@ -1,6 +1,6 @@
 # Phase 11 acceptance report
 
-Behavior commit: `ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc`.
+Behavior commit: `bfa4876cad6e43ff31db2cd0148eb65a037493b1`.
 
 `python scripts/phase11_evidence.py --all` recorded P11-R0 through P11-R16 as passed with exit code 0. The structured record is `test_reports/phase11/acceptance-state.json`. Each gate stores the command, the behavior commit, the exit code, and the SHA-256 of the captured output. Raw output is in `test_reports/phase11/logs/`.
 

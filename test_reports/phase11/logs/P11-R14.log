@@ -31,10 +31,6 @@ server.py:125
           
     return self.router.on_event(event_type)  # ty: ignore[deprecated]
 
-tests/phase2/test_commands_and_authorization.py::test_concurrent_same_key_creates_one_property
-  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_generate_schema.py:2274: UnsupportedFieldAttributeWarning: The 'alias' attribute with value 'authorization' was provided to the `Field()` function, which has no effect in the context it was used. 'alias' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-    warnings.warn(
-
 tests/test_perchpoint_api.py: 3 warnings
 tests/test_phase0_public_api_matrix.py: 8 warnings
   C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py:1053: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
@@ -51,4 +47,4 @@ tests/test_perchpoint_api.py::test_maintenance_validation_error
     return self.request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-183 passed, 26 warnings in 65.80s (0:01:05)
+183 passed, 25 warnings in 62.39s (0:01:02)

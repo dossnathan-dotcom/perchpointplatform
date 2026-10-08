@@ -31,10 +31,6 @@ server.py:125
           
     return self.router.on_event(event_type)  # ty: ignore[deprecated]
 
-tests/phase2/test_commands_and_authorization.py::test_concurrent_same_key_creates_one_property
-  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\_internal\_generate_schema.py:2274: UnsupportedFieldAttributeWarning: The 'alias' attribute with value 'body' was provided to the `Field()` function, which has no effect in the context it was used. 'alias' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-    warnings.warn(
-
 tests/test_perchpoint_api.py: 3 warnings
 tests/test_phase0_public_api_matrix.py: 8 warnings
   C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py:1053: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
@@ -51,18 +47,18 @@ tests/test_perchpoint_api.py::test_maintenance_validation_error
     return self.request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-183 passed, 26 warnings in 65.52s (0:01:05)
+183 passed, 25 warnings in 69.94s (0:01:09)
 
 [1;32mAll checks passed![0m
 
 
 yarn run v1.22.22
 $ C:\Users\Admin\PerchPoint\frontend\node_modules\.bin\eslint src --max-warnings 0
-Done in 2.01s.
+Done in 1.75s.
 
 yarn run v1.22.22
 $ craco test --watchAll=false --watchman=false
-Done in 4.17s.
+Done in 3.65s.
 PASS src/sentry.test.js
 PASS src/config/phase0Flags.test.js
 PASS src/design-system/phase4.test.js
@@ -73,7 +69,7 @@ PASS src/App.routing.test.js
 Test Suites: 6 passed, 6 total
 Tests:       36 passed, 36 total
 Snapshots:   0 total
-Time:        2.91 s, estimated 3 s
+Time:        2.557 s
 Ran all test suites.
 
 yarn run v1.22.22
@@ -118,6 +114,6 @@ Find out more about deployment here:
 
 prerendered homepage 39428 characters
 {"files":52,"raw":4682209,"gzip":1109723,"brotli":937263}
-Done in 15.13s.
-(node:16144) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+Done in 15.75s.
+(node:26216) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
 (Use `node --trace-deprecation ...` to show where the warning was created)

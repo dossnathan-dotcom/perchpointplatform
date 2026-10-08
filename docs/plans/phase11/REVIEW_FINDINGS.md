@@ -1,6 +1,6 @@
 # Phase 11 review findings
 
-Reviewed against behavior commit `ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc`. `python scripts/phase11_review.py` reported no critical or high findings. Reviewer identity: `phase11-independent-review`.
+Reviewed against behavior commit `bfa4876cad6e43ff31db2cd0148eb65a037493b1`. `python scripts/phase11_review.py` reported no critical or high findings. Reviewer identity: `phase11-independent-review`.
 
 ## Resolved
 

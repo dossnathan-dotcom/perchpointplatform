@@ -43,33 +43,33 @@ Running 12 tests using 1 worker
 [1A[2K[12/12] [webkit] â€º e2e\phase11-showing.spec.js:5:3 â€º showing times stay usable at 1440px
 
 [1A[2K  12 passed (23.9s)
-Done in 24.76s.
-[1A[2K[WebServer] (node:6148) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+Done in 24.77s.
+[1A[2K[WebServer] (node:23856) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
 [WebServer] (Use `node --trace-deprecation ...` to show where the warning was created)
-[1A[2K[WebServer] (node:6148) [DEP_WEBPACK_COMPILATION_ASSETS] DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated.
+[1A[2K[WebServer] (node:23856) [DEP_WEBPACK_COMPILATION_ASSETS] DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated.
 [WebServer] BREAKING CHANGE: No more changes should happen to Compilation.assets after sealing the Compilation.
 [WebServer] 		Do changes to assets earlier, e. g. in Compilation.hooks.processAssets.
 [WebServer] 		Make sure to select an appropriate stage from Compilation.PROCESS_ASSETS_STAGE_*.
-[1A[2K(node:14312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:16484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:14312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:16484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K[WebServer] (node:6148) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+[1A[2K[WebServer] (node:23856) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
-[1A[2K(node:23360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:24080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:23360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:24080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
-[1A[2K(node:9040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:1448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-[1A[2K(node:9040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:1448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 [1A[2K[WebServer] [HPM] Error occurred while proxying request 127.0.0.1:3000/api/v2/public/showings/capabilities to http://127.0.0.1:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
