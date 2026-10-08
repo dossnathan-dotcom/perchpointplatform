@@ -7,7 +7,7 @@ import hmac
 import json
 import secrets
 from datetime import datetime, timedelta, timezone
-from uuid import uuid4
+from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import text
@@ -23,6 +23,17 @@ LEAD = timedelta(hours=2)
 STEP = timedelta(minutes=15)
 
 
+def _minutes(value: datetime) -> int:
+    offset = value.utcoffset()
+    if offset is None:
+        raise CommandError(422, "offset_mismatch", "The offset does not match the property zone.", False)
+    return int(offset.total_seconds() // 60)
+
+
+def _org(value: UUID | str) -> UUID:
+    return value if isinstance(value, UUID) else UUID(str(value))
+
+
 def resolve_wall(wall: str, zone: str, offset_minutes: int) -> datetime:
     naive = datetime.fromisoformat(wall)
     if naive.tzinfo is not None:
@@ -30,8 +41,8 @@ def resolve_wall(wall: str, zone: str, offset_minutes: int) -> datetime:
     tz = ZoneInfo(zone)
     early = naive.replace(tzinfo=tz, fold=0)
     late = naive.replace(tzinfo=tz, fold=1)
-    early_offset = int(early.utcoffset().total_seconds() // 60)
-    late_offset = int(late.utcoffset().total_seconds() // 60)
+    early_offset = _minutes(early)
+    late_offset = _minutes(late)
     early_exists = early.astimezone(timezone.utc).astimezone(tz).replace(tzinfo=None) == naive
     late_exists = late.astimezone(timezone.utc).astimezone(tz).replace(tzinfo=None) == naive
     if not early_exists and not late_exists:
@@ -42,7 +53,7 @@ def resolve_wall(wall: str, zone: str, offset_minutes: int) -> datetime:
             raise CommandError(422, "ambiguous_time", "Choose an offset for the repeated local time.", False)
         return chosen
     chosen = early if early_exists else late
-    actual = int(chosen.utcoffset().total_seconds() // 60)
+    actual = _minutes(chosen)
     if actual != offset_minutes:
         raise CommandError(422, "offset_mismatch", "The offset does not match the property zone.", False)
     return chosen
@@ -74,7 +85,7 @@ def candidate_slots(day: str, busy: list[dict], now: datetime | None = None) -> 
                 slots.append({
                     "wall_start": cursor.replace(tzinfo=None).isoformat(timespec="minutes"),
                     "zone_name": "America/New_York",
-                    "offset_minutes": int(cursor.utcoffset().total_seconds() // 60),
+                    "offset_minutes": _minutes(cursor),
                     "duration_minutes": 30,
                 })
         cursor += STEP
@@ -156,7 +167,7 @@ def book(settings: Settings, payload: dict, idempotency_key: str) -> dict:
 
 def create_resource(settings: Settings, actor, organization: str, kind: str, label: str, capacity: int, parent_id: str | None) -> dict:
     resource = str(uuid4())
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         connection.execute(
             text(
@@ -169,7 +180,7 @@ def create_resource(settings: Settings, actor, organization: str, kind: str, lab
 
 
 def cancel(settings: Settings, actor, organization: str, reference: str) -> dict:
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         row = connection.execute(
             text("SELECT id FROM showings WHERE public_reference = :reference"),
@@ -187,7 +198,7 @@ def cancel(settings: Settings, actor, organization: str, reference: str) -> dict
 
 
 def complete(settings: Settings, actor, organization: str, reference: str) -> dict:
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         row = connection.execute(text("SELECT id, inquiry_id FROM showings WHERE public_reference = :reference"), {"reference": reference}).first()
         if row is None:
@@ -209,7 +220,7 @@ def start_connection(settings: Settings, actor, organization: str) -> dict:
     state = secrets.token_urlsafe(24)
     verifier = secrets.token_urlsafe(48)
     challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         connection.execute(
             text(
@@ -226,7 +237,7 @@ def finish_connection(settings: Settings, actor, organization: str, connection_i
     if code != "fake-auth-code" or digest != challenge:
         raise CommandError(400, "rejected", "The calendar connection could not be accepted.", False)
     envelope = _seal(settings, "fake-refresh-token")
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         row = connection.execute(
             text("SELECT token_envelope, state FROM calendar_connections WHERE id = :id"),
@@ -242,7 +253,7 @@ def finish_connection(settings: Settings, actor, organization: str, connection_i
 
 
 def refresh_connection(settings: Settings, actor, organization: str, connection_id: str, expected_version: int) -> dict:
-    with runtime_transaction(settings, actor, organization, uuid4()) as connection:
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require(connection, "inquiry.manage")
         row = connection.execute(
             text("SELECT token_version, token_envelope, state FROM calendar_connections WHERE id = :id FOR UPDATE"),
