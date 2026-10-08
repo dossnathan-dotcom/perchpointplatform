@@ -607,3 +607,54 @@ export function StaffContent() {
     </PageFrame>
   );
 }
+
+export function ShowingDesk() {
+  const [status, setStatus] = useState("Enter a showing receipt to see property-local times.");
+  const [slots, setSlots] = useState([]);
+  async function loadSlots(event) {
+    event.preventDefault();
+    const receipt = new FormData(event.currentTarget).get("receipt");
+    setStatus("Checking available times.");
+    try {
+      const capability = await phase2("/api/v2/public/showings/capabilities", { method: "POST", body: JSON.stringify({ receipt }) });
+      if (!capability.response.ok) {
+        setStatus("The showing request could not be accepted.");
+        setSlots([]);
+        return;
+      }
+      const listed = await phase2("/api/v2/public/showings/slots", { method: "POST", body: JSON.stringify({ capability: capability.body.capability, day: "2026-10-20" }) });
+      if (!listed.response.ok) {
+        setStatus("Times are temporarily unavailable.");
+        setSlots([]);
+        return;
+      }
+      setSlots(listed.body.slots || []);
+      setStatus(listed.body.slots?.length ? "Property time is America/New_York." : "No open time is available for that day.");
+    } catch {
+      setStatus("Showing times are temporarily unavailable.");
+      setSlots([]);
+    }
+  }
+  return (
+    <PageFrame title="Schedule a showing" testId="showing-page">
+      <p>Choose a property-local time. A showing lasts 30 minutes. Self-guided entry is not available.</p>
+      <form className="grid gap-3" onSubmit={loadSlots} aria-labelledby="showing-heading">
+        <h2 id="showing-heading" className="font-heading text-2xl">Available times</h2>
+        <label htmlFor="showing-receipt">Showing receipt
+          <input id="showing-receipt" name="receipt" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Show times</button>
+      </form>
+      <p role="status">{status}</p>
+      {slots.length > 0 ? (
+        <ul>
+          {slots.map((slot) => (
+            <li key={slot.wall_start}>
+              <button type="button" className="underline">{slot.wall_start} America/New_York, {slot.duration_minutes} minutes</button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </PageFrame>
+  );
+}
