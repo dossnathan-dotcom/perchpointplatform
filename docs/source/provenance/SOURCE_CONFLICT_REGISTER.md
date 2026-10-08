@@ -225,3 +225,14 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk Atmaca for any future channel reversal; Nathan for this local
   implementation.
 - Continue safely: yes. Status: resolved for Phase 10 local implementation by Q1, Q6, and Q11.
+
+## CONFLICT-020 — Phase 11 canonical scheduling versus early marketplace calendars
+- Claims: early roadmap examples mention marketplace scheduling, personal calendars as the
+  system of record, or self-guided lockbox entry. Approved Phase 11 decisions keep PerchPoint
+  as the canonical appointment record and keep provider calendars as mirrors and busy inputs.
+- Consequence: showing identity, overlap control, and access safety.
+- Safe assumption: Phase 11 books only from a server-issued capability, rejects self-guided
+  entry, and uses a fake calendar adapter. It does not activate a live calendar provider.
+- Decision owner: Faruk Atmaca for any future provider or access reversal; Nathan for this
+  local implementation.
+- Continue safely: yes. Status: resolved for Phase 11 local implementation by Q1, Q3, and Q13.

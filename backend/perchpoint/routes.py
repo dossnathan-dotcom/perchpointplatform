@@ -3659,9 +3659,11 @@ def create_app():
     app.include_router(phase8_router)
     from .phase9_routes import router as phase9_router
     from .phase10_routes import router as phase10_router
+    from .phase11_routes import router as phase11_router
 
     app.include_router(phase9_router)
     app.include_router(phase10_router)
+    app.include_router(phase11_router)
     return app
 
 

@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase11_clean_room.py --execute",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T17:12:52.095633+00:00",
+  "gate": "P11-R15",
+  "output_sha256": "312cc5f37a99519738465a2d1931969866de30b66330c8aee862336e28320aa6",
+  "result": "passed",
+  "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
+}

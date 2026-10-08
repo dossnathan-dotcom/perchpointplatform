@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase11/test_showing_calendar.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T17:06:35.309461+00:00",
+  "gate": "P11-R4",
+  "output_sha256": "2fb81106c160db2424d54175e742ff53b9257f1e0bd6868cfe8f3b3f6f2dc7ca",
+  "result": "passed",
+  "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
+}

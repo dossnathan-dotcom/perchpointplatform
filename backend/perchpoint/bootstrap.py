@@ -101,6 +101,12 @@ def bootstrap(settings: Settings | None = None) -> None:
             "record_discovery_event(text, text, text, text, text, text, text, boolean, text)",
             "capture_leasing_inquiry(jsonb, text, text, boolean)",
             "leasing_deadline(timestamptz, uuid)",
+            "commit_showing(jsonb, text, text)",
+            "issue_showing_capability(text, text)",
+            "showing_busy(text, timestamptz, timestamptz)",
+            "apply_calendar_callback(text, text, text)",
+            "showing_resource_no_cycle()",
+            "showing_seats_within_capacity()",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(

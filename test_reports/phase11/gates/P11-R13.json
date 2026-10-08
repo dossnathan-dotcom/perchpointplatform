@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase11_benchmark.py",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T17:10:15.032537+00:00",
+  "gate": "P11-R13",
+  "output_sha256": "91beb20aa4d7fda98c59eca7e44475f0e60185d8ab0b44e2d47987ebd6edf20b",
+  "result": "passed",
+  "tested_commit": "bfa4876cad6e43ff31db2cd0148eb65a037493b1"
+}

@@ -78,10 +78,11 @@ def test_discovery_projects_search_withdraws_and_denies(client):
     )
     assert media.status_code == 201, media.text
     slug = f"phase9-{uuid4().hex[:8]}"
+    marker = f"marker{uuid4().hex[:12]}"
     published = client.post(
         "/api/v2/portfolio/snapshots",
         headers=headers,
-        json={"listing_id": listing_id, "expected_version": 1, "public_slug": slug, "description": "EXAMPLE ONLY. Synthetic listing facts.", "idempotency_key": _key("publish")},
+        json={"listing_id": listing_id, "expected_version": 1, "public_slug": slug, "description": f"EXAMPLE ONLY. Synthetic listing facts. {marker}", "idempotency_key": _key("publish")},
     )
     assert published.status_code == 201, published.text
     projected = client.post(
@@ -120,7 +121,7 @@ def test_discovery_projects_search_withdraws_and_denies(client):
         json={"snapshot_id": published.json()["id"], "pet_policy": "assistance_animal", "idempotency_key": _key("pets")},
     )
     assert rejected_pets.status_code == 422
-    found = client.get("/api/v2/public/discovery/search", params={"city": "Cincinnati", "use_code": "residential", "min_bedrooms": 2, "query": "Synthetic"})
+    found = client.get("/api/v2/public/discovery/search", params={"city": "Cincinnati", "use_code": "residential", "min_bedrooms": 2, "query": marker})
     assert found.status_code == 200, found.text
     assert any(row["public_slug"] == slug for row in found.json()["records"])
     assert found.json()["facets"]["residential"] >= 1
