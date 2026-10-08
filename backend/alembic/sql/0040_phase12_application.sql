@@ -248,6 +248,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON application_policies, applications, appl
   TO perchpoint_runtime, perchpoint_definer;
 
 CREATE INDEX applications_queue ON applications (organization_id, state, public_reference);
+CREATE INDEX application_participants_application ON application_participants (organization_id, application_id, role_name);
+CREATE INDEX application_documents_application ON application_documents (organization_id, application_id, scan_state);
 
 CREATE FUNCTION perchpoint.start_application(intake jsonb, idempotency_key text, fingerprint text, token_hash text)
 RETURNS jsonb
