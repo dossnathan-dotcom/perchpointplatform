@@ -1,0 +1,19 @@
+[1;32mAll checks passed![0m
+
+No known vulnerabilities found
+
+yarn audit v1.22.22
+0 vulnerabilities found - Packages audited: 215
+Done in 0.90s.
+warning Resolution field "underscore@1.13.8" is incompatible with requested version "underscore@1.13.6"
+warning Resolution field "uuid@11.1.1" is incompatible with requested version "uuid@^8.3.2"
+warning Resolution field "@eslint/plugin-kit@0.3.4" is incompatible with requested version "@eslint/plugin-kit@^0.2.7"
+(node:12896) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+warning Resolution field "resolve-url-loader@5.0.0" is incompatible with requested version "resolve-url-loader@^4.0.0"
+warning Resolution field "webpack-dev-server@5.2.6" is incompatible with requested version "webpack-dev-server@^4.6.0"
+warning Resolution field "serialize-javascript@7.0.5" is incompatible with requested version "serialize-javascript@^6.0.0"
+warning Resolution field "@babel/plugin-transform-modules-systemjs@7.29.4" is incompatible with requested version "@babel/plugin-transform-modules-systemjs@^7.29.7"
+warning Resolution field "svgo@2.8.4" is incompatible with requested version "svgo@^1.2.2"
+warning Resolution field "serialize-javascript@7.0.5" is incompatible with requested version "serialize-javascript@^4.0.0"
+warning Resolution field "@tootallnate/once@2.0.1" is incompatible with requested version "@tootallnate/once@1"

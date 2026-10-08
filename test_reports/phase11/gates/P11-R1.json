@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase11_answers.py",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T16:45:02.934009+00:00",
+  "gate": "P11-R1",
+  "output_sha256": "d50081a91309c6a6c552087cd87c21f8cb9d7e261f9f154a32fea2ab3a78cf14",
+  "result": "passed",
+  "tested_commit": "ef2c0da23fcb2e96e549a9b12e3b609bf3eb86cc"
+}
