@@ -457,7 +457,7 @@ def main() -> None:
         if leaked != 1:
             raise SystemExit(f"cross-organization prospect leakage: {leaked}")
         if queue["p95_ms"] >= 300 or day["p95_ms"] >= 300 or callback["p95_ms"] >= 200:
-            raise SystemExit(f"queue budget missed: {queue}")
+            raise SystemExit(f"showing budget missed: queue={queue} day={day} callback={callback}")
         if discovery["p95_ms"] >= 300 or facets["p95_ms"] >= 400 or detail_discovery["p95_ms"] >= 200 or admin_read["p95_ms"] >= 300:
             raise SystemExit(f"discovery budget missed: search={discovery} facets={facets} detail={detail_discovery} admin={admin_read}")
         if discovery["errors"] or discovery["timeouts"]:

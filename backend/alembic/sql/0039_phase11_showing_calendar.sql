@@ -75,6 +75,8 @@ CREATE TABLE showings (
   CHECK (ends_at > starts_at)
 );
 
+CREATE INDEX showings_day ON showings (organization_id, starts_at);
+
 CREATE TABLE showing_occupancy (
   organization_id uuid NOT NULL,
   id uuid NOT NULL,
