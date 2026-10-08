@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T22:59:59.179761+00:00",
+  "gate": "P12-R2",
+  "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+  "result": "passed",
+  "tested_commit": "a2dff07f81bd2b03f7b645a4830187511b1bd294"
+}

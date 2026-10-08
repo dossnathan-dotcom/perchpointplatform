@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T23:02:46.993759+00:00",
+  "gate": "P12-R11",
+  "output_sha256": "29b40da79507c865628f36348aaa2595dea2caff1d080ad289db6cdc21dbcc7a",
+  "result": "passed",
+  "tested_commit": "a2dff07f81bd2b03f7b645a4830187511b1bd294"
+}
