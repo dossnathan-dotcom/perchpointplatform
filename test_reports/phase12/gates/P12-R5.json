@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase12/test_applications.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-08T23:00:13.363866+00:00",
+  "gate": "P12-R5",
+  "output_sha256": "91aa883994935a92d6869ba726a939cb4f98906a848d377d6d81c03533cd6f11",
+  "result": "passed",
+  "tested_commit": "a2dff07f81bd2b03f7b645a4830187511b1bd294"
+}

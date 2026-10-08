@@ -658,3 +658,38 @@ export function ShowingDesk() {
     </PageFrame>
   );
 }
+
+export function ApplicationDesk() {
+  const [status, setStatus] = useState("Enter an inquiry receipt to start or resume an application.");
+  async function begin(event) {
+    event.preventDefault();
+    const receipt = new FormData(event.currentTarget).get("receipt");
+    setStatus("Checking the listing and disclosure.");
+    try {
+      const started = await phase2("/api/v2/public/applications", {
+        method: "POST",
+        body: JSON.stringify({ receipt, disclosure: true, application_type: "residential", idempotency_key: `browser-${receipt}` }),
+      });
+      if (!started.response.ok) {
+        setStatus("The application request could not be accepted.");
+        return;
+      }
+      setStatus(started.body.replayed ? "The existing application was resumed." : "A draft application was saved.");
+    } catch {
+      setStatus("Applications are temporarily unavailable.");
+    }
+  }
+  return (
+    <PageFrame title="Rental application" testId="application-page">
+      <p>This application collects household and document facts. It does not screen, approve, deny, collect a fee, or create a lease.</p>
+      <form className="grid gap-3" onSubmit={begin} aria-labelledby="application-heading">
+        <h2 id="application-heading" className="font-heading text-2xl">Start or resume</h2>
+        <label htmlFor="application-receipt">Inquiry receipt
+          <input id="application-receipt" name="receipt" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Continue application</button>
+      </form>
+      <p role="status">{status}</p>
+    </PageFrame>
+  );
+}
