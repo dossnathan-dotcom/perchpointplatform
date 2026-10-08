@@ -11,7 +11,7 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import text
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .commands import CommandError
 from .db import runtime_transaction
@@ -143,6 +143,10 @@ def book(settings: Settings, payload: dict, idempotency_key: str) -> dict:
                 {"intake": json.dumps(body), "key": idempotency_key, "fingerprint": fingerprint},
             ).scalar_one()
     except IntegrityError as exc:
+        raise CommandError(409, "slot_unavailable", "That time is no longer available.", False) from exc
+    except OperationalError as exc:
+        if getattr(exc.orig, "sqlstate", "") != "40P01":
+            raise
         raise CommandError(409, "slot_unavailable", "That time is no longer available.", False) from exc
     if not row["accepted"]:
         status = 409 if row["code"] == "conflict" else 400

@@ -353,11 +353,17 @@ BEGIN
     intake->>'wall_start', intake->>'zone_name', (intake->>'offset_minutes')::integer, starts, ends, host, space,
     COALESCE((intake->>'guest_count')::integer, 1), 1
   );
+  SELECT parent_id INTO parent FROM showing_resources WHERE organization_id = org AND id = space;
+  PERFORM pg_advisory_xact_lock(hashtext(org::text || locked.id::text))
+  FROM (
+    SELECT id FROM showing_resources
+    WHERE organization_id = org AND id IN (host, space, parent)
+    ORDER BY id
+  ) AS locked;
   INSERT INTO showing_occupancy (organization_id, id, resource_id, showing_id, span)
   VALUES
     (org, gen_random_uuid(), host, showing, tstzrange(starts - interval '15 minutes', ends + interval '15 minutes', '[)')),
     (org, gen_random_uuid(), space, showing, tstzrange(starts - interval '15 minutes', ends + interval '15 minutes', '[)'));
-  SELECT parent_id INTO parent FROM showing_resources WHERE organization_id = org AND id = space;
   IF parent IS NOT NULL THEN
     INSERT INTO showing_occupancy (organization_id, id, resource_id, showing_id, span)
     VALUES (org, gen_random_uuid(), parent, showing, tstzrange(starts - interval '15 minutes', ends + interval '15 minutes', '[)'));
