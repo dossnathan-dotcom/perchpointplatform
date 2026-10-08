@@ -80,23 +80,24 @@ def test_showings_prevent_overlap_and_keep_provider_state_separate(client):
     slots = client.post("/api/v2/public/showings/slots", json={"capability": token, "day": "2026-10-20"})
     assert slots.status_code == 200 and slots.json()["slots"][0]["duration_minutes"] == 30
     assert "host" not in slots.text
-    key = _key("same")
-    booked = _book(client, token, key=key)
-    assert booked.status_code == 200, booked.text
-    assert booked.json()["duration_minutes"] == 30 and "buffer" not in booked.text
-    replay = _book(client, token, key=key)
-    assert replay.json()["replayed"] is True and replay.json()["reference"] == booked.json()["reference"]
-    changed = _book(client, token, key=key, guest_count=2)
-    assert changed.status_code == 409 and changed.json()["detail"]["code"] == "conflict"
-    second = _book(client, token)
-    assert second.status_code == 409 and second.json()["detail"]["code"] == "slot_unavailable"
-    guided = _book(client, token, wall="2026-10-20T11:00:00", mode="self_guided")
-    assert guided.status_code == 400
-    parent = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "property", "label": "Shared building", "capacity": 1})
+    parent = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "property", "label": f"Shared building {uuid4().hex[:8]}", "capacity": 1})
     left = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "space", "label": "Left", "capacity": 4, "parent_id": parent.json()["id"]})
     right = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "space", "label": "Right", "capacity": 4, "parent_id": parent.json()["id"]})
     host_a = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "host", "label": "Host A"})
     host_b = client.post("/api/v2/leasing/showing-resources", headers=headers, json={"kind": "host", "label": "Host B"})
+    resources = {"host_resource_id": host_a.json()["id"], "space_resource_id": left.json()["id"]}
+    key = _key("same")
+    booked = _book(client, token, key=key, **resources)
+    assert booked.status_code == 200, booked.text
+    assert booked.json()["duration_minutes"] == 30 and "buffer" not in booked.text
+    replay = _book(client, token, key=key, **resources)
+    assert replay.json()["replayed"] is True and replay.json()["reference"] == booked.json()["reference"]
+    changed = _book(client, token, key=key, guest_count=2, **resources)
+    assert changed.status_code == 409 and changed.json()["detail"]["code"] == "conflict"
+    second = _book(client, token, **resources)
+    assert second.status_code == 409 and second.json()["detail"]["code"] == "slot_unavailable"
+    guided = _book(client, token, wall="2026-10-20T11:00:00", mode="self_guided", **resources)
+    assert guided.status_code == 400
     sibling = _receipt(client, slug)
     sibling_token = client.post("/api/v2/public/showings/capabilities", json={"receipt": sibling}).json()["capability"]
     first_space = _book(client, sibling_token, wall="2026-10-21T10:00:00", host_resource_id=host_a.json()["id"], space_resource_id=left.json()["id"])
