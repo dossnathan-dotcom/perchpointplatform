@@ -248,3 +248,15 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk Atmaca for any future screening or payment reversal; Nathan for this
   local implementation.
 - Continue safely: yes. Status: resolved for Phase 12 local implementation by Q1, Q7, and Q158.
+
+## CONFLICT-022 — Phase 13 decisions versus provider scores and live screening
+- Claims: early examples treat a screening provider score as the housing decision or collect a
+  report during the application. Approved Phase 13 decisions keep PerchPoint as the decision
+  record, use deterministic provider fakes, and leave live pulls, leases, and payments outside
+  this phase.
+- Consequence: who may decide, which products may be ordered, and what Phase 14 may receive.
+- Safe assumption: Phase 13 records a human decision from normalized fake evidence. It does not
+  call a live screening provider, store a full government identifier, or create a lease.
+- Decision owner: Faruk Atmaca for any future provider or criminal-history activation; Nathan
+  for this local implementation.
+- Continue safely: yes. Status: resolved for Phase 13 local implementation by Q4, Q5, and Q110.

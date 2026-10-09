@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase13/test_screening.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-09T15:33:38.677452+00:00",
+  "gate": "P13-R8",
+  "output_sha256": "466ff7ece5459a969f2761beb09482221329d2c56e3faaf7ac32c9f472db6c2b",
+  "result": "passed",
+  "tested_commit": "85e77382fac6d3135f402a1548b1f0c77117d4d8"
+}

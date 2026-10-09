@@ -95,7 +95,10 @@ def test_application_submits_without_screening_or_payment(client):
     _, isolation_headers = _login(client, "isolation.synthetic@example.com")
     hidden = client.post("/api/v2/leasing/applications/handoff", headers=isolation_headers, json={"reference": submitted.json()["reference"]})
     assert hidden.status_code == 403
+    not_screened = client.post("/api/v2/leasing/screening/decisions", headers=headers, json={"reference": submitted.json()["reference"], "outcome": "denied", "human_confirmed": True})
+    assert not_screened.status_code == 404
     with runtime_transaction(Settings.load(), None, None, uuid4()) as connection:
         assert connection.execute(text("SELECT count(*) FROM applications")).scalar_one() == 0
-        assert connection.execute(text("SELECT to_regclass('public.screening_decisions')")).scalar_one() is None
+        assert connection.execute(text("SELECT count(*) FROM screening_decisions")).scalar_one() == 0
+        assert connection.execute(text("SELECT to_regclass('public.leases')")).scalar_one() is None
     assert session["organization_id"]
