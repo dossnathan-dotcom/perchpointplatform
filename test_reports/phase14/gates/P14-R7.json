@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-09T21:15:21.794952+00:00",
+  "gate": "P14-R7",
+  "output_sha256": "c8ba9895242d1db843cd739f98bdf4d5f8f938298ea0ef1902cd5b25bec15bf8",
+  "result": "passed",
+  "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+}
