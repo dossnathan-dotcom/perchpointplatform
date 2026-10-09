@@ -693,3 +693,20 @@ export function ApplicationDesk() {
     </PageFrame>
   );
 }
+
+export function ScreeningDesk() {
+  const [status, setStatus] = useState("A screening decision is recorded by an authorized person. A provider does not decide.");
+  return (
+    <PageFrame title="Screening review" testId="screening-page">
+      <p>This desk reviews a ready application. It does not order a live report, collect a fee, or create a lease.</p>
+      <form aria-labelledby="screening-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The screening request could not be accepted."); }}>
+        <h2 id="screening-heading" className="font-heading text-2xl">Case reference</h2>
+        <label htmlFor="screening-reference">Application reference
+          <input id="screening-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Review case</button>
+      </form>
+      <p role="status">{status}</p>
+    </PageFrame>
+  );
+}

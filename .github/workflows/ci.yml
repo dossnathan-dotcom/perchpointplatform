@@ -31,6 +31,7 @@ jobs:
       - run: python scripts/validate_phase10_answers.py
       - run: python scripts/validate_phase11_answers.py
       - run: python scripts/validate_phase12_answers.py
+      - run: python scripts/validate_phase13_answers.py
       - run: python -m unittest discover -s scripts -p "test_*.py"
       - run: python scripts/phase6_acceptance.py --check --mode pr
       - run: python scripts/phase7_acceptance.py --check --mode pr
@@ -39,6 +40,7 @@ jobs:
       - run: python scripts/phase10_acceptance.py --check --mode pr
       - run: python scripts/phase11_acceptance.py --check --mode pr
       - run: python scripts/phase12_acceptance.py --check --mode pr
+      - run: python scripts/phase13_acceptance.py --check --mode pr
       - run: python -m compileall -q scripts
       - run: python scripts/phase5_staging_preflight.py
   contracts:
