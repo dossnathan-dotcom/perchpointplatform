@@ -710,3 +710,20 @@ export function ScreeningDesk() {
     </PageFrame>
   );
 }
+
+export function LeaseDesk() {
+  const [status, setStatus] = useState("A person approves the lease package. A signature provider does not activate a resident.");
+  return (
+    <PageFrame title="Lease preparation" testId="lease-page">
+      <p>This desk prepares a lease from an approved screening handoff. It does not collect a deposit or open a resident portal.</p>
+      <form aria-labelledby="lease-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The lease request could not be accepted."); }}>
+        <h2 id="lease-heading" className="font-heading text-2xl">Handoff reference</h2>
+        <label htmlFor="lease-reference">Screening reference
+          <input id="lease-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Prepare lease</button>
+      </form>
+      <p role="status">{status}</p>
+    </PageFrame>
+  );
+}

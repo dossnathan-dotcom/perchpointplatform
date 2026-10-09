@@ -117,6 +117,8 @@ def bootstrap(settings: Settings | None = None) -> None:
             "grant_screening_authorization(text)",
             "place_screening_order(text, text, text, text)",
             "apply_screening_result(text, text, text)",
+            "place_lease_signature(text, text, text)",
+            "apply_lease_signature(text, text)",
         ):
             connection.execute(text(f"ALTER FUNCTION perchpoint.{name} OWNER TO perchpoint_definer"))
         connection.execute(
