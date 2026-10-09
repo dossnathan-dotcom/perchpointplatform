@@ -30,7 +30,7 @@ module.exports = defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /phase4-production\.spec\.js/ },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js|phase8-portfolio\.spec\.js|phase9-discovery\.spec\.js|phase10-inquiry\.spec\.js|phase11-showing\.spec\.js|phase12-application\.spec\.js|phase13-screening\.spec\.js/ },
-    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js|phase8-portfolio\.spec\.js|phase9-discovery\.spec\.js|phase10-inquiry\.spec\.js|phase11-showing\.spec\.js|phase12-application\.spec\.js|phase13-screening\.spec\.js/ },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js|phase8-portfolio\.spec\.js|phase9-discovery\.spec\.js|phase10-inquiry\.spec\.js|phase11-showing\.spec\.js|phase12-application\.spec\.js|phase13-screening\.spec\.js|phase14-lease\.spec\.js/ },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /engines\.spec\.js|phase7-public\.spec\.js|phase8-portfolio\.spec\.js|phase9-discovery\.spec\.js|phase10-inquiry\.spec\.js|phase11-showing\.spec\.js|phase12-application\.spec\.js|phase13-screening\.spec\.js|phase14-lease\.spec\.js/ },
   ],
 });

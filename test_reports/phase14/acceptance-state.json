@@ -1,0 +1,159 @@
+{
+  "behavior_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db",
+  "gates": {
+    "P14-R0": {
+      "command": "git merge-base --is-ancestor c8699dcb05fc35fc2f267c9f5fa53ff62a5a9e81 HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:38.255817+00:00",
+      "gate": "P14-R0",
+      "output_sha256": "56c16b1f6d789ae8e530f5371bbe337df242c3b9def64384de7afa89b255e551",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase14_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:38.361501+00:00",
+      "gate": "P14-R1",
+      "output_sha256": "bef042ef6c512d79ccf15db13b009f97fec864917b19453e0b7a099c15153a95",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase14_lease.py perchpoint/phase14_routes.py tests/phase14 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:16:14.927116+00:00",
+      "gate": "P14-R10",
+      "output_sha256": "18ae2db60f3bc2e20f0d987eccb96fba4aeec4f4c4afcdec74d8bea35551af8a",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:18:36.361684+00:00",
+      "gate": "P14-R11",
+      "output_sha256": "6825866bfde9f0e1b6ac9ec1a7218f7bec8b2871fc1fc2eb424c6b6707b77534",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R12": {
+      "command": "corepack yarn playwright test e2e/phase14-lease.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:18:59.863110+00:00",
+      "gate": "P14-R12",
+      "output_sha256": "0c2d359bba91f6a3f4f581f5f8942b52c63910dc8ee7d6c42a03c8345aae037d",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R13": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase14_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:19:40.662290+00:00",
+      "gate": "P14-R13",
+      "output_sha256": "9574fb5b1011f01e9d327a7632611fe35577e2623080d156424bbff45db83df2",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:20:56.912088+00:00",
+      "gate": "P14-R14",
+      "output_sha256": "9e445ae49e8f097840d0ea02aa6e31443650d7b1384c16819bd38e159ea363b0",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase14_clean_room.py --execute",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:22:33.638522+00:00",
+      "gate": "P14-R15",
+      "output_sha256": "4beb8f24c24621274afc4cc5ad3d884624423f7c46da6713840e6ab4da5504da",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase14_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:22:33.735049+00:00",
+      "gate": "P14-R16",
+      "output_sha256": "6bd806a7808eb14bc7cb8b891bb63893ad3cebabe5f8f091729baa55c2da2387",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:40.690825+00:00",
+      "gate": "P14-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:45.714075+00:00",
+      "gate": "P14-R3",
+      "output_sha256": "fa9003c7bc5f393293b880fcaef76fb5456a45554707cfca8feab1106eb01f00",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:51.230942+00:00",
+      "gate": "P14-R4",
+      "output_sha256": "991cfbb4f8ef6cf97b504aab8c306b6d853005f11dbe9c4ac4c45bc2033d81d2",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:13:56.659639+00:00",
+      "gate": "P14-R5",
+      "output_sha256": "e779aea86b4e886dc363288d589e335f410fe339f34f9f83392d9f20c69befdf",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R6": {
+      "command": "corepack yarn playwright test e2e/phase14-lease.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:15:16.256435+00:00",
+      "gate": "P14-R6",
+      "output_sha256": "077d3b2bb8d79f672f655ef078c50dadabc6b16e421c3a0cb95073a12074420e",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:15:21.794952+00:00",
+      "gate": "P14-R7",
+      "output_sha256": "c8ba9895242d1db843cd739f98bdf4d5f8f938298ea0ef1902cd5b25bec15bf8",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:15:27.226116+00:00",
+      "gate": "P14-R8",
+      "output_sha256": "5308721f667b6c5991bd2274167f636ec545b40766b570eddfea1d71a7f1e96f",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    },
+    "P14-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase14/test_lease.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-09T21:15:32.610460+00:00",
+      "gate": "P14-R9",
+      "output_sha256": "ff2a4a764ed0f208cdc8977dbc7fb786a73ff00eed55ace3a22cc6f1f3b97aa8",
+      "result": "passed",
+      "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+    }
+  },
+  "schema": 1
+}

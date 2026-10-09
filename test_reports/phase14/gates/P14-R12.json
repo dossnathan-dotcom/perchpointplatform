@@ -1,0 +1,9 @@
+{
+  "command": "corepack yarn playwright test e2e/phase14-lease.spec.js --reporter=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-09T21:18:59.863110+00:00",
+  "gate": "P14-R12",
+  "output_sha256": "0c2d359bba91f6a3f4f581f5f8942b52c63910dc8ee7d6c42a03c8345aae037d",
+  "result": "passed",
+  "tested_commit": "64a7c215688963fffd0e7653ca46b5718e5f85db"
+}

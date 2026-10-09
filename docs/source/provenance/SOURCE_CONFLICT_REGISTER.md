@@ -260,3 +260,16 @@ production-activation boundaries remain controlling.
 - Decision owner: Faruk Atmaca for any future provider or criminal-history activation; Nathan
   for this local implementation.
 - Continue safely: yes. Status: resolved for Phase 13 local implementation by Q4, Q5, and Q110.
+
+## CONFLICT-023 — Phase 14 lease execution versus live signatures, deposits, and resident portals
+- Claims: early examples send a lease to a live signature vendor, collect a deposit, or mark an
+  applicant as a resident when a packet is sent. Approved Phase 14 decisions keep PerchPoint as
+  the execution record, use a deterministic signature fake, record a deposit obligation without
+  moving money, and activate a resident only after the package is executed.
+- Consequence: what may be signed locally, what a deposit status means, and what Phase 15 may receive.
+- Safe assumption: Phase 14 consumes an approved Phase 13 handoff and does not rewrite it. It does
+  not call a live signature or payment provider, post a ledger, or open a resident portal.
+- Decision owner: Faruk Atmaca for template approval and material deviations; Nathan for this
+  local implementation.
+- Continue safely: yes. Status: resolved for Phase 14 local implementation by Q1, Q5, and Q13.
+

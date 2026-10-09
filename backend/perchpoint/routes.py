@@ -3662,12 +3662,14 @@ def create_app():
     from .phase11_routes import router as phase11_router
     from .phase12_routes import router as phase12_router
     from .phase13_routes import router as phase13_router
+    from .phase14_routes import router as phase14_router
 
     app.include_router(phase9_router)
     app.include_router(phase10_router)
     app.include_router(phase11_router)
     app.include_router(phase12_router)
     app.include_router(phase13_router)
+    app.include_router(phase14_router)
     return app
 
 
