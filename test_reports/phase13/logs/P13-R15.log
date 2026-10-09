@@ -1,0 +1,61 @@
+healthy perchpoint-phase13-cleanroom-postgres-1
+{"ancestry": "confirmed", "current_head": "0041_phase13_screening", "lineage_length": 41, "reached_head": "0041_phase13_screening", "required_revision": "0031_phase6_authz_remediation"}
+phase6_ancestry=confirmed
+
+ancestors=0040,0039,0038,0037,0036,0035,0031 lineage_length=41
+migration_head=0041_phase13_screening runtime=false,false forced_rls=164/164
+healthy perchpoint-phase13-cleanroom-clamav-1
+healthy perchpoint-phase13-cleanroom-minio-1
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 38%]
+........................................................................ [ 77%]
+.........................................                                [100%]
+============================== warnings summary ===============================
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\testclient.py:1
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\testclient.py:1
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+server.py:125
+server.py:125
+  C:\Users\Admin\PerchPoint\backend\server.py:125: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\applications.py:4681
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\applications.py:4681
+  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\applications.py:4681: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_perchpoint_api.py: 3 warnings
+tests/test_phase0_public_api_matrix.py: 8 warnings
+  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py:1053: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
+    return self.request(
+
+tests/test_perchpoint_api.py::test_create_showing_lead
+tests/test_perchpoint_api.py::test_create_application_interest_lead
+tests/test_perchpoint_api.py::test_create_maintenance_request
+tests/test_perchpoint_api.py::test_create_lead_rejects_unit_property_mismatch
+tests/test_perchpoint_api.py::test_lead_rejects_non_example_domain
+tests/test_perchpoint_api.py::test_auth_endpoint_absent_by_design
+tests/test_perchpoint_api.py::test_maintenance_validation_error
+  C:\Users\Admin\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py:1144: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
+    return self.request(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+185 passed, 25 warnings in 54.28s
+
+clean_room=passed
+containers='' volumes=''

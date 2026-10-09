@@ -1,0 +1,9 @@
+{
+  "command": "corepack yarn playwright test e2e/phase13-screening.spec.js --reporter=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-09T15:36:42.372915+00:00",
+  "gate": "P13-R12",
+  "output_sha256": "1e96f2ad739786663ad05e5501a01c34133b9d51f635243dffb5d25ed47f6637",
+  "result": "passed",
+  "tested_commit": "85e77382fac6d3135f402a1548b1f0c77117d4d8"
+}
