@@ -121,12 +121,13 @@ def test_portal_requires_activation_and_does_not_open_later_domains(client):
     assert requested.json()["canonical_changed"] is False and requested.json()["lease_state"] == "activated"
     hidden = client.post("/api/v2/leasing/portal/requests", headers=headers, json={"reference": portal_reference, "request_kind": "accommodation", "requested_delta": "a quieter entry path"})
     assert hidden.status_code == 200
-    blocked = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": "residential", "clause_code": "overlap", "human_confirmed": True})
+    family = f"residential-{uuid4().hex[:8]}"
+    blocked = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": family, "clause_code": "overlap", "human_confirmed": True})
     assert blocked.status_code == 400
-    published = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": "residential", "clause_code": "sample-term", "human_confirmed": True})
+    published = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": family, "clause_code": "sample-term", "human_confirmed": True})
     assert published.status_code == 200 and published.json()["edited_in_place"] is False
     first_hash = published.json()["content_hash"]
-    successor = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": "residential", "clause_code": "sample-term-next", "human_confirmed": True})
+    successor = client.post("/api/v2/leasing/portal/configuration", headers=headers, json={"family_code": family, "clause_code": "sample-term-next", "human_confirmed": True})
     assert successor.json()["version"] == 2 and successor.json()["content_hash"] != first_hash
     secret = client.post("/api/v2/leasing/portal/manifest", headers=headers, json={"display_name": "Example Homes", "extra": {"secret": "not-stored"}})
     assert secret.status_code == 400
