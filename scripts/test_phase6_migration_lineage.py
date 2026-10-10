@@ -90,6 +90,7 @@ class MigrationLineageTests(unittest.TestCase):
         self.assertEqual(graph["0041_phase13_screening"], "0040_phase12_application")
         self.assertEqual(graph["0042_phase14_lease"], "0041_phase13_screening")
         self.assertEqual(graph["0043_phase15_resident_portal"], "0042_phase14_lease")
+        self.assertEqual(graph["0044_phase16_ledger"], "0043_phase15_resident_portal")
 
     def test_clean_room_executes_upgrade_and_graph_check(self) -> None:
         source = (Path(__file__).parent / "phase6_clean_room.py").read_text(encoding="utf-8")

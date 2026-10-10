@@ -14,3 +14,7 @@ No real values were requested or activated. Every item below remains synthetic u
 | Manifest version 1 | Nathan | Dry run only | `portal_manifest_runs` | Real-information batch |
 
 `python scripts/phase15_demo.py --verify` checks this packet on a local target and reports `real_values_activated=false`.
+
+## Phase 16 extension
+
+Phase 16 adds operational journal, statement, period, and opening-balance placeholders to the same batch. No second onboarding process is introduced. Real entity, opening-balance, chart, fiscal-period, and export values stay inactive until one later governed activation. `python scripts/phase16_demo.py --verify` reports `real_values_activated=false`.

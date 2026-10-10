@@ -1,0 +1,9 @@
+{
+  "command": "corepack yarn playwright test e2e/phase16-ledger.spec.js --reporter=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T15:39:26.252381+00:00",
+  "gate": "P16-R12",
+  "output_sha256": "62a66eb6dd60f28fd1b44508ec31cdc3691dad33c0fb63625019cd7d8dbaab6b",
+  "result": "passed",
+  "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+}

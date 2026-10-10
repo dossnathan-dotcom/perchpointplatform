@@ -23,8 +23,8 @@ def main() -> int:
         findings.append({"severity": "high", "id": "provider", "detail": "a live provider action is present"})
     if "ledger_postings" in sql or "maintenance_work_orders" in sql or "message_threads" in sql:
         findings.append({"severity": "high", "id": "boundary", "detail": "a later-domain table is present"})
-    if list(ROOT.glob("backend/perchpoint/phase16*.py")):
-        findings.append({"severity": "high", "id": "phase16", "detail": "a Phase 16 module is present"})
+    if list(ROOT.glob("backend/perchpoint/phase17*.py")):
+        findings.append({"severity": "high", "id": "phase17", "detail": "a Phase 17 module is present"})
     print(json.dumps({"findings": findings, "critical_or_high": len(findings), "reviewer": "phase15-independent-review"}, indent=2))
     return 1 if findings else 0
 

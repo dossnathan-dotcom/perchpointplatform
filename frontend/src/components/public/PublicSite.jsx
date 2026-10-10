@@ -736,6 +736,34 @@ export function ResidentHub() {
   );
 }
 
+export function LedgerDesk() {
+  const [status, setStatus] = useState("A balance is derived from posted journal lines. A person cannot type an authoritative balance.");
+  return (
+    <PageFrame title="Resident ledger" testId="ledger-page">
+      <p>This desk posts synthetic operational charges and statements. It does not move money or call a payment processor.</p>
+      <p>SYNTHETIC OPERATIONAL STATEMENT — NOT A TAX RETURN — NOT A FORMAL GENERAL LEDGER</p>
+      <form aria-labelledby="ledger-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The ledger request could not be accepted."); }}>
+        <h2 id="ledger-heading" className="font-heading text-2xl">Account reference</h2>
+        <label htmlFor="ledger-reference">Household reference
+          <input id="ledger-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Post charge</button>
+      </form>
+      <table>
+        <caption>Derived positions</caption>
+        <thead>
+          <tr><th scope="col">Position</th><th scope="col">Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Due</th><td>Open receivable after posted lines</td></tr>
+          <tr><th scope="row">Prepayment</th><td>Unapplied synthetic settlement remainder</td></tr>
+        </tbody>
+      </table>
+      <p role="status">{status}</p>
+    </PageFrame>
+  );
+}
+
 export function LeaseDesk() {
   const [status, setStatus] = useState("A person approves the lease package. A signature provider does not activate a resident.");
   return (

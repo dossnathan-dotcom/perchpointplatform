@@ -1,0 +1,159 @@
+{
+  "behavior_commit": "96487c9d5920466b062cd1cce964e69342413fe8",
+  "gates": {
+    "P16-R0": {
+      "command": "git merge-base --is-ancestor 64719d4e747891121791c080723e5f3c6c7c56ec HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:33.237665+00:00",
+      "gate": "P16-R0",
+      "output_sha256": "b25a6a51b1ea620b9876db64c7d6c83f14bcda712b8203d92de105b03795a32b",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase16_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:33.354043+00:00",
+      "gate": "P16-R1",
+      "output_sha256": "372e45797203b7c394ce063b511c425b23cb87177663bb1f608267fb6d280f72",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase16_ledger.py perchpoint/phase16_routes.py tests/phase16 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase16_demo.py --verify",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:37:17.737564+00:00",
+      "gate": "P16-R10",
+      "output_sha256": "3e58489f4a351d33fee0fdbc5df742764900532f8f3347145ca5f3580c9e8cc3",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:39:02.952990+00:00",
+      "gate": "P16-R11",
+      "output_sha256": "f5655e476d99ea5a1d63777f679217bf3367d9f6a7e56d62f52451f46b3c5e65",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R12": {
+      "command": "corepack yarn playwright test e2e/phase16-ledger.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:39:26.252381+00:00",
+      "gate": "P16-R12",
+      "output_sha256": "62a66eb6dd60f28fd1b44508ec31cdc3691dad33c0fb63625019cd7d8dbaab6b",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R13": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase16_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:40:16.136267+00:00",
+      "gate": "P16-R13",
+      "output_sha256": "c5f3f4ca1b75732c5deefc182e93fbac411d5617003c7e90905f54d1d321253f",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:41:40.130296+00:00",
+      "gate": "P16-R14",
+      "output_sha256": "0a9cde872d4caa76b21e36ef4a76b07cb97d0e34df4bf2c21f585eac4ff2cc00",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase16_clean_room.py --execute",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:43:18.027284+00:00",
+      "gate": "P16-R15",
+      "output_sha256": "01fd26e770bd47320bfcbea76415f4717d98e873773c67251bc5c2d30cb7a48e",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase16_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:43:18.122893+00:00",
+      "gate": "P16-R16",
+      "output_sha256": "4aab751e4c7f42e96e2b1c70b5e28437a91097c05adc1b171a2581d8d9c68ec2",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:34.242199+00:00",
+      "gate": "P16-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:39.088945+00:00",
+      "gate": "P16-R3",
+      "output_sha256": "8013974bd2ac99683984b963854948a4eda5fff36d4b6fca9f8e5301c294b12d",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:46.561390+00:00",
+      "gate": "P16-R4",
+      "output_sha256": "fa2e12bb4f483846b0a5662fd857ca3ca005e3129da6e470c78a51f4460b485f",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:35:53.743477+00:00",
+      "gate": "P16-R5",
+      "output_sha256": "65bb44bddb20613021be9e2021ff83a31c47182a67ff2f264b11086e1514e9ae",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R6": {
+      "command": "corepack yarn playwright test e2e/phase16-ledger.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:36:16.910993+00:00",
+      "gate": "P16-R6",
+      "output_sha256": "7906136aaa733941b60af5adc2a606ab67ebb01c7e3a3bb29182a09292fbf87c",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:36:24.182148+00:00",
+      "gate": "P16-R7",
+      "output_sha256": "9c870306b9e31cd05689a98f132b30a60aeaf90a26f4d7ed580233466ccc0c54",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:36:31.311106+00:00",
+      "gate": "P16-R8",
+      "output_sha256": "967c6d6158dafa1eb5e7cc0069e86e68cbfd60b0e96ac54f9f568cb93f51efe4",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    },
+    "P16-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T15:36:38.483575+00:00",
+      "gate": "P16-R9",
+      "output_sha256": "57a5679c627c6d099763f60fa323c65ab1677d7d2466c3d28f2291d8e53c32f2",
+      "result": "passed",
+      "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+    }
+  },
+  "schema": 1
+}
