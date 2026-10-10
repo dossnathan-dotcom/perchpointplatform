@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase16_ledger.py perchpoint/phase16_routes.py tests/phase16 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase16_demo.py --verify",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T15:37:17.737564+00:00",
+  "gate": "P16-R10",
+  "output_sha256": "3e58489f4a351d33fee0fdbc5df742764900532f8f3347145ca5f3580c9e8cc3",
+  "result": "passed",
+  "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+}

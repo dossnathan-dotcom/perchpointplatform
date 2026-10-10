@@ -1,0 +1,9 @@
+{
+  "command": "git merge-base --is-ancestor 64719d4e747891121791c080723e5f3c6c7c56ec HEAD",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T15:35:33.237665+00:00",
+  "gate": "P16-R0",
+  "output_sha256": "b25a6a51b1ea620b9876db64c7d6c83f14bcda712b8203d92de105b03795a32b",
+  "result": "passed",
+  "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+}

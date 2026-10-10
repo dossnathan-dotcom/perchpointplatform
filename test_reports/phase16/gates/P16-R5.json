@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase16/test_ledger.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T15:35:53.743477+00:00",
+  "gate": "P16-R5",
+  "output_sha256": "65bb44bddb20613021be9e2021ff83a31c47182a67ff2f264b11086e1514e9ae",
+  "result": "passed",
+  "tested_commit": "96487c9d5920466b062cd1cce964e69342413fe8"
+}
