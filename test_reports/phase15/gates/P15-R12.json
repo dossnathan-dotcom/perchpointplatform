@@ -1,0 +1,9 @@
+{
+  "command": "corepack yarn playwright test e2e/phase15-portal.spec.js --reporter=line",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T13:19:23.449396+00:00",
+  "gate": "P15-R12",
+  "output_sha256": "e651339ef5f9695a477864cd88600cdcc0e44ee4d42bff1e9a938584354f2867",
+  "result": "passed",
+  "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+}

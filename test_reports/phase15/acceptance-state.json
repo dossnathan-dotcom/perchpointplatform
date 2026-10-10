@@ -1,0 +1,159 @@
+{
+  "behavior_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc",
+  "gates": {
+    "P15-R0": {
+      "command": "git merge-base --is-ancestor eb814c897c567e650fe6fac6837858d78ebab6f3 HEAD",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:27.572303+00:00",
+      "gate": "P15-R0",
+      "output_sha256": "de07255eb3300c38a7a6385e35534f4929b44dbef77dc9334c134f48c2e12755",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R1": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/validate_phase15_answers.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:27.670253+00:00",
+      "gate": "P15-R1",
+      "output_sha256": "3fbf012ae5c15a204be2abbfce9e6d72a8b0e16f62d7dfbde1ad8cf546d93cf0",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R10": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint/phase15_portal.py perchpoint/phase15_routes.py tests/phase15 && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip_audit -r requirements.txt && corepack yarn audit --groups dependencies --level high && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase15_demo.py --verify",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:17:10.943164+00:00",
+      "gate": "P15-R10",
+      "output_sha256": "1c09ce38339735b2163dcf8bcd469ba5e79ed850b9c1380ab0c7559d1503168c",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R11": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m ruff check perchpoint tests && C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m compileall -q perchpoint && corepack yarn eslint src --max-warnings 0 && corepack yarn test --watchAll=false --watchman=false && corepack yarn build",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:19:00.151205+00:00",
+      "gate": "P15-R11",
+      "output_sha256": "0dec8b6ff7307b93d310156d68db824ea2b0e6b3753d89df69eb2e6f5c3aae53",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R12": {
+      "command": "corepack yarn playwright test e2e/phase15-portal.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:19:23.449396+00:00",
+      "gate": "P15-R12",
+      "output_sha256": "e651339ef5f9695a477864cd88600cdcc0e44ee4d42bff1e9a938584354f2867",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R13": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase15_benchmark.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:20:08.190859+00:00",
+      "gate": "P15-R13",
+      "output_sha256": "4010d26626367dcfd7a7e555d3fa9e76e4e33c2898c44dc0a063b70dd8de22ac",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R14": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest -q --tb=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:21:23.224887+00:00",
+      "gate": "P15-R14",
+      "output_sha256": "f71a441b2194a0003f5d25bf6a305f260d993261a23cf101395eeba6347b0f69",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R15": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase15_clean_room.py --execute",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:23:01.311999+00:00",
+      "gate": "P15-R15",
+      "output_sha256": "52996547328a6cd1c8e3b2a4e0c712ecf1b2dacbc57709f7f4238e53c5e237e0",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R16": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe scripts/phase15_review.py",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:23:01.408073+00:00",
+      "gate": "P15-R16",
+      "output_sha256": "06a17ac6591150585e5589adc291752581cfbb7b1cfea010a55afaab7d626b5a",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R2": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m foundation.export --check && node scripts/generate-contract-types.cjs --check",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:28.563259+00:00",
+      "gate": "P15-R2",
+      "output_sha256": "2ca9613f09007843c129698b707ea2f3f2c6ab377182575113148b7f2b14f0f2",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R3": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:33.205702+00:00",
+      "gate": "P15-R3",
+      "output_sha256": "c72b977d5837183c5c3cab005c151598de341ace63f73b9717ba56a703a0a9e8",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R4": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:39.927877+00:00",
+      "gate": "P15-R4",
+      "output_sha256": "32f28a2f3830674adf75a7aa3de961a4a69038586f96ac846af0a6aee61d2d30",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R5": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:15:46.564034+00:00",
+      "gate": "P15-R5",
+      "output_sha256": "b9eeac04d04879f0f50be8d54ca1e23beeb7d611b5bede37c9b1fbfc5e1ced6b",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R6": {
+      "command": "corepack yarn playwright test e2e/phase15-portal.spec.js --reporter=line",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:16:09.605531+00:00",
+      "gate": "P15-R6",
+      "output_sha256": "52331e8bc55b250071fa35f7629c2d7b865125e712ffa056ad8ec7332f311cb7",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R7": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:16:16.314798+00:00",
+      "gate": "P15-R7",
+      "output_sha256": "32f28a2f3830674adf75a7aa3de961a4a69038586f96ac846af0a6aee61d2d30",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R8": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:16:22.868345+00:00",
+      "gate": "P15-R8",
+      "output_sha256": "7cf4f99e901ce62503a83a5ac584ec8cca25a9f4a9aa62c130c55b259dd089cb",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    },
+    "P15-R9": {
+      "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+      "exit_code": 0,
+      "finished_at": "2026-10-10T13:16:29.434251+00:00",
+      "gate": "P15-R9",
+      "output_sha256": "6bc8ab03dc507a822757571c0973e55fc80f9972178b281b3d1deccc54f22428",
+      "result": "passed",
+      "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+    }
+  },
+  "schema": 1
+}
