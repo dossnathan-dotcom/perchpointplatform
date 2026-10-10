@@ -711,6 +711,31 @@ export function ScreeningDesk() {
   );
 }
 
+export function ResidentHub() {
+  const [status, setStatus] = useState("A household portal opens only after activation. Demo previews do not create later records.");
+  return (
+    <PageFrame title="Resident household hub" testId="portal-page">
+      <p>This hub shows household access, the sample lease, and later destinations. It does not collect money, open a maintenance case, or send a message.</p>
+      <p>SAMPLE — NOT A REAL LEASE — NOT FOR EXECUTION</p>
+      <form aria-labelledby="portal-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The portal request could not be accepted."); }}>
+        <h2 id="portal-heading" className="font-heading text-2xl">Household reference</h2>
+        <label htmlFor="portal-reference">Activation reference
+          <input id="portal-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+        </label>
+        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Open household</button>
+      </form>
+      <section aria-label="Demo previews">
+        <h2 className="font-heading text-2xl">Demo Preview</h2>
+        <p>Balance and statements remain a Phase 16 demo preview.</p>
+        <p>Payments remain a Phase 17 demo preview.</p>
+        <p>Maintenance remains a later demo preview.</p>
+        <p>Messages remain a later demo preview.</p>
+      </section>
+      <p role="status">{status}</p>
+    </PageFrame>
+  );
+}
+
 export function LeaseDesk() {
   const [status, setStatus] = useState("A person approves the lease package. A signature provider does not activate a resident.");
   return (

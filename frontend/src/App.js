@@ -32,6 +32,7 @@ const ShowingDesk = lazy(() => import("@/components/public/PublicSite").then((mo
 const ApplicationDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplicationDesk })));
 const ScreeningDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ScreeningDesk })));
 const LeaseDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.LeaseDesk })));
+const ResidentHub = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ResidentHub })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -89,6 +90,7 @@ export function AppContent() {
         <Route path="/applications" element={<Suspense fallback={routePending}><ApplicationDesk /></Suspense>} />
         <Route path="/screening" element={<Suspense fallback={routePending}><ScreeningDesk /></Suspense>} />
         <Route path="/leases" element={<Suspense fallback={routePending}><LeaseDesk /></Suspense>} />
+        <Route path="/portal" element={<Suspense fallback={routePending}><ResidentHub /></Suspense>} />
         <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
         <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
         <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />

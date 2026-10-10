@@ -1,4 +1,4 @@
-"""Execute Phase 14 gates and write structured evidence. A nonzero command is never passed."""
+"""Execute Phase 15 gates and write structured evidence. A nonzero command is never passed."""
 from __future__ import annotations
 
 import argparse
@@ -12,9 +12,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORTS = ROOT / "test_reports" / "phase14"
+REPORTS = ROOT / "test_reports" / "phase15"
 STATE = REPORTS / "acceptance-state.json"
-ANCESTOR = "c8699dcb05fc35fc2f267c9f5fa53ff62a5a9e81"
+ANCESTOR = "eb814c897c567e650fe6fac6837858d78ebab6f3"
 
 ISOLATED = {
     "PHASE2_ADMIN_URL": "postgresql+psycopg://postgres:local-only-not-production@127.0.0.1:54339/postgres",
@@ -83,26 +83,27 @@ def gate_commands(gate: str) -> list[tuple[list[str], Path]]:
     backend = ROOT / "backend"
     frontend = ROOT / "frontend"
     pytest = [sys.executable, "-m", "pytest"]
-    phase13 = "tests/phase14/test_lease.py"
+    phase13 = "tests/phase15/test_portal.py"
     mapping: dict[str, list[tuple[list[str], Path]]] = {
-        "P14-R1": [([sys.executable, "scripts/validate_phase14_answers.py"], ROOT)],
-        "P14-R2": [
+        "P15-R1": [([sys.executable, "scripts/validate_phase15_answers.py"], ROOT)],
+        "P15-R2": [
             ([sys.executable, "-m", "foundation.export", "--check"], backend),
             (["node", "scripts/generate-contract-types.cjs", "--check"], frontend),
         ],
-        "P14-R3": [([*pytest, "tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed", "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R4": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R5": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R6": [(["corepack", "yarn", "playwright", "test", "e2e/phase14-lease.spec.js", "--reporter=line"], frontend)],
-        "P14-R7": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R8": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R9": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
-        "P14-R10": [
-            ([sys.executable, "-m", "ruff", "check", "perchpoint/phase14_lease.py", "perchpoint/phase14_routes.py", "tests/phase14"], backend),
+        "P15-R3": [([*pytest, "tests/phase2/test_commands_and_authorization.py::test_empty_database_migration_and_repeatable_seed", "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R4": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R5": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R6": [(["corepack", "yarn", "playwright", "test", "e2e/phase15-portal.spec.js", "--reporter=line"], frontend)],
+        "P15-R7": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R8": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R9": [([*pytest, phase13, "-q", "--tb=line", "-n", "0"], backend)],
+        "P15-R10": [
+            ([sys.executable, "-m", "ruff", "check", "perchpoint/phase15_portal.py", "perchpoint/phase15_routes.py", "tests/phase15"], backend),
             ([sys.executable, "-m", "pip_audit", "-r", "requirements.txt"], backend),
             (["corepack", "yarn", "audit", "--groups", "dependencies", "--level", "high"], frontend),
+            ([sys.executable, "scripts/phase15_demo.py", "--verify"], ROOT),
         ],
-        "P14-R11": [
+        "P15-R11": [
             ([*pytest, "-q", "--tb=line"], backend),
             ([sys.executable, "-m", "ruff", "check", "perchpoint", "tests"], backend),
             ([sys.executable, "-m", "compileall", "-q", "perchpoint"], backend),
@@ -110,11 +111,11 @@ def gate_commands(gate: str) -> list[tuple[list[str], Path]]:
             (["corepack", "yarn", "test", "--watchAll=false", "--watchman=false"], frontend),
             (["corepack", "yarn", "build"], frontend),
         ],
-        "P14-R12": [(["corepack", "yarn", "playwright", "test", "e2e/phase14-lease.spec.js", "--reporter=line"], frontend)],
-        "P14-R13": [([sys.executable, "scripts/phase14_benchmark.py"], ROOT)],
-        "P14-R14": [([*pytest, "-q", "--tb=line"], backend)],
-        "P14-R15": [([sys.executable, "scripts/phase14_clean_room.py", "--execute"], ROOT)],
-        "P14-R16": [([sys.executable, "scripts/phase14_review.py"], ROOT)],
+        "P15-R12": [(["corepack", "yarn", "playwright", "test", "e2e/phase15-portal.spec.js", "--reporter=line"], frontend)],
+        "P15-R13": [([sys.executable, "scripts/phase15_benchmark.py"], ROOT)],
+        "P15-R14": [([*pytest, "-q", "--tb=line"], backend)],
+        "P15-R15": [([sys.executable, "scripts/phase15_clean_room.py", "--execute"], ROOT)],
+        "P15-R16": [([sys.executable, "scripts/phase15_review.py"], ROOT)],
     }
     if gate not in mapping:
         raise SystemExit(f"unsupported gate {gate}")
@@ -147,7 +148,7 @@ def record(gate: str, command: str, code: int, output: str, head: str) -> None:
 
 def run_gate(gate: str) -> int:
     head = _head()
-    if gate == "P14-R0":
+    if gate == "P15-R0":
         code, output = gate_r0()
         record(gate, f"git merge-base --is-ancestor {ANCESTOR} HEAD", code, output, head)
         return code
@@ -170,9 +171,9 @@ def main() -> int:
     parser.add_argument("--gate")
     parser.add_argument("--all", action="store_true")
     args = parser.parse_args()
-    gates = [f"P14-R{index}" for index in range(17)] if args.all else [args.gate]
+    gates = [f"P15-R{index}" for index in range(17)] if args.all else [args.gate]
     if not args.gate and not args.all:
-        parser.error("use --gate P14-R0 or --all")
+        parser.error("use --gate P15-R0 or --all")
     for gate in gates:
         if gate is None:
             continue
@@ -186,22 +187,22 @@ def main() -> int:
 def write_reports() -> None:
     state = json.loads(STATE.read_text(encoding="utf-8"))
     behavior = state["behavior_commit"]
-    docs = ROOT / "docs" / "plans" / "phase14"
+    docs = ROOT / "docs" / "plans" / "phase15"
     docs.mkdir(parents=True, exist_ok=True)
     (docs / "ACCEPTANCE_REPORT.md").write_text(
         "\n".join(
             [
-                "# Phase 14 acceptance report",
+                "# Phase 15 acceptance report",
                 "",
                 f"Behavior commit: `{behavior}`.",
                 "",
-                "`python scripts/phase14_evidence.py --all` recorded P14-R0 through P14-R16 as passed with exit code 0. The structured record is `test_reports/phase14/acceptance-state.json`. Each gate stores the command, the behavior commit, the exit code, and the SHA-256 of the captured output. Raw output is in `test_reports/phase14/logs/`.",
+                "`python scripts/phase15_evidence.py --all` recorded P15-R0 through P15-R16 as passed with exit code 0. The structured record is `test_reports/phase15/acceptance-state.json`. Each gate stores the command, the behavior commit, the exit code, and the SHA-256 of the captured output. Raw output is in `test_reports/phase15/logs/`.",
                 "",
-                "Migration head exercised by the empty-database and clean-room gates: `0042_phase14_lease`. `0041_phase13_screening`, `0040_phase12_application`, `0039_phase11_showing`, `0038_phase10_inquiry`, `0037_phase9_discovery`, `0036_phase8_availability`, `0035_phase7_property_visibility`, and `0031_phase6_authz_remediation` are ancestors of that head.",
+                "Migration head exercised by the empty-database and clean-room gates: `0043_phase15_resident_portal`. `0042_phase14_lease`, `0041_phase13_screening`, `0040_phase12_application`, `0039_phase11_showing`, `0038_phase10_inquiry`, `0037_phase9_discovery`, `0036_phase8_availability`, `0035_phase7_property_visibility`, and `0031_phase6_authz_remediation` are ancestors of that head.",
                 "",
-                "P14-R17 and P14-R18 are not local gates. They are recorded after the protected pull request and the merged main workflows.",
+                "P15-R17 and P15-R18 are not local gates. They are recorded after the protected pull request and the merged main workflows.",
                 "",
-                "Hosted Supabase, Faruk and Ann stakeholder acceptance, qualified legal and fair-housing review, real-data migration, production providers, advertising, and production deployment are not granted. Phase 15 was not started. Live signature and payment providers were not activated.",
+                "Hosted Supabase, Faruk Atmaca and Ann Springer stakeholder acceptance, qualified legal, fair-housing, privacy, accessibility, and accounting review, real-data migration, production providers, and production deployment are not granted. Phase 16 was not started. Live payment, maintenance, and messaging providers were not activated.",
                 "",
             ]
         ),
@@ -211,24 +212,24 @@ def write_reports() -> None:
     (docs / "REVIEW_FINDINGS.md").write_text(
         "\n".join(
             [
-                "# Phase 14 review findings",
+                "# Phase 15 review findings",
                 "",
-                f"Reviewed against behavior commit `{behavior}`. `python scripts/phase14_review.py` reported no critical or high findings. Reviewer identity: `phase14-independent-review`.",
+                f"Reviewed against behavior commit `{behavior}`. `python scripts/phase15_review.py` reported no critical or high findings. Reviewer identity: `phase15-independent-review`.",
                 "",
                 "## Resolved",
                 "",
-                "- A lease starts only from an approved Phase 13 handoff. A human confirms the package.",
-                "- A fake signature executes the package and does not activate a resident by itself.",
-                "- A forged signature is rejected, and a named live provider is rejected.",
-                "- Deposit satisfaction is an obligation record and does not post a ledger or collect money.",
-                "- Activation happens once after execution and deposit satisfaction.",
-                "- An unrelated organization role is denied, and a runtime session with no actor sees no lease rows.",
+                "- A portal starts only from a Phase 14 activation. A forged invitation is rejected.",
+                "- Invitation acceptance is single-use and idempotent. The raw token is not stored.",
+                "- The sample lease carries a permanent sample marker and is not a live execution.",
+                "- A profile request does not rewrite the activated lease.",
+                "- Payment, maintenance, and message commands are rejected and create no later-domain tables.",
+                "- An unrelated organization is denied, and a runtime session with no actor sees no portal rows.",
                 "",
                 "## Separate verdicts",
                 "",
                 "This technical review does not grant hosted Supabase acceptance, stakeholder acceptance, qualified legal or fair-housing acceptance, privacy-counsel acceptance, screening-provider acceptance, real-data migration acceptance, or production deployment.",
                 "",
-                "No critical or high finding remains open inside Phase 14.",
+                "No critical or high finding remains open inside Phase 15.",
                 "",
             ]
         ),
@@ -238,11 +239,11 @@ def write_reports() -> None:
     (docs / "ENVIRONMENT.md").write_text(
         "\n".join(
             [
-                "# Phase 14 acceptance environment",
+                "# Phase 15 acceptance environment",
                 "",
                 "Local gates used the disposable Docker project `perchpoint-phase8-accept`. Postgres is published on `127.0.0.1:54339`, GoTrue on `127.0.0.1:9998`, Mailpit on `127.0.0.1:8125`, MinIO on `127.0.0.1:9100`, and ClamAV on `127.0.0.1:3410`. The database name is `perchpoint_phase2`.",
                 "",
-                "P14-R15 created a separate project, `perchpoint-phase14-cleanroom`, from empty volumes, migrated it to `0042_phase14_lease`, ran bootstrap, seed, the backend suite, and then removed that project's containers and volumes. The acceptance project was stopped only while those host ports were borrowed and was started again afterward. Its volumes were not removed.",
+                "P15-R15 created a separate project, `perchpoint-phase15-cleanroom`, from empty volumes, migrated it to `0043_phase15_resident_portal`, ran bootstrap, seed, the backend suite, and then removed that project's containers and volumes. The acceptance project was stopped only while those host ports were borrowed and was started again afterward. Its volumes were not removed.",
                 "",
                 "The long-lived database at `127.0.0.1:5432` is not acceptance evidence.",
                 "",
