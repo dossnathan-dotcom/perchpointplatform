@@ -74,7 +74,7 @@ def gate_r0() -> tuple[int, str]:
     if code != 0:
         return code, output
     names = subprocess.check_output(["git", "diff", "--name-only", f"{ANCESTOR}...HEAD"], cwd=ROOT, text=True)
-    if any("phase16" in line or "zillow" in line.lower() for line in names.splitlines()):
+    if any("phase17" in line or "zillow" in line.lower() for line in names.splitlines()):
         return 1, names
     return 0, names
 

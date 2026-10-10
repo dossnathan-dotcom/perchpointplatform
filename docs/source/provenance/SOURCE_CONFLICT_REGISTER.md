@@ -285,3 +285,16 @@ production-activation boundaries remain controlling.
   Nathan for this local implementation.
 - Continue safely: yes. Status: resolved for Phase 15 local implementation by Q1, Q3, and Q154.
 
+## CONFLICT-025 — Phase 16 operational subledger versus live payments and a formal general ledger
+
+- Claims: a resident balance could be typed, a portal preview could collect a payment, or an
+  operational journal could be treated as a tax return or audited financial statement. Approved
+  Phase 16 decisions derive balances from immutable minor-unit journal lines and keep live
+  payments, processor settlement, and formal accounting outside this phase.
+- Consequence: what a posted charge or synthetic settlement means, and what Phase 17 still owns.
+- Safe assumption: Phase 16 consumes an active Phase 15 membership and does not rewrite the lease
+  or portal history. It does not move money, call a processor, or claim a formal general ledger.
+- Decision owner: Faruk Atmaca for accounting policy; Ann Springer for delegated operations;
+  Nathan for this local implementation.
+- Continue safely: yes. Status: resolved for Phase 16 local implementation by Q1, Q4, and Q7.
+
