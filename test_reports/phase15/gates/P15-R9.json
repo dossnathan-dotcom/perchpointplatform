@@ -1,0 +1,9 @@
+{
+  "command": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/phase15/test_portal.py -q --tb=line -n 0",
+  "exit_code": 0,
+  "finished_at": "2026-10-10T13:16:29.434251+00:00",
+  "gate": "P15-R9",
+  "output_sha256": "6bc8ab03dc507a822757571c0973e55fc80f9972178b281b3d1deccc54f22428",
+  "result": "passed",
+  "tested_commit": "f24c512c334d3f7b254cdb7f63e1771853a735dc"
+}

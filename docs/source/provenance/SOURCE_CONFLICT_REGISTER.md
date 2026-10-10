@@ -273,3 +273,15 @@ production-activation boundaries remain controlling.
   local implementation.
 - Continue safely: yes. Status: resolved for Phase 14 local implementation by Q1, Q5, and Q13.
 
+## CONFLICT-024 — Phase 15 resident portal versus later financial, maintenance, and messaging systems
+
+- Claims: a resident portal could show balances, accept payments, create work orders, or deliver
+  messages. Approved Phase 15 decisions make membership, invitations, documents, preferences, and
+  requests authoritative, and keep later domains as labeled non-authoritative demo previews.
+- Consequence: what a resident can see or request, and what Phase 16 and later phases still own.
+- Safe assumption: Phase 15 consumes a Phase 14 activation and does not rewrite it. It does not
+  post a ledger, collect money, create a maintenance case, or claim a message was delivered.
+- Decision owner: Faruk Atmaca for resident-access policy; Ann Springer for delegated operations;
+  Nathan for this local implementation.
+- Continue safely: yes. Status: resolved for Phase 15 local implementation by Q1, Q3, and Q154.
+
