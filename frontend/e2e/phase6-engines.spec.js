@@ -114,7 +114,7 @@ async function elevate(page, session) {
 test("unified sign-in keeps the provider credential off the browser", async ({ page }) => {
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill("ann.synthetic@example.com");
-  await page.getByLabel("Password").fill(password);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/mfa\?next=/);
   const stored = await page.evaluate(() => `${JSON.stringify(localStorage)}${JSON.stringify(sessionStorage)}`);
