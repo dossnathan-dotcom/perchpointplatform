@@ -170,6 +170,29 @@ export function AssistanceDesk() {
     setMessage(recorded);
   }
 
+  async function holdDeposit(item) {
+    const { response, body } = await postJson("/api/v2/payments/assistance/batches/hold", {
+      batch_reference: item.public_reference,
+      idempotency_key: `hold-${item.public_reference}`,
+    });
+    setMessage(response.ok ? "The deposit stays in review. It was not posted again." : detailMessage(body, "The deposit was not held."));
+    if (response.ok) await loadQueue();
+  }
+
+  async function assignRow(event, item) {
+    event.preventDefault();
+    const tenancyCode = String(new FormData(event.currentTarget).get("tenancy_code") || "");
+    const { response, body } = await postJson("/api/v2/payments/assistance/batches/assign", {
+      batch_reference: item.batch_reference,
+      row_reference: item.row_reference,
+      tenancy_code: tenancyCode,
+      service_period: item.service_period || "2026-11",
+      idempotency_key: `assign-${item.row_reference}`,
+    });
+    setMessage(response.ok ? "The line is named. It is not posted until you apply the remittance." : detailMessage(body, "The line was not assigned."));
+    if (response.ok) await loadQueue();
+  }
+
   async function openReturn(item) {
     const { response, body } = await postJson("/api/v2/payments/assistance/returns", {
       exception_reference: item.public_reference,
@@ -302,6 +325,7 @@ export function AssistanceDesk() {
                 </ul>
               ) : null}
               {household.exceptions?.length ? <p className="mt-3">Open follow-up: {household.exceptions[0].kind.replaceAll("_", " ")} {money(household.exceptions[0].amount_minor)}</p> : null}
+              {household.service_period ? <p className="mt-3"><a className="underline" href={`/api/v2/payments/assistance/documents?kind=determination&tenancy_code=${encodeURIComponent(tenancy)}`}>Open the assistance schedule</a></p> : null}
             </section>
           ) : null}
           {nothingToPay ? null : (
@@ -376,7 +400,31 @@ export function AssistanceDesk() {
             ) : null}
             {queue ? (
               <ul className="mt-4 space-y-2">
-                {queue.receipts.length === 0 && queue.exceptions.length === 0 && queue.reports.length === 0 ? <li>Nothing is waiting.</li> : null}
+                {(queue.receipts || []).length === 0 && (queue.exceptions || []).length === 0 && (queue.reports || []).length === 0 && (queue.batches || []).length === 0 && (queue.unassigned_rows || []).length === 0 ? <li>Nothing is waiting.</li> : null}
+                {(queue.batches || []).map((item) => (
+                  <li key={item.public_reference} className="border border-[#D9E2EF] bg-white p-3">
+                    <p>Separate deposit · net {money(item.net_minor)} · unexplained {money(item.unexplained_minor)}</p>
+                    <p className="mt-1">{item.next_action}</p>
+                    <button className="mt-2 min-h-11 bg-[#2457D6] px-4 py-2 text-white" type="button" onClick={() => holdDeposit(item)}>Hold as a separate deposit</button>
+                  </li>
+                ))}
+                {(queue.unassigned_rows || []).map((item) => (
+                  <li key={item.row_reference} className="border border-[#D9E2EF] bg-white p-3">
+                    <p>Unassigned remittance line · {money(item.gross_minor)}</p>
+                    <p className="mt-1">{item.next_action}</p>
+                    <form className="mt-2 flex flex-wrap items-end gap-2" onSubmit={(event) => assignRow(event, item)}>
+                      <label>Household for this line
+                        <select className="mt-1 block border border-[#D9E2EF] bg-white px-3 py-2" name="tenancy_code" required>
+                          <option value="">Choose a household</option>
+                          {choices.map((choice) => (
+                            <option key={`${item.row_reference}-${choice.tenancy_code}`} value={choice.tenancy_code}>{choice.label}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <button className="min-h-11 bg-[#2457D6] px-4 py-2 text-white" type="submit">Name this line</button>
+                    </form>
+                  </li>
+                ))}
                 {(queue.reports || []).map((item) => (
                   <li key={item.public_reference} className="border border-[#D9E2EF] bg-white p-3">
                     <p>{item.label || "Household"} · transfer report · {money(item.amount_minor)} · Awaiting verification</p>

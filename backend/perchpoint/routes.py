@@ -212,7 +212,7 @@ def _route_capability(request: Request) -> str:
         return "payment.pay"
     if path.startswith("/payments/charges"):
         return "payment.charge"
-    if path.startswith(("/payments/assistance/household", "/payments/assistance/configuration", "/payments/assistance/reports", "/payments/assistance/instructions", "/payments/assistance/measures")):
+    if path.startswith(("/payments/assistance/household", "/payments/assistance/configuration", "/payments/assistance/reports", "/payments/assistance/instructions", "/payments/assistance/measures", "/payments/assistance/documents")):
         return "payment.read"
     if path.startswith("/payments/assistance"):
         return "payment.charge"

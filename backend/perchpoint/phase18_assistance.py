@@ -6,6 +6,7 @@ Cash, check, and money-order intake stay closed. No money moves in this local ph
 """
 from __future__ import annotations
 
+import html
 import os
 from uuid import UUID, uuid4
 
@@ -43,6 +44,13 @@ def _require(connection, capability: str) -> None:
     allowed = connection.execute(text("SELECT perchpoint.has_capability(:capability)"), {"capability": capability}).scalar()
     if not allowed:
         raise CommandError(403, "denied", "This action is not authorized.", False)
+
+
+def _dollars(minor: int) -> str:
+    value = int(minor)
+    sign = "-" if value < 0 else ""
+    value = abs(value)
+    return f"{sign}${value // 100}.{value % 100:02d}"
 
 
 def _display(tenancy_code: str | None) -> str | None:
@@ -1007,6 +1015,112 @@ def apply_batch(settings: Settings, actor, organization, body: dict) -> dict:
         }
 
 
+def assign_remittance_row(settings: Settings, actor, organization, body: dict) -> dict:
+    """Name an open remittance line. Naming it does not post the subsidy."""
+    fingerprint = _fingerprint([body["batch_reference"], body["row_reference"], body["tenancy_code"], body["service_period"], body["idempotency_key"]])
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
+        _require(connection, "payment.charge")
+        replay = _replay(connection, body["idempotency_key"], fingerprint)
+        if replay is not None:
+            return replay
+        determination = connection.execute(
+            text(
+                "SELECT 1 FROM assistance_determinations "
+                "WHERE tenancy_code = :tenancy AND service_period = :period AND state = 'approved'"
+            ),
+            {"tenancy": body["tenancy_code"], "period": body["service_period"]},
+        ).first()
+        if determination is None:
+            raise CommandError(404, "missing", "That household has no approved schedule for this period.", False)
+        updated = connection.execute(
+            text(
+                "UPDATE remittance_rows AS row SET tenancy_code = :tenancy, service_period = :period "
+                "FROM remittance_batches AS batch "
+                "WHERE row.batch_id = batch.id AND batch.public_reference = :batch "
+                "AND row.id = CAST(:row AS uuid) AND row.state = 'open' AND row.tenancy_code IS NULL "
+                "RETURNING row.id"
+            ),
+            {
+                "tenancy": body["tenancy_code"],
+                "period": body["service_period"],
+                "batch": body["batch_reference"],
+                "row": body["row_reference"],
+            },
+        ).first()
+        if updated is None:
+            raise CommandError(409, "conflict", "That remittance line is no longer unassigned.", False)
+        reference = body["batch_reference"]
+        _remember(connection, organization, body["idempotency_key"], fingerprint, reference)
+    return {"accepted": True, "reference": reference, "posted": False, "money_moved": False}
+
+
+def hold_separate_deposit(settings: Settings, actor, organization, body: dict) -> dict:
+    """Keep a distinct deposit in review when the same assistance is already posted."""
+    fingerprint = _fingerprint([body["batch_reference"], "separate-deposit", body["idempotency_key"]])
+    reference = f"review-{uuid4().hex[:16]}"
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
+        _require(connection, "payment.charge")
+        replay = _replay(connection, body["idempotency_key"], fingerprint)
+        if replay is not None:
+            return replay
+        batch = connection.execute(
+            text(
+                "SELECT id, public_reference, state, unexplained_minor, net_minor FROM remittance_batches "
+                "WHERE public_reference = :reference FOR UPDATE"
+            ),
+            {"reference": body["batch_reference"]},
+        ).mappings().first()
+        if batch is None:
+            raise CommandError(404, "missing", "That remittance batch was not found.", False)
+        if batch["state"] == "applied" or int(batch["unexplained_minor"]) == 0:
+            raise CommandError(409, "conflict", "An applied remittance does not need a separate-deposit review.", False)
+        detail = f"batch:{batch['public_reference']}"
+        existing = connection.execute(
+            text(
+                "SELECT public_reference FROM assistance_exceptions "
+                "WHERE kind = 'review' AND state = 'open' AND detail = :detail"
+            ),
+            {"detail": detail},
+        ).mappings().first()
+        if existing is not None:
+            _remember(connection, organization, body["idempotency_key"], fingerprint, existing["public_reference"])
+            return {
+                "accepted": True,
+                "reference": existing["public_reference"],
+                "replayed": True,
+                "posted": False,
+                "unexplained_minor": int(batch["unexplained_minor"]),
+                "money_moved": False,
+            }
+        period = connection.execute(
+            text("SELECT service_period FROM remittance_rows WHERE batch_id = :batch AND service_period IS NOT NULL LIMIT 1"),
+            {"batch": batch["id"]},
+        ).scalar() or "2026-11"
+        connection.execute(
+            text(
+                "INSERT INTO assistance_exceptions "
+                "(organization_id, id, public_reference, tenancy_code, service_period, kind, amount_minor, detail, state) "
+                "VALUES (CAST(:org AS uuid), gen_random_uuid(), :reference, 'unallocated-source', :period, 'review', :amount, :detail, 'open')"
+            ),
+            {
+                "org": organization,
+                "reference": reference,
+                "period": period,
+                "amount": int(batch["unexplained_minor"]),
+                "detail": detail,
+            },
+        )
+        _remember(connection, organization, body["idempotency_key"], fingerprint, reference)
+    return {
+        "accepted": True,
+        "reference": reference,
+        "replayed": False,
+        "posted": False,
+        "unexplained_minor": int(batch["unexplained_minor"]),
+        "money_moved": False,
+    }
+
+
 def household_view(settings: Settings, actor, organization, tenancy_code: str) -> dict:
     with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require_any(connection, ("payment.read", "payment.charge", "payment.pay"))
@@ -1179,8 +1293,27 @@ def queue(settings: Settings, actor, organization) -> dict:
                 "WHERE report.state = 'reported' ORDER BY report.created_at DESC LIMIT 50"
             )
         ).mappings().all()
+        batches = connection.execute(
+            text(
+                "SELECT public_reference, gross_minor, recoupment_minor, net_minor, unexplained_minor, state "
+                "FROM remittance_batches WHERE state IN ('preview', 'partial') "
+                "ORDER BY created_at DESC LIMIT 50"
+            )
+        ).mappings().all()
+        unassigned = connection.execute(
+            text(
+                "SELECT row.id::text AS row_reference, batch.public_reference AS batch_reference, "
+                "row.gross_minor, row.service_period "
+                "FROM remittance_rows row "
+                "JOIN remittance_batches batch ON batch.id = row.batch_id AND batch.organization_id = row.organization_id "
+                "WHERE row.state = 'open' AND row.tenancy_code IS NULL "
+                "ORDER BY batch.created_at DESC LIMIT 50"
+            )
+        ).mappings().all()
     def _queue_label(row) -> str | None:
-        return row.get("household_label") or _display(row["tenancy_code"])
+        if row.get("tenancy_code") == "unallocated-source":
+            return "Separate deposit"
+        return row.get("household_label") or _display(row.get("tenancy_code"))
 
     return {
         "receipts": [
@@ -1207,8 +1340,76 @@ def queue(settings: Settings, actor, organization) -> dict:
             }
             for row in reports
         ],
+        "batches": [
+            {
+                **dict(row),
+                "next_action": "Hold this deposit for review. Do not post assistance that is already applied.",
+            }
+            for row in batches
+        ],
+        "unassigned_rows": [
+            {
+                **dict(row),
+                "next_action": "Choose the household by name. This does not post the line.",
+            }
+            for row in unassigned
+        ],
         "money_moved": False,
     }
+
+
+def assistance_document(settings: Settings, actor, organization, kind: str, tenancy_code: str) -> str:
+    """Render one household's synthetic notice from the ledger. Other households stay out."""
+    if kind not in {"determination", "return"}:
+        raise CommandError(404, "missing", "That document is not available.", False)
+    with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
+        _require_any(connection, ("payment.read", "payment.charge", "payment.pay"))
+        if not _may_act_for_tenancy(connection, tenancy_code, grant_counts=True):
+            raise CommandError(403, "denied", "This household is not available for this sign-in.", False)
+        if kind == "determination":
+            row = connection.execute(
+                text(
+                    "SELECT service_period, resident_minor, agency_minor, rent_to_owner_minor, household_label "
+                    "FROM assistance_determinations WHERE tenancy_code = :tenancy AND state = 'approved' "
+                    "ORDER BY service_period DESC, version DESC LIMIT 1"
+                ),
+                {"tenancy": tenancy_code},
+            ).mappings().first()
+            if row is None:
+                raise CommandError(404, "missing", "There is no approved schedule to open.", False)
+            title = "Synthetic assistance schedule"
+            lines = [
+                f"Household {row['household_label'] or tenancy_code}",
+                f"Service period {row['service_period']}",
+                f"Rent to owner {_dollars(row['rent_to_owner_minor'])}",
+                f"Resident portion {_dollars(row['resident_minor'])}",
+                f"Agency portion {_dollars(row['agency_minor'])}",
+            ]
+        else:
+            row = connection.execute(
+                text(
+                    "SELECT amount_minor, service_period, state FROM assistance_exceptions "
+                    "WHERE tenancy_code = :tenancy AND kind = 'required_return' AND state = 'resolved' "
+                    "ORDER BY created_at DESC LIMIT 1"
+                ),
+                {"tenancy": tenancy_code},
+            ).mappings().first()
+            if row is None:
+                raise CommandError(404, "missing", "There is no completed return to open.", False)
+            title = "Synthetic return confirmation"
+            lines = [
+                f"Service period {row['service_period']}",
+                f"Returned {_dollars(row['amount_minor'])}",
+                "This return is complete. The same overpayment cannot be opened again.",
+            ]
+    body = "".join(f"<p>{html.escape(line)}</p>" for line in lines)
+    return (
+        "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+        f"<title>{html.escape(title)}</title></head><body>"
+        f"<h1>{html.escape(title)}</h1>"
+        "<p>SYNTHETIC — NOT AN OFFICIAL AGENCY DOCUMENT</p>"
+        f"{body}</body></html>"
+    )
 
 
 def record_required_return(settings: Settings, actor, organization, body: dict) -> dict:

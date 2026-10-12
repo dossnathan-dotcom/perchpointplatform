@@ -1,15 +1,19 @@
 """Phase 18 assistance routes. A report is not a payment. No money moves."""
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.exc import IntegrityError
 
 from .commands import CommandError
 from .phase18_assistance import (
     apply_batch,
+    assign_remittance_row,
+    assistance_document,
     apply_receipt,
     configuration,
     resolve_receipt,
     household_directory,
+    hold_separate_deposit,
     household_view,
     ingest_receipt,
     owner_measures,
@@ -86,6 +90,19 @@ class BatchBody(BaseModel):
 
 
 class BatchApplyBody(BaseModel):
+    batch_reference: str
+    idempotency_key: str = Field(min_length=8)
+
+
+class BatchAssignBody(BaseModel):
+    batch_reference: str
+    row_reference: str
+    tenancy_code: str
+    service_period: str
+    idempotency_key: str = Field(min_length=8)
+
+
+class BatchHoldBody(BaseModel):
     batch_reference: str
     idempotency_key: str = Field(min_length=8)
 
@@ -194,6 +211,24 @@ def create_batch(body: BatchBody, request: Request, current: Settings = Depends(
 def create_batch_application(body: BatchApplyBody, request: Request, current: Settings = Depends(settings), current_actor=Depends(actor)) -> dict:
     _browser(request, current)
     return _call(lambda: apply_batch(current, current_actor["id"], current_actor["organization_id"], body.model_dump()))
+
+
+@router.post("/payments/assistance/batches/assign")
+def create_batch_assignment(body: BatchAssignBody, request: Request, current: Settings = Depends(settings), current_actor=Depends(actor)) -> dict:
+    _browser(request, current)
+    return _call(lambda: assign_remittance_row(current, current_actor["id"], current_actor["organization_id"], body.model_dump()))
+
+
+@router.post("/payments/assistance/batches/hold")
+def create_batch_hold(body: BatchHoldBody, request: Request, current: Settings = Depends(settings), current_actor=Depends(actor)) -> dict:
+    _browser(request, current)
+    return _call(lambda: hold_separate_deposit(current, current_actor["id"], current_actor["organization_id"], body.model_dump()))
+
+
+@router.get("/payments/assistance/documents", response_class=HTMLResponse)
+def read_document(kind: str, tenancy_code: str, current: Settings = Depends(settings), current_actor=Depends(actor)) -> HTMLResponse:
+    document = _call(lambda: assistance_document(current, current_actor["id"], current_actor["organization_id"], kind, tenancy_code))
+    return HTMLResponse(document)
 
 
 @router.post("/payments/assistance/returns")

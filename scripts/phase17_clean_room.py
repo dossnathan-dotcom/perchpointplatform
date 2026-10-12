@@ -82,6 +82,7 @@ def _env() -> dict[str, str]:
             "PHASE5_CLAMAV_HOST": "127.0.0.1",
             "PHASE5_CLAMAV_PORT": "3410",
             "PYTHONPATH": str(ROOT / "backend"),
+            "PERCHPOINT_ALEMBIC_TARGET": HEAD,
         }
     )
     env["PHASE2_ADMIN_URL"] = ADMIN

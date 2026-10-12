@@ -318,6 +318,87 @@ def test_batch_offset_reconciles_without_charging_a_resident(client):
         view = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
         assert view["agency_received_minor"] == {households[0][0]: 110000, households[1][0]: 90000, households[2][0]: 80000}[tenancy]
         assert view["due_minor"] == 10000
+    held = client.post(
+        "/api/v2/payments/assistance/batches/hold",
+        headers=headers,
+        json={"batch_reference": distinct.json()["reference"], "idempotency_key": _key("batch-hold")},
+    )
+    assert held.status_code == 200, held.text
+    assert held.json()["posted"] is False
+    assert held.json()["unexplained_minor"] == 260000
+    assert held.json()["money_moved"] is False
+    again = client.post(
+        "/api/v2/payments/assistance/batches/hold",
+        headers=headers,
+        json={"batch_reference": distinct.json()["reference"], "idempotency_key": _key("batch-hold-again")},
+    )
+    assert again.status_code == 200, again.text
+    assert again.json()["replayed"] is True
+    waiting = client.get("/api/v2/payments/assistance/queue", headers=headers)
+    assert waiting.status_code == 200, waiting.text
+    assert any(item["label"] == "Separate deposit" and item["amount_minor"] == 260000 for item in waiting.json()["exceptions"])
+    notice = client.get(
+        "/api/v2/payments/assistance/documents",
+        headers=headers,
+        params={"kind": "determination", "tenancy_code": households[0][0]},
+    )
+    assert notice.status_code == 200, notice.text
+    assert "Resident portion $100.00" in notice.text
+    assert "Agency portion $1100.00" in notice.text
+    assert households[1][0] not in notice.text
+    hidden = client.get(
+        "/api/v2/payments/assistance/documents",
+        params={"kind": "determination", "tenancy_code": households[0][0]},
+    )
+    assert hidden.status_code == 401
+
+
+def test_an_unnamed_remittance_line_is_named_before_it_posts(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    account = _books(client, headers)
+    tenancy, _body = _determination(client, headers, account, resident=10000, agency=110000)
+    created = client.post(
+        "/api/v2/payments/assistance/batches",
+        headers=headers,
+        json={
+            "external_id": f"hap-{uuid4().hex[:8]}",
+            "gross_minor": 110000,
+            "recoupment_minor": 0,
+            "net_minor": 110000,
+            "cash_external_id": f"cash-{uuid4().hex[:8]}",
+            "rows": [{"service_period": "2026-11", "gross_minor": 110000}],
+            "idempotency_key": _key("unnamed-batch"),
+        },
+    )
+    assert created.status_code == 200, created.text
+    waiting = client.get("/api/v2/payments/assistance/queue", headers=headers)
+    row = next(item for item in waiting.json()["unassigned_rows"] if item["batch_reference"] == created.json()["reference"])
+    named = client.post(
+        "/api/v2/payments/assistance/batches/assign",
+        headers=headers,
+        json={
+            "batch_reference": created.json()["reference"],
+            "row_reference": row["row_reference"],
+            "tenancy_code": tenancy,
+            "service_period": "2026-11",
+            "idempotency_key": _key("unnamed-assign"),
+        },
+    )
+    assert named.status_code == 200, named.text
+    assert named.json()["posted"] is False
+    before = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    assert before["agency_received_minor"] == 0
+    applied = client.post(
+        "/api/v2/payments/assistance/batches/apply",
+        headers=headers,
+        json={"batch_reference": created.json()["reference"], "idempotency_key": _key("unnamed-apply")},
+    )
+    assert applied.status_code == 200, applied.text
+    assert applied.json()["posted_rows"] == 1
+    assert applied.json()["unexplained_minor"] == 0
+    after = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    assert after["agency_received_minor"] == 110000
+    assert after["due_minor"] == 10000
 
 
 def test_revision_opens_an_overpayment_without_an_agency_receipt(client):
