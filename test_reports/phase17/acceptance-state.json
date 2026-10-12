@@ -186,11 +186,11 @@
     },
     "P17-R12": {
       "result": "passed",
-      "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --config=playwright.phase17.config.js --project=chromium-1440 -g \"owner approves one exact refund\"",
+      "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --config=playwright.phase17.config.js -g \"owner approves one exact refund\"",
       "evidence": {
         "personas": ["resident", "payer", "operations", "owner"],
         "ledger_status": "posted",
-        "owner_chromium": "1 passed in 13.4s on chromium-1440",
+        "owner_matrix": "12 passed in 2.6m on Chromium, Firefox, and WebKit at 320, 768, 1024, and 1440",
         "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
       }
     },
