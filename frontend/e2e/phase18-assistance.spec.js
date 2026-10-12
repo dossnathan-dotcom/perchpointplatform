@@ -154,11 +154,27 @@ async function openDisposableBooks(api, headers, stamp) {
   return { tenancy: deal.reference, account: account.reference };
 }
 
+function householdRead(response) {
+  return response.url().includes("/payments/assistance/household?") && response.request().method() === "GET";
+}
+
 async function chooseHousehold(page, label) {
   const select = page.getByRole("combobox", { name: "Household", exact: true });
   const option = select.locator("option", { hasText: label });
   await expect(option).toBeAttached();
+  const ready = page.waitForResponse(householdRead);
   await select.selectOption(await option.getAttribute("value"));
+  const response = await ready;
+  expect(response.ok(), await response.text()).toBeTruthy();
+}
+
+async function postThenRefresh(page, locator, urlPart, follow) {
+  const posted = page.waitForResponse((response) => response.url().includes(urlPart) && response.request().method() === "POST");
+  const refreshed = page.waitForResponse(follow);
+  await locator.click();
+  const response = await posted;
+  expect(response.ok(), await response.text()).toBeTruthy();
+  await refreshed;
 }
 
 function dueAmount(page, name) {
@@ -260,8 +276,8 @@ test("resident transfer is matched once and the worker posts the resident portio
   await residentPage.goto("/payments");
   await residentPage.getByLabel("Find a household").fill(label);
   await chooseHousehold(residentPage, label);
-  await expect(residentPage.getByRole("status")).toContainText("Your portion for 2026-11 is $400.00");
-  await expect(residentPage.getByRole("status")).toContainText("Agency assistance of $1,100.00 is not added");
+  await expect(residentPage.getByRole("status").filter({ hasText: "Your portion for 2026-11 is $400.00" })).toBeVisible();
+  await expect(residentPage.getByRole("status").filter({ hasText: "Agency assistance of $1,100.00 is not added" })).toBeVisible();
   await residentPage.goto("/payments/assistance");
   await residentPage.getByLabel("Find a household").fill(label);
   await residentPage.getByRole("button", { name: "Search" }).click();
@@ -271,15 +287,20 @@ test("resident transfer is matched once and the worker posts the resident portio
   await residentPage.getByRole("textbox", { name: "Reference", exact: true }).fill(`transfer-${stamp}`);
   await residentPage.getByLabel("Date sent").fill("2026-11-02");
   await residentPage.getByLabel("What should we know").fill("Already sent the resident portion");
-  await residentPage.getByRole("button", { name: "Submit report" }).click();
-  await expect(residentPage.getByRole("status")).toContainText("Awaiting verification. This report is not a payment.");
+  await postThenRefresh(residentPage, residentPage.getByRole("button", { name: "Submit report" }), "/payments/assistance/reports", householdRead);
+  await expect(residentPage.getByRole("status").filter({ hasText: "Awaiting verification. This report is not a payment." })).toBeVisible();
   await expect(residentPage.getByText("Awaiting verification · $400.00")).toBeVisible();
 
   await opsPage.getByRole("button", { name: "Open the operations queue" }).click();
   const report = opsPage.locator("li").filter({ hasText: label });
   await report.getByLabel("Bank reference").fill(bankReference);
-  await report.getByRole("button", { name: "Confirm bank evidence" }).click();
-  await expect(opsPage.getByRole("status")).toContainText("Verified transfer processing");
+  await postThenRefresh(
+    opsPage,
+    report.getByRole("button", { name: "Confirm bank evidence" }),
+    "/payments/assistance/receipts",
+    (response) => response.url().includes("/payments/assistance/queue") && response.request().method() === "GET",
+  );
+  await expect(opsPage.getByRole("status").filter({ hasText: "Verified transfer processing" })).toBeVisible();
   const skipped = await opsPage.request.post("/api/v2/payments/autopay/run", {
     headers: csrfHeaders(await operations.cookies()),
     data: { tenancy_code: books.tenancy, period_code: "2026-11" },
@@ -437,12 +458,22 @@ test("a revised resident portion completes one required return", async ({ browse
   await opsPage.goto("/payments/assistance");
   await opsPage.getByRole("button", { name: "Open the operations queue" }).click();
   const row = opsPage.locator("li").filter({ hasText: label }).filter({ hasText: "resident overpayment" });
-  await row.getByRole("button", { name: "Open required return" }).click();
-  await expect(opsPage.getByRole("status")).toContainText("open and unpaid");
+  await postThenRefresh(
+    opsPage,
+    row.getByRole("button", { name: "Open required return" }),
+    "/payments/assistance/returns",
+    (response) => response.url().includes("/payments/assistance/queue") && response.request().method() === "GET",
+  );
+  await expect(opsPage.getByRole("status").filter({ hasText: "open and unpaid" })).toBeVisible();
   const completion = opsPage.locator("li").filter({ hasText: label }).filter({ hasText: "required return" });
   await completion.getByLabel("Verified bank evidence").fill(evidence);
-  await completion.getByRole("button", { name: "Record verified completion" }).click();
-  await expect(opsPage.getByRole("status")).toContainText("completed synthetic settlement");
+  await postThenRefresh(
+    opsPage,
+    completion.getByRole("button", { name: "Record verified completion" }),
+    "/payments/assistance/returns/complete",
+    (response) => response.url().includes("/payments/assistance/queue") && response.request().method() === "GET",
+  );
+  await expect(opsPage.getByRole("status").filter({ hasText: "completed synthetic settlement" })).toBeVisible();
   await expect(opsPage.locator("li").filter({ hasText: label }).getByRole("button", { name: "Open required return" })).toHaveCount(0);
 
   await residentPage.reload();
