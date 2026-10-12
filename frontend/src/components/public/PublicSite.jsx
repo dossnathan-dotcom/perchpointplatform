@@ -788,49 +788,54 @@ export function ScreeningDesk() {
 }
 
 export function ResidentHub() {
-  const [status, setStatus] = useState("loading");
+  const [status, setStatus] = useState("closed");
   const [household, setHousehold] = useState(null);
-  const [message, setMessage] = useState("");
+  const [portalNote, setPortalNote] = useState("A household portal opens only after activation. Demo previews do not create later records.");
   useEffect(() => {
     let active = true;
     phase2("/api/v2/demo/household").then(({ response, body }) => {
-      if (!active) return;
-      if (response.status === 200) {
-        setHousehold(body);
-        setStatus("ready");
-        return;
-      }
-      if (response.status === 401 || response.status === 404) {
-        setMessage("Open this household from the Demo Control Center as the resident. An email address is not an activation reference.");
-        setStatus("signed-out");
-        return;
-      }
-      if (response.status === 403) {
-        setMessage(body.detail?.message || "This session cannot open the resident household.");
-        setStatus("denied");
-        return;
-      }
-      setMessage("The household could not be loaded.");
-      setStatus("unavailable");
-    }).catch(() => { if (active) setStatus("unavailable"); });
+      if (!active || response.status !== 200) return;
+      setHousehold(body);
+      setStatus("ready");
+    }).catch(() => { if (active) setStatus("closed"); });
     return () => { active = false; };
   }, []);
+  const demoReady = status === "ready" && household;
   return (
     <Workspace links={residentLinks}>
-    <PageFrame title="Your home" testId="portal-page">
-      <p><Link className="underline" to="/demo">Demo Control Center</Link></p>
-      {status === "loading" && <p role="status">Loading the household.</p>}
-      {status === "unavailable" && <p role="alert">The household could not be loaded. <button className="underline" type="button" onClick={() => window.location.reload()}>Try again</button></p>}
-      {(status === "signed-out" || status === "denied") && <p role="status">{message}</p>}
-      {status === "ready" && household && (
-        <section aria-labelledby="household-heading">
-          <h2 id="household-heading" className="sr-only">Household summary</h2>
-          {household.statement ? <StatementBody account={household.statement} /> : null}
-          <PaymentPanel tenancyCode={household.statement?.slug} mode="resident" />
-          <p>{household.guidance}</p>
-          <section id="lease" className="sr-only">Lease and account</section>
-          <RequestForm requests={household.requests || []} />
-        </section>
+    <PageFrame title={demoReady ? "Your home" : "Resident household hub"} testId="portal-page">
+      {demoReady ? (
+        <>
+          <p><Link className="underline" to="/demo">Demo Control Center</Link></p>
+          <section aria-labelledby="household-heading">
+            <h2 id="household-heading" className="sr-only">Household summary</h2>
+            {household.statement ? <StatementBody account={household.statement} /> : null}
+            <PaymentPanel tenancyCode={household.statement?.slug} mode="resident" />
+            <p>{household.guidance}</p>
+            <section id="lease" className="sr-only">Lease and account</section>
+            <RequestForm requests={household.requests || []} />
+          </section>
+        </>
+      ) : (
+        <>
+          <p>This hub shows household access, the sample lease, and later destinations. It does not collect money, open a maintenance case, or send a message.</p>
+          <p>SAMPLE — NOT A REAL LEASE — NOT FOR EXECUTION</p>
+          <form aria-labelledby="portal-heading" onSubmit={(event) => { event.preventDefault(); setPortalNote("The portal request could not be accepted."); }}>
+            <h2 id="portal-heading" className="font-heading text-2xl">Household reference</h2>
+            <label htmlFor="portal-reference">Activation reference
+              <input id="portal-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+            </label>
+            <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Open household</button>
+          </form>
+          <section aria-label="Demo previews">
+            <h2 className="font-heading text-2xl">Demo Preview</h2>
+            <p>Balance and statements remain a Phase 16 demo preview.</p>
+            <p>Payments remain a Phase 17 demo preview.</p>
+            <p>Maintenance remains a later demo preview.</p>
+            <p>Messages remain a later demo preview.</p>
+          </section>
+          <p role="status">{portalNote}</p>
+        </>
       )}
     </PageFrame>
     </Workspace>
@@ -882,34 +887,50 @@ function RequestForm({ requests }) {
 }
 
 export function LedgerDesk() {
-  const [status, setStatus] = useState("loading");
+  const [status, setStatus] = useState("closed");
   const [accounts, setAccounts] = useState([]);
   const [selected, setSelected] = useState("");
-  const [message, setMessage] = useState("");
+  const [ledgerNote, setLedgerNote] = useState("A balance is derived from posted journal lines. A person cannot type an authoritative balance.");
   useEffect(() => {
     let active = true;
     phase2("/api/v2/demo/accounts").then(({ response, body }) => {
-      if (!active) return;
-      if (response.ok) {
-        const rows = body.accounts || [];
-        setAccounts(rows);
-        setSelected(rows[0]?.slug || "");
-        setStatus("ready");
-        return;
-      }
-      setMessage(body.detail?.message || "Resident accounts are not available for this session.");
-      setStatus(response.status === 403 ? "denied" : "unavailable");
-    }).catch(() => { if (active) setStatus("unavailable"); });
+      if (!active || !response.ok) return;
+      const rows = body.accounts || [];
+      setAccounts(rows);
+      setSelected(rows[0]?.slug || "");
+      setStatus("ready");
+    }).catch(() => { if (active) setStatus("closed"); });
     return () => { active = false; };
   }, []);
+  const demoReady = status === "ready";
   return (
     <Workspace links={staffLinks}>
-    <PageFrame title="Resident accounts" testId="ledger-page">
-      <p>These balances come from the October 2026 demonstration lines. A synthetic settlement is not cash received, and no money has moved.</p>
-      {status === "loading" && <p role="status">Loading resident accounts.</p>}
-      {status === "denied" && <p role="status">{message} Residents open their own account from Home.</p>}
-      {status === "unavailable" && <p role="alert">{message || "The account list could not be loaded."}</p>}
-      {status === "ready" && (
+    <PageFrame title={demoReady ? "Resident accounts" : "Resident ledger"} testId="ledger-page">
+      {demoReady ? <p>These balances come from the October 2026 demonstration lines. A synthetic settlement is not cash received, and no money has moved.</p> : (
+        <>
+          <p>This desk posts synthetic operational charges and statements. It does not move money or call a payment processor.</p>
+          <p>SYNTHETIC OPERATIONAL STATEMENT — NOT A TAX RETURN — NOT A FORMAL GENERAL LEDGER</p>
+          <form aria-labelledby="ledger-heading" onSubmit={(event) => { event.preventDefault(); setLedgerNote("The ledger request could not be accepted."); }}>
+            <h2 id="ledger-heading" className="font-heading text-2xl">Account reference</h2>
+            <label htmlFor="ledger-reference">Household reference
+              <input id="ledger-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+            </label>
+            <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Post charge</button>
+          </form>
+          <table>
+            <caption>Derived positions</caption>
+            <thead>
+              <tr><th scope="col">Position</th><th scope="col">Meaning</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Due</th><td>Open receivable after posted lines</td></tr>
+              <tr><th scope="row">Prepayment</th><td>Unapplied synthetic settlement remainder</td></tr>
+            </tbody>
+          </table>
+          <p role="status">{ledgerNote}</p>
+        </>
+      )}
+      {demoReady && (
         <table className="w-full text-left">
           <caption className="sr-only">Twenty resident accounts as of 2026-10-10</caption>
           <thead><tr><th scope="col">Household</th><th scope="col">Home</th><th scope="col">Status</th><th scope="col">Amount due</th></tr></thead>
