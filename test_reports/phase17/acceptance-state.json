@@ -6,6 +6,11 @@
   "real_values_activated": false,
   "money_moved": false,
   "behavior_revision": "a38223061e61d700ed9d590316f56e90eb19af09",
+  "pull_request": {
+    "number": 44,
+    "head": "2646aad42636525b4dea06fc26983928386d1978",
+    "merge": "a68b28897d4f61abe6dd09ad78535214461acb66"
+  },
   "migration_head": "0060_phase17_grant_accept",
   "commands": [
     "python scripts/phase17_clean_room.py --execute",
@@ -260,10 +265,23 @@
       }
     },
     "P17-R17": {
-      "result": "not_run"
+      "result": "passed",
+      "command": "gh pr checks 44",
+      "evidence": {
+        "pr_head": "2646aad42636525b4dea06fc26983928386d1978",
+        "tested_revision": "2646aad42636525b4dea06fc26983928386d1978",
+        "run": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/38233735035",
+        "checks": "backend, frontend, browser, contracts, governance, secrets, supply-chain, CodeQL, containers"
+      }
     },
     "P17-R18": {
-      "result": "not_run"
+      "result": "passed",
+      "command": "gh run view 38236284775",
+      "evidence": {
+        "merge_commit": "a68b28897d4f61abe6dd09ad78535214461acb66",
+        "run": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/38236284775",
+        "jobs": "backend, frontend, browser, contracts, governance, secrets, supply-chain, containers, phase4-smoke, phase4-performance"
+      }
     }
   }
 }
