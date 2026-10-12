@@ -23,6 +23,54 @@ def create_app():
     return build()
 
 
+def test_preactivation_obligation_is_payable_without_opening_the_active_ledger(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    tenancy = f"tenancy-{uuid4().hex[:8]}"
+    blocked = client.post(
+        "/api/v2/payments/charges",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "amount_minor": 25000,
+            "category": "preactivation",
+            "description": "Holding fee before activation",
+            "account_reference": "account-not-opened",
+            "idempotency_key": _key("pre-blocked"),
+        },
+    )
+    assert blocked.status_code == 409, blocked.text
+    published = client.post(
+        "/api/v2/payments/charges",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "amount_minor": 25000,
+            "category": "preactivation",
+            "description": "Holding fee before activation",
+            "idempotency_key": _key("pre-publish"),
+        },
+    )
+    assert published.status_code == 200, published.text
+    body = published.json()
+    assert body["payable"] is True and body["journal_reference"] is None and body["money_moved"] is False
+    paid = client.post(
+        "/api/v2/payments/checkout",
+        headers=headers,
+        json={
+            "obligation_reference": body["reference"],
+            "amount_minor": 25000,
+            "method": "card",
+            "scenario": "succeeded",
+            "idempotency_key": _key("pre-pay"),
+        },
+    )
+    assert paid.status_code == 200, paid.text
+    assert paid.json()["state"] == "succeeded"
+    assert paid.json()["ledger_status"] == "not_linked"
+    assert paid.json()["ledger_reference"] is None
+    assert paid.json()["due_minor"] is None
+
+
 def test_published_charge_is_payable_once_and_refunds_share_one_cap(client):
     headers = _login(client, "ann.synthetic@example.com")
     _lease, portal_reference, capability = _household(client, headers)

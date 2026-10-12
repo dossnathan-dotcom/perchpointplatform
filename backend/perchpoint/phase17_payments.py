@@ -148,6 +148,8 @@ def publish_charge(settings, actor, organization, body: dict) -> dict:
     rent_basis = int(body.get("rent_basis_minor") or (household["rent_minor"] if household else 0))
     if category == "rent" and rent_basis < 1:
         raise CommandError(409, "conflict", "A monthly rent basis is required before this charge can be refunded later.", False)
+    if category == "preactivation" and body.get("account_reference"):
+        raise CommandError(409, "conflict", "A pre-activation obligation stays outside the active household ledger until the tenancy is activated.", False)
     fingerprint = _fingerprint([tenancy, amount, category, description, body.get("account_reference"), body["idempotency_key"]])
     reference = f"obligation-{uuid4().hex[:16]}"
     with runtime_transaction(settings, _org(actor), _org(organization), uuid4()) as connection:
