@@ -101,6 +101,21 @@ class StripeAdapter:
             raise ProviderTimeout(idempotency_key) from exc
         return _normalize_intent(intent)
 
+    def create_cash_app_payment(self, *, idempotency_key: str, amount_minor: int, currency: str = "usd") -> dict:
+        """Cash App Pay is a Stripe method type. It is not an off-session card confirm."""
+        from .phase18_assistance import cash_app_payment_intent_params
+
+        params = cash_app_payment_intent_params(amount_minor)
+        params["currency"] = currency
+        intent = self.client.v1.payment_intents.create(
+            params=params,
+            options={"idempotency_key": idempotency_key},
+        )
+        normalized = _normalize_intent(intent)
+        if intent.status == "requires_payment_method":
+            normalized["status"] = "action_required"
+        return normalized
+
     def refund_payment(self, *, idempotency_key: str, payment_intent: str, amount_minor: int) -> dict:
         try:
             refund = self.client.v1.refunds.create(
