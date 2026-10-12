@@ -335,6 +335,7 @@ async function prepareLinkedAccount(api, headers, stamp) {
 }
 
 test("linked household charge settles through the worker", async ({ browser }) => {
+  test.setTimeout(360000);
   const stamp = Date.now().toString(36);
   const residentEmail = `resident.linked.${stamp}@example.com`;
   const payerEmail = `payer.linked.${stamp}@example.com`;

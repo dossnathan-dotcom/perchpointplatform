@@ -14,7 +14,7 @@ REMOTE_GATES = ("P17-R17", "P17-R18")
 AUTOPAY_CASES = tuple(f"APW-{index:02d}" for index in range(1, 10))
 ENGINES = ("chromium", "firefox", "webkit")
 VIEWPORTS = (320, 768, 1024, 1440)
-SELF_REVIEW = {"implementer", "self", "author"}
+SELF_REVIEW = {"implementer", "self", "author", "phase17-invariant-review"}
 
 
 def evaluate(state: dict, mode: str = "local") -> list[str]:
@@ -152,7 +152,12 @@ def _gate_evidence(gate: str, evidence: dict) -> list[str]:
             errors.append(f"{gate} needs Chromium, Firefox, and WebKit at 320, 768, 1024, and 1440")
     if gate == "P17-R16":
         reviewer = str(evidence.get("reviewer") or "")
-        if evidence.get("independent_review") is not True or reviewer.casefold() in SELF_REVIEW:
+        folded = reviewer.casefold()
+        if (
+            evidence.get("independent_review") is not True
+            or folded in SELF_REVIEW
+            or "invariant-review" in folded
+        ):
             errors.append(f"{gate} needs an independent review of the current candidate")
         if evidence.get("households") != 20:
             errors.append(f"{gate} needs the twenty-household demonstration")

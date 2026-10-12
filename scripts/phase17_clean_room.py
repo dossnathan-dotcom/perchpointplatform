@@ -69,6 +69,9 @@ def _env() -> dict[str, str]:
             "PHASE6_ALLOWED_ORIGINS": "http://127.0.0.1:3000,http://localhost:3000,http://testserver",
             "PHASE6_AUTH_URL": "http://127.0.0.1:9998",
             "PHASE6_PROVIDER_JWT_SECRET": "local-only-not-production-gotrue-jwt-secret",
+            "PHASE6_SMTP_HOST": "127.0.0.1",
+            "PHASE6_SMTP_PORT": "1125",
+            "PHASE6_MAILPIT_URL": "http://127.0.0.1:8125",
             "PHASE5_LIVE_SERVICES": "1",
             "PHASE5_OBJECT_STORE": "s3",
             "PHASE5_S3_ENDPOINT": "http://127.0.0.1:9100",
@@ -97,11 +100,46 @@ def _assert_removed() -> None:
         raise RuntimeError("clean-room resources remained after teardown")
 
 
+def _pid_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        import ctypes
+
+        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)
+        if handle:
+            ctypes.windll.kernel32.CloseHandle(handle)
+            return True
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def _acquire_lock() -> Path:
+    path = Path(os.environ.get("TEMP", ".")) / "perchpoint-phase17-clean-room.lock"
+    if path.exists():
+        try:
+            holder = int(path.read_text(encoding="utf-8").strip())
+        except ValueError:
+            holder = 0
+        if _pid_alive(holder):
+            raise RuntimeError(f"clean room already running as pid {holder}")
+        path.unlink(missing_ok=True)
+    path.write_text(str(os.getpid()), encoding="utf-8")
+    return path
+
+
 def main() -> int:
     if "--execute" not in sys.argv:
         print("refusing to run without --execute")
         return 1
+    lock = _acquire_lock()
+    print("clean_room=locked", flush=True)
     accept_was_up = _run(["docker", "ps", "-q", "--filter", f"label=com.docker.compose.project={ACCEPT}"], check=False).stdout.strip()
+    print(f"clean_room=accept_was_up:{bool(accept_was_up)}", flush=True)
     try:
         if accept_was_up:
             _run(["docker", "compose", "-p", ACCEPT, "-f", str(COMPOSE_FILE), "stop"])
@@ -166,6 +204,7 @@ def main() -> int:
         if role != "false,false":
             raise RuntimeError("runtime role is superuser or bypasses row security")
         _compose("up", "-d", "mailpit", "auth", "minio", "clamav")
+        _wait_healthy("mailpit", 90)
         _wait_healthy("clamav", 360)
         _wait_healthy("minio", 90)
         pytest = _run([sys.executable, "-m", "pytest", "-q", "--tb=line"], cwd=ROOT / "backend", env=env)
@@ -180,6 +219,8 @@ def main() -> int:
         _assert_removed()
         if accept_was_up:
             _run(["docker", "compose", "-p", ACCEPT, "-f", str(COMPOSE_FILE), "up", "-d"], check=False)
+        if lock.exists() and lock.read_text(encoding="utf-8").strip() == str(os.getpid()):
+            lock.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

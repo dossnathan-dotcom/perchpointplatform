@@ -108,6 +108,15 @@ def test_self_review_and_missing_autopay_cases_are_rejected():
     assert any("APW-02" in error for error in errors)
 
 
+def test_invariant_script_cannot_close_the_review_gate():
+    state = _complete()
+    state["findings"] = []
+    state["gates"]["P17-R16"]["evidence"]["reviewer"] = "phase17-invariant-review"
+    state["gates"]["P17-R16"]["evidence"]["independent_review"] = True
+    errors = evaluate(state, "local")
+    assert any("independent review" in error for error in errors)
+
+
 def test_pr_mode_rejects_a_mismatched_head():
     state = _complete()
     state["pull_request"] = {"head": "abc123"}

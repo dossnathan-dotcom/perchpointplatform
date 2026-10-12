@@ -100,7 +100,11 @@ def test_worker_process_collects_one_due_autopay_occurrence():
             client,
             headers,
             tenancy,
-            lambda body: body["ledger"]["due_minor"] == 0 and body["ledger"]["settlement_count"] == 2,
+            lambda body: (
+                body["ledger"]["due_minor"] == 0
+                and body["ledger"]["settlement_count"] == 2
+                and ((body.get("autopay") or {}).get("latest") or {}).get("state") == "collected"
+            ),
         )
         assert collected["obligations"][0]["remaining_minor"] == 0
         assert collected["autopay"]["latest"]["state"] == "collected"
@@ -154,7 +158,10 @@ def test_worker_delay_posts_once_after_callback_and_restart():
             client,
             headers,
             tenancy,
-            lambda body: body["ledger"]["settlement_count"] == 2 and body["ledger"]["due_minor"] == 0,
+            lambda body: body["ledger"]["settlement_count"] == 2
+            and body["ledger"]["due_minor"] == 0
+            and ((body.get("autopay") or {}).get("latest") or {}).get("state") == "collected"
+            and body["autopay"]["latest"]["reason"] == "provider_confirmed",
         )
         assert posted["ledger"]["settlement_count"] == 2
         assert posted["autopay"]["latest"]["state"] == "collected"
@@ -519,9 +526,15 @@ def test_worker_process_lost_ack_does_not_post_again():
     assert _event_state(event_id) == "received"
     recovered = _spawn("2026-10-11T16:00:00-04:00")
     try:
-        posted = _wait_until(client, headers, tenancy, lambda body: body["ledger"]["due_minor"] == 0)
+        deadline = time.time() + 20
+        while time.time() < deadline and _event_state(event_id) != "applied":
+            time.sleep(0.25)
+        summary = client.get("/api/v2/payments/summary", headers=headers, params={"tenancy_code": tenancy})
+        assert summary.status_code == 200, summary.text
+        posted = summary.json()
+        assert _event_state(event_id) == "applied"
+        assert posted["ledger"]["due_minor"] == 0
         assert posted["ledger"]["settlement_count"] == 2
         assert _orders(tenancy, f"autopay-{tenancy}-2026-10") == 1
-        assert _event_state(event_id) == "applied"
     finally:
         _stop(recovered)
