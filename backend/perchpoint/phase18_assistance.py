@@ -311,6 +311,17 @@ def _revise_resident(connection, organization, prior, parts, body) -> None:
         ).scalar()
         or 0
     )
+    collected += int(
+        connection.execute(
+            text(
+                "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
+                "WHERE tenancy_code = :tenancy AND service_period = :period "
+                "AND purpose = 'resident_rent' AND application_state = 'applied'"
+            ),
+            {"tenancy": parts["tenancy"], "period": parts["period"]},
+        ).scalar()
+        or 0
+    )
     if new_resident == 0 and collected == 0:
         account = _account(connection, parts["account"])
         _post(
@@ -328,9 +339,10 @@ def _revise_resident(connection, organization, prior, parts, body) -> None:
         connection.execute(
             text(
                 "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
-                "WHERE tenancy_code = :tenancy AND kind = 'required_return' AND state = 'resolved'"
+                "WHERE tenancy_code = :tenancy AND service_period = :period "
+                "AND kind = 'required_return' AND state = 'resolved'"
             ),
-            {"tenancy": parts["tenancy"]},
+            {"tenancy": parts["tenancy"], "period": parts["period"]},
         ).scalar()
         or 0
     )
@@ -1570,9 +1582,10 @@ def complete_required_return(settings: Settings, actor, organization, body: dict
         determination = connection.execute(
             text(
                 "SELECT resident_minor, account_reference, obligation_reference FROM assistance_determinations "
-                "WHERE tenancy_code = :tenancy AND state = 'approved' ORDER BY service_period DESC LIMIT 1"
+                "WHERE tenancy_code = :tenancy AND service_period = :period AND state = 'approved' "
+                "ORDER BY version DESC LIMIT 1"
             ),
-            {"tenancy": case["tenancy_code"]},
+            {"tenancy": case["tenancy_code"], "period": case["service_period"]},
         ).mappings().first()
         if determination is None or not determination["account_reference"]:
             raise CommandError(409, "conflict", "The household account for this return is not available.", False)
@@ -1682,6 +1695,8 @@ def household_directory(settings: Settings, actor, organization, query: str | No
 def transfer_instructions(settings: Settings, actor, organization, body: dict) -> dict:
     with runtime_transaction(settings, actor, _org(organization), uuid4()) as connection:
         _require_any(connection, ("payment.read", "payment.pay", "payment.charge"))
+        if not _may_act_for_tenancy(connection, body["tenancy_code"], grant_counts=True):
+            raise CommandError(403, "denied", "This household is not available for this sign-in.", False)
         determination = connection.execute(
             text(
                 "SELECT resident_minor FROM assistance_determinations "

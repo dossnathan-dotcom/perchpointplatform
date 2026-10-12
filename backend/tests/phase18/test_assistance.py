@@ -106,6 +106,12 @@ def test_a_resident_cannot_open_another_household_by_code(client):
         },
     )
     assert report.status_code == 403
+    instructions = client.post(
+        "/api/v2/payments/assistance/instructions",
+        headers=resident,
+        json={"tenancy_code": tenancy},
+    )
+    assert instructions.status_code == 403
 
 
 def test_agency_delay_does_not_increase_resident_due(client):
@@ -1119,3 +1125,117 @@ def test_worker_process_applies_a_queued_receipt_once(client):
     assert replay.json()["replayed"] is True
     confirmed = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
     assert confirmed["subsidy_minor"] == 80000
+
+
+def test_a_revised_transfer_receipt_opens_the_resident_overpayment(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    account = _books(client, headers)
+    tenancy, _created = _determination(client, headers, account, resident=40000, agency=110000)
+    confirmed = client.post(
+        "/api/v2/payments/assistance/receipts",
+        headers=headers,
+        json={
+            "source": "business_bank",
+            "external_id": f"resident-{uuid4().hex[:8]}",
+            "method": "bank_transfer",
+            "purpose": "resident_rent",
+            "amount_minor": 40000,
+            "tenancy_code": tenancy,
+            "service_period": "2026-11",
+            "idempotency_key": _key("transfer-revision-receipt"),
+        },
+    )
+    assert confirmed.status_code == 200, confirmed.text
+    applied = client.post(
+        "/api/v2/payments/assistance/receipts/apply",
+        headers=headers,
+        json={"receipt_reference": confirmed.json()["reference"], "idempotency_key": _key("transfer-revision-apply")},
+    )
+    assert applied.status_code == 200 and applied.json()["posted"] is True
+    revised = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-11",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 30000,
+            "agency_minor": 120000,
+            "idempotency_key": _key("transfer-revision"),
+        },
+    )
+    assert revised.status_code == 200, revised.text
+    view = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    assert view["exceptions"][0]["kind"] == "resident_overpayment"
+    assert view["exceptions"][0]["amount_minor"] == 10000
+    assert view["agency_received_minor"] == 0
+
+
+def test_a_return_uses_its_own_period_when_a_later_period_exists(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    account = _books(client, headers)
+    tenancy, created = _determination(client, headers, account, resident=40000, agency=110000)
+    paid = client.post(
+        "/api/v2/payments/checkout",
+        headers=headers,
+        json={
+            "obligation_reference": created["resident_obligation"],
+            "amount_minor": 40000,
+            "method": "card",
+            "scenario": "succeeded",
+            "idempotency_key": _key("period-pay"),
+        },
+    )
+    assert paid.status_code == 200, paid.text
+    revised = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-11",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 30000,
+            "agency_minor": 120000,
+            "idempotency_key": _key("period-revision"),
+        },
+    )
+    assert revised.status_code == 200, revised.text
+    view = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    opened = client.post(
+        "/api/v2/payments/assistance/returns",
+        headers=headers,
+        json={
+            "exception_reference": view["exceptions"][0]["public_reference"],
+            "recipient": "resident",
+            "idempotency_key": _key("period-return"),
+        },
+    )
+    assert opened.status_code == 200, opened.text
+    later = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-12",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 40000,
+            "agency_minor": 110000,
+            "idempotency_key": _key("later-period"),
+        },
+    )
+    assert later.status_code == 200, later.text
+    completed = client.post(
+        "/api/v2/payments/assistance/returns/complete",
+        headers=headers,
+        json={
+            "return_reference": opened.json()["reference"],
+            "evidence_key": f"bank-return-{uuid4().hex[:12]}",
+            "idempotency_key": _key("period-complete"),
+        },
+    )
+    assert completed.status_code == 200, completed.text
+    assert completed.json()["state"] == "resolved"
+    assert completed.json()["amount_minor"] == 10000

@@ -825,7 +825,7 @@ def request_refund(settings, actor, organization, body: dict) -> dict:
         else:
             order = connection.execute(
                 text(
-                    "SELECT id, amount_minor, tenancy_code, state, ledger_reference FROM payment_orders "
+                    "SELECT id, obligation_id, amount_minor, tenancy_code, state, ledger_reference FROM payment_orders "
                     "WHERE public_reference = :reference FOR UPDATE"
                 ),
                 {"reference": body["payment_reference"]},
@@ -854,12 +854,22 @@ def request_refund(settings, actor, organization, body: dict) -> dict:
             )
             basis_minor = connection.execute(
                 text(
-                    "SELECT resident_minor FROM assistance_determinations "
-                    "WHERE tenancy_code = :tenancy AND state = 'approved' "
-                    "ORDER BY service_period DESC, version DESC LIMIT 1"
+                    "SELECT determination.resident_minor FROM assistance_determinations determination "
+                    "JOIN payment_obligations obligation ON obligation.public_reference = determination.obligation_reference "
+                    "WHERE obligation.id = :obligation AND determination.state = 'approved' "
+                    "ORDER BY determination.version DESC LIMIT 1"
                 ),
-                {"tenancy": order["tenancy_code"]},
+                {"obligation": order["obligation_id"]},
             ).scalar()
+            if basis_minor is None:
+                basis_minor = connection.execute(
+                    text(
+                        "SELECT resident_minor FROM assistance_determinations "
+                        "WHERE tenancy_code = :tenancy AND state = 'approved' "
+                        "ORDER BY service_period DESC, version DESC LIMIT 1"
+                    ),
+                    {"tenancy": order["tenancy_code"]},
+                ).scalar()
             if basis_minor is not None:
                 decision = dict(decision)
                 decision["assistance_basis_minor"] = int(basis_minor)
