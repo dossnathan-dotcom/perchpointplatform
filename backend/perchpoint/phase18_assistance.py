@@ -316,7 +316,18 @@ def _revise_resident(connection, organization, prior, parts, body) -> None:
         )
         connection.execute(text("UPDATE payment_obligations SET state = 'held' WHERE id = :id"), {"id": obligation["id"]})
         return
-    if collected > new_resident:
+    returned = int(
+        connection.execute(
+            text(
+                "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
+                "WHERE tenancy_code = :tenancy AND kind = 'required_return' AND state = 'resolved'"
+            ),
+            {"tenancy": parts["tenancy"]},
+        ).scalar()
+        or 0
+    )
+    excess = collected - returned - new_resident
+    if excess > 0:
         connection.execute(
             text(
                 "INSERT INTO assistance_exceptions "
@@ -328,7 +339,7 @@ def _revise_resident(connection, organization, prior, parts, body) -> None:
                 "reference": f"exception-{uuid4().hex[:16]}",
                 "tenancy": parts["tenancy"],
                 "period": parts["period"],
-                "amount": collected - new_resident,
+                "amount": excess,
                 "detail": "A revised resident portion is below the amount already paid. No agency receipt was created.",
             },
         )
@@ -820,12 +831,14 @@ def record_batch(settings: Settings, actor, organization, body: dict) -> dict:
         if replay is not None:
             return replay
         existing = connection.execute(
-            text("SELECT public_reference FROM remittance_batches WHERE economic_key = :key"),
+            text("SELECT public_reference, gross_minor, recoupment_minor, net_minor FROM remittance_batches WHERE economic_key = :key"),
             {"key": economic},
-        ).scalar()
+        ).mappings().first()
         if existing is not None:
-            _remember(connection, organization, body["idempotency_key"], fingerprint, existing)
-            return {"accepted": True, "reference": existing, "replayed": True, "money_moved": False}
+            if int(existing["gross_minor"]) != gross or int(existing["recoupment_minor"]) != recoupment or int(existing["net_minor"]) != net:
+                raise CommandError(409, "conflict", "That remittance identifier already belongs to a different batch.", False)
+            _remember(connection, organization, body["idempotency_key"], fingerprint, existing["public_reference"])
+            return {"accepted": True, "reference": existing["public_reference"], "replayed": True, "money_moved": False}
         if body.get("cash_external_id"):
             receipt_reference = f"receipt-{uuid4().hex[:16]}"
             connection.execute(
@@ -1223,12 +1236,14 @@ def record_required_return(settings: Settings, actor, organization, body: dict) 
             raise CommandError(404, "not_found", "There is no open resident overpayment to return.", False)
         if recipient != "resident":
             raise CommandError(409, "conflict", "A resident overpayment returns to the resident, not the agency.", False)
+        source_detail = f"source:{body['exception_reference']}"
         existing_return = connection.execute(
             text(
                 "SELECT 1 FROM assistance_exceptions "
-                "WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'required_return' AND state = 'open'"
+                "WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'required_return' "
+                "AND state = 'open' AND detail = :source"
             ),
-            {"tenancy": source["tenancy_code"], "period": source["service_period"]},
+            {"tenancy": source["tenancy_code"], "period": source["service_period"], "source": source_detail},
         ).first()
         if existing_return is not None:
             raise CommandError(409, "conflict", "An open required return already reserves this overpayment.", False)
@@ -1236,9 +1251,10 @@ def record_required_return(settings: Settings, actor, organization, body: dict) 
             connection.execute(
                 text(
                     "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
-                    "WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'required_return' AND state = 'resolved'"
+                    "WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'required_return' "
+                    "AND state = 'resolved' AND detail = :source"
                 ),
-                {"tenancy": source["tenancy_code"], "period": source["service_period"]},
+                {"tenancy": source["tenancy_code"], "period": source["service_period"], "source": source_detail},
             ).scalar()
             or 0
         )
@@ -1256,7 +1272,7 @@ def record_required_return(settings: Settings, actor, organization, body: dict) 
                 "tenancy": source["tenancy_code"],
                 "period": source["service_period"],
                 "amount": int(source["amount_minor"]),
-                "detail": "Owned required return. Not paid. Recipient: resident.",
+                "detail": source_detail,
             },
         )
         _remember(connection, organization, body["idempotency_key"], fingerprint, reference)
@@ -1303,7 +1319,7 @@ def complete_required_return(settings: Settings, actor, organization, body: dict
         )
         case = connection.execute(
             text(
-                "SELECT id, tenancy_code, service_period, amount_minor, state, journal_reference, evidence_key "
+                "SELECT id, tenancy_code, service_period, amount_minor, state, journal_reference, evidence_key, detail "
                 "FROM assistance_exceptions WHERE public_reference = :reference AND kind = 'required_return' FOR UPDATE"
             ),
             {"reference": body["return_reference"]},
@@ -1380,17 +1396,16 @@ def complete_required_return(settings: Settings, actor, organization, body: dict
             ),
             {"journal": journal, "evidence": evidence, "id": case["id"]},
         )
-        connection.execute(
-            text(
-                "UPDATE assistance_exceptions SET state = 'resolved' "
-                "WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'resident_overpayment' AND state = 'open' "
-                "AND amount_minor <= ("
-                "  SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
-                "  WHERE tenancy_code = :tenancy AND service_period = :period AND kind = 'required_return' AND state = 'resolved'"
-                ")"
-            ),
-            {"tenancy": case["tenancy_code"], "period": case["service_period"]},
-        )
+        source_reference = str(case["detail"] or "")
+        if source_reference.startswith("source:"):
+            connection.execute(
+                text(
+                    "UPDATE assistance_exceptions SET state = 'resolved' "
+                    "WHERE public_reference = :source AND kind = 'resident_overpayment' AND state = 'open' "
+                    "AND amount_minor <= :amount"
+                ),
+                {"source": source_reference.removeprefix("source:"), "amount": amount},
+            )
         if determination["obligation_reference"]:
             connection.execute(
                 text("UPDATE payment_obligations SET amount_minor = :amount WHERE public_reference = :reference"),

@@ -218,16 +218,18 @@ def test_batch_offset_reconciles_without_charging_a_resident(client):
         account = _books(client, headers)
         tenancy, _body = _determination(client, headers, account, resident=10000, agency=agency)
         households.append((tenancy, account))
+    economic = f"hap-{uuid4().hex[:8]}"
+    cash = f"cash-{uuid4().hex[:8]}"
     created = client.post(
         "/api/v2/payments/assistance/batches",
         headers=headers,
         json={
-            "external_id": f"hap-{uuid4().hex[:8]}",
+            "external_id": economic,
             "gross_minor": 280000,
             "recoupment_minor": 20000,
             "adjustment_minor": 0,
             "net_minor": 260000,
-            "cash_external_id": f"cash-{uuid4().hex[:8]}",
+            "cash_external_id": cash,
             "rows": [
                 {"tenancy_code": households[0][0], "service_period": "2026-11", "gross_minor": 110000},
                 {"tenancy_code": households[1][0], "service_period": "2026-11", "gross_minor": 90000},
@@ -254,6 +256,68 @@ def test_batch_offset_reconciles_without_charging_a_resident(client):
         view = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
         assert view["due_minor"] == 10000
         assert view["agency_outstanding_minor"] == 0
+        assert view["agency_received_minor"] == {households[0][0]: 110000, households[1][0]: 90000, households[2][0]: 80000}[tenancy]
+    replayed = client.post(
+        "/api/v2/payments/assistance/batches",
+        headers=headers,
+        json={
+            "external_id": economic,
+            "gross_minor": 280000,
+            "recoupment_minor": 20000,
+            "adjustment_minor": 0,
+            "net_minor": 260000,
+            "cash_external_id": cash,
+            "rows": [
+                {"tenancy_code": households[0][0], "service_period": "2026-11", "gross_minor": 110000},
+                {"tenancy_code": households[1][0], "service_period": "2026-11", "gross_minor": 90000},
+                {"tenancy_code": households[2][0], "service_period": "2026-11", "gross_minor": 80000},
+            ],
+            "idempotency_key": _key("batch-replay"),
+        },
+    )
+    assert replayed.status_code == 200, replayed.text
+    assert replayed.json()["replayed"] is True
+    assert replayed.json()["reference"] == created.json()["reference"]
+    reapplied = client.post(
+        "/api/v2/payments/assistance/batches/apply",
+        headers=headers,
+        json={"batch_reference": created.json()["reference"], "idempotency_key": _key("batch-apply-again")},
+    )
+    assert reapplied.status_code == 200, reapplied.text
+    assert reapplied.json()["replayed"] is True
+    distinct = client.post(
+        "/api/v2/payments/assistance/batches",
+        headers=headers,
+        json={
+            "external_id": f"hap-{uuid4().hex[:8]}",
+            "gross_minor": 280000,
+            "recoupment_minor": 20000,
+            "adjustment_minor": 0,
+            "net_minor": 260000,
+            "cash_external_id": f"cash-{uuid4().hex[:8]}",
+            "rows": [
+                {"tenancy_code": households[0][0], "service_period": "2026-11", "gross_minor": 110000},
+                {"tenancy_code": households[1][0], "service_period": "2026-11", "gross_minor": 90000},
+                {"tenancy_code": households[2][0], "service_period": "2026-11", "gross_minor": 80000},
+            ],
+            "idempotency_key": _key("batch-distinct"),
+        },
+    )
+    assert distinct.status_code == 200, distinct.text
+    assert distinct.json()["replayed"] is False
+    assert distinct.json()["reference"] != created.json()["reference"]
+    blocked = client.post(
+        "/api/v2/payments/assistance/batches/apply",
+        headers=headers,
+        json={"batch_reference": distinct.json()["reference"], "idempotency_key": _key("batch-distinct-apply")},
+    )
+    assert blocked.status_code == 200, blocked.text
+    assert blocked.json()["open_rows"] == 3
+    assert blocked.json()["unexplained_minor"] == 260000
+    for tenancy, _account in households:
+        view = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+        assert view["agency_received_minor"] == {households[0][0]: 110000, households[1][0]: 90000, households[2][0]: 80000}[tenancy]
+        assert view["due_minor"] == 10000
 
 
 def test_revision_opens_an_overpayment_without_an_agency_receipt(client):
@@ -430,6 +494,87 @@ def test_required_return_stays_unpaid_and_cannot_be_sent_to_the_agency(client):
         },
     )
     assert repeated.status_code == 404
+
+
+def test_a_later_overpayment_remains_returnable(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    account = _books(client, headers)
+    tenancy, created = _determination(client, headers, account, resident=40000, agency=110000)
+    paid = client.post(
+        "/api/v2/payments/checkout",
+        headers=headers,
+        json={
+            "obligation_reference": created["resident_obligation"],
+            "amount_minor": 40000,
+            "method": "card",
+            "scenario": "succeeded",
+            "idempotency_key": _key("later-pay"),
+        },
+    )
+    assert paid.status_code == 200, paid.text
+    revised = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-11",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 30000,
+            "agency_minor": 120000,
+            "idempotency_key": _key("later-first"),
+        },
+    )
+    assert revised.status_code == 200, revised.text
+    first = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    overpayment = next(row for row in first["exceptions"] if row["kind"] == "resident_overpayment")
+    opened = client.post(
+        "/api/v2/payments/assistance/returns",
+        headers=headers,
+        json={"exception_reference": overpayment["public_reference"], "recipient": "resident", "idempotency_key": _key("later-open")},
+    )
+    assert opened.status_code == 200, opened.text
+    evidence = f"bank-return-{uuid4().hex[:12]}"
+    completed = client.post(
+        "/api/v2/payments/assistance/returns/complete",
+        headers=headers,
+        json={"return_reference": opened.json()["reference"], "evidence_key": evidence, "idempotency_key": _key("later-complete")},
+    )
+    assert completed.status_code == 200, completed.text
+    again = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-11",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 20000,
+            "agency_minor": 130000,
+            "idempotency_key": _key("later-second"),
+        },
+    )
+    assert again.status_code == 200, again.text
+    fresh = client.get("/api/v2/payments/assistance/household", headers=headers, params={"tenancy_code": tenancy}).json()
+    assert fresh["resident_returned_minor"] == 10000
+    assert fresh["resident_responsibility_minor"] == 20000
+    opened_again = [row for row in fresh["exceptions"] if row["kind"] == "resident_overpayment"]
+    assert len(opened_again) == 1
+    assert opened_again[0]["amount_minor"] == 10000
+    assert opened_again[0]["public_reference"] != overpayment["public_reference"]
+    stale = client.post(
+        "/api/v2/payments/assistance/returns",
+        headers=headers,
+        json={"exception_reference": overpayment["public_reference"], "recipient": "resident", "idempotency_key": _key("later-stale")},
+    )
+    assert stale.status_code == 404
+    second = client.post(
+        "/api/v2/payments/assistance/returns",
+        headers=headers,
+        json={"exception_reference": opened_again[0]["public_reference"], "recipient": "resident", "idempotency_key": _key("later-new")},
+    )
+    assert second.status_code == 200, second.text
+    assert second.json()["amount_minor"] == 10000 and second.json()["state"] == "open" and second.json()["paid"] is False
 
 
 def test_zero_resident_portion_publishes_no_charge(client):
