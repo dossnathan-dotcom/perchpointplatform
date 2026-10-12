@@ -7,8 +7,8 @@
   "phase_17_merge": "a68b28897d4f61abe6dd09ad78535214461acb66",
   "phase_17_evidence_merge": "a8c494dd479c7645da0b1d95ca3d6a53fb1a9561",
   "phase_18_behavior_started": true,
-  "phase_18_behavior_sha": "37907099365a1fff162b985c21122f5ab5d2a7e2",
-  "phase_18_head_sha": "9e901a0",
+  "phase_18_behavior_sha": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+  "phase_18_head_sha": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
   "phase_18_acceptance_granted": false,
   "real_values_activated": false,
   "money_moved": false,
@@ -24,6 +24,6 @@
   ],
   "targeted_suite_before_behavior_commit": "python -m pytest tests/phase18/test_assistance.py -n 0 --tb=line -q exited 0: 17 passed in 82.24s on 2026-10-12 against the dirty tree. This note is not a behavior SHA and does not grant acceptance.",
   "migration_proof": "0060 to 0064 preserved a 40000 succeeded payment and an invited grant. Empty database reached 0064 with runtime false,false and forced row security 226/226. Phase 18 tests: 25 passed. Phase 19 remains unopened.",
-  "next_unresolved_item": "Re-run the browser matrix on the current candidate, finish inherited suite on a fresh database with auth, scale, independent review, and the protected release. Phase 19 remains unopened.",
+  "next_unresolved_item": "Browser matrix 48 passed on 9bc691c. Still required: scale, inherited suite on a fresh database, independent review, and the protected release. Phase 19 remains unopened.",
   "scope_change": "CONFLICT-027 replaces physical payment intake with digital receipts and housing assistance. Decisions are in docs/plans/phase18/DECISIONS.md."
 }
