@@ -268,7 +268,7 @@ test("resident transfer is matched once and the worker posts the resident portio
   await chooseHousehold(residentPage, label);
   await expect(dueAmount(residentPage, "Amount due from you")).toHaveText("$400.00");
   await residentPage.getByLabel("Amount you sent").fill("400.00");
-  await residentPage.getByLabel("Reference").fill(`transfer-${stamp}`);
+  await residentPage.getByRole("textbox", { name: "Reference", exact: true }).fill(`transfer-${stamp}`);
   await residentPage.getByLabel("Date sent").fill("2026-11-02");
   await residentPage.getByLabel("What should we know").fill("Already sent the resident portion");
   await residentPage.getByRole("button", { name: "Submit report" }).click();

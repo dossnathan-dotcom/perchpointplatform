@@ -63,6 +63,7 @@ export function AssistanceDesk() {
     { tenancy: "", gross: "" },
   ]);
   const [batchResult, setBatchResult] = useState(null);
+  const [staff, setStaff] = useState(false);
   const searchGeneration = useRef(0);
 
   async function loadChoices(text) {
@@ -80,6 +81,7 @@ export function AssistanceDesk() {
 
   useEffect(() => {
     loadChoices("");
+    fetch("/api/v2/payments/assistance/measures", { credentials: "include" }).then((response) => setStaff(response.ok));
   }, []);
 
   async function openHousehold(code) {
@@ -321,7 +323,7 @@ export function AssistanceDesk() {
               <button className="min-h-11 bg-[#2457D6] px-4 py-2 text-white" type="submit">Submit report</button>
             </form>
           )}
-          <form className="mt-8 space-y-3" onSubmit={recordRemittance}>
+          {staff ? <form className="mt-8 space-y-3" onSubmit={recordRemittance}>
             <h2 className="text-xl font-semibold">Agency remittance</h2>
             <p>Gross assistance, a prior-period offset, and the bank deposit stay separate. Applying a complete remittance does not change what each resident owes.</p>
             <label className="block">Remittance reference
@@ -349,7 +351,7 @@ export function AssistanceDesk() {
               </div>
             ))}
             <button className="min-h-11 border border-[#2457D6] px-4 py-2" type="submit">Preview remittance</button>
-          </form>
+          </form> : null}
           {batchResult ? (
             <section className="mt-4 border border-[#D9E2EF] bg-white p-4" aria-live="polite">
               <h2 className="text-xl font-semibold">{batchResult.proposed ? "Proposed remittance" : "Applied remittance"}</h2>
