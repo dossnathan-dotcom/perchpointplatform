@@ -1293,3 +1293,57 @@ def test_a_november_receipt_does_not_settle_december(client):
     )
     assert checkout.status_code == 200, checkout.text
     assert checkout.json()["state"] == "succeeded"
+
+
+def test_another_organization_cannot_read_or_apply_a_receipt(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    external = f"org-bound-{uuid4().hex[:8]}"
+    tenancy = f"tenancy-{uuid4().hex[:8]}"
+    created = client.post(
+        "/api/v2/payments/assistance/receipts",
+        headers=headers,
+        json={
+            "source": "business_bank",
+            "external_id": external,
+            "method": "bank_transfer",
+            "purpose": "resident_rent",
+            "amount_minor": 40000,
+            "tenancy_code": tenancy,
+            "service_period": "2026-11",
+            "idempotency_key": _key("org-receipt"),
+        },
+    )
+    assert created.status_code == 200, created.text
+    reference = created.json()["reference"]
+    other = _login(client, "isolation.synthetic@example.com")
+    queue = client.get("/api/v2/payments/assistance/queue", headers=other)
+    assert queue.status_code == 200, queue.text
+    assert all(item["public_reference"] != reference for item in queue.json()["receipts"])
+    stolen = client.post(
+        "/api/v2/payments/assistance/receipts/apply",
+        headers=other,
+        json={"receipt_reference": reference, "idempotency_key": _key("org-apply")},
+    )
+    assert stolen.status_code == 404
+    duplicate = client.post(
+        "/api/v2/payments/assistance/receipts",
+        headers=other,
+        json={
+            "source": "business_bank",
+            "external_id": external,
+            "method": "bank_transfer",
+            "purpose": "resident_rent",
+            "amount_minor": 40000,
+            "tenancy_code": f"tenancy-{uuid4().hex[:8]}",
+            "service_period": "2026-11",
+            "idempotency_key": _key("org-own"),
+        },
+    )
+    assert duplicate.status_code == 200, duplicate.text
+    assert duplicate.json()["replayed"] is False
+    assert duplicate.json()["reference"] != reference
+    household = client.get("/api/v2/payments/assistance/household", headers=other, params={"tenancy_code": tenancy})
+    assert household.status_code == 200, household.text
+    assert household.json()["resident_responsibility_minor"] is None
+    still = client.get("/api/v2/payments/assistance/queue", headers=headers)
+    assert any(item["public_reference"] == reference for item in still.json()["receipts"])
