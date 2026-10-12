@@ -1,0 +1,16 @@
+{
+  "behavior_revision": "1056a7ffebc563960f337e72c851dd105d8bd053",
+  "command": "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js",
+  "started_at": "2026-10-12T19:02:23Z",
+  "elapsed": "53.0m",
+  "collected": 48,
+  "passed": 48,
+  "failed": 0,
+  "skipped": 0,
+  "workers": 1,
+  "engines": ["chromium", "firefox", "webkit"],
+  "viewports": [320, 768, 1024, 1440],
+  "projects_per_engine": 16,
+  "spec": "frontend/e2e/phase18-assistance.spec.js",
+  "acceptance_granted": false
+}
