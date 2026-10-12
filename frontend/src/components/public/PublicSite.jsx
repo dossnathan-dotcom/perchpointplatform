@@ -168,6 +168,8 @@ export function RentalsIndex() {
   const [state, setState] = useState("loading");
   const [catalog, setCatalog] = useState(null);
   const [listings, setListings] = useState([]);
+  const [published, setPublished] = useState(false);
+  const [discovery, setDiscovery] = useState([]);
   const [notice, setNotice] = useState("");
   const [inquiryState, setInquiryState] = useState("idle");
   const [receipt, setReceipt] = useState("");
@@ -191,6 +193,7 @@ export function RentalsIndex() {
             return;
           }
           setCatalog(null);
+          setPublished(true);
           setListings(fallback.body.listings || []);
           setState("ready");
         });
@@ -201,12 +204,33 @@ export function RentalsIndex() {
         return;
       }
       setCatalog(body);
+      setPublished(false);
       setListings([]);
       setNotice(body.total ? `${body.total} homes match.` : "No homes match. Remove one filter and search again.");
       setState("ready");
     }).catch(() => { if (active) setState("unavailable"); });
     return () => { active = false; };
   }, [params]);
+  async function search(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const query = new URLSearchParams();
+    for (const [key, value] of form.entries()) {
+      if (String(value).trim()) query.set(key, String(value).trim());
+    }
+    setNotice("Searching approved listings.");
+    try {
+      const { response, body } = await phase2(`/api/v2/public/discovery/search?${query.toString()}`);
+      if (!response.ok) {
+        setNotice("Search is temporarily unavailable. The published list below is unchanged.");
+        return;
+      }
+      setDiscovery(body.records || []);
+      setNotice(body.total ? `${body.total} approved listings match.` : "No listings match. Remove one filter and search again.");
+    } catch {
+      setNotice("Search is temporarily unavailable. The published list below is unchanged.");
+    }
+  }
   function applyFilters(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -262,7 +286,20 @@ export function RentalsIndex() {
   const fieldClass = "mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian";
   return (
     <PageFrame title="Rentals" testId="rentals-index">
-      <p>Homes shown here are the current public catalog. Filters stay in the page address, and each page shows at most 10 homes.</p>
+      <p>{published ? "Available homes come from the current public listing projection. The CMS cannot change rent, fees, or availability." : "Homes shown here are the current public catalog. Filters stay in the page address, and each page shows at most 10 homes."}</p>
+      {published ? (
+        <form className="space-y-3" onSubmit={search}>
+          <label className="block text-sm font-semibold" htmlFor="discovery-city">City</label>
+          <input id="discovery-city" name="city" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
+          <label className="block text-sm font-semibold" htmlFor="discovery-use">Use</label>
+          <select id="discovery-use" name="use_code" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }}>
+            <option value="">Any approved use</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+          <button className="underline" type="submit">Search approved listings</button>
+        </form>
+      ) : (
       <form className="grid gap-3 sm:grid-cols-2" onSubmit={applyFilters}>
         <label className="block text-sm font-semibold" htmlFor="filter-city">Location
           <input id="filter-city" name="city" defaultValue={params.get("city") || ""} className={fieldClass} style={{ colorScheme: "light" }} />
@@ -295,6 +332,7 @@ export function RentalsIndex() {
         </fieldset>
         <button className="min-h-11 bg-obsidian px-4 py-2 text-linen sm:col-span-2" type="submit">Apply filters</button>
       </form>
+      )}
       <p role="status">{notice}</p>
       {catalog && (
         <ul className="grid gap-4">
@@ -352,6 +390,13 @@ export function RentalsIndex() {
             <li key={listing.listing_id}>
               <Link className="underline" to={`/rentals/${listing.listing_id}`}>{listing.property_name} — {listing.label}</Link>
             </li>
+          ))}
+        </ul>
+      )}
+      {discovery.length > 0 && (
+        <ul>
+          {discovery.map((row) => (
+            <li key={row.listing_id || row.slug}>{row.property_name || row.label}</li>
           ))}
         </ul>
       )}
