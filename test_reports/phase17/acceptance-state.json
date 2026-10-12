@@ -1,38 +1,269 @@
 {
   "phase": 17,
-  "local_technical_acceptance": false,
-  "recovery_complete": false,
+  "local_technical_acceptance": true,
+  "recovery_complete": true,
   "phase_18_started": false,
   "real_values_activated": false,
   "money_moved": false,
-  "migration_head": "0051_phase17_payer_ledger",
+  "behavior_revision": "a38223061e61d700ed9d590316f56e90eb19af09",
+  "migration_head": "0060_phase17_grant_accept",
   "commands": [
-    "python -m alembic current",
-    "python -m pytest tests/phase17/test_payments.py tests/phase17/test_refund_policy.py -n 0"
+    "python scripts/phase17_clean_room.py --execute",
+    "python scripts/phase17_benchmark.py --execute",
+    "python -m pytest tests/phase17 -n 0",
+    "python -m pytest tests/phase17/test_worker.py -n 0",
+    "corepack yarn playwright test --config=playwright.phase17.config.js",
+    "corepack yarn playwright test e2e/phase17-payer.spec.js --config=playwright.phase17.config.js -g \"owner approves one exact refund\""
   ],
   "results": {
-    "alembic_current": "0051_phase17_payer_ledger (head)",
-    "pytest": "15 passed, exit 0, 28.46s, 2026-10-11"
+    "clean_room": "254 passed in 130.58s on the a382230 tree, head 0060_phase17_grant_accept, lineage 60, runtime false,false, forced_rls 220/220",
+    "predecessor": "passed on 03dd3d6: 0044 forced_rls 204/204, head 0060_phase17_grant_accept, runtime false,false, forced_rls 220/220",
+    "scale": "passed on 03dd3d6 at 0060. Database query time only, not whole-request latency. p95 tenancy_order_count 42.971 ms, p95 received_callback_count 17.313 ms, refund exposure 100000 minor units",
+    "phase17_suite": "53 passed in 304.37s on 668ee1b against the demo database. That suite includes the pre-activation test.",
+    "worker_process": "The empty-database suite on a382230 included the separate worker process tests, including lost-ack recovery.",
+    "owner_browser": "12 passed in 1.9m on Chromium, Firefox, and WebKit at 320, 768, 1024, and 1440",
+    "playwright_matrix": "108 passed in 29.0m on 9a5c203. The later owner journey is the additional 12, not a replacement of that matrix.",
+    "pytest": "254 passed in the empty-database suite, not the original 15-test checkpoint",
+    "checker": "test_invariant_script_cannot_close_the_review_gate passed in 1.72s on a382230"
   },
+  "findings": [
+    {
+      "id": "P17-R16-review",
+      "disposition": "closed",
+      "reason": "Security review 238dc23f closed the six authorization findings on 03dd3d6. Security review c3433b53 then confirmed the invariant-script reviewer name is rejected. Neither review is phase17-invariant-review."
+    }
+  ],
   "gates": {
-    "P17-R0": {"result": "partial", "note": "Decisions recorded. Full ancestry and recovery reconciliation is not closed."},
-    "P17-R1": {"result": "partial", "note": "Local head is 0051. Zero-to-head clean room was not run."},
-    "P17-R2": {"result": "not_run"},
-    "P17-R3": {"result": "partial", "note": "A published charge accepted two partial settlements. Pre-activation was not demonstrated."},
-    "P17-R4": {"result": "partial", "note": "Identity invitation, token acceptance, partial payment, privacy, and revocation passed in the API. Separate browser contexts were not run."},
-    "P17-R5": {"result": "partial", "note": "Local fake adapter only. No Stripe sandbox call."},
-    "P17-R6": {"result": "partial", "note": "40000 then 60000 posted two settlements. Replay did not add a third. Advance payments and expense separation were not demonstrated."},
-    "P17-R7": {"result": "partial", "note": "One period collected the remainder and an over-cap run skipped. No separate worker process."},
-    "P17-R8": {"result": "partial", "note": "A return restored receivable and an open dispute blocked a refund. Crash injection was not run."},
-    "P17-R9": {"result": "partial", "note": "A 70000 owner approval was rejected for insufficient source funds, and the same amount executed once when the source was 200000. Concurrent reservations were not executed."},
-    "P17-R10": {"result": "partial", "note": "Return and dispute commands exist. Closed-period correction was not executed."},
-    "P17-R11": {"result": "partial", "note": "Unsigned callback rejected. Durable inbox application is incomplete."},
-    "P17-R12": {"result": "partial", "note": "Chromium operations reached Accounts, 20 households, the charge form, and autopay. Other personas and browsers were not run."},
-    "P17-R13": {"result": "partial", "note": "Resident refund denial and closed live-payment route passed. Broader security suite was not run."},
-    "P17-R14": {"result": "not_run"},
-    "P17-R15": {"result": "not_run"},
-    "P17-R16": {"result": "not_run"},
-    "P17-R17": {"result": "not_run"},
-    "P17-R18": {"result": "not_run"}
+    "P17-R0": {
+      "result": "passed",
+      "command": "docs/plans/phase17/PROGRESS.md baseline and decision record",
+      "evidence": {
+        "baseline": true,
+        "decisions": true,
+        "tested_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "ancestor_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "sensitive_paths": [
+          "docs/plans/phase17/DECISIONS.md",
+          "docs/plans/phase17/ARCHITECTURE.md"
+        ]
+      }
+    },
+    "P17-R1": {
+      "result": "passed",
+      "command": "python scripts/phase17_clean_room.py --execute",
+      "evidence": {
+        "migration_head": "0060_phase17_grant_accept",
+        "clean_room": true,
+        "predecessor_upgrade": true,
+        "lineage_length": 60,
+        "passed": 254,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R2": {
+      "result": "passed",
+      "command": "python scripts/phase17_clean_room.py --execute",
+      "evidence": {
+        "runtime_role": "NOSUPERUSER",
+        "forced_rls": true,
+        "runtime": "false,false",
+        "forced_rls_count": "220/220",
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R3": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_payments.py::test_preactivation_obligation_is_payable_without_opening_the_active_ledger -n 0",
+      "evidence": {
+        "published_charge": true,
+        "pre_activation": true,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R4": {
+      "result": "passed",
+      "command": "corepack yarn playwright test --config=playwright.phase17.config.js",
+      "evidence": {
+        "invitation": true,
+        "browser": true,
+        "ledger_status": "posted",
+        "tested_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "ancestor_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "sensitive_paths": [
+          "frontend/src/components/demo/PaymentPanel.jsx",
+          "frontend/src/components/demo/ResidentPayments.jsx"
+        ]
+      }
+    },
+    "P17-R5": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_stripe_contract.py -n 0",
+      "evidence": {
+        "adapter_contract": true,
+        "sandbox": "unrun",
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R6": {
+      "result": "passed",
+      "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --project=chromium -g \"linked household charge settles through the worker\"",
+      "evidence": {
+        "ledger_status": "posted",
+        "settlement_count": 2,
+        "replay": "single",
+        "tested_revision": "03dd3d64012bd3c1bee31c5a0c315d3be709a23c",
+        "project": "chromium-1440",
+        "result_detail": "1 passed in 3.2m",
+        "ancestor_revision": "03dd3d64012bd3c1bee31c5a0c315d3be709a23c",
+        "sensitive_paths": [
+          "backend/perchpoint/phase17_payments.py"
+        ]
+      }
+    },
+    "P17-R7": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_worker.py -n 0",
+      "evidence": {
+        "worker": "process",
+        "cases": [
+          "APW-01",
+          "APW-02",
+          "APW-03",
+          "APW-04",
+          "APW-05",
+          "APW-06",
+          "APW-07",
+          "APW-08",
+          "APW-09"
+        ],
+        "case_tests": {
+          "APW-01": "test_worker_process_collects_one_due_autopay_occurrence",
+          "APW-02": "test_worker_delay_posts_once_after_callback_and_restart",
+          "APW-03": "test_two_workers_collect_one_occurrence",
+          "APW-04": "test_pause_and_blocked_instrument_do_not_debit and test_pause_after_submission_still_posts_the_one_accepted_payment",
+          "APW-05": "blocked instrument and revoked grant are rechecked before dispatch",
+          "APW-06": "test_worker_skips_over_cap_paid_fee_reserved_and_revoked_grant",
+          "APW-07": "test_missed_day_is_not_collected_as_a_historical_batch and test_month_change_collects_the_new_period_without_a_historical_batch",
+          "APW-08": "test_worker_crash_before_posting_retries_the_same_callback_once and test_worker_process_lost_ack_does_not_post_again",
+          "APW-09": "scheduled autopay finishes after the browser closes"
+        },
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R8": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_callbacks.py tests/phase17/test_returns.py -n 0",
+      "evidence": {
+        "returns": true,
+        "uncertainty": true,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R9": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_refund_contention.py tests/phase17/test_refund_policy.py -n 0",
+      "evidence": {
+        "concurrent": true,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R10": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_returns.py -n 0",
+      "evidence": {
+        "closed_period": true,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R11": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_callbacks.py tests/phase17/test_worker.py::test_worker_process_lost_ack_does_not_post_again -n 0",
+      "evidence": {
+        "worker": "process",
+        "callback_route": "/api/v2/payments/provider-events",
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R12": {
+      "result": "passed",
+      "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --config=playwright.phase17.config.js --project=chromium-1440 -g \"owner approves one exact refund\"",
+      "evidence": {
+        "personas": ["resident", "payer", "operations", "owner"],
+        "ledger_status": "posted",
+        "owner_chromium": "1 passed in 13.4s on chromium-1440",
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R13": {
+      "result": "passed",
+      "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --project=chromium",
+      "evidence": {
+        "negative_access": true,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09"
+      }
+    },
+    "P17-R14": {
+      "result": "passed",
+      "command": "corepack yarn playwright test --config=playwright.phase17.config.js",
+      "evidence": {
+        "executed": true,
+        "engines": [
+          "chromium",
+          "firefox",
+          "webkit"
+        ],
+        "viewports": [
+          320,
+          768,
+          1024,
+          1440
+        ],
+        "passed": 108,
+        "additional_owner_journey": "12 passed",
+        "tested_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "ancestor_revision": "9a5c20341d7be596bf65ec5cf2659aad8b0111a5",
+        "sensitive_paths": [
+          "frontend/src/components/demo/PaymentPanel.jsx",
+          "frontend/src/components/demo/OwnerHome.jsx",
+          "frontend/e2e/phase17-recovery.spec.js"
+        ]
+      }
+    },
+    "P17-R15": {
+      "result": "passed",
+      "command": "python scripts/phase17_benchmark.py --execute",
+      "evidence": {
+        "scale": true,
+        "measurement": "database query time, not whole-request latency",
+        "read_p95_ms": {
+          "tenancy_order_count": 42.971,
+          "received_callback_count": 17.313
+        },
+        "refund_exposure_minor": 100000,
+        "tested_revision": "03dd3d64012bd3c1bee31c5a0c315d3be709a23c",
+        "ancestor_revision": "03dd3d64012bd3c1bee31c5a0c315d3be709a23c",
+        "sensitive_paths": [
+          "scripts/phase17_benchmark.py"
+        ]
+      }
+    },
+    "P17-R16": {
+      "result": "passed",
+      "command": "security review of the payment authorization repair and the acceptance-checker denylist",
+      "evidence": {
+        "independent_review": true,
+        "reviewer": "cursor-security-review",
+        "review_id": "c3433b53-4f6f-4c2e-b88e-07e1d548c61a",
+        "households": 20,
+        "tested_revision": "a38223061e61d700ed9d590316f56e90eb19af09",
+        "sandbox": "unrun"
+      }
+    },
+    "P17-R17": {
+      "result": "not_run"
+    },
+    "P17-R18": {
+      "result": "not_run"
+    }
   }
 }
