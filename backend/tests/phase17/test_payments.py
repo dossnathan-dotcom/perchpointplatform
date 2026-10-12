@@ -452,7 +452,7 @@ def test_return_restores_the_obligation_and_an_open_dispute_blocks_refund(client
 
 
 def _mail_token(email: str) -> str:
-    mailpit = os.environ.get("PHASE6_MAILPIT_URL", "http://127.0.0.1:8125")
+    mailpit = os.environ.get("PHASE6_MAILPIT_URL", "http://127.0.0.1:8025")
     for _ in range(20):
         listing = json.load(urllib.request.urlopen(f"{mailpit}/api/v1/messages", timeout=3))
         match = next(
