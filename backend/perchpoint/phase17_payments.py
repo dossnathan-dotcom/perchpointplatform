@@ -11,7 +11,6 @@ from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import text
-from sqlalchemy.exc import IntegrityError
 
 from .commands import CommandError
 from .db import application_admin_connection, engine_for, runtime_transaction

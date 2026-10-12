@@ -1,12 +1,11 @@
 """The Phase 17 checker rejects status flips and insufficient evidence."""
-import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from phase17_acceptance import EVIDENCE, evaluate  # noqa: E402
+from phase17_acceptance import evaluate  # noqa: E402
 
 
 def _complete() -> dict:

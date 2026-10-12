@@ -9,7 +9,7 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from tests.phase15.test_portal import _activate, _key, _login
+from tests.phase15.test_portal import _key, _login
 from tests.phase16.test_ledger import _household
 
 

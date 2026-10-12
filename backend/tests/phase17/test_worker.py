@@ -186,7 +186,7 @@ def test_two_workers_collect_one_occurrence():
     ).status_code == 200
     workers = [_spawn("2026-10-11T16:00:00-04:00"), _spawn("2026-10-11T16:00:00-04:00")]
     try:
-        posted = _wait_until(
+        _wait_until(
             client,
             headers,
             tenancy,

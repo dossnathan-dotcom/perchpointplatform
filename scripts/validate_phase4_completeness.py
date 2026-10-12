@@ -24,8 +24,9 @@ PHASE4_SURFACES = {
 }
 
 # Additive Phase 7 public navigation. These do not replace the baseline above.
+# CONFLICT-026 keeps the visible public label. The destination remains /resources.
 PHASE7_SURFACES = {
-    "frontend/src/components/Navbar.jsx": ["Home", "Resources", "Maintenance", "About"],
+    "frontend/src/components/Navbar.jsx": ["Home", "Renter Resources", "Maintenance", "About"],
 }
 
 

@@ -6,7 +6,7 @@ export const brand = {
   linen: "#F3F6FB",
   copper: "#2457D6",
   copperDark: "#1d4ed8",
-  gold: "#087F8C",
+  gold: "#3AA8B4",
 };
 
 export const semantic = {
