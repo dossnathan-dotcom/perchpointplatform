@@ -50,7 +50,7 @@ export function ResidentPayments() {
           {assistance ? (
             <p className="mt-3" role="status">Your portion for {assistance.service_period} is {(assistance.resident_responsibility_minor / 100).toLocaleString(undefined, { style: "currency", currency: "USD" })}. Agency assistance of {(assistance.agency_responsibility_minor / 100).toLocaleString(undefined, { style: "currency", currency: "USD" })} is not added to the amount you pay.</p>
           ) : null}
-          <form className="mt-4 flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); setTenancy(draft.trim()); }}>
+          <form className="mt-4 flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); chooseHousehold(draft.trim()); }}>
             <label>Household code
               <input className="mt-1 block border border-[#D9E2EF] px-3 py-2" required value={draft} onChange={(event) => setDraft(event.target.value)} />
             </label>

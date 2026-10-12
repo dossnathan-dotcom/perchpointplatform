@@ -1,0 +1,17 @@
+{
+  "behavior_revision": "5afe5db6e95a6a4124f5bb1557066bc6d75a7c49",
+  "command": "python scripts/phase18_clean_room.py --execute tests/phase16 tests/phase17 tests/phase18",
+  "container": "perchpoint-phase18-ledger",
+  "port": 54350,
+  "started_at": "2026-10-12T22:20:22.676Z",
+  "ended_at": "2026-10-12T22:24:01.983Z",
+  "exit_code": 0,
+  "migration_head": "0064_phase18_return_completion",
+  "runtime": "false,false",
+  "forced_rls": "226/226",
+  "passed": 88,
+  "failed": 0,
+  "elapsed_s": 207.94,
+  "result": "passed",
+  "acceptance_granted": false
+}
