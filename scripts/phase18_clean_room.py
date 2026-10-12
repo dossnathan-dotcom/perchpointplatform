@@ -13,9 +13,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE = "postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54"
-CONTAINER = "perchpoint-phase18-cleanroom"
+CONTAINER = os.environ.get("PHASE18_CLEAN_ROOM_CONTAINER", "perchpoint-phase18-cleanroom")
 PASSWORD = "local-only-not-production"
-PORT = "54344"
+PORT = os.environ.get("PHASE18_CLEAN_ROOM_PORT", "54344")
 HEAD = "0064_phase18_return_completion"
 ADMIN = f"postgresql+psycopg://postgres:{PASSWORD}@127.0.0.1:{PORT}/postgres"
 MIGRATOR = f"postgresql+psycopg://perchpoint_migrator:{PASSWORD}@127.0.0.1:{PORT}/perchpoint_phase2"
@@ -124,8 +124,10 @@ def main() -> int:
         print(f"migration_head={version} runtime={role} forced_rls={forced}")
         if role != "false,false" or "/" not in forced or forced.startswith("0/"):
             raise RuntimeError("runtime role or forced row security is not in force")
+        selected = [arg for arg in sys.argv[1:] if arg != "--execute"]
+        pytest_args = selected or ["tests/phase18"]
         pytest = _run(
-            [sys.executable, "-m", "pytest", "tests/phase18", "-n", "0", "-q", "--tb=line"],
+            [sys.executable, "-m", "pytest", *pytest_args, "-n", "0", "-q", "--tb=line"],
             cwd=ROOT / "backend",
             env=env,
             check=False,
