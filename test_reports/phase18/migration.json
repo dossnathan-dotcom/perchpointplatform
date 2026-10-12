@@ -1,7 +1,6 @@
 {
-  "behavior_revision": "37907099365a1fff162b985c21122f5ab5d2a7e2",
-  "later_head": "9e901a0",
-  "later_head_note": "Later commits rename the checker test and let the clean room select a suite. They do not change assistance behavior.",
+  "behavior_revision": "83c47b6ed2a29611d2ddf530c09511d7efaf0511",
+  "later_head_note": "The 2026-10-12 empty-database run is on the current assistance tests, including period-scoped receipts and organization isolation.",
   "acceptance_granted": false,
   "predecessor": {
     "command": "python scripts/phase18_predecessor.py --execute",
@@ -20,9 +19,13 @@
     "migration_head": "0064_phase18_return_completion",
     "runtime": "false,false",
     "forced_rls": "226/226",
+    "container": "perchpoint-phase18-inherited",
     "pytest": "tests/phase18 -n 0",
-    "passed": 25,
+    "passed": 29,
     "failed": 0,
+    "elapsed_s": 65.12,
+    "exit_code": 0,
+    "started_at": "2026-10-12T22:15:28.929Z",
     "result": "passed"
   }
 }
