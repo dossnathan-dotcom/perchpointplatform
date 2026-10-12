@@ -16,10 +16,19 @@ def main() -> int:
     payments = (ROOT / "backend/perchpoint/phase17_payments.py").read_text(encoding="utf-8")
     worker = (ROOT / "backend/perchpoint/phase17_worker.py").read_text(encoding="utf-8")
     merchant = (ROOT / "backend/alembic/sql/0045_phase17_payments.sql").read_text(encoding="utf-8")
-    head = (ROOT / "backend/alembic/versions/0057_phase17_autopay_due.py").read_text(encoding="utf-8")
+    head = (ROOT / "backend/alembic/versions/0060_phase17_grant_accept.py").read_text(encoding="utf-8")
+    grant_owner = (ROOT / "backend/alembic/versions/0059_phase17_grant_owner.py").read_text(encoding="utf-8")
+    scope = (ROOT / "backend/alembic/versions/0058_phase17_tenancy_scope.py").read_text(encoding="utf-8")
+    previous_head = (ROOT / "backend/alembic/versions/0057_phase17_autopay_due.py").read_text(encoding="utf-8")
     previous = (ROOT / "backend/alembic/versions/0056_phase17_worker_scope.py").read_text(encoding="utf-8")
     inbox = (ROOT / "backend/alembic/versions/0055_phase17_worker_inbox.py").read_text(encoding="utf-8")
-    if 'down_revision = "0056_phase17_worker_scope"' not in head:
+    if 'down_revision = "0059_phase17_grant_owner"' not in head:
+        findings.append({"severity": "high", "id": "lineage", "detail": "0060 is not a child of 0059"})
+    if 'down_revision = "0058_phase17_tenancy_scope"' not in grant_owner:
+        findings.append({"severity": "high", "id": "lineage", "detail": "0059 is not a child of 0058"})
+    if 'down_revision = "0057_phase17_autopay_due"' not in scope:
+        findings.append({"severity": "high", "id": "lineage", "detail": "0058 is not a child of 0057"})
+    if 'down_revision = "0056_phase17_worker_scope"' not in previous_head:
         findings.append({"severity": "high", "id": "lineage", "detail": "0057 is not a child of 0056"})
     if 'down_revision = "0055_phase17_worker_inbox"' not in previous:
         findings.append({"severity": "high", "id": "lineage", "detail": "0056 is not a child of 0055"})

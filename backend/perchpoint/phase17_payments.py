@@ -230,6 +230,50 @@ def publish_charge(settings, actor, organization, body: dict) -> dict:
     }
 
 
+def _may_act_for_tenancy(connection, tenancy: str, *, grant_counts: bool) -> bool:
+    """Staff may act for any tenancy. A resident may act only for a household they belong to."""
+    staff = connection.execute(
+        text(
+            "SELECT perchpoint.has_capability('payment.charge') "
+            "OR perchpoint.has_capability('payment.refund') "
+            "OR perchpoint.has_capability('payment.exception')"
+        )
+    ).scalar()
+    if staff:
+        return True
+    household = _household(tenancy)
+    if household is not None and household["email"].lower() == _email(connection).lower():
+        return True
+    primary = connection.execute(
+        text(
+            "SELECT 1 FROM payment_obligations WHERE tenancy_code = :tenancy "
+            "AND primary_account_id = perchpoint.current_actor() LIMIT 1"
+        ),
+        {"tenancy": tenancy},
+    ).first()
+    if primary is not None:
+        return True
+    if not grant_counts:
+        return False
+    grant = connection.execute(
+        text(
+            "SELECT 1 FROM payer_grants WHERE tenancy_code = :tenancy "
+            "AND payer_account_id = perchpoint.current_actor() AND state = 'active' LIMIT 1"
+        ),
+        {"tenancy": tenancy},
+    ).first()
+    if grant is not None:
+        return True
+    enrolled = connection.execute(
+        text(
+            "SELECT 1 FROM autopay_enrollments WHERE tenancy_code = :tenancy "
+            "AND payer_account_id = perchpoint.current_actor() AND state = 'active' LIMIT 1"
+        ),
+        {"tenancy": tenancy},
+    ).first()
+    return enrolled is not None
+
+
 def _actor_tenancy(connection, settings: Settings) -> str | None:
     email = _email(connection)
     for row in HOUSEHOLDS:
@@ -251,6 +295,20 @@ def summary(settings, actor, organization, tenancy_code: str | None) -> dict:
         tenancy = tenancy_code or _actor_tenancy(connection, settings)
         if tenancy is None:
             return {"tenancy_code": None, "obligations": [], "payments": [], "refunds": [], "autopay": None, "money_moved": False}
+        if not _may_act_for_tenancy(connection, tenancy, grant_counts=True):
+            return {
+                "tenancy_code": tenancy,
+                "environment": "local_fake",
+                "obligations": [],
+                "payments": [],
+                "refunds": [],
+                "allowance": None,
+                "autopay": None,
+                "ledger": None,
+                "money_moved": False,
+                "real_values_activated": False,
+                "resident_surcharge": False,
+            }
         obligations = connection.execute(
             text(
                 "SELECT public_reference, description, amount_minor, category, state, account_reference, due_on, id "
@@ -913,6 +971,28 @@ def approve_exception(settings, actor, organization, body: dict) -> dict:
     return {"accepted": True, "reference": body["reference"], "state": "succeeded", "ordinary_cap_reset": False, "money_moved": False}
 
 
+def link_tenancy_resident(settings, actor, organization, body: dict) -> dict:
+    email = str(body.get("email") or "").strip().lower()
+    tenancy = str(body.get("tenancy_code") or "").strip()
+    if "@" not in email or not tenancy:
+        raise CommandError(400, "invalid", "Link the resident with an email and a tenancy.", False)
+    account_id = _primary_account(settings, email)
+    if account_id is None:
+        raise CommandError(404, "missing", "That person does not have an account.", False)
+    with runtime_transaction(settings, _org(actor), _org(organization), uuid4()) as connection:
+        _require(connection, "payment.charge")
+        updated = connection.execute(
+            text(
+                "UPDATE payment_obligations SET primary_account_id = :account "
+                "WHERE tenancy_code = :tenancy RETURNING id"
+            ),
+            {"account": account_id, "tenancy": tenancy},
+        ).first()
+        if updated is None:
+            raise CommandError(409, "conflict", "That tenancy has no published charge to link.", False)
+    return {"accepted": True, "tenancy_code": tenancy, "linked": True, "money_moved": False}
+
+
 def invite_payer(settings, actor, organization, body: dict) -> dict:
     email = str(body.get("email") or "").strip().lower()
     if "@" not in email:
@@ -924,6 +1004,8 @@ def invite_payer(settings, actor, organization, body: dict) -> dict:
         tenancy = body.get("tenancy_code") or _actor_tenancy(connection, settings)
         if not tenancy:
             raise CommandError(409, "conflict", "This session is not linked to a tenancy.", False)
+        if not _may_act_for_tenancy(connection, tenancy, grant_counts=False):
+            raise CommandError(403, "denied", "This action is not authorized.", False)
         recent = connection.execute(
             text(
                 "SELECT count(*) FROM payer_grants WHERE tenancy_code = :tenancy AND state = 'invited' "
@@ -1003,6 +1085,8 @@ def revoke_payer(settings, actor, organization, body: dict) -> dict:
     with runtime_transaction(settings, _org(actor), _org(organization), uuid4()) as connection:
         _require_any(connection, ("payment.pay", "payment.charge"))
         tenancy = body.get("tenancy_code") or _actor_tenancy(connection, settings)
+        if not tenancy or not _may_act_for_tenancy(connection, str(tenancy), grant_counts=False):
+            raise CommandError(403, "denied", "This action is not authorized.", False)
         grant = connection.execute(
             text(
                 "SELECT id FROM payer_grants WHERE tenancy_code = :tenancy AND state = 'active' FOR UPDATE"
@@ -1036,6 +1120,8 @@ def enroll_autopay(settings, actor, organization, body: dict) -> dict:
         tenancy = body.get("tenancy_code") or _actor_tenancy(connection, settings)
         if not tenancy:
             raise CommandError(409, "conflict", "This session is not linked to a tenancy.", False)
+        if not _may_act_for_tenancy(connection, tenancy, grant_counts=True):
+            raise CommandError(403, "denied", "This action is not authorized.", False)
         actor_id = connection.execute(text("SELECT perchpoint.current_actor()")).scalar()
         instrument_id = uuid4()
         connection.execute(
@@ -1071,6 +1157,8 @@ def set_autopay_state(settings, actor, organization, body: dict) -> dict:
         raise CommandError(400, "invalid", "Autopay can be paused or canceled for one tenancy.", False)
     with runtime_transaction(settings, _org(actor), _org(organization), uuid4()) as connection:
         _require_any(connection, ("payment.pay", "payment.charge"))
+        if not _may_act_for_tenancy(connection, tenancy, grant_counts=True):
+            raise CommandError(403, "denied", "This action is not authorized.", False)
         updated = connection.execute(
             text(
                 "UPDATE autopay_enrollments SET state = :state "
@@ -1553,6 +1641,9 @@ def _callback_return(connection, row, payload: dict) -> bool:
     if existing is not None:
         return True
     amount = int(payload.get("amount_minor") or order["amount_minor"])
+    if amount > _source_remaining(connection, order["id"], int(order["amount_minor"])):
+        connection.execute(text("UPDATE provider_events SET state = 'quarantined' WHERE id = :id"), {"id": row["id"]})
+        return False
     account_reference = connection.execute(
         text("SELECT account_reference FROM payment_obligations WHERE id = :id"),
         {"id": order["obligation_id"]},

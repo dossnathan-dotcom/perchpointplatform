@@ -500,7 +500,7 @@ def main() -> int:
         _run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT / "backend", env=_env())
         version = _psql("SELECT version_num FROM alembic_version", "perchpoint_phase2")
         print(f"migration_head={version}")
-        if version != "0057_phase17_autopay_due":
+        if version != "0060_phase17_grant_accept":
             raise RuntimeError(f"unexpected head {version}")
         actor_acl = _psql(
             "SELECT coalesce(proacl::text, 'null') FROM pg_proc JOIN pg_namespace n ON n.oid = pronamespace "

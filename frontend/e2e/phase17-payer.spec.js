@@ -173,6 +173,11 @@ test("resident invitation and additional payer pay the remainder", async ({ brow
   await opsPage.getByLabel("Description").fill("Disposable payer scenario charge");
   await opsPage.getByRole("button", { name: "Publish charge" }).click();
   await expect(opsPage.getByText("The charge is payable.")).toBeVisible();
+  const linkedResident = await opsPage.request.post("/api/v2/payments/charges/resident", {
+    headers: csrfHeaders(await operations.cookies()),
+    data: { tenancy_code: tenancy, email: residentEmail },
+  });
+  expect(linkedResident.ok(), await linkedResident.text()).toBeTruthy();
   await expect(opsPage.getByText("Remaining $1,000.00")).toBeVisible();
   const hidden = await opsPage.request.post("/api/v2/payments/charges", {
     headers: csrfHeaders(await operations.cookies()),
@@ -368,6 +373,11 @@ test("linked household charge settles through the worker", async ({ browser }) =
   await opsPage.getByLabel("Description").fill("Linked household rent charge");
   await opsPage.getByRole("button", { name: "Publish charge" }).click();
   await expect(opsPage.getByText("The charge is payable.")).toBeVisible();
+  const linkedResident = await opsPage.request.post("/api/v2/payments/charges/resident", {
+    headers,
+    data: { tenancy_code: linked.tenancy, email: residentEmail },
+  });
+  expect(linkedResident.ok(), await linkedResident.text()).toBeTruthy();
   const organization = (await (await opsPage.request.get("/api/v2/auth/me")).json()).organization_id;
   let ledger = await staffSummary(opsPage, linked.tenancy);
   expect(ledger.ledger.due_minor).toBe(100000);

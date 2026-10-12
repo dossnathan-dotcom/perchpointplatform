@@ -189,6 +189,31 @@ def test_worker_crash_and_lost_ack_post_once(client):
     assert _event_state(ack_id) == "applied"
 
 
+def test_oversized_return_is_quarantined(client):
+    headers, account = _account(client)
+    organization = _organization(client)
+    tenancy = f"tenancy-{uuid4().hex[:8]}"
+    obligation = _publish(client, headers, account, tenancy, 100000, 100000)
+    paid = _pay(client, headers, obligation, 100000)
+    reference = paid.json()["reference"]
+    event_id = f"evt-{uuid4().hex[:8]}"
+    assert _deliver(
+        client,
+        {
+            "id": event_id,
+            "organization_id": organization,
+            "type": "payment.returned",
+            "effect_key": f"return-{reference}",
+            "payment_reference": reference,
+            "amount_minor": 1000000,
+            "environment": "local_fake",
+        },
+    ).status_code == 200
+    process_provider_inbox(Settings.load())
+    assert _event_state(event_id) == "quarantined"
+    assert _count(tenancy, "return") == 0
+
+
 def test_out_of_order_return_waits_for_success_then_corrects(client):
     headers, account = _account(client)
     organization = _organization(client)

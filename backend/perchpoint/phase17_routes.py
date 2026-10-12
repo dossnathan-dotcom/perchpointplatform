@@ -15,6 +15,7 @@ from .phase17_payments import (
     exceptions,
     integration_health,
     invite_payer,
+    link_tenancy_resident,
     publish_charge,
     reconcile,
     record_provider_event,
@@ -97,6 +98,17 @@ def _browser(request: Request, current: Settings) -> None:
 @router.get("/payments/summary")
 def read_summary(tenancy_code: str | None = None, current: Settings = Depends(settings), current_actor=Depends(actor)) -> dict:
     return _call(lambda: summary(current, current_actor["id"], current_actor["organization_id"], tenancy_code))
+
+
+class ResidentLinkBody(BaseModel):
+    tenancy_code: str = Field(min_length=1, max_length=80)
+    email: str = Field(min_length=3, max_length=200)
+
+
+@router.post("/payments/charges/resident")
+def link_resident(body: ResidentLinkBody, request: Request, current: Settings = Depends(settings), current_actor=Depends(actor)) -> dict:
+    _browser(request, current)
+    return _call(lambda: link_tenancy_resident(current, current_actor["id"], current_actor["organization_id"], body.model_dump()))
 
 
 @router.post("/payments/charges")

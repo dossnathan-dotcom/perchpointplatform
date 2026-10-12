@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 COMPOSE_FILE = ROOT / "docker-compose.phase6-closeout.yml"
 PROJECT = "perchpoint-phase17-cleanroom"
-HEAD = "0057_phase17_autopay_due"
+HEAD = "0060_phase17_grant_accept"
 ACCEPT = "perchpoint-phase8-accept"
 PASSWORD = "local-only-not-production"
 ADMIN = f"postgresql+psycopg://postgres:{PASSWORD}@127.0.0.1:54339/postgres"

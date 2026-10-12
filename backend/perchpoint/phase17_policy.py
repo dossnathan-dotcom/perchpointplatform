@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-UNRESOLVED = frozenset({"reserved", "dispatched", "pending", "unknown"})
+UNRESOLVED = frozenset({"reserved", "dispatched", "pending", "unknown", "owner_approved"})
 CONSUMING = UNRESOLVED | {"succeeded"}
 RELEASED = frozenset({"draft", "rejected", "canceled", "failed"})
 ROLLING_DAYS = 31

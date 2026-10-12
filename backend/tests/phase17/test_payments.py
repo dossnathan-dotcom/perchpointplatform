@@ -531,7 +531,7 @@ def test_additional_payer_accepts_a_token_pays_and_cannot_continue_after_revocat
     payer_token = grant.json()["invitation_token"]
     resident = _login(client, "resident.synthetic@example.com")
     denied = client.post("/api/v2/payments/payers/accept", headers=resident, json={"invitation_token": payer_token})
-    assert denied.status_code == 403
+    assert denied.status_code == 409
     accepted = payer.post(
         "/api/v2/payments/payers/accept",
         headers=_csrf(payer_signed.json()),
@@ -575,3 +575,41 @@ def test_additional_payer_accepts_a_token_pays_and_cannot_continue_after_revocat
         json={"obligation_reference": obligation, "amount_minor": 100, "method": "card", "idempotency_key": _key("payer-after")},
     )
     assert blocked.status_code == 404
+    hidden_refunds = payer.get("/api/v2/payments/summary", headers=_csrf(payer_signed.json()), params={"tenancy_code": other})
+    assert hidden_refunds.json()["refunds"] == []
+
+
+def test_resident_cannot_read_or_command_another_tenancy(client):
+    headers, account = _account(client)
+    tenancy = f"tenancy-{uuid4().hex[:8]}"
+    obligation = _publish(client, headers, account, tenancy, 100000, 100000)
+    paid = _pay(client, headers, obligation, 100000)
+    refund = client.post(
+        "/api/v2/payments/refunds",
+        headers=headers,
+        json={
+            "payment_reference": paid.json()["reference"],
+            "amount_minor": 10000,
+            "description": "A refund the other resident must not see.",
+            "resident_explanation": "This explanation stays with the tenancy.",
+            "idempotency_key": _key("hidden-refund"),
+        },
+    )
+    assert refund.status_code == 200, refund.text
+    resident = _login(client, "resident.synthetic@example.com")
+    summary = client.get("/api/v2/payments/summary", headers=resident, params={"tenancy_code": tenancy})
+    assert summary.status_code == 200, summary.text
+    assert summary.json()["obligations"] == []
+    assert summary.json()["refunds"] == []
+    invited = client.post(
+        "/api/v2/payments/payers",
+        headers=resident,
+        json={"email": "payer.hidden@example.com", "tenancy_code": tenancy},
+    )
+    assert invited.status_code == 403, invited.text
+    enrolled = client.post(
+        "/api/v2/payments/autopay",
+        headers=resident,
+        json={"tenancy_code": tenancy, "cap_minor": 100000, "day_of_month": 11},
+    )
+    assert enrolled.status_code == 403, enrolled.text

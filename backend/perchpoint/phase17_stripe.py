@@ -140,5 +140,7 @@ def sign_payload(body: bytes, secret: str = LOCAL_WEBHOOK_KEY) -> str:
 def signature_ok(body: bytes, presented: str, secret: str = LOCAL_WEBHOOK_KEY) -> bool:
     if not presented:
         return False
+    if secret == "local-only-not-production-phase17-webhook" and os.environ.get("PHASE3_ENVIRONMENT", "local") not in {"local", "test"}:
+        return False
     expected = sign_payload(body, secret)
     return hmac.compare_digest(expected, presented)

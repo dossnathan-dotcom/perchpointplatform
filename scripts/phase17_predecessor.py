@@ -19,7 +19,7 @@ PORT = "54340"
 ADMIN = f"postgresql+psycopg://postgres:{PASSWORD}@127.0.0.1:{PORT}/postgres"
 MIGRATOR = f"postgresql+psycopg://perchpoint_migrator:{PASSWORD}@127.0.0.1:{PORT}/perchpoint_phase2"
 PREDECESSOR = "0044_phase16_ledger"
-HEAD = "0057_phase17_autopay_due"
+HEAD = "0060_phase17_grant_accept"
 
 
 def _run(command: list[str], *, cwd: Path = ROOT, env: dict | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
