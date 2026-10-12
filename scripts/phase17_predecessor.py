@@ -117,7 +117,7 @@ def main() -> int:
             raise RuntimeError("Phase 17 events existed at the Phase 16 head")
         before = _forced()
         print(f"predecessor={version} forced_rls={before}")
-        _run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT / "backend", env=env)
+        _run([sys.executable, "-m", "alembic", "upgrade", HEAD], cwd=ROOT / "backend", env=env)
         version = _psql("SELECT version_num FROM alembic_version", "perchpoint_phase2")
         payload = _psql(
             "SELECT data_type FROM information_schema.columns "

@@ -5,6 +5,7 @@ import os
 import time
 
 from perchpoint.phase17_payments import dispatch_due_autopay, process_provider_inbox
+from perchpoint.phase18_assistance import apply_queued_receipts
 from perchpoint.settings import Settings
 
 
@@ -21,6 +22,12 @@ def main() -> None:
         result = process_provider_inbox(settings)
         if result["applied"]:
             print(f"phase17-worker-applied {result['applied']}", flush=True)
+        assistance = apply_queued_receipts(settings)
+        if assistance["applied"]:
+            print(f"phase18-worker-applied {assistance['applied']}", flush=True)
+        if os.environ.get("PHASE18_WORKER_ONCE") == "1":
+            print(f"phase18-worker-once {assistance['applied']}", flush=True)
+            return
         time.sleep(0.25)
 
 

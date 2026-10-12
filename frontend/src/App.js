@@ -39,6 +39,7 @@ const ResidentHub = lazy(() => import("@/components/public/PublicSite").then((mo
 const LedgerDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.LedgerDesk })));
 const PayerHome = lazy(() => import("@/components/demo/PayerHome").then((module) => ({ default: module.PayerHome })));
 const ResidentPayments = lazy(() => import("@/components/demo/ResidentPayments").then((module) => ({ default: module.ResidentPayments })));
+const AssistanceDesk = lazy(() => import("@/components/demo/AssistanceDesk").then((module) => ({ default: module.AssistanceDesk })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -115,6 +116,7 @@ export function AppContent() {
         <Route path="/ledger" element={<Suspense fallback={routePending}><LedgerDesk /></Suspense>} />
         <Route path="/pay" element={<Suspense fallback={routePending}><PayerHome /></Suspense>} />
         <Route path="/payments" element={<Suspense fallback={routePending}><ResidentPayments /></Suspense>} />
+        <Route path="/payments/assistance" element={<Suspense fallback={routePending}><AssistanceDesk /></Suspense>} />
         <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
         <Route path="/demo" element={<Suspense fallback={routePending}><DemoControl /></Suspense>} />
         <Route path="/owner" element={<Suspense fallback={routePending}><OwnerHome /></Suspense>} />
