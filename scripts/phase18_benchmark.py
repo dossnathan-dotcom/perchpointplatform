@@ -103,19 +103,23 @@ def _percentile(samples: list[float], fraction: float) -> float:
     return ordered[index]
 
 
-def _scope(connection, organization, actor) -> None:
+def _scope(connection, organization, actor, membership) -> None:
     connection.execute(
-        text("SELECT set_config('app.organization_id', :organization, true), set_config('app.actor_id', :actor, true)"),
-        {"organization": str(organization), "actor": str(actor)},
+        text(
+            "SELECT set_config('app.organization_id', :organization, true), "
+            "set_config('app.actor_id', :actor, true), "
+            "set_config('app.membership_id', :membership, true)"
+        ),
+        {"organization": str(organization), "actor": str(actor), "membership": str(membership)},
     )
 
 
-def _read_once(engine, organization, actor, statement: str) -> float:
+def _read_once(engine, organization, actor, membership, statement: str) -> float:
     started = time.perf_counter()
     with engine.connect() as connection:
         with connection.begin():
             connection.execute(text("SET LOCAL statement_timeout = '10s'"))
-            _scope(connection, organization, actor)
+            _scope(connection, organization, actor, membership)
             connection.execute(text(statement)).scalar_one()
     return (time.perf_counter() - started) * 1000
 
@@ -163,10 +167,10 @@ def _load(admin, organization) -> str:
     return hot
 
 
-def _claim_once(engine, organization, actor, receipt_id) -> int:
+def _claim_once(engine, organization, actor, membership, receipt_id) -> int:
     with engine.connect() as connection:
         with connection.begin():
-            _scope(connection, organization, actor)
+            _scope(connection, organization, actor, membership)
             row = connection.execute(
                 text(
                     "UPDATE digital_receipts SET application_state = 'claimed' "
@@ -208,9 +212,23 @@ def main() -> int:
         with admin.connect() as connection:
             organization = connection.execute(text("SELECT id FROM organizations WHERE name LIKE 'HawkVision%'")).scalar_one()
             actor = connection.execute(text("SELECT id FROM accounts WHERE email = 'ann.synthetic@example.com'")).scalar_one()
+            membership = connection.execute(
+                text(
+                    "SELECT id FROM memberships WHERE account_id = :actor AND organization_id = :organization "
+                    "AND role_name = 'operations_manager'"
+                ),
+                {"actor": actor, "organization": organization},
+            ).scalar_one()
         hot = _load(admin, organization)
         print(f"loaded determinations={DETERMINATIONS} receipts={RECEIPTS + 1}")
         runtime = create_engine(RUNTIME, pool_size=CONNECTIONS, max_overflow=0)
+        with runtime.connect() as connection:
+            with connection.begin():
+                _scope(connection, organization, actor, membership)
+                visible = int(connection.execute(text("SELECT count(*) FROM digital_receipts WHERE application_state = 'queued'")).scalar_one())
+        print(f"visible_queued_receipts={visible}")
+        if visible != RECEIPTS + 1:
+            raise RuntimeError(f"runtime role saw {visible} queued receipts")
         statements = {
             "queued_receipts": "SELECT count(*) FROM digital_receipts WHERE application_state = 'queued'",
             "approved_determinations": "SELECT count(*) FROM assistance_determinations WHERE state = 'approved'",
@@ -221,7 +239,7 @@ def main() -> int:
             errors = 0
             for _ in range(ROUNDS):
                 with ThreadPoolExecutor(max_workers=CONNECTIONS) as pool:
-                    futures = [pool.submit(_read_once, runtime, organization, actor, statement) for _ in range(CONNECTIONS)]
+                    futures = [pool.submit(_read_once, runtime, organization, actor, membership, statement) for _ in range(CONNECTIONS)]
                     for future in futures:
                         try:
                             samples.append(future.result())
@@ -234,7 +252,7 @@ def main() -> int:
             if errors or p95 >= READ_P95_MS:
                 failed = True
         with ThreadPoolExecutor(max_workers=CLAIM_ATTEMPTS) as pool:
-            claims = list(pool.map(lambda _index: _claim_once(runtime, organization, actor, hot), range(CLAIM_ATTEMPTS)))
+            claims = list(pool.map(lambda _index: _claim_once(runtime, organization, actor, membership, hot), range(CLAIM_ATTEMPTS)))
         print(f"claims={sum(claims)} attempts={CLAIM_ATTEMPTS}")
         if sum(claims) != 1:
             failed = True

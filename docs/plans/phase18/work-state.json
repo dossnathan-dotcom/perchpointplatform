@@ -24,6 +24,6 @@
   ],
   "targeted_suite_before_behavior_commit": "python -m pytest tests/phase18/test_assistance.py -n 0 --tb=line -q exited 0: 17 passed in 82.24s on 2026-10-12 against the dirty tree. This note is not a behavior SHA and does not grant acceptance.",
   "migration_proof": "0060 to 0064 preserved a 40000 succeeded payment and an invited grant. Empty database reached 0064 with runtime false,false and forced row security 226/226. Phase 18 tests: 25 passed. Phase 19 remains unopened.",
-  "next_unresolved_item": "Browser matrix 48 passed on 9bc691c. Still required: scale, inherited suite on a fresh database, independent review, and the protected release. Phase 19 remains unopened.",
+  "next_unresolved_item": "Browser matrix 48 passed and the disposable scale run passed. Still required: inherited suite on a fresh database, independent review, and the protected release. Phase 19 remains unopened.",
   "scope_change": "CONFLICT-027 replaces physical payment intake with digital receipts and housing assistance. Decisions are in docs/plans/phase18/DECISIONS.md."
 }

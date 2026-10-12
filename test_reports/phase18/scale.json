@@ -1,0 +1,22 @@
+{
+  "behavior_revision": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+  "command": "python scripts/phase18_benchmark.py --execute",
+  "started_at": "2026-10-12T22:13:49Z",
+  "exit_code": 0,
+  "result": "passed",
+  "container": "perchpoint-phase18-bench",
+  "port": 54348,
+  "migration_head": "0064_phase18_return_completion",
+  "declared_before_measure": true,
+  "determinations": 200,
+  "receipts": 1001,
+  "connections": 25,
+  "rounds": 3,
+  "read_p95_threshold_ms": 300,
+  "queued_receipts_p95_ms": 111.146,
+  "approved_determinations_p95_ms": 23.216,
+  "claim_attempts": 8,
+  "claims": 1,
+  "measured": "database_only",
+  "acceptance_granted": false
+}
