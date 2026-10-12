@@ -166,7 +166,10 @@ if (isDevServer) {
 }
 
 const configureDevServer = webpackConfig.devServer;
-webpackConfig.devServer = (devServerConfig) =>
-  makeDevServerV5Compatible(configureDevServer(devServerConfig));
+webpackConfig.devServer = (devServerConfig) => {
+  const next = configureDevServer(devServerConfig);
+  next.historyApiFallback = { index: "/index.html", disableDotRule: true };
+  return makeDevServerV5Compatible(next);
+};
 
 module.exports = webpackConfig;

@@ -1,0 +1,17 @@
+{
+  "phase": 18,
+  "updated": "2026-10-12",
+  "phase_17_local_acceptance": false,
+  "phase_18_behavior_started": false,
+  "real_values_activated": false,
+  "money_moved": false,
+  "branch": "cursor/pre-phase17-demo-cohesion",
+  "behavior_committed": false,
+  "migration_head_on_demo_database": "0057_phase17_autopay_due",
+  "demo_database": "127.0.0.1:54339/perchpoint_phase2",
+  "browser_matrix": "108 passed, playwright.phase17.config.js, 29.0m, 2026-10-12",
+  "clean_room": "passed, head 0057_phase17_autopay_due, 246 passed, runtime false,false, forced_rls 220/220",
+  "scale": "passed, p95 order count 42.138 ms, p95 callback count 17.323 ms",
+  "next_unresolved_item": "Bind Phase 17 evidence to a behavior commit and complete independent review plus the protected pull request. Do not start Phase 18 financial migrations before that acceptance.",
+  "scope_change": "CONFLICT-027 replaces physical payment intake with digital receipts and housing assistance. Decisions are in docs/plans/phase18/DECISIONS.md."
+}

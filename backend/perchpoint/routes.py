@@ -200,6 +200,26 @@ def _route_capability(request: Request) -> str:
         return "export.create"
     if path.startswith("/documents"):
         return "document.read" if request.method == "GET" else "document.manage"
+    if path.startswith("/payments/checkout"):
+        return "payment.read"
+    if path.startswith("/payments/autopay/run") or path.startswith("/payments/returns") or path.startswith("/payments/disputes"):
+        return "payment.refund" if path.startswith(("/payments/returns", "/payments/disputes")) else "payment.charge"
+    if path.startswith("/payments/autopay"):
+        return "payment.read"
+    if path.startswith("/payments/payers/revoke"):
+        return "payment.read"
+    if path.startswith("/payments/payers"):
+        return "payment.pay"
+    if path.startswith("/payments/charges"):
+        return "payment.charge"
+    if path.startswith("/payments/refunds/exceptions"):
+        return "payment.exception"
+    if path.startswith("/payments/refunds"):
+        return "payment.refund"
+    if path.startswith("/payments/integration"):
+        return "payment.configure"
+    if path.startswith("/payments"):
+        return "payment.read"
     if path.startswith("/inquiries") or path.startswith("/leasing"):
         return "inquiry.manage"
     if path.startswith("/portfolio"):
@@ -1288,7 +1308,9 @@ def _generic_auth_failure() -> HTTPException:
 
 @router.post("/auth/sign-in")
 def sign_in(body: LoginBody, request: Request, settings: Settings = Depends(settings)):
-    if password_problem(body.password):
+    from .demo_center import accepts_local_demo_password
+
+    if password_problem(body.password) and not accepts_local_demo_password(body.email, body.password):
         raise _generic_auth_failure()
     try:
         provider_session = password_grant(body.email, body.password)
@@ -1346,32 +1368,40 @@ def sign_in(body: LoginBody, request: Request, settings: Settings = Depends(sett
         raise HTTPException(403, {"code": identity_status, "message": "This account is not currently available.", "retryable": False})
     if not membership:
         raise HTTPException(403, {"code": "membership_expired", "message": "This account has no current membership.", "retryable": False})
+    from .demo_center import demo_enabled, persona_by_email
+
+    demo_persona = persona_by_email(body.email) if demo_enabled() else None
     opened = open_session(
         settings,
         account_id,
         membership["organization_id"],
         membership["role_name"],
         provider_session.subject,
-        provider_session.assurance,
+        "aal2" if demo_persona else provider_session.assurance,
         membership_id=membership["membership_id"],
         refresh_token=provider_session.refresh_token,
         provider_session_id=provider_session.provider_session_id,
     )
+    staff_mfa = membership["role_name"] not in {
+        "applicant",
+        "resident",
+        "household_adult",
+        "guarantor",
+        "additional_payer",
+        "service_principal",
+    }
     response = JSONResponse(
         {
             "organization_id": str(membership["organization_id"]),
             "role_name": membership["role_name"],
             "csrf": opened["csrf"],
             "assurance": opened["assurance"],
-            "mfa_required": bool(
-                (identity and identity["mfa_required"])
-                or membership["role_name"] not in {
-                    "applicant",
-                    "resident",
-                    "household_adult",
-                    "guarantor",
-                    "service_principal",
-                }
+            "mfa_required": False if demo_persona else bool((identity and identity["mfa_required"]) or staff_mfa),
+            "workspace": (
+                demo_persona["workspace"] if demo_persona
+                else "/pay" if membership["role_name"] == "additional_payer"
+                else "/payments" if membership["role_name"] == "resident"
+                else None
             ),
             "synthetic": True,
         }
@@ -3054,6 +3084,65 @@ def create_maintenance_case(
     return {"case_id": str(case_id), "synthetic": True}
 
 
+def _vendor_reader(settings: Settings, session: dict):
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        allowed = connection.execute(
+            text(
+                "SELECT perchpoint.has_capability('vendor.admin') "
+                "OR perchpoint.has_capability('vendor.worker.approve') "
+                "OR perchpoint.has_capability('work.assign')"
+            )
+        ).scalar()
+    if not allowed:
+        raise HTTPException(403, {"code": "denied", "message": "This action is not authorized.", "retryable": False})
+
+
+@router.get("/access/vendor/relationships")
+def list_vendor_relationships(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _vendor_reader(settings, session)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        rows = connection.execute(
+            text(
+                "SELECT id, vendor_name FROM vendor_relationships "
+                "WHERE status = 'active' ORDER BY vendor_name"
+            )
+        ).mappings().all()
+    return {"relationships": [{"id": str(row["id"]), "vendor_name": row["vendor_name"]} for row in rows]}
+
+
+@router.get("/access/vendor/workers/proposals")
+def list_vendor_proposals(request: Request, settings: Settings = Depends(settings)):
+    session = _session_actor(request, settings)
+    _vendor_reader(settings, session)
+    with runtime_transaction(settings, session["id"], session["organization_id"], uuid4()) as connection:
+        rows = connection.execute(
+            text(
+                """
+                SELECT proposal.id, proposal.email, proposal.role_name, proposal.status, relationship.vendor_name
+                FROM vendor_worker_proposals proposal
+                JOIN vendor_relationships relationship
+                  ON relationship.organization_id = proposal.organization_id
+                 AND relationship.id = proposal.vendor_relationship_id
+                WHERE proposal.status = 'proposed'
+                ORDER BY proposal.created_at
+                """
+            )
+        ).mappings().all()
+    return {
+        "proposals": [
+            {
+                "id": str(row["id"]),
+                "email": row["email"],
+                "role_name": row["role_name"],
+                "status": row["status"],
+                "vendor_name": row["vendor_name"],
+            }
+            for row in rows
+        ]
+    }
+
+
 @router.post("/access/vendor/workers/proposals")
 def propose_vendor_worker(
     body: VendorWorkerProposalBody,
@@ -3600,6 +3689,7 @@ def create_app():
             "/api/v2/auth/password/reset-request",
             "/api/v2/auth/password/reset",
             "/api/v2/public/submissions",
+            "/api/v2/payments/provider-events",
         }
         try:
             if (
@@ -3665,6 +3755,8 @@ def create_app():
     from .phase14_routes import router as phase14_router
     from .phase15_routes import router as phase15_router
     from .phase16_routes import router as phase16_router
+    from .phase17_routes import router as phase17_router
+    from .demo_routes import router as demo_router
 
     app.include_router(phase9_router)
     app.include_router(phase10_router)
@@ -3674,6 +3766,15 @@ def create_app():
     app.include_router(phase14_router)
     app.include_router(phase15_router)
     app.include_router(phase16_router)
+    app.include_router(phase17_router)
+    app.include_router(demo_router)
+    if os.environ.get("DEMO_MODE") == "1":
+        try:
+            from .demo_center import provision_local_demo_logins
+
+            provision_local_demo_logins(Settings.load())
+        except Exception as exc:
+            log.info(json.dumps({"event": "demo_provision_skipped", "error": type(exc).__name__}))
     return app
 
 

@@ -1,0 +1,38 @@
+{
+  "phase": 17,
+  "local_technical_acceptance": false,
+  "recovery_complete": false,
+  "phase_18_started": false,
+  "real_values_activated": false,
+  "money_moved": false,
+  "migration_head": "0051_phase17_payer_ledger",
+  "commands": [
+    "python -m alembic current",
+    "python -m pytest tests/phase17/test_payments.py tests/phase17/test_refund_policy.py -n 0"
+  ],
+  "results": {
+    "alembic_current": "0051_phase17_payer_ledger (head)",
+    "pytest": "15 passed, exit 0, 28.46s, 2026-10-11"
+  },
+  "gates": {
+    "P17-R0": {"result": "partial", "note": "Decisions recorded. Full ancestry and recovery reconciliation is not closed."},
+    "P17-R1": {"result": "partial", "note": "Local head is 0051. Zero-to-head clean room was not run."},
+    "P17-R2": {"result": "not_run"},
+    "P17-R3": {"result": "partial", "note": "A published charge accepted two partial settlements. Pre-activation was not demonstrated."},
+    "P17-R4": {"result": "partial", "note": "Identity invitation, token acceptance, partial payment, privacy, and revocation passed in the API. Separate browser contexts were not run."},
+    "P17-R5": {"result": "partial", "note": "Local fake adapter only. No Stripe sandbox call."},
+    "P17-R6": {"result": "partial", "note": "40000 then 60000 posted two settlements. Replay did not add a third. Advance payments and expense separation were not demonstrated."},
+    "P17-R7": {"result": "partial", "note": "One period collected the remainder and an over-cap run skipped. No separate worker process."},
+    "P17-R8": {"result": "partial", "note": "A return restored receivable and an open dispute blocked a refund. Crash injection was not run."},
+    "P17-R9": {"result": "partial", "note": "A 70000 owner approval was rejected for insufficient source funds, and the same amount executed once when the source was 200000. Concurrent reservations were not executed."},
+    "P17-R10": {"result": "partial", "note": "Return and dispute commands exist. Closed-period correction was not executed."},
+    "P17-R11": {"result": "partial", "note": "Unsigned callback rejected. Durable inbox application is incomplete."},
+    "P17-R12": {"result": "partial", "note": "Chromium operations reached Accounts, 20 households, the charge form, and autopay. Other personas and browsers were not run."},
+    "P17-R13": {"result": "partial", "note": "Resident refund denial and closed live-payment route passed. Broader security suite was not run."},
+    "P17-R14": {"result": "not_run"},
+    "P17-R15": {"result": "not_run"},
+    "P17-R16": {"result": "not_run"},
+    "P17-R17": {"result": "not_run"},
+    "P17-R18": {"result": "not_run"}
+  }
+}

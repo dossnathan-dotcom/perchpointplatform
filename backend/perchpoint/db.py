@@ -51,6 +51,19 @@ def admin_connection(settings: Settings):
 
 
 @contextmanager
+def application_admin_connection(settings: Settings):
+    """Superuser session on the application database. The admin URL itself is the maintenance database."""
+    from sqlalchemy.engine.url import make_url
+
+    url = make_url(settings.admin_url).set(database=make_url(settings.runtime_url).database)
+    engine = engine_for(url.render_as_string(hide_password=False))
+    with engine.connect() as connection:
+        yield connection
+        connection.commit()
+    engine.dispose()
+
+
+@contextmanager
 def runtime_transaction(
     settings: Settings,
     actor_id: UUID | None,

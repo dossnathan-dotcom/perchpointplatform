@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { phase2 } from "@/api/phase2";
+import { StatementBody } from "@/components/demo/AccountView";
+import { PaymentPanel } from "@/components/demo/PaymentPanel";
+import { Workspace, residentLinks, staffLinks } from "@/components/demo/RoleNav";
+
 
 function PageFrame({ title, children, testId }) {
   return (
@@ -29,12 +33,23 @@ async function staffRequest(path, options = {}) {
 }
 
 export function LeasingDesk() {
-  const [state, setState] = useState("idle");
+  const [state, setState] = useState("loading");
   const [rows, setRows] = useState([]);
+  const [workflow, setWorkflow] = useState("All");
   async function load(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     setState("loading");
     try {
+      const demo = await staffRequest("/api/v2/demo/work");
+      if (demo.response.ok) {
+        setRows(demo.body.items || []);
+        setState(demo.body.items?.length ? "ready" : "empty");
+        return;
+      }
+      if (demo.response.status === 403) {
+        setState("denied");
+        return;
+      }
       const { response, body } = await staffRequest("/api/v2/leasing/queue");
       if (response.status === 401 || response.status === 403) {
         setState("denied");
@@ -50,10 +65,18 @@ export function LeasingDesk() {
       setState("unavailable");
     }
   }
+  useEffect(() => { load(); }, []);
+  const visible = rows.filter((row) => workflow === "All" || row.workflow === workflow);
   return (
+    <Workspace links={staffLinks}>
     <PageFrame title="Leasing queue" testId="leasing-desk">
       <p>Operational work only. This desk does not approve housing, schedule a showing, or open an application.</p>
-      <form onSubmit={load}>
+      <form onSubmit={load} className="flex flex-wrap items-end gap-3">
+        <label>Workflow
+          <select className="mt-1 block border border-stone-300 bg-white px-3 py-2" value={workflow} onChange={(event) => setWorkflow(event.target.value)}>
+            {["All", "Inquiry", "Showing", "Application", "Screening", "Lease", "Dispute", "Request"].map((item) => <option key={item}>{item}</option>)}
+          </select>
+        </label>
         <button className="underline" type="submit">Refresh queue</button>
       </form>
       {state === "loading" && <p role="status">Loading the queue.</p>}
@@ -64,20 +87,24 @@ export function LeasingDesk() {
         <table className="w-full text-left">
           <caption className="sr-only">Open leasing inquiries</caption>
           <thead>
-            <tr><th scope="col">Stage</th><th scope="col">Next action</th><th scope="col">Due</th></tr>
+            <tr><th scope="col">Work</th><th scope="col">Subject</th><th scope="col">Home</th><th scope="col">Status</th><th scope="col">Owner</th><th scope="col">Next action</th></tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.public_receipt}>
-                <td>{row.stage}</td>
+            {visible.map((row) => (
+              <tr key={row.id || row.public_receipt}>
+                <td>{row.workflow || row.stage}</td>
+                <td>{row.subject || row.next_action}</td>
+                <td>{row.home_label || (row.unassigned ? "Unassigned" : "Assigned")}</td>
+                <td>{row.status || ""}</td>
+                <td>{row.assignee || ""}</td>
                 <td>{row.next_action}</td>
-                <td>{row.unassigned ? "Unassigned" : "Assigned"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
     </PageFrame>
+    </Workspace>
   );
 }
 
@@ -126,9 +153,9 @@ export function ManagedPage({ slug, testId }) {
   if (state === "missing" || !page) return <PageFrame title="This page is not published" testId={testId}><p>Nothing public is available at this address.</p><Link className="underline" to="/">Return home</Link></PageFrame>;
   const snapshot = page.snapshot || {};
   const text = snapshot.blocks?.[0]?.text || "";
-  const crumbs = slug === "faq" ? [["Resources", "/resources"], ["FAQ", "/faq"]] : slug === "resources" ? [["Resources", "/resources"]] : null;
+  const crumbs = slug === "faq" ? [["Renter Resources", "/resources"], ["FAQ", "/faq"]] : slug === "resources" ? [["Renter Resources", "/resources"]] : null;
   return (
-    <PageFrame title={snapshot.title || slug} testId={testId}>
+    <PageFrame title={slug === "resources" ? "Renter Resources" : snapshot.title || slug} testId={testId}>
       {crumbs && <nav aria-label="Breadcrumb"><ol className="flex gap-2 text-sm">{crumbs.map(([label, href]) => <li key={href}><Link className="underline" to={href}>{label}</Link></li>)}</ol></nav>}
       <p>{text}</p>
       <p><Link className="underline" to="/sign-in" data-testid="sign-in-transition">Resident or staff sign-in</Link></p>
@@ -137,9 +164,10 @@ export function ManagedPage({ slug, testId }) {
 }
 
 export function RentalsIndex() {
+  const [params, setParams] = useSearchParams();
   const [state, setState] = useState("loading");
+  const [catalog, setCatalog] = useState(null);
   const [listings, setListings] = useState([]);
-  const [discovery, setDiscovery] = useState([]);
   const [notice, setNotice] = useState("");
   const [inquiryState, setInquiryState] = useState("idle");
   const [receipt, setReceipt] = useState("");
@@ -152,36 +180,48 @@ export function RentalsIndex() {
   });
   useEffect(() => {
     let active = true;
-    phase2("/api/v2/listings").then(({ response, body }) => {
+    const query = params.toString();
+    phase2(`/api/v2/public/demo/listings${query ? `?${query}` : ""}`).then(({ response, body }) => {
       if (!active) return;
+      if (response.status === 404) {
+        return phase2("/api/v2/listings").then((fallback) => {
+          if (!active) return;
+          if (!fallback.response.ok) {
+            setState("unavailable");
+            return;
+          }
+          setCatalog(null);
+          setListings(fallback.body.listings || []);
+          setState("ready");
+        });
+      }
       if (!response.ok) {
         setState("unavailable");
+        setNotice("Those filters could not be applied.");
         return;
       }
-      setListings(body.listings || []);
+      setCatalog(body);
+      setListings([]);
+      setNotice(body.total ? `${body.total} homes match.` : "No homes match. Remove one filter and search again.");
       setState("ready");
     }).catch(() => { if (active) setState("unavailable"); });
     return () => { active = false; };
-  }, []);
-  async function search(event) {
+  }, [params]);
+  function applyFilters(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const params = new URLSearchParams();
-    for (const [key, value] of form.entries()) {
-      if (String(value).trim()) params.set(key, String(value).trim());
+    const next = new URLSearchParams();
+    for (const key of ["city", "home_type", "bedrooms", "min_sqft", "max_sqft"]) {
+      const value = String(form.get(key) || "").trim();
+      if (value && value !== "all") next.set(key, value);
     }
-    setNotice("Searching approved listings.");
-    try {
-      const { response, body } = await phase2(`/api/v2/public/discovery/search?${params.toString()}`);
-      if (!response.ok) {
-        setNotice("Search is temporarily unavailable. The published list below is unchanged.");
-        return;
-      }
-      setDiscovery(body.records || []);
-      setNotice(body.total ? `${body.total} approved listings match.` : "No listings match. Remove one filter and search again.");
-    } catch {
-      setNotice("Search is temporarily unavailable. The published list below is unchanged.");
-    }
+    setParams(next);
+  }
+  function goToPage(page) {
+    const next = new URLSearchParams(params);
+    if (page <= 1) next.delete("page");
+    else next.set("page", String(page));
+    setParams(next);
   }
   async function inquire(event) {
     event.preventDefault();
@@ -218,30 +258,66 @@ export function RentalsIndex() {
     setFavorites(next);
     window.localStorage.setItem("pp-discovery-favorites", JSON.stringify(next));
   }
+  const page = Number(catalog?.page || 1);
+  const fieldClass = "mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian";
   return (
     <PageFrame title="Rentals" testId="rentals-index">
-      <p>Available homes come from the current public listing projection. The CMS cannot change rent, fees, or availability.</p>
-      <form className="space-y-3" onSubmit={search}>
-        <label className="block text-sm font-semibold" htmlFor="discovery-city">City</label>
-        <input id="discovery-city" name="city" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
-        <label className="block text-sm font-semibold" htmlFor="discovery-use">Use</label>
-        <select id="discovery-use" name="use_code" className="w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }}>
-          <option value="">Any approved use</option>
-          <option value="residential">Residential</option>
-          <option value="commercial">Commercial</option>
-        </select>
-        <button className="underline" type="submit">Search approved listings</button>
+      <p>Homes shown here are the current public catalog. Filters stay in the page address, and each page shows at most 10 homes.</p>
+      <form className="grid gap-3 sm:grid-cols-2" onSubmit={applyFilters}>
+        <label className="block text-sm font-semibold" htmlFor="filter-city">Location
+          <input id="filter-city" name="city" defaultValue={params.get("city") || ""} className={fieldClass} style={{ colorScheme: "light" }} />
+        </label>
+        <label className="block text-sm font-semibold" htmlFor="filter-home-type">Home type
+          <select id="filter-home-type" name="home_type" defaultValue={params.get("home_type") || "all"} className={fieldClass} style={{ colorScheme: "light" }}>
+            <option value="all">All</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+          </select>
+        </label>
+        <label className="block text-sm font-semibold" htmlFor="filter-bedrooms">Bedrooms
+          <select id="filter-bedrooms" name="bedrooms" defaultValue={params.get("bedrooms") || "all"} className={fieldClass} style={{ colorScheme: "light" }}>
+            <option value="all">All</option>
+            <option value="studio">Studio</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4+</option>
+          </select>
+        </label>
+        <fieldset className="grid grid-cols-2 gap-2">
+          <legend className="text-sm font-semibold">Square footage</legend>
+          <label className="text-sm" htmlFor="filter-min-sqft">Minimum
+            <input id="filter-min-sqft" name="min_sqft" inputMode="numeric" defaultValue={params.get("min_sqft") || ""} className={fieldClass} style={{ colorScheme: "light" }} />
+          </label>
+          <label className="text-sm" htmlFor="filter-max-sqft">Maximum
+            <input id="filter-max-sqft" name="max_sqft" inputMode="numeric" defaultValue={params.get("max_sqft") || ""} className={fieldClass} style={{ colorScheme: "light" }} />
+          </label>
+        </fieldset>
+        <button className="min-h-11 bg-obsidian px-4 py-2 text-linen sm:col-span-2" type="submit">Apply filters</button>
       </form>
       <p role="status">{notice}</p>
-      {discovery.length > 0 && (
-        <ul className="space-y-3">
-          {discovery.map((row) => (
-            <li key={row.public_slug}>
-              <Link className="underline" to={`/rentals/${row.public_slug}`}>{row.payload.property_name} — {row.payload.label}</Link>
-              <button className="ml-3 underline" type="button" onClick={() => favorite(row.public_slug)}>Save on this device</button>
+      {catalog && (
+        <ul className="grid gap-4">
+          {catalog.records.map((row) => (
+            <li key={row.slug} className="overflow-hidden border border-stone-200 bg-white">
+              <Link to={`/rentals/${row.slug}`}>
+                <img src={row.hero} alt="" width="640" height="360" className="aspect-video w-full object-cover" onError={(event) => { event.currentTarget.alt = "Photo unavailable"; event.currentTarget.style.background = "#1f2933"; }} />
+                <span className="block px-4 py-3 font-heading text-xl font-bold">{row.property_name}</span>
+              </Link>
+              <p className="px-4 text-sm">{row.label}, {row.city} · {row.bedrooms === 0 ? "Studio" : `${row.bedrooms} bed`} · {row.sqft} sq ft · ${(row.amount_minor / 100).toLocaleString()}/month</p>
+              <button className="min-h-11 px-4 py-2 underline" type="button" onClick={() => favorite(row.slug)}>Save on this device</button>
             </li>
           ))}
         </ul>
+      )}
+      {catalog && catalog.pages > 1 && (
+        <nav aria-label="Listing pages" className="flex flex-wrap gap-2">
+          <button type="button" className="min-h-11 underline" disabled={page <= 1} onClick={() => goToPage(page - 1)}>Previous</button>
+          {Array.from({ length: catalog.pages }, (_, index) => (
+            <button key={index + 1} type="button" className="min-h-11 min-w-11 underline" aria-current={page === index + 1 ? "page" : undefined} onClick={() => goToPage(index + 1)}>{index + 1}</button>
+          ))}
+          <button type="button" className="min-h-11 underline" disabled={page >= catalog.pages} onClick={() => goToPage(page + 1)}>Next</button>
+        </nav>
       )}
       {favorites.length > 0 && <p>Saved on this device: {favorites.join(", ")}. Nothing was sent to the server.</p>}
       <form className="space-y-3" onSubmit={inquire} data-testid="leasing-inquiry">
@@ -269,8 +345,8 @@ export function RentalsIndex() {
       {inquiryState === "received" && <p role="status">Inquiry received. Reference {receipt}. No staff notes or other records are shown.</p>}
       {state === "loading" && <p role="status">Loading published listings.</p>}
       {state === "unavailable" && <p role="alert">Published listings could not be loaded.</p>}
-      {state === "ready" && listings.length === 0 && <p>No homes are published right now.</p>}
-      {state === "ready" && listings.length > 0 && (
+      {state === "ready" && !catalog && listings.length === 0 && <p>No homes are published right now.</p>}
+      {state === "ready" && !catalog && listings.length > 0 && (
         <ul className="space-y-3">
           {listings.map((listing) => (
             <li key={listing.listing_id}>
@@ -712,55 +788,155 @@ export function ScreeningDesk() {
 }
 
 export function ResidentHub() {
-  const [status, setStatus] = useState("A household portal opens only after activation. Demo previews do not create later records.");
+  const [status, setStatus] = useState("loading");
+  const [household, setHousehold] = useState(null);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    let active = true;
+    phase2("/api/v2/demo/household").then(({ response, body }) => {
+      if (!active) return;
+      if (response.status === 200) {
+        setHousehold(body);
+        setStatus("ready");
+        return;
+      }
+      if (response.status === 401 || response.status === 404) {
+        setMessage("Open this household from the Demo Control Center as the resident. An email address is not an activation reference.");
+        setStatus("signed-out");
+        return;
+      }
+      if (response.status === 403) {
+        setMessage(body.detail?.message || "This session cannot open the resident household.");
+        setStatus("denied");
+        return;
+      }
+      setMessage("The household could not be loaded.");
+      setStatus("unavailable");
+    }).catch(() => { if (active) setStatus("unavailable"); });
+    return () => { active = false; };
+  }, []);
   return (
-    <PageFrame title="Resident household hub" testId="portal-page">
-      <p>This hub shows household access, the sample lease, and later destinations. It does not collect money, open a maintenance case, or send a message.</p>
-      <p>SAMPLE — NOT A REAL LEASE — NOT FOR EXECUTION</p>
-      <form aria-labelledby="portal-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The portal request could not be accepted."); }}>
-        <h2 id="portal-heading" className="font-heading text-2xl">Household reference</h2>
-        <label htmlFor="portal-reference">Activation reference
-          <input id="portal-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
-        </label>
-        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Open household</button>
-      </form>
-      <section aria-label="Demo previews">
-        <h2 className="font-heading text-2xl">Demo Preview</h2>
-        <p>Balance and statements remain a Phase 16 demo preview.</p>
-        <p>Payments remain a Phase 17 demo preview.</p>
-        <p>Maintenance remains a later demo preview.</p>
-        <p>Messages remain a later demo preview.</p>
-      </section>
-      <p role="status">{status}</p>
+    <Workspace links={residentLinks}>
+    <PageFrame title="Your home" testId="portal-page">
+      <p><Link className="underline" to="/demo">Demo Control Center</Link></p>
+      {status === "loading" && <p role="status">Loading the household.</p>}
+      {status === "unavailable" && <p role="alert">The household could not be loaded. <button className="underline" type="button" onClick={() => window.location.reload()}>Try again</button></p>}
+      {(status === "signed-out" || status === "denied") && <p role="status">{message}</p>}
+      {status === "ready" && household && (
+        <section aria-labelledby="household-heading">
+          <h2 id="household-heading" className="sr-only">Household summary</h2>
+          {household.statement ? <StatementBody account={household.statement} /> : null}
+          <PaymentPanel tenancyCode={household.statement?.slug} mode="resident" />
+          <p>{household.guidance}</p>
+          <section id="lease" className="sr-only">Lease and account</section>
+          <RequestForm requests={household.requests || []} />
+        </section>
+      )}
     </PageFrame>
+    </Workspace>
+  );
+}
+
+function RequestForm({ requests }) {
+  const [note, setNote] = useState("");
+  const [status, setStatus] = useState("");
+  async function submit(event) {
+    event.preventDefault();
+    setStatus("Sending the request.");
+    const csrf = document.cookie.split("; ").find((value) => value.startsWith("pp_csrf="));
+    const token = csrf ? decodeURIComponent(csrf.split("=").slice(1).join("=")) : "";
+    try {
+      const response = await fetch("/api/v2/demo/requests", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json", "x-perchpoint-csrf": token },
+        body: JSON.stringify({ kind: "contact", note, idempotency_key: `contact-${Date.now()}` }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setStatus(body.detail?.message || "The request was not saved.");
+        return;
+      }
+      setStatus(`Saved. Status: ${body.state}. Staff can review it from the work queue.`);
+      setNote("");
+    } catch {
+      setStatus("The request could not be sent.");
+    }
+  }
+  return (
+    <section id="requests" className="rounded-md border border-[#D9E2EF] bg-white p-5">
+      <h2 className="font-heading text-2xl font-bold">Request a contact change</h2>
+      <p>Staff review this request. It does not change the lease.</p>
+      <form className="mt-3 space-y-3" onSubmit={submit}>
+        <label className="block">What should staff update?
+          <textarea className="mt-1 w-full border border-[#D9E2EF] px-3 py-2" minLength={8} required value={note} onChange={(event) => setNote(event.target.value)} />
+        </label>
+        <button className="bg-[#2457D6] px-4 py-2 text-white" type="submit">Submit request</button>
+      </form>
+      {status ? <p role="status">{status}</p> : null}
+      <ul className="mt-4 space-y-2">
+        {requests.map((item) => <li key={item.id}>{item.kind}: {item.note} — {item.state}</li>)}
+      </ul>
+    </section>
   );
 }
 
 export function LedgerDesk() {
-  const [status, setStatus] = useState("A balance is derived from posted journal lines. A person cannot type an authoritative balance.");
+  const [status, setStatus] = useState("loading");
+  const [accounts, setAccounts] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    let active = true;
+    phase2("/api/v2/demo/accounts").then(({ response, body }) => {
+      if (!active) return;
+      if (response.ok) {
+        const rows = body.accounts || [];
+        setAccounts(rows);
+        setSelected(rows[0]?.slug || "");
+        setStatus("ready");
+        return;
+      }
+      setMessage(body.detail?.message || "Resident accounts are not available for this session.");
+      setStatus(response.status === 403 ? "denied" : "unavailable");
+    }).catch(() => { if (active) setStatus("unavailable"); });
+    return () => { active = false; };
+  }, []);
   return (
-    <PageFrame title="Resident ledger" testId="ledger-page">
-      <p>This desk posts synthetic operational charges and statements. It does not move money or call a payment processor.</p>
-      <p>SYNTHETIC OPERATIONAL STATEMENT — NOT A TAX RETURN — NOT A FORMAL GENERAL LEDGER</p>
-      <form aria-labelledby="ledger-heading" onSubmit={(event) => { event.preventDefault(); setStatus("The ledger request could not be accepted."); }}>
-        <h2 id="ledger-heading" className="font-heading text-2xl">Account reference</h2>
-        <label htmlFor="ledger-reference">Household reference
-          <input id="ledger-reference" name="reference" required className="mt-1 w-full border border-stone-300 bg-white px-3 py-2 text-obsidian" style={{ colorScheme: "light" }} />
-        </label>
-        <button className="mt-3 w-fit bg-obsidian px-4 py-2 text-linen" type="submit">Post charge</button>
-      </form>
-      <table>
-        <caption>Derived positions</caption>
-        <thead>
-          <tr><th scope="col">Position</th><th scope="col">Meaning</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">Due</th><td>Open receivable after posted lines</td></tr>
-          <tr><th scope="row">Prepayment</th><td>Unapplied synthetic settlement remainder</td></tr>
-        </tbody>
-      </table>
-      <p role="status">{status}</p>
+    <Workspace links={staffLinks}>
+    <PageFrame title="Resident accounts" testId="ledger-page">
+      <p>These balances come from the October 2026 demonstration lines. A synthetic settlement is not cash received, and no money has moved.</p>
+      {status === "loading" && <p role="status">Loading resident accounts.</p>}
+      {status === "denied" && <p role="status">{message} Residents open their own account from Home.</p>}
+      {status === "unavailable" && <p role="alert">{message || "The account list could not be loaded."}</p>}
+      {status === "ready" && (
+        <table className="w-full text-left">
+          <caption className="sr-only">Twenty resident accounts as of 2026-10-10</caption>
+          <thead><tr><th scope="col">Household</th><th scope="col">Home</th><th scope="col">Status</th><th scope="col">Amount due</th></tr></thead>
+          <tbody>
+            {accounts.map((row) => (
+              <tr key={row.slug}>
+                <td>{row.person_label}</td>
+                <td><Link className="underline" to={`/owner/accounts/${row.slug}`}>{row.home_label}</Link></td>
+                <td>{row.status}</td>
+                <td>{(row.due_minor / 100).toLocaleString(undefined, { style: "currency", currency: "USD" })}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {status === "ready" && selected ? (
+        <>
+          <label className="mt-6 block">Household
+            <select className="mt-1 w-full border border-[#D9E2EF] bg-white px-3 py-2" value={selected} onChange={(event) => setSelected(event.target.value)}>
+              {accounts.map((row) => <option key={row.slug} value={row.slug}>{row.person_label} — {row.home_label}</option>)}
+            </select>
+          </label>
+          <PaymentPanel tenancyCode={selected} mode="staff" />
+        </>
+      ) : null}
     </PageFrame>
+    </Workspace>
   );
 }
 

@@ -1,12 +1,12 @@
 /** Authoritative Phase 4 tokens. CSS custom properties in index.css must match these names. */
 
 export const brand = {
-  obsidian: "#0d1117",
-  obsidianCard: "#161b22",
-  linen: "#faf8f5",
-  copper: "#a64b23",
-  copperDark: "#873c1b",
-  gold: "#f2ad78",
+  obsidian: "#172B4D",
+  obsidianCard: "#ffffff",
+  linen: "#F3F6FB",
+  copper: "#2457D6",
+  copperDark: "#1d4ed8",
+  gold: "#087F8C",
 };
 
 export const semantic = {

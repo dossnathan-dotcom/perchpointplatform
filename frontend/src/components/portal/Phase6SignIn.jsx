@@ -6,6 +6,7 @@ export function Phase6SignIn() {
   const errorRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -34,9 +35,8 @@ export function Phase6SignIn() {
         role_name: body.role_name,
         assurance: body.assurance,
       }));
-      navigate(body.mfa_required && body.assurance !== "aal2" ? "/mfa?next=%2Faccess%2Fonboarding" : "/access/onboarding", {
-        replace: true,
-      });
+      const next = body.mfa_required && body.assurance !== "aal2" ? "/mfa?next=%2Faccess%2Fonboarding" : (body.workspace || "/access/onboarding");
+      navigate(next, { replace: true });
     } catch {
       setMessage("The identity service is unavailable. Try again.");
       requestAnimationFrame(() => errorRef.current?.focus());
@@ -54,16 +54,21 @@ export function Phase6SignIn() {
       <form className="mt-8 space-y-4" onSubmit={submit} aria-busy={busy}>
         <label className="block">
           Email
-          <input className="mt-1 w-full rounded border border-linen/30 bg-transparent px-3 py-2" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} />
+          <input className="mt-1 w-full rounded border border-white/40 bg-white/10 px-3 py-2 text-white" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} />
         </label>
         <label className="block">
           Password
-          <input className="mt-1 w-full rounded border border-linen/30 bg-transparent px-3 py-2" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} />
+          <input className="mt-1 w-full rounded border border-white/40 bg-white/10 px-3 py-2 text-white" type={showPassword ? "text" : "password"} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
         </label>
-        <button className="rounded bg-brass px-4 py-2 text-obsidian disabled:opacity-60" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={showPassword} onChange={(event) => setShowPassword(event.target.checked)} />
+          Show password
+        </label>
+        <button className="min-h-11 rounded bg-[#2457D6] px-4 py-2 font-semibold text-white disabled:opacity-60" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
       </form>
       <div className="mt-6 flex flex-wrap gap-4 text-sm">
         <Link className="text-gold underline" to="/password-reset">Reset password</Link>
+        <Link className="text-gold underline" to="/demo">Local Demo Control Center</Link>
         <Link className="text-gold underline" to="/">Return to HawkVision</Link>
       </div>
       </div>

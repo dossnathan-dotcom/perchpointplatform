@@ -7,7 +7,7 @@ const links = [
   ["Home", "/"],
   ["Rentals", "/rentals"],
   ["Apply", "/apply"],
-  ["Resources", "/resources"],
+  ["Renter Resources", "/resources"],
   ["Maintenance", "/maintenance"],
   ["About", "/about"],
   ["Contact", "/contact"],
@@ -15,6 +15,13 @@ const links = [
 
 export const Navbar = ({ onLoginClick }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/v2/demo/status").then((response) => { if (active) setDemoOpen(response.ok); }).catch(() => { if (active) setDemoOpen(false); });
+    return () => { active = false; };
+  }, []);
+  const visibleLinks = demoOpen ? [...links, ["Local demo", "/demo"]] : links;
   const menuButton = useRef(null);
   const mobileMenu = useRef(null);
   useEffect(() => {
@@ -49,7 +56,7 @@ export const Navbar = ({ onLoginClick }) => {
         </a>
 
         <nav className="hidden items-center gap-4 xl:flex" data-testid="navbar-nav-links">
-          {links.map(([label, href]) => <a key={href} href={href} className="py-3 text-xs font-semibold text-linen transition-colors hover:text-gold" data-testid={`nav-link-${label.toLowerCase().replaceAll(" ", "-")}`}>{label}</a>)}
+          {visibleLinks.map(([label, href]) => <a key={href} href={href} className="py-3 text-xs font-semibold text-linen transition-colors hover:text-gold" data-testid={`nav-link-${label.toLowerCase().replaceAll(" ", "-")}`}>{label}</a>)}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -63,7 +70,7 @@ export const Navbar = ({ onLoginClick }) => {
       {menuOpen && (
         <nav ref={mobileMenu} id="mobile-navigation" className="max-h-[calc(100dvh-5rem)] overflow-y-auto border-t border-white/30 bg-obsidian px-5 py-5 xl:hidden" data-testid="navbar-mobile-menu">
           <div className="mx-auto grid max-w-7xl gap-1">
-            {links.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-3 text-sm font-semibold text-linen/75 hover:bg-white/5 hover:text-gold" data-testid={`mobile-nav-link-${label.toLowerCase().replaceAll(" ", "-")}`}>{label}</a>)}
+            {visibleLinks.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-md px-3 py-3 text-sm font-semibold text-linen/75 hover:bg-white/5 hover:text-gold" data-testid={`mobile-nav-link-${label.toLowerCase().replaceAll(" ", "-")}`}>{label}</a>)}
             <Button className="mt-3 bg-copper text-white" onClick={() => {setMenuOpen(false);onLoginClick("resident");}} data-testid="mobile-resident-login">Resident Login</Button>
             <Button className="mt-2 border border-white/50 bg-transparent text-linen" onClick={() => {setMenuOpen(false);onLoginClick("leasing");}} data-testid="mobile-staff-login">Staff Login</Button>
           </div>
