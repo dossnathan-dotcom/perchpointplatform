@@ -92,8 +92,13 @@ jobs:
       PHASE2_JWT_SECRET: ci-only-not-production-jwt-value
       PHASE2_DEV_PASSWORD: ci-only-not-production-password
       PHASE2_WEBHOOK_SECRET: ci-only-not-production-webhook
+      PHASE6_SMTP_HOST: 127.0.0.1
+      PHASE6_SMTP_PORT: "1025"
+      PHASE6_MAILPIT_URL: http://127.0.0.1:8025
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"

@@ -129,9 +129,19 @@ class Settings:
                 raise Phase2ConfigurationError(environment.capitalize() + " startup refused: " + ", ".join(reasons))
         elif mode != "development":
             raise Phase2ConfigurationError("PHASE2_LOCAL_AUTH must be development; Phase 2 local auth is not production identity")
-        missing = [name for name, value in values.items() if not value or value.startswith("replace-")]
+        restricted_worker = os.environ.get("PHASE17_RESTRICTED_WORKER") == "1"
+        if restricted_worker:
+            values["admin_url"] = ""
+            values["migrator_url"] = ""
+        missing = [
+            name
+            for name, value in values.items()
+            if name not in ({"admin_url", "migrator_url"} if restricted_worker else set())
+            and (not value or value.startswith("replace-"))
+        ]
         if missing:
             raise Phase2ConfigurationError("Missing local Phase 2 settings: " + ", ".join(missing))
         for name in ("admin_url", "migrator_url", "runtime_url"):
-            values[name] = use_psycopg(values[name])
+            if values[name]:
+                values[name] = use_psycopg(values[name])
         return cls(local_auth=mode, **values)

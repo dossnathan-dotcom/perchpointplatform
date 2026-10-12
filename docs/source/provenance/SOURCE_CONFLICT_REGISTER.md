@@ -298,3 +298,38 @@ production-activation boundaries remain controlling.
   Nathan for this local implementation.
 - Continue safely: yes. Status: resolved for Phase 16 local implementation by Q1, Q4, and Q7.
 
+## CONFLICT-026 — Public navigation label for renter guidance
+
+- Claims: Phase 7 approved customization answer Q11 names the public item “Resources.”
+  The pre-Phase-17 demo instruction asks for the explicit public label “Renter Resources”
+  on the same destination, `/resources`.
+- Consequence: public navigation, breadcrumbs, page title, and tests that name the link.
+- Safe assumption: the destination and published content stay the same. The visible label
+  becomes “Renter Resources.” The historical Q11 answer is not rewritten.
+- Decision owner: Nathan for this local demonstration. Faruk remains the business owner
+  if the public label is later adopted as policy.
+- Continue safely: yes. Status: resolved for this local demonstration by the explicit
+  demo instruction. It does not change Phase 7 acceptance evidence.
+
+## CONFLICT-027 — Phase 18 physical intake versus centralized digital receipts
+
+- Claims: `docs/source/normalized/ENTERPRISE_DELIVERY_ROADMAP.md` page 11 names Phase 18
+  “Cash exceptions and Innago coexistence” and includes cash, check, Cash App, and manual
+  intake. Phase 14 Q214 and Phase 15 Q170 left offline payment exceptions to Phase 18.
+  The October 12, 2026 direction rejects new cash, check, money-order, and other physical
+  collection. It replaces that scope with digital receipt evidence, housing-assistance
+  remittances, exception resolution, and controlled historical import.
+- Consequence: Phase 18 must not implement physical collection or custody, and must not
+  mark the old physical-intake requirements as implemented. Unknown money, evidence,
+  duplicate prevention, approval, historical correction, opening-balance staging, and the
+  illustrative $1,975 legacy digital receipt remain in scope. Broader bank reconciliation
+  stays in Phase 19. Maintenance intake stays in its later roadmap phase.
+- Safe assumption: local work uses synthetic Stripe, bank, and agency adapters.
+  `real_values_activated` and `money_moved` stay false. Zelle stays conditional and
+  unavailable until a supported evidence path exists.
+- Decision owner: the user for the channel rejection; Faruk for later collecting-entity
+  and program confirmation; Ann for operational matching; Nathan for this implementation.
+- Continue safely: yes, after Phase 17 local acceptance. Status: resolved for local
+  Phase 18 scope by the October 12, 2026 direction. Physical-intake requirements remain
+  unmet on purpose.
+

@@ -1,0 +1,242 @@
+[
+  {
+    "file": "gallery/house-exterior.jpg",
+    "origin": "generated",
+    "listing": "shared gallery",
+    "license": "Exterior photograph generated for the local demonstration."
+  },
+  {
+    "file": "gallery/apartment-exterior.jpg",
+    "origin": "generated",
+    "listing": "shared gallery",
+    "license": "Apartment exterior generated for the local demonstration."
+  },
+  {
+    "file": "gallery/living-room.jpg",
+    "origin": "generated",
+    "listing": "shared gallery",
+    "license": "Living area generated for the local demonstration."
+  },
+  {
+    "file": "gallery/kitchen.jpg",
+    "origin": "generated",
+    "listing": "shared gallery",
+    "license": "Kitchen generated for the local demonstration."
+  },
+  {
+    "file": "gallery/bedroom.jpg",
+    "origin": "generated",
+    "listing": "shared gallery",
+    "license": "Bedroom generated for the local demonstration."
+  },
+  {
+    "file": "heroes/demo-01.webp",
+    "origin": "generated",
+    "listing": "demo-01",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-02.webp",
+    "origin": "generated",
+    "listing": "demo-02",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-03.webp",
+    "origin": "generated",
+    "listing": "demo-03",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-04.webp",
+    "origin": "generated",
+    "listing": "demo-04",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-05.webp",
+    "origin": "generated",
+    "listing": "demo-05",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-06.webp",
+    "origin": "generated",
+    "listing": "demo-06",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-07.webp",
+    "origin": "generated",
+    "listing": "demo-07",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-08.webp",
+    "origin": "generated",
+    "listing": "demo-08",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-09.webp",
+    "origin": "generated",
+    "listing": "demo-09",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-10.webp",
+    "origin": "generated",
+    "listing": "demo-10",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-11.webp",
+    "origin": "generated",
+    "listing": "demo-11",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-12.webp",
+    "origin": "generated",
+    "listing": "demo-12",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-13.webp",
+    "origin": "generated",
+    "listing": "demo-13",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-14.webp",
+    "origin": "generated",
+    "listing": "demo-14",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-15.webp",
+    "origin": "generated",
+    "listing": "demo-15",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-16.webp",
+    "origin": "generated",
+    "listing": "demo-16",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-17.webp",
+    "origin": "generated",
+    "listing": "demo-17",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-18.webp",
+    "origin": "generated",
+    "listing": "demo-18",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-19.webp",
+    "origin": "generated",
+    "listing": "demo-19",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-20.webp",
+    "origin": "generated",
+    "listing": "demo-20",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-21.webp",
+    "origin": "generated",
+    "listing": "demo-21",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-22.webp",
+    "origin": "generated",
+    "listing": "demo-22",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-23.webp",
+    "origin": "generated",
+    "listing": "demo-23",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-24.webp",
+    "origin": "generated",
+    "listing": "demo-24",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-25.webp",
+    "origin": "generated",
+    "listing": "demo-25",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-26.webp",
+    "origin": "generated",
+    "listing": "demo-26",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-27.webp",
+    "origin": "generated",
+    "listing": "demo-27",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-28.webp",
+    "origin": "generated",
+    "listing": "demo-28",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-29.webp",
+    "origin": "generated",
+    "listing": "demo-29",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-30.webp",
+    "origin": "generated",
+    "listing": "demo-30",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-31.webp",
+    "origin": "generated",
+    "listing": "demo-31",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-32.webp",
+    "origin": "generated",
+    "listing": "demo-32",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-33.webp",
+    "origin": "generated",
+    "listing": "demo-33",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-34.webp",
+    "origin": "generated",
+    "listing": "demo-34",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  },
+  {
+    "file": "heroes/demo-35.webp",
+    "origin": "generated",
+    "listing": "demo-35",
+    "license": "Derived locally from a generated demonstration photograph. No third-party listing photo."
+  }
+]

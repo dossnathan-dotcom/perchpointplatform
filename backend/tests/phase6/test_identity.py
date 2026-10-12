@@ -1687,6 +1687,9 @@ def test_vendor_admin_proposes_operations_approves_and_worker_assignment_activat
             ),
             {"account": vendor_account},
         )
+    listed = vendor.get("/api/v2/access/vendor/relationships")
+    assert listed.status_code == 200, listed.text
+    assert any(row["id"] == str(relationship_id) and row["vendor_name"] == "Synthetic Vendor Proposal Test" for row in listed.json()["relationships"])
     worker_email = f"vendor.worker.{uuid4().hex[:8]}@example.com"
     proposed = vendor.post(
         "/api/v2/access/vendor/workers/proposals",
@@ -1700,6 +1703,9 @@ def test_vendor_admin_proposes_operations_approves_and_worker_assignment_activat
         },
     )
     assert proposed.status_code == 200, proposed.text
+    pending = operations.get("/api/v2/access/vendor/workers/proposals")
+    assert pending.status_code == 200, pending.text
+    assert any(row["id"] == proposed.json()["proposal_id"] and row["email"] == worker_email for row in pending.json()["proposals"])
     approved = operations.post(
         f"/api/v2/access/vendor/workers/proposals/{proposed.json()['proposal_id']}",
         headers=_csrf(operations_session.json()),

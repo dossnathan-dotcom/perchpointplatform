@@ -39,6 +39,8 @@ dist
 # Environment files (comprehensive coverage)
 .env
 .env.*
+backend/.demo-requests.json
+frontend/e2e/artifacts/
 !.env.example
 !frontend/.env.development
 

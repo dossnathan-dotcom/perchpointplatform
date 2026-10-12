@@ -70,7 +70,8 @@ def _positions(connection, account_id) -> dict:
             "SELECT "
             "coalesce(sum(CASE WHEN category = 'receivable' AND side = 'debit' THEN amount_minor "
             "WHEN category = 'receivable' AND side = 'credit' THEN -amount_minor ELSE 0 END), 0) AS due_minor, "
-            "coalesce(sum(CASE WHEN category = 'prepayment' AND side = 'credit' THEN amount_minor ELSE 0 END), 0) AS prepayment_minor, "
+            "coalesce(sum(CASE WHEN category = 'prepayment' AND side = 'credit' THEN amount_minor "
+            "WHEN category = 'prepayment' AND side = 'debit' THEN -amount_minor ELSE 0 END), 0) AS prepayment_minor, "
             "coalesce(sum(CASE WHEN category = 'deposit' AND side = 'debit' THEN amount_minor ELSE 0 END), 0) AS deposit_minor, "
             "coalesce(sum(CASE WHEN category = 'subsidy' AND side = 'debit' THEN amount_minor ELSE 0 END), 0) AS subsidy_minor "
             "FROM journal_lines WHERE transaction_id IN "
@@ -89,7 +90,7 @@ def _positions(connection, account_id) -> dict:
     }
 
 
-def _post(connection, organization, account, kind: str, amount: int, lines: list[tuple[str, str, int]], reversal_of=None) -> str:
+def _post(connection, organization, account, kind: str, amount: int, lines: list[tuple[str, str, int]], reversal_of=None, tenancy_code: str | None = None) -> str:
     if account.period_state != "open":
         raise CommandError(409, "conflict", "The accounting period is closed.", False)
     debit = sum(value for side, _category, value in lines if side == "debit")
@@ -102,8 +103,8 @@ def _post(connection, organization, account, kind: str, amount: int, lines: list
         connection.execute(
             text(
                 "INSERT INTO journal_transactions "
-                "(organization_id, id, account_id, period_id, public_reference, kind, reversal_of, amount_minor, money_moved) "
-                "VALUES (CAST(:org AS uuid), :id, :account_id, :period_id, :reference, :kind, :reversal_of, :amount, false)"
+                "(organization_id, id, account_id, period_id, public_reference, kind, reversal_of, amount_minor, money_moved, tenancy_code) "
+                "VALUES (CAST(:org AS uuid), :id, :account_id, :period_id, :reference, :kind, :reversal_of, :amount, false, :tenancy_code)"
             ),
             {
                 "org": organization,
@@ -114,6 +115,7 @@ def _post(connection, organization, account, kind: str, amount: int, lines: list
                 "kind": kind,
                 "reversal_of": reversal_of,
                 "amount": amount,
+                "tenancy_code": tenancy_code,
             },
         )
     except IntegrityError as exc:

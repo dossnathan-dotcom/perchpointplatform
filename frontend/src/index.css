@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 36 33% 97%;
-    --foreground: 220 20% 7%;
+    --background: 216 54% 97%;
+    --foreground: 216 54% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 7%;
+    --card-foreground: 216 54% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 7%;
-    --primary: 18 65% 39%;
-    --primary-foreground: 36 33% 97%;
-    --secondary: 35 28% 92%;
-    --secondary-foreground: 220 20% 7%;
-    --muted: 35 22% 91%;
-    --muted-foreground: 25 10% 40%;
-    --accent: 36 88% 45%;
-    --accent-foreground: 220 20% 7%;
-    --destructive: 0 72% 45%;
-    --destructive-foreground: 36 33% 97%;
-    --border: 34 18% 84%;
-    --input: 34 18% 84%;
-    --ring: 22 64% 46%;
+    --popover-foreground: 216 54% 20%;
+    --primary: 224 72% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 186 89% 29%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 216 40% 94%;
+    --muted-foreground: 216 24% 32%;
+    --accent: 224 72% 49%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 216 46% 89%;
+    --input: 216 46% 89%;
+    --ring: 224 72% 49%;
     --radius: 0.5rem;
   }
 
@@ -41,8 +41,8 @@
   }
 
   ::selection {
-    background: #a64b23;
-    color: #faf8f5;
+    background: #2457d6;
+    color: #ffffff;
   }
 }
 
@@ -50,16 +50,16 @@
 :root,
 html[data-theme="hawkvision"],
 html[data-theme="light"] {
-  --pp-obsidian: #0d1117;
-  --pp-linen: #faf8f5;
-  --pp-copper: #a64b23;
-  --pp-gold: #f2ad78;
-  --pp-text: #0d1117;
-  --pp-text-muted: #3f3a36;
-  --pp-surface: #faf8f5;
+  --pp-obsidian: #172b4d;
+  --pp-linen: #f3f6fb;
+  --pp-copper: #2457d6;
+  --pp-gold: #4bb6c2;
+  --pp-text: #172b4d;
+  --pp-text-muted: #3d4d66;
+  --pp-surface: #f3f6fb;
   --pp-surface-raised: #ffffff;
-  --pp-border: #817a73;
-  --pp-focus: #873c1b;
+  --pp-border: #d9e2ef;
+  --pp-focus: #2457d6;
   --pp-danger: #9f1239;
   --pp-success: #166534;
   --pp-warning: #9a3412;

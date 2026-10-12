@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Workspace } from "@/components/demo/RoleNav";
 
 const NAV = [
   ["onboarding", "Access summary"],
@@ -117,17 +118,17 @@ function ContextBar({ me, contexts, onSwitch, busy }) {
   return (
     <section aria-label="Active access context" className="border border-white/25 bg-white/5 p-4">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <p><span className="block text-xs uppercase text-linen/70">Organization</span>{me.organization_id}</p>
+        <p><span className="block text-xs uppercase text-linen/70">Organization</span>HawkVision Homes — synthetic organization</p>
         <p><span className="block text-xs uppercase text-linen/70">Role</span>{me.role_name}</p>
         <p><span className="block text-xs uppercase text-linen/70">Scope</span>Current membership</p>
         <p><span className="block text-xs uppercase text-linen/70">Authority</span>{me.assurance === "aal2" ? "Elevated (AAL2)" : "Standard (AAL1)"}</p>
       </div>
       <label className="mt-4 block max-w-lg">Switch access context
           <select className={inputClass} value={me.membership_id} disabled={busy || available.length < 2} aria-describedby="context-help" onChange={(event) => onSwitch(event.target.value)}>
-            {available.map((item) => <option key={item.membership_id} value={item.membership_id} label={`${item.role_name} — ${item.organization_id}`} />)}
+            {available.map((item) => <option key={item.membership_id} value={item.membership_id} label={`${item.role_name.replaceAll("_", " ")} — HawkVision Homes`} />)}
           </select>
       </label>
-      <p id="context-help" className="mt-2 text-sm text-linen/70">{available.length < 2 ? "Switching is unavailable because no additional current membership is exposed by the authorized directory." : "Changing context updates the server-authorized organization and role."}</p>
+      <p id="context-help" className="mt-2 text-sm text-linen/70">{available.length < 2 ? "This account has one role. Open the Demo Control Center to enter a different persona. Roles are not switched inside this account." : "Changing context updates the server-authorized organization and role."}</p>
     </section>
   );
 }
@@ -369,7 +370,16 @@ function AccessRequests({ me }) {
   const [error, setError] = useState(null);
   const [pending, setPending] = useState("");
   const [status, setStatus] = useState("");
-  const load = () => { setLoading(true); setError(null); phase6Api("/api/v2/access/requests").then((body) => setItems(body.requests || [])).catch(setError).finally(() => setLoading(false)); };
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    phase6Api("/api/v2/access/requests").then((body) => setItems(body.requests || [])).catch((loadError) => {
+      if (loadError.status === 403) {
+        loadError.message = "This role cannot review access requests. Return to the Demo Control Center and enter as the owner or the operations manager.";
+      }
+      setError(loadError);
+    }).finally(() => setLoading(false));
+  };
   useEffect(load, []);
   useEffect(() => {
     if (params.get("purpose") || params.get("scope") || params.get("capability")) {
@@ -434,27 +444,51 @@ function VendorAccess() {
   const [proposalId, setProposalId] = useState("");
   const [purpose, setPurpose] = useState("");
   const [workers, setWorkers] = useState([]);
+  const [relationships, setRelationships] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [proposals, setProposals] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState("");
   const [status, setStatus] = useState("");
-  useEffect(() => { phase6Api("/api/v2/access/users").then((body) => setWorkers((body.users || []).filter((item) => ["vendor_admin", "vendor_worker", "technician", "cleaner"].includes(item.role_name)))).catch(setError).finally(() => setLoading(false)); }, []);
+  const loadProposals = () => phase6Api("/api/v2/access/vendor/workers/proposals").then((body) => setProposals(body.proposals || [])).catch(() => setProposals([]));
+  useEffect(() => {
+    Promise.all([
+      phase6Api("/api/v2/access/users").catch(() => ({ users: [] })),
+      phase6Api("/api/v2/access/vendor/relationships").catch(() => ({ relationships: [] })),
+      phase6Api("/api/v2/properties").catch(() => ({ properties: [] })),
+    ]).then(([users, vendors, portfolio]) => {
+      setWorkers((users.users || []).filter((item) => ["vendor_admin", "vendor_worker", "technician", "cleaner"].includes(item.role_name)));
+      setRelationships(vendors.relationships || []);
+      setProperties(portfolio.properties || []);
+    }).catch(setError).finally(() => setLoading(false));
+    loadProposals();
+  }, []);
   const propose = async (event) => {
     event.preventDefault();
     try {
       const body = await phase6Api("/api/v2/access/vendor/workers/proposals", { method: "POST", body: JSON.stringify({ ...draft, property_id: draft.property_id || null, starts_at: new Date(draft.starts_at).toISOString(), ends_at: new Date(draft.ends_at).toISOString() }) });
-      setProposalId(body.proposal_id); clearDraft();
+      setProposalId(body.proposal_id);
+      clearDraft();
+      setStatus("Worker proposal submitted.");
+      await loadProposals();
     } catch (actionError) { setError(actionError); }
   };
   const decide = async (approve) => {
     if (!window.confirm(`${approve ? "Approve and invite" : "Deny"} this worker proposal?`)) return;
     setPending("decision"); setStatus("");
-    try { await phase6Api(`/api/v2/access/vendor/workers/proposals/${proposalId}`, { method: "POST", body: JSON.stringify({ approve, purpose }) }); setProposalId(""); setPurpose(""); setStatus(`Worker proposal ${approve ? "approved" : "denied"}.`); } catch (actionError) { setError(actionError); }
+    try {
+      await phase6Api(`/api/v2/access/vendor/workers/proposals/${proposalId}`, { method: "POST", body: JSON.stringify({ approve, purpose }) });
+      setProposalId("");
+      setPurpose("");
+      setStatus(`Worker proposal ${approve ? "approved" : "denied"}.`);
+      await loadProposals();
+    } catch (actionError) { setError(actionError); }
     finally { setPending(""); }
   };
-  return <div className="space-y-8"><ErrorSummary error={error} /><p role="status" aria-live="polite">{status || (pending ? "Vendor access decision in progress…" : "")}</p><section aria-labelledby="vendor-directory-title"><h2 id="vendor-directory-title" className="text-2xl">Active vendor identities</h2><SectionState loading={loading} items={workers} empty="No vendor workers are visible in the authorized directory." /><ul className="mt-4 space-y-2">{workers.map((worker) => <li className="border border-white/20 p-3" key={worker.membership_id}><strong>{worker.email}</strong> — {worker.role_name}</li>)}</ul><p className="mt-2 text-sm text-linen/70">Assignment details and automatic completion/cancellation expiry are enforced by the backend but are not exposed by a listing API.</p></section>
-    <section aria-labelledby="propose-title"><h2 id="propose-title" className="text-2xl">Propose a worker assignment</h2><form className="mt-4 grid gap-4 md:grid-cols-2" onSubmit={propose}><label>Vendor relationship ID<input className={inputClass} required value={draft.vendor_relationship_id} onChange={(e) => setDraft({ ...draft, vendor_relationship_id: e.target.value })} /></label><label>Worker email<input className={inputClass} type="email" required value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} /></label><label>Role<select className={inputClass} value={draft.role_name} onChange={(e) => setDraft({ ...draft, role_name: e.target.value })}><option value="vendor_worker">Vendor worker</option><option value="technician">Technician</option><option value="cleaner">Cleaner</option></select></label><label>Property ID (optional)<input className={inputClass} value={draft.property_id} onChange={(e) => setDraft({ ...draft, property_id: e.target.value })} /></label><label>Starts at<input className={inputClass} type="datetime-local" required value={draft.starts_at} onChange={(e) => setDraft({ ...draft, starts_at: e.target.value })} /></label><label>Access ends at<input className={inputClass} type="datetime-local" required value={draft.ends_at} onChange={(e) => setDraft({ ...draft, ends_at: e.target.value })} /></label><button className={`${buttonClass} md:col-span-2 md:justify-self-start`} type="submit">Propose worker</button></form></section>
-    <section aria-labelledby="proposal-decision-title"><h2 id="proposal-decision-title" className="text-2xl">Approve or deny proposal</h2><p className="mt-2 text-sm text-linen/70">Proposal listing is not exposed by the API. Use the proposal ID from the vendor submission or approval notice.</p><div className="mt-4 grid gap-4 md:grid-cols-2"><label>Proposal ID<input className={inputClass} value={proposalId} onChange={(e) => setProposalId(e.target.value)} /></label><label>Decision purpose<input className={inputClass} value={purpose} onChange={(e) => setPurpose(e.target.value)} /></label></div><div className="mt-3 flex gap-3"><button className={buttonClass} disabled={Boolean(pending) || !proposalId || !purpose} type="button" onClick={() => decide(true)}>Approve and invite</button><button className={buttonClass} disabled={Boolean(pending) || !proposalId || !purpose} type="button" onClick={() => decide(false)}>Deny proposal</button></div></section>
+  return <div className="space-y-8"><ErrorSummary error={error} /><p role="status" aria-live="polite">{status || (pending ? "Vendor access decision in progress…" : "")}</p><section aria-labelledby="vendor-directory-title"><h2 id="vendor-directory-title" className="text-2xl">Active vendor identities</h2><SectionState loading={loading} items={workers} empty="No vendor workers are visible in the authorized directory." /><ul className="mt-4 space-y-2">{workers.map((worker) => <li className="border border-white/20 p-3" key={worker.membership_id}><strong>{worker.email}</strong> — {worker.role_name}</li>)}</ul></section>
+    <section aria-labelledby="propose-title"><h2 id="propose-title" className="text-2xl">Propose a worker assignment</h2><form className="mt-4 grid gap-4 md:grid-cols-2" onSubmit={propose}><label>Vendor<select className={inputClass} required value={draft.vendor_relationship_id} onChange={(e) => setDraft({ ...draft, vendor_relationship_id: e.target.value })}><option value="">Choose a vendor</option>{relationships.map((item) => <option key={item.id} value={item.id}>{item.vendor_name}</option>)}</select></label><label>Worker email<input className={inputClass} type="email" required value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} /></label><label>Role<select className={inputClass} value={draft.role_name} onChange={(e) => setDraft({ ...draft, role_name: e.target.value })}><option value="vendor_worker">Vendor worker</option><option value="technician">Technician</option><option value="cleaner">Cleaner</option></select></label><label>Property<select className={inputClass} value={draft.property_id} onChange={(e) => setDraft({ ...draft, property_id: e.target.value })}><option value="">No specific property</option>{properties.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><label>Starts at<input className={inputClass} type="datetime-local" required value={draft.starts_at} onChange={(e) => setDraft({ ...draft, starts_at: e.target.value })} /></label><label>Access ends at<input className={inputClass} type="datetime-local" required value={draft.ends_at} onChange={(e) => setDraft({ ...draft, ends_at: e.target.value })} /></label><button className={`${buttonClass} md:col-span-2 md:justify-self-start`} type="submit">Propose worker</button></form></section>
+    <section aria-labelledby="proposal-decision-title"><h2 id="proposal-decision-title" className="text-2xl">Approve or deny proposal</h2><div className="mt-4 grid gap-4 md:grid-cols-2"><label>Pending proposal<select className={inputClass} value={proposalId} onChange={(e) => setProposalId(e.target.value)}><option value="">Choose a proposal</option>{proposals.map((item) => <option key={item.id} value={item.id}>{item.vendor_name}: {item.email}</option>)}</select></label><label>Decision purpose<input className={inputClass} value={purpose} onChange={(e) => setPurpose(e.target.value)} /></label></div><div className="mt-3 flex gap-3"><button className={buttonClass} disabled={Boolean(pending) || !proposalId || !purpose} type="button" onClick={() => decide(true)}>Approve and invite</button><button className={buttonClass} disabled={Boolean(pending) || !proposalId || !purpose} type="button" onClick={() => decide(false)}>Deny proposal</button></div></section>
   </div>;
 }
 
@@ -526,8 +560,15 @@ export function Phase6AccessWorkspace({ surface }) {
     catch (switchError) { setError(switchError); }
     finally { setBusy(false); }
   };
+  const fieldLinks = me?.role_name === "technician"
+    ? [["Assignments", "/access/vendor-access"], ["History", "/access/maintenance-history"]]
+    : me?.role_name === "maintenance" || me?.role_name === "maintenance_coordinator"
+      ? [["History", "/access/maintenance-history"], ["Assignments", "/access/vendor-access"]]
+      : null;
+  const fieldSurfaces = fieldLinks ? fieldLinks.map(([, href]) => href.split("/").pop()) : null;
   const content = useMemo(() => {
     if (!me) return null;
+    if (fieldSurfaces && !fieldSurfaces.includes(surface)) return <p role="status">This workspace does not include that area.</p>;
     if (surface === "onboarding") return <Onboarding me={me} />;
     if (surface === "security") return <SecurityCenter />;
     if (surface === "users-access") return <UsersAccess />;
@@ -537,20 +578,23 @@ export function Phase6AccessWorkspace({ surface }) {
     if (surface === "vendor-access") return <VendorAccess />;
     if (surface === "maintenance-history") return <MaintenanceHistory />;
     return null;
-  }, [me, surface]);
-  return <main id="main" className="min-h-screen bg-obsidian text-linen">
+  }, [me, surface, fieldSurfaces]);
+  const visibleNav = fieldSurfaces ? NAV.filter(([id]) => fieldSurfaces.includes(id)) : NAV;
+  const page = <main id="main" className="min-h-screen bg-obsidian text-linen">
     <a className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-obsidian focus:p-3" href="#access-content">Skip to access content</a>
     {me ? <SessionClock role={me.role_name} /> : null}
     <div className="mx-auto max-w-6xl px-5 py-8">
       <nav aria-label="Identity and access" className="flex gap-4 overflow-x-auto border-b border-white/20 pb-4">
-        {NAV.map(([id, label]) => <Link key={id} aria-current={id === surface ? "page" : undefined} className={`shrink-0 ${id === surface ? "text-gold underline" : "text-linen"}`} to={`/access/${id}`}>{label}</Link>)}
+        {visibleNav.map(([id, label]) => <Link key={id} aria-current={id === surface ? "page" : undefined} className={`shrink-0 ${id === surface ? "text-gold underline" : "text-linen"}`} to={`/access/${id}`}>{label}</Link>)}
       </nav>
       <h1 className="mt-8 font-heading text-4xl">{title}</h1>
       <p className="mt-2 text-linen/70">Only current server-authorized data and actions are shown.</p>
+      <p className="mt-2"><Link className="text-gold underline" to="/demo">Return to the Demo Control Center</Link></p>
       <div className="mt-6">{!me && !error ? <p role="status">Loading current access…</p> : null}<ErrorSummary error={error} retry={loadContext} />{me ? <ContextBar me={me} contexts={contexts} onSwitch={switchContext} busy={busy} /> : null}</div>
       <div id="access-content" tabIndex="-1" className="mt-8">{content}</div>
     </div>
   </main>;
+  return fieldLinks ? <Workspace links={fieldLinks}>{page}</Workspace> : page;
 }
 
 export function Phase6BoundaryPage({ kind }) {

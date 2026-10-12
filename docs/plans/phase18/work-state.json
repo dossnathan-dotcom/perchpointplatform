@@ -1,0 +1,19 @@
+{
+  "phase": 18,
+  "updated": "2026-10-12",
+  "phase_17_local_acceptance": true,
+  "phase_18_behavior_started": false,
+  "real_values_activated": false,
+  "money_moved": false,
+  "behavior_sha": "a38223061e61d700ed9d590316f56e90eb19af09",
+  "branch": "cursor/phase-17-payments",
+  "behavior_committed": true,
+  "pushed": false,
+  "migration_head_on_demo_database": "0060_phase17_grant_accept",
+  "demo_database": "127.0.0.1:54339/perchpoint_phase2",
+  "browser_matrix": "108 passed, playwright.phase17.config.js, 29.0m, 2026-10-12",
+  "clean_room": "passed, head 0060_phase17_grant_accept, 254 passed, lineage 60, runtime false,false, forced_rls 220/220",
+  "scale": "passed on 03dd3d6 at head 0060, database query time only, p95 order count 42.971 ms, p95 callback count 17.313 ms, refund exposure 100000 minor units",
+  "next_unresolved_item": "Local P17-R0 through P17-R16 passed on a382230. P17-R17, P17-R18, and the Stripe sandbox are not run. Do not start Phase 18 financial migrations before the protected merge.",
+  "scope_change": "CONFLICT-027 replaces physical payment intake with digital receipts and housing assistance. Decisions are in docs/plans/phase18/DECISIONS.md."
+}

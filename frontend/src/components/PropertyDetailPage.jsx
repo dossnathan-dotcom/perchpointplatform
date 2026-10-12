@@ -15,7 +15,10 @@ export const PropertyDetailPage = () => {
     window.scrollTo(0, 0);
     let active = true;
     setState('loading');
-    phase2(`/api/v2/listings/${listingId}`).then(({ response, body }) => {
+    const path = String(listingId || "").startsWith("demo-")
+      ? `/api/v2/public/demo/listings/${listingId}`
+      : `/api/v2/listings/${listingId}`;
+    phase2(path).then(({ response, body }) => {
       if (!active) return;
       if (response.status === 404) setState('missing');
       else if (!response.ok) setState('unavailable');
@@ -51,7 +54,9 @@ export const PropertyDetailPage = () => {
       <Link to="/#rentals" className="inline-flex items-center gap-2 py-4 text-sm underline"><ArrowLeft size={16} />All published rentals</Link>
       <p className="mt-6 text-xs uppercase tracking-widest text-gold">{listing.use} · {listing.availability}</p>
       <h1 className="mt-4 font-heading text-5xl font-bold">{listing.property_name}</h1>
-      <p className="mt-4">{listing.label} · {listing.municipality}, {listing.state}</p>
+      {listing.gallery && <div className="mt-8 grid gap-3 sm:grid-cols-2">{listing.gallery.map((image) => <img key={image.src} src={image.src} alt={image.alt} width="640" height="360" className="aspect-video w-full object-cover" loading="lazy" />)}</div>}
+      <p className="mt-4">{listing.label} · {listing.city || listing.municipality}, {listing.state}</p>
+      {listing.disclosure && <p className="mt-4 max-w-2xl text-sm">{listing.disclosure}</p>}
       <p className="mt-6 font-heading text-3xl">{moneyMinor(listing.amount_minor, listing.currency)} <span className="font-body text-base">/ month</span></p>
       {listing.estimate_disclaimer && <p className="mt-4 max-w-2xl text-sm" data-testid="listing-estimate-disclaimer">{listing.estimate_disclaimer}{listing.estimate_minor != null ? ` Estimated move-in ${moneyMinor(listing.estimate_minor, listing.currency)}.` : ""}</p>}
       {listing.description && <p className="mt-4 max-w-2xl">{listing.description}</p>}

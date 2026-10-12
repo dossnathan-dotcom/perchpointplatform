@@ -20,6 +20,9 @@ const PerchPointPortal = lazy(() => import("@/components/PerchPointPortal").then
 const Phase5Workspace = lazy(() => import("@/components/portal/Phase5Workspace").then((module) => ({ default: module.Phase5Workspace })));
 const PortfolioAdmin = lazy(() => import("@/components/portal/PortfolioAdmin").then((module) => ({ default: module.PortfolioAdmin })));
 const Phase6SignIn = lazy(() => import("@/components/portal/Phase6SignIn").then((module) => ({ default: module.Phase6SignIn })));
+const DemoControl = lazy(() => import("@/components/demo/DemoControl").then((module) => ({ default: module.DemoControl })));
+const OwnerHome = lazy(() => import("@/components/demo/OwnerHome").then((module) => ({ default: module.OwnerHome })));
+const AccountDetail = lazy(() => import("@/components/demo/AccountView").then((module) => ({ default: module.AccountDetail })));
 const Phase6IdentityFlow = lazy(() => import("@/components/portal/Phase6Identity").then((module) => ({ default: module.Phase6IdentityFlow })));
 const Phase6AccessWorkspace = lazy(() => import("@/components/portal/Phase6Access").then((module) => ({ default: module.Phase6AccessWorkspace })));
 const Phase6BoundaryPage = lazy(() => import("@/components/portal/Phase6Access").then((module) => ({ default: module.Phase6BoundaryPage })));
@@ -34,6 +37,8 @@ const ScreeningDesk = lazy(() => import("@/components/public/PublicSite").then((
 const LeaseDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.LeaseDesk })));
 const ResidentHub = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ResidentHub })));
 const LedgerDesk = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.LedgerDesk })));
+const PayerHome = lazy(() => import("@/components/demo/PayerHome").then((module) => ({ default: module.PayerHome })));
+const ResidentPayments = lazy(() => import("@/components/demo/ResidentPayments").then((module) => ({ default: module.ResidentPayments })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -86,13 +91,6 @@ export function AppContent() {
         <Route element={<PublicLayout onLogin={() => navigate("/sign-in")} onMaintenance={() => setMaintenanceOpen(true)} onContact={() => openRequest(undefined, "contact")} />}>
         <Route path="/" element={<main id="main"><Hero onSchedule={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} onMaintenance={() => setMaintenanceOpen(true)} /><Listings /><HowToApply onApply={() => document.getElementById('rentals')?.scrollIntoView({ behavior: 'smooth' })} /><ResidentResources onMaintenance={() => setMaintenanceOpen(true) } onLogin={() => navigate("/sign-in")} /><Neighborhoods /><AboutHawkVision /></main>} />
         <Route path="/rentals" element={<Suspense fallback={routePending}><RentalsIndex /></Suspense>} />
-        <Route path="/leasing-desk" element={<Suspense fallback={routePending}><LeasingDesk /></Suspense>} />
-        <Route path="/showings" element={<Suspense fallback={routePending}><ShowingDesk /></Suspense>} />
-        <Route path="/applications" element={<Suspense fallback={routePending}><ApplicationDesk /></Suspense>} />
-        <Route path="/screening" element={<Suspense fallback={routePending}><ScreeningDesk /></Suspense>} />
-        <Route path="/leases" element={<Suspense fallback={routePending}><LeaseDesk /></Suspense>} />
-        <Route path="/portal" element={<Suspense fallback={routePending}><ResidentHub /></Suspense>} />
-        <Route path="/ledger" element={<Suspense fallback={routePending}><LedgerDesk /></Suspense>} />
         <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
         <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
         <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
@@ -108,7 +106,19 @@ export function AppContent() {
         <Route path="/property/:propertyId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         <Route path="/rentals/:unitId" element={<Suspense fallback={routePending}><PropertyDetailPage onRequest={openRequest} /></Suspense>} />
         </Route>
+        <Route path="/leasing-desk" element={<Suspense fallback={routePending}><LeasingDesk /></Suspense>} />
+        <Route path="/showings" element={<Suspense fallback={routePending}><ShowingDesk /></Suspense>} />
+        <Route path="/applications" element={<Suspense fallback={routePending}><ApplicationDesk /></Suspense>} />
+        <Route path="/screening" element={<Suspense fallback={routePending}><ScreeningDesk /></Suspense>} />
+        <Route path="/leases" element={<Suspense fallback={routePending}><LeaseDesk /></Suspense>} />
+        <Route path="/portal" element={<Suspense fallback={routePending}><ResidentHub /></Suspense>} />
+        <Route path="/ledger" element={<Suspense fallback={routePending}><LedgerDesk /></Suspense>} />
+        <Route path="/pay" element={<Suspense fallback={routePending}><PayerHome /></Suspense>} />
+        <Route path="/payments" element={<Suspense fallback={routePending}><ResidentPayments /></Suspense>} />
         <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
+        <Route path="/demo" element={<Suspense fallback={routePending}><DemoControl /></Suspense>} />
+        <Route path="/owner" element={<Suspense fallback={routePending}><OwnerHome /></Suspense>} />
+        <Route path="/owner/accounts/:slug" element={<Suspense fallback={routePending}><AccountDetail /></Suspense>} />
         <Route path="/invitation" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="invitation" /></Suspense>} />
         <Route path="/password-reset" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="password-reset" /></Suspense>} />
         <Route path="/mfa" element={<Suspense fallback={routePending}><Phase6IdentityFlow mode="mfa" /></Suspense>} />
