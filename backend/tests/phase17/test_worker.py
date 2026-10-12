@@ -473,3 +473,55 @@ def test_worker_crash_before_posting_retries_the_same_callback_once():
         assert _event_state(event_id) == "applied"
     finally:
         _stop(recovered)
+
+
+def test_worker_process_lost_ack_does_not_post_again():
+    client = TestClient(create_app())
+    headers, account = _account(client)
+    organization = _organization(client)
+    tenancy = f"tenancy-{uuid4().hex[:8]}"
+    obligation = _publish(client, headers, account, tenancy, 100000, 100000)
+    assert _pay(client, headers, obligation, 40000).json()["state"] == "succeeded"
+    assert client.post(
+        "/api/v2/payments/autopay",
+        headers=headers,
+        json={"tenancy_code": tenancy, "cap_minor": 100000, "day_of_month": 11},
+    ).status_code == 200
+    started = _spawn("2026-10-11T16:00:00-04:00", "callback")
+    try:
+        waiting = _wait_until(
+            client,
+            headers,
+            tenancy,
+            lambda body: any(row["state"] == "processing" and row["amount_minor"] == 60000 for row in body["payments"]),
+        )
+    finally:
+        _stop(started)
+    payment = next(row for row in waiting["payments"] if row["amount_minor"] == 60000)
+    event_id = f"evt-ack-{payment['public_reference']}"
+    assert _deliver(
+        client,
+        {
+            "id": event_id,
+            "organization_id": organization,
+            "type": "payment.succeeded",
+            "effect_key": payment["public_reference"],
+            "amount_minor": 60000,
+            "environment": "local_fake",
+        },
+    ).status_code == 200
+    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_ack")
+    try:
+        crashed.wait(timeout=15)
+    finally:
+        _stop(crashed)
+    assert _count(tenancy, "settlement") == 2
+    assert _event_state(event_id) == "received"
+    recovered = _spawn("2026-10-11T16:00:00-04:00")
+    try:
+        posted = _wait_until(client, headers, tenancy, lambda body: body["ledger"]["due_minor"] == 0)
+        assert posted["ledger"]["settlement_count"] == 2
+        assert _orders(tenancy, f"autopay-{tenancy}-2026-10") == 1
+        assert _event_state(event_id) == "applied"
+    finally:
+        _stop(recovered)

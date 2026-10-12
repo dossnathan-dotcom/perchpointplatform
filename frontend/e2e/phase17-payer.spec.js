@@ -566,3 +566,58 @@ test("staff records a ledger settlement and reversal from Accounts", async ({ br
   expect(body.ledger.journals.filter((row) => row.kind === "reversal")).toHaveLength(1);
   await operations.close();
 });
+
+test("owner approves one exact refund from the owner workspace", async ({ browser }) => {
+  const stamp = Date.now().toString(36);
+  const tenancy = `owner-exception-${stamp}`;
+  const operations = await browser.newContext();
+  const owner = await browser.newContext();
+  const opsPage = await operations.newPage();
+  const ownerPage = await owner.newPage();
+  await signIn(opsPage, "operations@demo.perchpoint.invalid", localPassword());
+  await expect(opsPage.getByRole("link", { name: "Accounts" })).toBeVisible();
+  const headers = csrfHeaders(await operations.cookies());
+  const charge = await opsPage.request.post("/api/v2/payments/charges", {
+    headers,
+    data: {
+      tenancy_code: tenancy,
+      amount_minor: 200000,
+      category: "rent",
+      description: "Disposable owner exception rent",
+      rent_basis_minor: 100000,
+      idempotency_key: `owner-charge-${stamp}`,
+    },
+  });
+  expect(charge.ok(), await charge.text()).toBeTruthy();
+  const paid = await opsPage.request.post("/api/v2/payments/checkout", {
+    headers,
+    data: {
+      obligation_reference: (await charge.json()).reference,
+      amount_minor: 200000,
+      method: "card",
+      scenario: "succeeded",
+      idempotency_key: `owner-pay-${stamp}`,
+    },
+  });
+  expect(paid.ok(), await paid.text()).toBeTruthy();
+  await opsPage.getByRole("link", { name: "Accounts" }).click();
+  await opsPage.getByLabel("Tenancy code").fill(tenancy);
+  await opsPage.getByLabel("Tenancy code").blur();
+  const refund = opsPage.locator("form", { has: opsPage.getByRole("button", { name: "Submit refund" }) });
+  await refund.getByLabel("Source payment").selectOption({ index: 1 });
+  await refund.getByLabel("Amount in dollars").fill("1200");
+  await refund.getByLabel("Internal explanation").fill("Resident asked for a larger refund.");
+  await refund.getByLabel("Resident-facing explanation").fill("We are reviewing this refund.");
+  await refund.getByRole("button", { name: "Submit refund" }).click();
+  await expect(opsPage.getByText("Refund owner_decision_required. No money has moved.")).toBeVisible();
+
+  await signIn(ownerPage, "dossnathan@gmail.com", localPassword());
+  await expect(ownerPage.getByRole("heading", { name: "Owner workspace" })).toBeVisible();
+  await expect(ownerPage.getByText(tenancy)).toBeVisible();
+  await ownerPage.getByLabel("Reason for an exact exception").fill("Exact owner approval for this refund.");
+  const decision = ownerPage.getByRole("listitem").filter({ hasText: tenancy });
+  await decision.getByRole("button", { name: "Approve exact amount" }).click();
+  await expect(ownerPage.getByText("The exact exception was recorded. The ordinary cap was not reset.")).toBeVisible();
+  await operations.close();
+  await owner.close();
+});

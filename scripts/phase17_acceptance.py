@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -61,6 +62,37 @@ def _is_original_checkpoint(state: dict, gates: dict) -> bool:
     return True
 
 
+def _revision_matches(tested: object, behavior: object, evidence: dict) -> bool:
+    """Same revision matches. An ancestor matches only when its sensitive paths are unchanged."""
+    if tested == behavior:
+        return True
+    if evidence.get("ancestor_revision") != tested:
+        return False
+    sensitive = evidence.get("sensitive_paths")
+    if not isinstance(sensitive, list) or not sensitive or not all(isinstance(path, str) and path for path in sensitive):
+        return False
+    try:
+        ancestor = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", str(tested), str(behavior)],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+        )
+        diff = subprocess.run(
+            ["git", "diff", "--name-only", f"{tested}..{behavior}"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError:
+        return False
+    if ancestor.returncode != 0 or diff.returncode != 0:
+        return False
+    changed = set(diff.stdout.splitlines())
+    return not any(path in changed for path in sensitive)
+
+
 def _evidence(record: object) -> dict:
     if not isinstance(record, dict):
         return {}
@@ -81,7 +113,7 @@ def _local_gate(gate: str, record: object, behavior: object) -> list[str]:
         errors.append(f"{gate} has no evidence")
         return errors
     tested = evidence.get("tested_revision")
-    if behavior and tested and tested != behavior:
+    if behavior and tested and not _revision_matches(tested, behavior, evidence):
         errors.append(f"{gate} evidence revision does not match the behavior revision")
     if evidence.get("kind") == "screenshot" and "settlement_count" not in evidence and "effect_count" not in evidence:
         errors.append(f"{gate} screenshot has no financial effect evidence")

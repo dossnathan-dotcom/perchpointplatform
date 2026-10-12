@@ -52,7 +52,14 @@ def test_complete_local_evidence_can_pass_while_sandbox_stays_unrun():
 
 
 def test_flipping_the_15_test_checkpoint_to_passed_is_rejected():
-    state = json.loads(EVIDENCE.read_text(encoding="utf-8"))
+    state = {
+        "real_values_activated": False,
+        "money_moved": False,
+        "phase_18_started": False,
+        "commands": ["python -m pytest tests/phase17/test_payments.py tests/phase17/test_refund_policy.py -n 0"],
+        "results": {"pytest": "15 passed, exit 0, 28.46s, 2026-10-11"},
+        "gates": {gate: {"result": "partial"} for gate in (f"P17-R{index}" for index in range(19))},
+    }
     for record in state["gates"].values():
         record["result"] = "passed"
     errors = evaluate(state, "local")
@@ -111,3 +118,39 @@ def test_pr_mode_rejects_a_mismatched_head():
     }
     errors = evaluate(state, "pr")
     assert any("head does not match" in error for error in errors)
+
+
+BEHAVIOR = "668ee1b3828dcc457bc9e5a8b795fa1eb42a9734"
+ANCESTOR = "9a5c20341d7be596bf65ec5cf2659aad8b0111a5"
+
+
+def test_ancestor_evidence_holds_when_its_sensitive_paths_are_unchanged():
+    state = _complete()
+    state["behavior_revision"] = BEHAVIOR
+    evidence = state["gates"]["P17-R14"]["evidence"]
+    evidence["tested_revision"] = ANCESTOR
+    evidence["ancestor_revision"] = ANCESTOR
+    evidence["sensitive_paths"] = ["frontend/e2e/phase17-payer.spec.js"]
+    errors = evaluate(state, "local")
+    assert not any("P17-R14 evidence revision" in error for error in errors)
+
+
+def test_ancestor_evidence_is_rejected_when_a_sensitive_path_changed():
+    state = _complete()
+    state["behavior_revision"] = BEHAVIOR
+    evidence = state["gates"]["P17-R6"]["evidence"]
+    evidence["tested_revision"] = ANCESTOR
+    evidence["ancestor_revision"] = ANCESTOR
+    evidence["sensitive_paths"] = ["backend/perchpoint/phase17_payments.py"]
+    errors = evaluate(state, "local")
+    assert any("P17-R6 evidence revision" in error for error in errors)
+
+
+def test_ancestor_claim_without_sensitive_paths_is_rejected():
+    state = _complete()
+    state["behavior_revision"] = BEHAVIOR
+    evidence = state["gates"]["P17-R15"]["evidence"]
+    evidence["tested_revision"] = ANCESTOR
+    evidence["ancestor_revision"] = ANCESTOR
+    errors = evaluate(state, "local")
+    assert any("P17-R15 evidence revision" in error for error in errors)
