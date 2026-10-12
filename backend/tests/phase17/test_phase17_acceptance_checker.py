@@ -1,6 +1,9 @@
 """The Phase 17 checker rejects status flips and insufficient evidence."""
+import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -132,7 +135,22 @@ BEHAVIOR = "668ee1b3828dcc457bc9e5a8b795fa1eb42a9734"
 ANCESTOR = "9a5c20341d7be596bf65ec5cf2659aad8b0111a5"
 
 
+def _require_recorded_history() -> None:
+    try:
+        probe = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ANCESTOR, BEHAVIOR],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+        )
+    except OSError:
+        pytest.skip("git cannot read the recorded Phase 17 revisions here")
+    if probe.returncode != 0:
+        pytest.skip("git cannot read the recorded Phase 17 revisions here")
+
+
 def test_ancestor_evidence_holds_when_its_sensitive_paths_are_unchanged():
+    _require_recorded_history()
     state = _complete()
     state["behavior_revision"] = BEHAVIOR
     evidence = state["gates"]["P17-R14"]["evidence"]
@@ -144,6 +162,7 @@ def test_ancestor_evidence_holds_when_its_sensitive_paths_are_unchanged():
 
 
 def test_ancestor_evidence_is_rejected_when_a_sensitive_path_changed():
+    _require_recorded_history()
     state = _complete()
     state["behavior_revision"] = BEHAVIOR
     evidence = state["gates"]["P17-R6"]["evidence"]
