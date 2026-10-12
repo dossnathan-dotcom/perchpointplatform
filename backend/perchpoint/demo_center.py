@@ -410,7 +410,12 @@ def provision_local_demo_logins(settings: Settings) -> None:
     from .phase6_provider import ProviderError, create_user, find_user_by_email, update_user_password
 
     organization = _organization(settings)
-    extra = [persona_by_email(household["email"]) for household in HOUSEHOLDS if persona_by_email(household["email"])["email"] not in {row["email"] for row in PERSONAS}]
+    known = {row["email"] for row in PERSONAS}
+    extra: list[dict] = []
+    for household in HOUSEHOLDS:
+        persona = persona_by_email(household["email"])
+        if persona is not None and persona["email"] not in known:
+            extra.append(persona)
     for row in (*PERSONAS, *extra):
         _ensure_principal(settings, row, organization)
         try:

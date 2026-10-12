@@ -1516,7 +1516,7 @@ def _fault(name: str) -> None:
     raise RuntimeError("injected fault")
 
 
-def _inbox_scopes(settings) -> list:
+def _inbox_scopes(settings) -> list[dict]:
     engine = engine_for(settings.runtime_url)
     with engine.connect() as connection:
         rows = connection.execute(
@@ -1524,7 +1524,7 @@ def _inbox_scopes(settings) -> list:
         ).mappings().all()
         connection.commit()
     engine.dispose()
-    return rows
+    return [dict(row) for row in rows]
 
 
 def _apply_one_provider_event(settings, principal, organization, event_id) -> bool:
