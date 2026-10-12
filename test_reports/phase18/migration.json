@@ -1,0 +1,28 @@
+{
+  "behavior_revision": "37907099365a1fff162b985c21122f5ab5d2a7e2",
+  "later_head": "9e901a0",
+  "later_head_note": "Later commits rename the checker test and let the clean room select a suite. They do not change assistance behavior.",
+  "acceptance_granted": false,
+  "predecessor": {
+    "command": "python scripts/phase18_predecessor.py --execute",
+    "port": 54342,
+    "from": "0060_phase17_grant_accept",
+    "migration_head": "0064_phase18_return_completion",
+    "preserved": "40000,succeeded,invited",
+    "runtime": "false,false",
+    "forced_rls_before": "220/220",
+    "forced_rls_after": "226/226",
+    "result": "passed"
+  },
+  "clean_room": {
+    "command": "python scripts/phase18_clean_room.py --execute",
+    "port": 54344,
+    "migration_head": "0064_phase18_return_completion",
+    "runtime": "false,false",
+    "forced_rls": "226/226",
+    "pytest": "tests/phase18 -n 0",
+    "passed": 25,
+    "failed": 0,
+    "result": "passed"
+  }
+}
