@@ -580,9 +580,10 @@ def _apply_resident(connection, organization, receipt) -> dict:
         connection.execute(
             text(
                 "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
-                "WHERE tenancy_code = :tenancy AND purpose = 'resident_rent' AND application_state = 'applied' AND id <> :id"
+                "WHERE tenancy_code = :tenancy AND service_period = :period AND purpose = 'resident_rent' "
+                "AND application_state = 'applied' AND id <> :id"
             ),
-            {"tenancy": receipt["tenancy_code"], "id": receipt["id"]},
+            {"tenancy": receipt["tenancy_code"], "period": receipt["service_period"], "id": receipt["id"]},
         ).scalar()
         or 0
     )
@@ -590,10 +591,10 @@ def _apply_resident(connection, organization, receipt) -> dict:
         connection.execute(
             text(
                 "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
-                "WHERE tenancy_code = :tenancy AND purpose = 'resident_rent' "
+                "WHERE tenancy_code = :tenancy AND service_period = :period AND purpose = 'resident_rent' "
                 "AND application_state IN ('queued', 'claimed') AND id <> :id"
             ),
-            {"tenancy": receipt["tenancy_code"], "id": receipt["id"]},
+            {"tenancy": receipt["tenancy_code"], "period": receipt["service_period"], "id": receipt["id"]},
         ).scalar()
         or 0
     )
@@ -1141,7 +1142,8 @@ def household_view(settings: Settings, actor, organization, tenancy_code: str) -
         determination = connection.execute(
             text(
                 "SELECT public_reference, service_period, version, rent_to_owner_minor, resident_minor, agency_minor, "
-                "agency_received_minor, utility_allowance_minor, utility_reimbursement_minor, account_reference, state, household_label "
+                "agency_received_minor, utility_allowance_minor, utility_reimbursement_minor, account_reference, "
+                "obligation_reference, state, household_label "
                 "FROM assistance_determinations WHERE tenancy_code = :tenancy AND state = 'approved' "
                 "ORDER BY service_period DESC, version DESC LIMIT 1"
             ),
@@ -1168,20 +1170,24 @@ def household_view(settings: Settings, actor, organization, tenancy_code: str) -
             ),
             {"tenancy": tenancy_code},
         ).mappings().all()
+        period = None if determination is None else determination["service_period"]
+        obligation_reference = None if determination is None else determination["obligation_reference"]
         received = connection.execute(
             text(
-                "SELECT coalesce(sum(amount_minor), 0) FROM payment_orders "
-                "WHERE tenancy_code = :tenancy AND state = 'succeeded'"
+                "SELECT coalesce(sum(payment.amount_minor), 0) FROM payment_orders payment "
+                "JOIN payment_obligations obligation ON obligation.id = payment.obligation_id "
+                "WHERE obligation.public_reference = :reference AND payment.state = 'succeeded'"
             ),
-            {"tenancy": tenancy_code},
+            {"reference": obligation_reference},
         ).scalar()
         received = int(received or 0) + int(
             connection.execute(
                 text(
                     "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
-                    "WHERE tenancy_code = :tenancy AND purpose = 'resident_rent' AND application_state = 'applied'"
+                    "WHERE tenancy_code = :tenancy AND service_period = :period "
+                    "AND purpose = 'resident_rent' AND application_state = 'applied'"
                 ),
-                {"tenancy": tenancy_code},
+                {"tenancy": tenancy_code, "period": period},
             ).scalar()
             or 0
         )
@@ -1189,9 +1195,10 @@ def household_view(settings: Settings, actor, organization, tenancy_code: str) -
             connection.execute(
                 text(
                     "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
-                    "WHERE tenancy_code = :tenancy AND kind = 'required_return' AND state = 'resolved'"
+                    "WHERE tenancy_code = :tenancy AND service_period = :period "
+                    "AND kind = 'required_return' AND state = 'resolved'"
                 ),
-                {"tenancy": tenancy_code},
+                {"tenancy": tenancy_code, "period": period},
             ).scalar()
             or 0
         )
@@ -1199,10 +1206,10 @@ def household_view(settings: Settings, actor, organization, tenancy_code: str) -
             connection.execute(
                 text(
                     "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
-                    "WHERE tenancy_code = :tenancy AND purpose = 'resident_rent' "
+                    "WHERE tenancy_code = :tenancy AND service_period = :period AND purpose = 'resident_rent' "
                     "AND application_state IN ('queued', 'claimed')"
                 ),
-                {"tenancy": tenancy_code},
+                {"tenancy": tenancy_code, "period": period},
             ).scalar()
             or 0
         )
@@ -1552,33 +1559,6 @@ def complete_required_return(settings: Settings, actor, organization, body: dict
                     "money_moved": False,
                 }
             raise CommandError(409, "conflict", "That return is already complete.", False)
-        received = int(
-            connection.execute(
-                text("SELECT coalesce(sum(amount_minor), 0) FROM payment_orders WHERE tenancy_code = :tenancy AND state = 'succeeded'"),
-                {"tenancy": case["tenancy_code"]},
-            ).scalar()
-            or 0
-        )
-        received += int(
-            connection.execute(
-                text(
-                    "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
-                    "WHERE tenancy_code = :tenancy AND purpose = 'resident_rent' AND application_state = 'applied'"
-                ),
-                {"tenancy": case["tenancy_code"]},
-            ).scalar()
-            or 0
-        )
-        already = int(
-            connection.execute(
-                text(
-                    "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
-                    "WHERE tenancy_code = :tenancy AND kind = 'required_return' AND state = 'resolved'"
-                ),
-                {"tenancy": case["tenancy_code"]},
-            ).scalar()
-            or 0
-        )
         determination = connection.execute(
             text(
                 "SELECT resident_minor, account_reference, obligation_reference FROM assistance_determinations "
@@ -1589,6 +1569,39 @@ def complete_required_return(settings: Settings, actor, organization, body: dict
         ).mappings().first()
         if determination is None or not determination["account_reference"]:
             raise CommandError(409, "conflict", "The household account for this return is not available.", False)
+        received = int(
+            connection.execute(
+                text(
+                    "SELECT coalesce(sum(payment.amount_minor), 0) FROM payment_orders payment "
+                    "JOIN payment_obligations obligation ON obligation.id = payment.obligation_id "
+                    "WHERE obligation.public_reference = :reference AND payment.state = 'succeeded'"
+                ),
+                {"reference": determination["obligation_reference"]},
+            ).scalar()
+            or 0
+        )
+        received += int(
+            connection.execute(
+                text(
+                    "SELECT coalesce(sum(amount_minor), 0) FROM digital_receipts "
+                    "WHERE tenancy_code = :tenancy AND service_period = :period "
+                    "AND purpose = 'resident_rent' AND application_state = 'applied'"
+                ),
+                {"tenancy": case["tenancy_code"], "period": case["service_period"]},
+            ).scalar()
+            or 0
+        )
+        already = int(
+            connection.execute(
+                text(
+                    "SELECT coalesce(sum(amount_minor), 0) FROM assistance_exceptions "
+                    "WHERE tenancy_code = :tenancy AND service_period = :period "
+                    "AND kind = 'required_return' AND state = 'resolved'"
+                ),
+                {"tenancy": case["tenancy_code"], "period": case["service_period"]},
+            ).scalar()
+            or 0
+        )
         returnable = received - int(determination["resident_minor"]) - already
         amount = int(case["amount_minor"])
         if amount > returnable:

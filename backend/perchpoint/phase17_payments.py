@@ -121,8 +121,12 @@ def _collected(connection, obligation_id) -> int:
     external = connection.execute(
         text(
             "SELECT coalesce(sum(receipt.amount_minor), 0) FROM digital_receipts receipt "
-            "JOIN payment_obligations obligation ON obligation.organization_id = receipt.organization_id "
-            "AND obligation.tenancy_code = receipt.tenancy_code "
+            "JOIN assistance_determinations determination ON determination.organization_id = receipt.organization_id "
+            "AND determination.tenancy_code = receipt.tenancy_code "
+            "AND determination.service_period = receipt.service_period "
+            "AND determination.state = 'approved' "
+            "JOIN payment_obligations obligation ON obligation.organization_id = determination.organization_id "
+            "AND obligation.public_reference = determination.obligation_reference "
             "WHERE obligation.id = :obligation AND receipt.purpose = 'resident_rent' "
             "AND receipt.application_state = 'applied'"
         ),
@@ -142,8 +146,12 @@ def _reserved(connection, obligation_id) -> int:
     held = connection.execute(
         text(
             "SELECT coalesce(sum(receipt.amount_minor), 0) FROM digital_receipts receipt "
-            "JOIN payment_obligations obligation ON obligation.organization_id = receipt.organization_id "
-            "AND obligation.tenancy_code = receipt.tenancy_code "
+            "JOIN assistance_determinations determination ON determination.organization_id = receipt.organization_id "
+            "AND determination.tenancy_code = receipt.tenancy_code "
+            "AND determination.service_period = receipt.service_period "
+            "AND determination.state = 'approved' "
+            "JOIN payment_obligations obligation ON obligation.organization_id = determination.organization_id "
+            "AND obligation.public_reference = determination.obligation_reference "
             "WHERE obligation.id = :obligation AND receipt.purpose = 'resident_rent' "
             "AND receipt.application_state IN ('queued', 'claimed')"
         ),

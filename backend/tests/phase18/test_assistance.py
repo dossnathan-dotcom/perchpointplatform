@@ -1239,3 +1239,57 @@ def test_a_return_uses_its_own_period_when_a_later_period_exists(client):
     assert completed.status_code == 200, completed.text
     assert completed.json()["state"] == "resolved"
     assert completed.json()["amount_minor"] == 10000
+
+
+def test_a_november_receipt_does_not_settle_december(client):
+    headers = _login(client, "ann.synthetic@example.com")
+    account = _books(client, headers)
+    tenancy, _november = _determination(client, headers, account, resident=40000, agency=110000)
+    confirmed = client.post(
+        "/api/v2/payments/assistance/receipts",
+        headers=headers,
+        json={
+            "source": "business_bank",
+            "external_id": f"resident-{uuid4().hex[:8]}",
+            "method": "bank_transfer",
+            "purpose": "resident_rent",
+            "amount_minor": 40000,
+            "tenancy_code": tenancy,
+            "service_period": "2026-11",
+            "idempotency_key": _key("november-receipt"),
+        },
+    )
+    assert confirmed.status_code == 200, confirmed.text
+    applied = client.post(
+        "/api/v2/payments/assistance/receipts/apply",
+        headers=headers,
+        json={"receipt_reference": confirmed.json()["reference"], "idempotency_key": _key("november-apply")},
+    )
+    assert applied.status_code == 200 and applied.json()["posted"] is True
+    december = client.post(
+        "/api/v2/payments/assistance/determinations",
+        headers=headers,
+        json={
+            "tenancy_code": tenancy,
+            "account_reference": account,
+            "service_period": "2026-12",
+            "rent_to_owner_minor": 150000,
+            "resident_minor": 40000,
+            "agency_minor": 110000,
+            "idempotency_key": _key("december"),
+        },
+    )
+    assert december.status_code == 200, december.text
+    checkout = client.post(
+        "/api/v2/payments/checkout",
+        headers=headers,
+        json={
+            "obligation_reference": december.json()["resident_obligation"],
+            "amount_minor": 40000,
+            "method": "card",
+            "scenario": "succeeded",
+            "idempotency_key": _key("december-pay"),
+        },
+    )
+    assert checkout.status_code == 200, checkout.text
+    assert checkout.json()["state"] == "succeeded"
