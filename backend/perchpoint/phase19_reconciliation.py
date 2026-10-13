@@ -124,7 +124,9 @@ def preview_lines(lines: list[dict]) -> dict:
 
 
 def _journal_count(connection) -> int:
-    return int(connection.execute(text("SELECT count(*) FROM journal_transactions")).scalar_one())
+    return int(connection.execute(
+        text("SELECT count(*) FROM journal_transactions WHERE xmin = pg_current_xact_id()::xid")
+    ).scalar_one())
 
 
 def import_lines(settings: Settings, actor, organization, body: dict) -> dict:
