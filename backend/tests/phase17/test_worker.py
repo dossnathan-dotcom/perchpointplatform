@@ -512,6 +512,7 @@ def test_worker_process_lost_ack_does_not_post_again():
         _stop(started)
     payment = next(row for row in waiting["payments"] if row["amount_minor"] == 60000)
     event_id = f"evt-ack-{payment['public_reference']}"
+    token = f"ack-{uuid4().hex}"
     assert _deliver(
         client,
         {
@@ -521,16 +522,17 @@ def test_worker_process_lost_ack_does_not_post_again():
             "effect_key": payment["public_reference"],
             "amount_minor": 60000,
             "environment": "local_fake",
+            "synthetic_worker_token": token,
         },
     ).status_code == 200
-    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_ack")
+    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_ack", token=token)
     try:
         crashed.wait(timeout=15)
     finally:
         _stop(crashed)
     assert _count(tenancy, "settlement") == 2
     assert _event_state(event_id) == "received"
-    recovered = _spawn("2026-10-11T16:00:00-04:00")
+    recovered = _spawn("2026-10-11T16:00:00-04:00", token=token)
     try:
         deadline = time.time() + 20
         while time.time() < deadline and _event_state(event_id) != "applied":
