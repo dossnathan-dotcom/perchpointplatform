@@ -40,6 +40,7 @@ const LedgerDesk = lazy(() => import("@/components/public/PublicSite").then((mod
 const PayerHome = lazy(() => import("@/components/demo/PayerHome").then((module) => ({ default: module.PayerHome })));
 const ResidentPayments = lazy(() => import("@/components/demo/ResidentPayments").then((module) => ({ default: module.ResidentPayments })));
 const AssistanceDesk = lazy(() => import("@/components/demo/AssistanceDesk").then((module) => ({ default: module.AssistanceDesk })));
+const ReconciliationDesk = lazy(() => import("@/components/demo/ReconciliationDesk").then((module) => ({ default: module.ReconciliationDesk })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -117,6 +118,7 @@ export function AppContent() {
         <Route path="/pay" element={<Suspense fallback={routePending}><PayerHome /></Suspense>} />
         <Route path="/payments" element={<Suspense fallback={routePending}><ResidentPayments /></Suspense>} />
         <Route path="/payments/assistance" element={<Suspense fallback={routePending}><AssistanceDesk /></Suspense>} />
+        <Route path="/payments/reconciliation" element={<Suspense fallback={routePending}><ReconciliationDesk /></Suspense>} />
         <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
         <Route path="/demo" element={<Suspense fallback={routePending}><DemoControl /></Suspense>} />
         <Route path="/owner" element={<Suspense fallback={routePending}><OwnerHome /></Suspense>} />

@@ -81,6 +81,7 @@ def _env() -> dict[str, str]:
             "PHASE6_PROVIDER_JWT_SECRET": "local-only-not-production-gotrue-jwt-secret",
             "PHASE6_SMTP_HOST": "127.0.0.1",
             "PHASE6_SMTP_PORT": "1125",
+            "PERCHPOINT_ALEMBIC_TARGET": HEAD,
             "PHASE6_MAILPIT_URL": "http://127.0.0.1:8125",
             "PHASE5_SCANNER_MODE": "signature",
             "PHASE5_OBJECT_STORE": "filesystem",

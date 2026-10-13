@@ -216,6 +216,10 @@ def _route_capability(request: Request) -> str:
         return "payment.read"
     if path.startswith("/payments/assistance"):
         return "payment.charge"
+    if path.startswith("/payments/reconciliation/closes/issue"):
+        return "payment.exception"
+    if path.startswith("/payments/reconciliation"):
+        return "payment.charge"
     if path.startswith("/payments/refunds/exceptions"):
         return "payment.exception"
     if path.startswith("/payments/refunds"):
@@ -3761,6 +3765,7 @@ def create_app():
     from .phase16_routes import router as phase16_router
     from .phase17_routes import router as phase17_router
     from .phase18_routes import router as phase18_router
+    from .phase19_routes import router as phase19_router
     from .demo_routes import router as demo_router
 
     app.include_router(phase9_router)
@@ -3773,6 +3778,7 @@ def create_app():
     app.include_router(phase16_router)
     app.include_router(phase17_router)
     app.include_router(phase18_router)
+    app.include_router(phase19_router)
     app.include_router(demo_router)
     if os.environ.get("DEMO_MODE") == "1":
         try:
