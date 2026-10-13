@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Workspace } from "@/components/demo/RoleNav";
 
-const links = [["Payments", "/payments"], ["Assistance", "/payments/assistance"]];
+const links = [["Payments", "/payments"], ["Assistance", "/payments/assistance"], ["Reconciliation", "/payments/reconciliation"]];
 
 function csrfToken() {
   const item = document.cookie.split("; ").find((value) => value.startsWith("pp_csrf="));

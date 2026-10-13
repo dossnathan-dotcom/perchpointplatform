@@ -126,6 +126,7 @@ export function OwnerHome() {
                 </tbody>
               </table>
             </section>
+            <p className="mt-6"><Link className="underline" to="/payments/reconciliation">Open the financial briefing</Link></p>
             <OwnerExceptions />
           </>
         )}
