@@ -352,3 +352,25 @@ production-activation boundaries remain controlling.
 - Continue safely: yes. Status: resolved for this local Phase 20 scope by the
   explicit assignment. The historical roadmap numbering stays in the source document.
 
+## CONFLICT-029 — Roadmap phases 21–25 versus this operating bundle
+
+- Claims: `docs/source/normalized/ENTERPRISE_DELIVERY_ROADMAP.md` (about lines 522–595)
+  names Phase 21 “Communications and Twilio phone tree” and includes recording and
+  transcription, Phase 22 the approval engine, Phase 23 budgets and procurement,
+  Phase 24 accounting visibility and Short Landlord, and Phase 25 documents.
+  `docs/plans/phase20/SCOPE.md` also placed payroll in repository Phase 25.
+  The October 13, 2026 assignment instead orders repository Phase 21 as call
+  metadata without audio, Phase 22 as work execution, Phase 23 as the shared inbox,
+  Phase 24 as approvals, and Phase 25 as budgets, turns, purchasing, and documents.
+  It forbids retained audio, transcripts, speech analysis, voicemail audio, payroll,
+  and formal accounting in this bundle.
+- Consequence: the roadmap PDF and Phase 20 historical scope wording stay unchanged.
+  This bundle does not implement recording to satisfy the older roadmap sentence.
+- Safe assumption: local simulated routing and manual call records are operational
+  facts only. `real_values_activated` and `money_moved` stay false. Live carrier
+  activation, payroll, and accounting remain outside this bundle.
+- Decision owner: Nathan for this implementation. Faruk remains the business owner
+  for later field, spending, and carrier adoption.
+- Continue safely: yes. Status: resolved for this local bundle by the explicit
+  assignment. The historical roadmap numbering stays in the source document.
+
