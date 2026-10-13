@@ -1,0 +1,16 @@
+{
+  "accepted_merge": "fbdc71b20222614ee9dd788a9f75b2f92c0159d9",
+  "product_tree": "100518fccca5416977ef8987ff8432e794015229",
+  "browser": "chromium",
+  "viewport": 1024,
+  "started": "2026-10-13T05:48:18.830Z",
+  "ended": "2026-10-13T05:54:42.407Z",
+  "exit_code": 0,
+  "journeys": [
+    {"role": "owner and resident", "command": "corepack yarn playwright test --config=playwright.phase19.config.js --project=chromium-1024", "passed": 1},
+    {"role": "operations, resident, and agency", "command": "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js --project=chromium-1024", "passed": 4},
+    {"role": "additional payer", "command": "corepack yarn playwright test e2e/phase17-payer.spec.js --config=playwright.phase17.config.js --project=chromium-1024 -g \"additional payer\"", "passed": 1},
+    {"role": "maintenance", "command": "corepack yarn playwright test e2e/phase20-maintenance.spec.js --config=playwright.phase20.config.js --project=chromium-1024", "passed": 1}
+  ],
+  "reviewer": "The separate reviewer is the close-issue API journey in tests/phase19/test_reconciliation.py. It passed again in merged-main run 38352807492. The maintenance journeys passed in pull request 50 backend job and again in that merged-main run."
+}
