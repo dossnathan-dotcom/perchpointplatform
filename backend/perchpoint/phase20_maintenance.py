@@ -162,7 +162,8 @@ def intake(settings: Settings, actor, organization, body: dict) -> dict:
     place_kind = str(body.get("place_kind") or "unit")
     if place_kind not in {"unit", "building", "common_area", "vacant_home"}:
         raise CommandError(400, "invalid", "That place is not available.", False)
-    urgency = body.get("urgency") if isinstance(body.get("urgency"), dict) else {}
+    raw_urgency = body.get("urgency")
+    urgency: dict = raw_urgency if isinstance(raw_urgency, dict) else {}
     severity, safety = _severity(urgency)
     reported_at = datetime.now(timezone.utc)
     if body.get("reported_at"):

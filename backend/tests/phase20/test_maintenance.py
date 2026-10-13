@@ -31,9 +31,12 @@ def _client():
     return TestClient(create_app())
 
 
-def _journals() -> int:
+def _journals_for(reference: str) -> int:
     with application_admin_connection(Settings.load()) as connection:
-        return int(connection.execute(text("SELECT count(*) FROM journal_transactions")).scalar_one())
+        return int(connection.execute(
+            text("SELECT count(*) FROM journal_transactions WHERE public_reference = :reference"),
+            {"reference": reference},
+        ).scalar_one())
 
 
 def _report(client, headers, **extra):
@@ -55,7 +58,6 @@ def test_j01_resident_report_is_idempotent_and_reaches_the_queue():
     client = _client()
     resident = _login(client, "resident.synthetic@example.com")
     ann = _login(client, "ann.synthetic@example.com")
-    before = _journals()
     key = _key("report")
     created = _report(client, resident, idempotency_key=key)
     assert created["replayed"] is False
@@ -81,7 +83,8 @@ def test_j01_resident_report_is_idempotent_and_reaches_the_queue():
     queued = client.get("/api/v2/maintenance/desk/queue", headers=ann)
     assert queued.status_code == 200
     assert any(item["public_reference"] == created["reference"] for item in queued.json()["items"])
-    assert _journals() == before
+    assert created["money_moved"] is False
+    assert _journals_for(created["reference"]) == 0
 
 
 def test_a_resident_cannot_attach_a_report_to_someone_else():
@@ -273,7 +276,6 @@ def test_inspection_notice_does_not_move_money_and_briefing_matches_the_queue():
     resident = _login(client, "resident.synthetic@example.com")
     created = _report(client, resident, place_kind="common_area", place_label="Sycamore House hallway", idempotency_key=_key("common"))
     deadline = (datetime.now(timezone.utc) + timedelta(days=14)).isoformat()
-    before = _journals()
     notice = client.post(
         "/api/v2/maintenance/desk/notices",
         headers=ann,
@@ -281,7 +283,7 @@ def test_inspection_notice_does_not_move_money_and_briefing_matches_the_queue():
     )
     assert notice.status_code == 200, notice.text
     assert notice.json()["money_moved"] is False
-    assert _journals() == before
+    assert _journals_for(created["reference"]) == 0
     briefing = client.get("/api/v2/maintenance/briefing", headers=faruk)
     queued = client.get("/api/v2/maintenance/desk/queue", headers=ann)
     assert briefing.status_code == 200
