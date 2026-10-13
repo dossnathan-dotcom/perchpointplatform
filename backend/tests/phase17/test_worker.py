@@ -14,7 +14,7 @@ from tests.phase17.test_callbacks import _count, _deliver, _event_state, _organi
 from tests.phase17.test_payments import _account, _key, _pay, _publish, create_app
 
 
-def _spawn(clock: str, scenario: str = "", fault: str = ""):
+def _spawn(clock: str, scenario: str = "", fault: str = "", token: str = ""):
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
     env["PHASE17_CLOCK"] = clock
@@ -26,6 +26,10 @@ def _spawn(clock: str, scenario: str = "", fault: str = ""):
         env["PHASE17_FAULT"] = fault
     else:
         env.pop("PHASE17_FAULT", None)
+    if token:
+        env["PHASE17_WORKER_TOKEN"] = token
+    else:
+        env.pop("PHASE17_WORKER_TOKEN", None)
     return subprocess.Popen(
         [sys.executable, "-m", "perchpoint.phase17_worker"],
         cwd=os.path.join(os.path.dirname(__file__), "..", ".."),
@@ -451,6 +455,7 @@ def test_worker_crash_before_posting_retries_the_same_callback_once():
     ).status_code == 200
     payment = next(row for row in waiting["payments"] if row["amount_minor"] == 60000)
     event_id = f"evt-crash-{payment['public_reference']}"
+    token = f"crash-{uuid4().hex}"
     payload = {
         "id": event_id,
         "organization_id": organization,
@@ -458,16 +463,17 @@ def test_worker_crash_before_posting_retries_the_same_callback_once():
         "effect_key": payment["public_reference"],
         "amount_minor": 60000,
         "environment": "local_fake",
+        "synthetic_worker_token": token,
     }
     assert _deliver(client, payload).status_code == 200
-    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_provider_commit")
+    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_provider_commit", token=token)
     try:
         crashed.wait(timeout=15)
     finally:
         _stop(crashed)
     assert _count(tenancy, "settlement") == 1
     assert _event_state(event_id) == "received"
-    recovered = _spawn("2026-10-11T16:00:00-04:00")
+    recovered = _spawn("2026-10-11T16:00:00-04:00", token=token)
     try:
         posted = _wait_until(
             client,
@@ -506,6 +512,7 @@ def test_worker_process_lost_ack_does_not_post_again():
         _stop(started)
     payment = next(row for row in waiting["payments"] if row["amount_minor"] == 60000)
     event_id = f"evt-ack-{payment['public_reference']}"
+    token = f"ack-{uuid4().hex}"
     assert _deliver(
         client,
         {
@@ -515,16 +522,17 @@ def test_worker_process_lost_ack_does_not_post_again():
             "effect_key": payment["public_reference"],
             "amount_minor": 60000,
             "environment": "local_fake",
+            "synthetic_worker_token": token,
         },
     ).status_code == 200
-    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_ack")
+    crashed = _spawn("2026-10-11T16:00:00-04:00", fault="before_ack", token=token)
     try:
         crashed.wait(timeout=15)
     finally:
         _stop(crashed)
     assert _count(tenancy, "settlement") == 2
     assert _event_state(event_id) == "received"
-    recovered = _spawn("2026-10-11T16:00:00-04:00")
+    recovered = _spawn("2026-10-11T16:00:00-04:00", token=token)
     try:
         deadline = time.time() + 20
         while time.time() < deadline and _event_state(event_id) != "applied":

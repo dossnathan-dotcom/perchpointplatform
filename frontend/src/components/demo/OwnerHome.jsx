@@ -85,6 +85,7 @@ export function OwnerHome() {
         <h1 className="mt-3 font-heading text-4xl font-bold">Owner workspace</h1>
         <p className="mt-3 max-w-2xl text-linen/80">HawkVision Homes — synthetic organization. This account is only the owner. It cannot switch into the resident or technical operator.</p>
         <p className="mt-4"><Link className="underline" to="/demo">Return to the Demo Control Center</Link></p>
+        <p className="mt-2"><Link className="underline" to="/payments/assistance">Review digital payments and assistance</Link></p>
       </div>
       <div className="mx-auto max-w-6xl px-5 py-8">
         {status === "loading" && <p role="status">Loading the owner workspace.</p>}

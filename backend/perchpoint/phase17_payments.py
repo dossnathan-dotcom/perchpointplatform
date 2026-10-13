@@ -118,7 +118,21 @@ def _collected(connection, obligation_id) -> int:
         ),
         {"obligation": obligation_id},
     ).scalar_one()
-    return int(value)
+    external = connection.execute(
+        text(
+            "SELECT coalesce(sum(receipt.amount_minor), 0) FROM digital_receipts receipt "
+            "JOIN assistance_determinations determination ON determination.organization_id = receipt.organization_id "
+            "AND determination.tenancy_code = receipt.tenancy_code "
+            "AND determination.service_period = receipt.service_period "
+            "AND determination.state = 'approved' "
+            "JOIN payment_obligations obligation ON obligation.organization_id = determination.organization_id "
+            "AND obligation.public_reference = determination.obligation_reference "
+            "WHERE obligation.id = :obligation AND receipt.purpose = 'resident_rent' "
+            "AND receipt.application_state = 'applied'"
+        ),
+        {"obligation": obligation_id},
+    ).scalar_one()
+    return int(value) + int(external)
 
 
 def _reserved(connection, obligation_id) -> int:
@@ -129,7 +143,21 @@ def _reserved(connection, obligation_id) -> int:
         ),
         {"obligation": obligation_id},
     ).scalar_one()
-    return int(value)
+    held = connection.execute(
+        text(
+            "SELECT coalesce(sum(receipt.amount_minor), 0) FROM digital_receipts receipt "
+            "JOIN assistance_determinations determination ON determination.organization_id = receipt.organization_id "
+            "AND determination.tenancy_code = receipt.tenancy_code "
+            "AND determination.service_period = receipt.service_period "
+            "AND determination.state = 'approved' "
+            "JOIN payment_obligations obligation ON obligation.organization_id = determination.organization_id "
+            "AND obligation.public_reference = determination.obligation_reference "
+            "WHERE obligation.id = :obligation AND receipt.purpose = 'resident_rent' "
+            "AND receipt.application_state IN ('queued', 'claimed')"
+        ),
+        {"obligation": obligation_id},
+    ).scalar_one()
+    return int(value) + int(held)
 
 
 def publish_charge(settings, actor, organization, body: dict) -> dict:
@@ -511,8 +539,14 @@ def _autopay_scenario() -> str:
 def checkout(settings, actor, organization, body: dict) -> dict:
     amount = int(body["amount_minor"])
     method = body.get("method") or "card"
-    if method not in {"card", "ach"} or amount < 1:
-        raise CommandError(400, "invalid", "Choose a synthetic card or bank debit and a positive amount.", False)
+    if method in {"cash", "check", "money_order", "money-order"}:
+        raise CommandError(400, "invalid", "Cash, check, and money-order payments are not accepted.", False)
+    if method == "zelle":
+        raise CommandError(409, "unavailable", "Zelle is not available for this organization.", False)
+    if method == "bank_transfer":
+        raise CommandError(400, "invalid", "A bank transfer uses approved instructions and does not start a debit.", False)
+    if method not in {"card", "ach", "cash_app"} or amount < 1:
+        raise CommandError(400, "invalid", "Choose a synthetic card, Cash App Pay, or bank debit and a positive amount.", False)
     fingerprint = _fingerprint([body["obligation_reference"], amount, method, body["idempotency_key"]])
     reference = f"payment-{uuid4().hex[:16]}"
     with runtime_transaction(settings, _org(actor), _org(organization), uuid4()) as connection:
@@ -799,7 +833,7 @@ def request_refund(settings, actor, organization, body: dict) -> dict:
         else:
             order = connection.execute(
                 text(
-                    "SELECT id, amount_minor, tenancy_code, state, ledger_reference FROM payment_orders "
+                    "SELECT id, obligation_id, amount_minor, tenancy_code, state, ledger_reference FROM payment_orders "
                     "WHERE public_reference = :reference FOR UPDATE"
                 ),
                 {"reference": body["payment_reference"]},
@@ -826,6 +860,28 @@ def request_refund(settings, actor, organization, body: dict) -> dict:
                 moment=server_now(),
                 zone_name=budget["zone_name"],
             )
+            basis_minor = connection.execute(
+                text(
+                    "SELECT determination.resident_minor FROM assistance_determinations determination "
+                    "JOIN payment_obligations obligation ON obligation.public_reference = determination.obligation_reference "
+                    "WHERE obligation.id = :obligation AND determination.state = 'approved' "
+                    "ORDER BY determination.version DESC LIMIT 1"
+                ),
+                {"obligation": order["obligation_id"]},
+            ).scalar()
+            if basis_minor is None:
+                basis_minor = connection.execute(
+                    text(
+                        "SELECT resident_minor FROM assistance_determinations "
+                        "WHERE tenancy_code = :tenancy AND state = 'approved' "
+                        "ORDER BY service_period DESC, version DESC LIMIT 1"
+                    ),
+                    {"tenancy": order["tenancy_code"]},
+                ).scalar()
+            if basis_minor is not None:
+                decision = dict(decision)
+                decision["assistance_basis_minor"] = int(basis_minor)
+                decision["ordinary_max_minor"] = min(int(decision["ordinary_max_minor"]), int(basis_minor))
             state = "reserved" if amount <= decision["ordinary_max_minor"] else "owner_decision_required"
             connection.execute(
                 text(
@@ -1539,6 +1595,13 @@ def _apply_one_provider_event(settings, principal, organization, event_id) -> bo
         if row is None:
             return False
         payload = row["payload"] if isinstance(row["payload"], dict) else json.loads(row["payload"] or "{}")
+        token = payload.get("synthetic_worker_token")
+        if (
+            token
+            and os.environ.get("PHASE3_ENVIRONMENT", "local") in {"local", "test"}
+            and token != os.environ.get("PHASE17_WORKER_TOKEN")
+        ):
+            return False
         if row["payload_kind"] == "payment.returned":
             return _callback_return(connection, row, payload)
         if row["payload_kind"] in {"payment.succeeded", "payment.failed", "payment.processing"}:

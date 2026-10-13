@@ -1,6 +1,7 @@
 """Create the isolated local database and roles. Does not open a cloud account."""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -32,7 +33,8 @@ def bootstrap(settings: Settings | None = None) -> None:
         connection.execute(text("GRANT ALL ON SCHEMA public TO perchpoint_migrator"))
         connection.execute(text("GRANT perchpoint_definer TO perchpoint_migrator"))
     owner.dispose()
-    subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT, check=True)
+    target = os.environ.get("PERCHPOINT_ALEMBIC_TARGET", "head")
+    subprocess.run([sys.executable, "-m", "alembic", "upgrade", target], cwd=ROOT, check=True)
     with owner.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
         connection.execute(text("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO perchpoint_definer"))
         connection.execute(text("GRANT USAGE, CREATE ON SCHEMA perchpoint TO perchpoint_definer"))

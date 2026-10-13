@@ -1,0 +1,31 @@
+{
+  "behavior_revision": "83c47b6ed2a29611d2ddf530c09511d7efaf0511",
+  "later_head_note": "The 2026-10-12 empty-database run is on the current assistance tests, including period-scoped receipts and organization isolation.",
+  "acceptance_granted": false,
+  "predecessor": {
+    "command": "python scripts/phase18_predecessor.py --execute",
+    "port": 54342,
+    "from": "0060_phase17_grant_accept",
+    "migration_head": "0064_phase18_return_completion",
+    "preserved": "40000,succeeded,invited",
+    "runtime": "false,false",
+    "forced_rls_before": "220/220",
+    "forced_rls_after": "226/226",
+    "result": "passed"
+  },
+  "clean_room": {
+    "command": "python scripts/phase18_clean_room.py --execute",
+    "port": 54344,
+    "migration_head": "0064_phase18_return_completion",
+    "runtime": "false,false",
+    "forced_rls": "226/226",
+    "container": "perchpoint-phase18-inherited",
+    "pytest": "tests/phase18 -n 0",
+    "passed": 29,
+    "failed": 0,
+    "elapsed_s": 65.12,
+    "exit_code": 0,
+    "started_at": "2026-10-12T22:15:28.929Z",
+    "result": "passed"
+  }
+}

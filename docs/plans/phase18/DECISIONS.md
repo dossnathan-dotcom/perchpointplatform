@@ -4,7 +4,7 @@ Recorded October 12, 2026 from the approved customization direction. These are l
 
 Labels: U explicit user direction, I inherited approved direction, D delegated default, A deferred real-world confirmation.
 
-Phase 17 local acceptance is still required before Phase 18 financial behavior. This file does not grant that acceptance.
+Phase 17 local acceptance, the protected merge, and the merged-main checks are recorded in `test_reports/phase17/acceptance-state.json`. Phase 18 behavior starts from that base. This file does not activate real collection.
 
 ## Scope change
 

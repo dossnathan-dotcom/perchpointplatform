@@ -82,6 +82,7 @@ def _env() -> dict[str, str]:
             "PHASE5_CLAMAV_HOST": "127.0.0.1",
             "PHASE5_CLAMAV_PORT": "3410",
             "PYTHONPATH": str(ROOT / "backend"),
+            "PERCHPOINT_ALEMBIC_TARGET": HEAD,
         }
     )
     env["PHASE2_ADMIN_URL"] = ADMIN
@@ -158,7 +159,7 @@ def main() -> int:
         _psql("GRANT ALL ON SCHEMA public TO perchpoint_migrator", "perchpoint_phase2")
         _psql("GRANT perchpoint_definer TO perchpoint_migrator", "perchpoint_phase2")
         env = _env()
-        _run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT / "backend", env=env)
+        _run([sys.executable, "-m", "alembic", "upgrade", HEAD], cwd=ROOT / "backend", env=env)
         version = _psql("SELECT version_num FROM alembic_version", "perchpoint_phase2")
         lineage = _run([sys.executable, "scripts/phase6_migration_lineage.py", "--database-url", MIGRATOR], env=env)
         print(lineage.stdout)

@@ -66,6 +66,27 @@ def test_payment_intent_contract_maps_success_pending_and_action():
     )["status"] == "action_required"
 
 
+def test_cash_app_pay_uses_the_injected_transport_without_confirming_a_card():
+    client = ScriptedHttp([
+        ({"id": "pi_cashapp", "object": "payment_intent", "amount": 40000, "currency": "usd", "status": "requires_payment_method"}, 200),
+    ])
+    adapter = StripeAdapter(api_key="sk_test_contract_not_a_live_key", http_client=client, stripe_account="acct_test")
+    result = adapter.create_cash_app_payment(idempotency_key="cashapp-400", amount_minor=40000)
+    assert result["id"] == "pi_cashapp"
+    assert result["status"] == "action_required"
+    assert result["provider_status"] == "requires_payment_method"
+    call = client.calls[0]
+    assert call["url"].endswith("/v1/payment_intents")
+    assert call["headers"]["Idempotency-Key"] == "cashapp-400"
+    assert call["headers"]["Stripe-Version"] == PINNED_STRIPE_VERSION
+    body = _body(call)
+    assert body["amount"] == ["40000"]
+    assert body["currency"] == ["usd"]
+    assert body["confirm"] == ["false"]
+    assert "cashapp" in (call["body"] or "")
+    assert "pm_" not in (call["body"] or "")
+
+
 def test_decline_timeout_refund_and_retrieve_keep_one_idempotency_key():
     declined = ScriptedHttp([
         ({"error": {"type": "card_error", "code": "card_declined", "message": "declined"}}, 402),
