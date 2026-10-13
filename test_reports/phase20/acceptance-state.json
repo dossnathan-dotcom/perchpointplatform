@@ -1,0 +1,102 @@
+{
+  "phase": 20,
+  "behavior_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab",
+  "real_values_activated": false,
+  "money_moved": false,
+  "results": {
+    "pytest": "13 passed on the clean room",
+    "contracts": "Verified 107 deterministic artifacts; no database writes.",
+    "shared_database_suite": "274 passed, 32 failed. Identity and payer failures were provider_unavailable because the auth service was not pointed at that database. Two journal-count mismatches passed again with -n 0. Portfolio and discovery list checks missed a new row on a database that already holds more than one page."
+  },
+  "commands": [
+    "python scripts/phase20_clean_room.py --execute",
+    "corepack yarn playwright test --config=playwright.phase20.config.js",
+    "python -m foundation.export --check"
+  ],
+  "gates": {
+    "P20-R0": {
+      "result": "passed",
+      "command": "docs/plans/phase20/SCOPE.md",
+      "evidence": {"scope": "maintenance", "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"}
+    },
+    "P20-R1": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase20 -n 0 -q",
+      "evidence": {
+        "passed": 13,
+        "exit_code": 0,
+        "separate_process_worker": true,
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R2": {
+      "result": "passed",
+      "command": "python scripts/phase20_clean_room.py --execute",
+      "evidence": {
+        "migration_head": "0066_phase20_maintenance",
+        "upgrade_from": "0065_phase19_reconciliation",
+        "accounts_preserved": 15,
+        "runtime": "false,false",
+        "forced_rls": "251/251",
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R3": {
+      "result": "passed",
+      "command": "python scripts/phase20_clean_room.py --execute",
+      "evidence": {
+        "thresholds_declared_first": true,
+        "cases": 200,
+        "bound_ms": 300,
+        "p95_ms": 112.011,
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R4": {
+      "result": "passed",
+      "command": "corepack yarn playwright test --config=playwright.phase20.config.js",
+      "evidence": {
+        "executed": true,
+        "passed": 12,
+        "exit_code": 0,
+        "engines": ["chromium", "firefox", "webkit"],
+        "viewports": [320, 768, 1024, 1440],
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R5": {
+      "result": "passed",
+      "command": "python -m foundation.export --check",
+      "evidence": {
+        "contracts": 107,
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R6": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase20/test_maintenance.py::test_materials_time_evidence_and_authority_stay_distinct -n 0 -q",
+      "evidence": {
+        "homes": 20,
+        "past_due_minor": 427500,
+        "journals_unchanged_on_presentation_upgrade": true,
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R7": {
+      "result": "passed",
+      "command": "cursor-security-review",
+      "evidence": {
+        "independent_review": true,
+        "reviewer": "cursor-security-review",
+        "review_ids": [
+          "f79fd4e5-510c-40a1-80e2-f68f6099cb53",
+          "10f48972-03f0-41c6-91fc-7d296557da45"
+        ],
+        "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+      }
+    },
+    "P20-R8": {"result": "not_run"},
+    "P20-R9": {"result": "not_run"}
+  },
+  "findings": []
+}

@@ -38,8 +38,8 @@ PERSONAS = (
     {"id": "operations", "email": "operations@demo.perchpoint.invalid", "role": "operations_manager", "title": "Operations manager", "summary": "Leasing, screening, activation, and resident-account operations.", "workspace": "/leasing-desk"},
     {"id": "leasing", "email": "leasing@demo.perchpoint.invalid", "role": "leasing", "title": "Leasing staff", "summary": "Inquiries, showings, and applications.", "workspace": "/applications"},
     {"id": "resident", "email": "dossnathan2@gmail.com", "role": "resident", "title": "Resident", "summary": "One household portal, documents, and the derived account.", "workspace": "/portal"},
-    {"id": "maintenance", "email": "maintenance@demo.perchpoint.invalid", "role": "maintenance", "title": "Maintenance coordinator", "summary": "Existing maintenance history. Production dispatch is not open.", "workspace": "/access/maintenance-history"},
-    {"id": "technician", "email": "technician@demo.perchpoint.invalid", "role": "technician", "title": "Technician", "summary": "Vendor assignment surface already implemented for synthetic vendors.", "workspace": "/access/vendor-access"},
+    {"id": "maintenance", "email": "maintenance@demo.perchpoint.invalid", "role": "maintenance", "title": "Maintenance coordinator", "summary": "Synthetic maintenance queue. This is not live 24/7 coverage or production dispatch.", "workspace": "/maintenance"},
+    {"id": "technician", "email": "technician@demo.perchpoint.invalid", "role": "technician", "title": "Technician", "summary": "Synthetic jobs, time, and evidence. This is not a native field app.", "workspace": "/maintenance/jobs"},
 )
 
 

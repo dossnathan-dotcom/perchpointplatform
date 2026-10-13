@@ -333,3 +333,22 @@ production-activation boundaries remain controlling.
   Phase 18 scope by the October 12, 2026 direction. Physical-intake requirements remain
   unmet on purpose.
 
+## CONFLICT-028 — Roadmap phase numbers versus the accepted maintenance phase
+
+- Claims: `docs/source/normalized/ENTERPRISE_DELIVERY_ROADMAP.md` names Phase 19
+  “Omnichannel maintenance intake and triage” and Phase 20 “Work orders, technicians,
+  and vendors.” Accepted Phase 19 is bank and payout reconciliation. The October 12,
+  2026 assignment places that deferred intake and triage work, plus a bounded
+  technician record of time, materials, evidence, and optional location check-in, in
+  repository Phase 20. Live telephony stays Phase 21. Full scheduling, vendors, and
+  the native app stay later.
+- Consequence: repository Phase 20 must not be described as the roadmap’s full work-order
+  phase, and the roadmap PDF text is not rewritten.
+- Safe assumption: this local phase records operational maintenance facts only.
+  `real_values_activated` and `money_moved` stay false. No vendor payment, payroll,
+  or real location collection.
+- Decision owner: Nathan for this implementation. Faruk remains the business owner
+  for later field and spending adoption.
+- Continue safely: yes. Status: resolved for this local Phase 20 scope by the
+  explicit assignment. The historical roadmap numbering stays in the source document.
+

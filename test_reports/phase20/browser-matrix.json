@@ -1,0 +1,11 @@
+{
+  "command": "corepack yarn playwright test --config=playwright.phase20.config.js",
+  "executed": true,
+  "passed": 12,
+  "exit_code": 0,
+  "engines": ["chromium", "firefox", "webkit"],
+  "viewports": [320, 768, 1024, 1440],
+  "duration": "147.99s",
+  "base_url": "http://127.0.0.1:3000",
+  "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+}

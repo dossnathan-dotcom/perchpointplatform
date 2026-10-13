@@ -1,0 +1,32 @@
+{
+  "independent_review": true,
+  "reviewer": "cursor-security-review",
+  "review_ids": [
+    "f79fd4e5-510c-40a1-80e2-f68f6099cb53",
+    "10f48972-03f0-41c6-91fc-7d296557da45"
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "location": "backend/perchpoint/phase20_maintenance.py",
+      "summary": "A household could supply another resident_actor.",
+      "disposition": "CLOSED",
+      "repair": "Residents cannot attach a report to another household. Staff must have maintenance.coordinate and a visible household membership."
+    },
+    {
+      "severity": "medium",
+      "location": "backend/alembic/sql/0066_phase20_maintenance.sql",
+      "summary": "Idempotency keys were shared across the organization.",
+      "disposition": "CLOSED",
+      "repair": "Command keys are scoped to the acting user, and the resident form uses a random key."
+    },
+    {
+      "severity": "medium",
+      "location": "backend/perchpoint/phase20_maintenance.py",
+      "summary": "A resident could store an internal note.",
+      "disposition": "CLOSED",
+      "repair": "A household note is stored as resident-visible, and the insert policy rejects an internal note from a household."
+    }
+  ],
+  "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+}

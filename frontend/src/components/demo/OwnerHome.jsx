@@ -7,6 +7,32 @@ function csrfToken() {
   return item ? decodeURIComponent(item.split("=").slice(1).join("=")) : "";
 }
 
+function OwnerMaintenance() {
+  const [briefing, setBriefing] = useState(null);
+  useEffect(() => {
+    fetch("/api/v2/maintenance/briefing", { credentials: "include" }).then(async (response) => {
+      if (response.ok) setBriefing(await response.json());
+    }).catch(() => setBriefing(null));
+  }, []);
+  if (!briefing) return null;
+  const items = [...(briefing.blocked || []), ...(briefing.decisions_needed || [])];
+  return (
+    <section className="mt-8" aria-labelledby="maintenance-heading">
+      <h2 id="maintenance-heading" className="font-heading text-2xl font-bold">Maintenance</h2>
+      <p className="mt-2 text-sm">{briefing.queue_count} open requests use the same queue as operations. Nothing here moves money.</p>
+      {items.length === 0 ? <p>No maintenance decision is waiting.</p> : null}
+      <ul className="mt-3 space-y-2">
+        {items.map((item) => (
+          <li key={`${item.public_reference}-${item.kind || item.summary}`} className="bg-white p-3">
+            <Link className="underline" to="/maintenance">{item.place_label || item.kind} · {item.public_reference}</Link>
+            <p>{item.severity || item.reason} · {item.summary || "blocked"}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function OwnerExceptions() {
   const [rows, setRows] = useState([]);
   const [note, setNote] = useState("");
@@ -127,6 +153,7 @@ export function OwnerHome() {
               </table>
             </section>
             <p className="mt-6"><Link className="underline" to="/payments/reconciliation">Open the financial briefing</Link></p>
+            <OwnerMaintenance />
             <OwnerExceptions />
           </>
         )}

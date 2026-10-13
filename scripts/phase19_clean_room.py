@@ -125,7 +125,7 @@ def main() -> int:
         _run([sys.executable, "-m", "perchpoint.seed"], cwd=ROOT / "backend", env=pinned)
         marker = _psql("SELECT count(*) FROM accounts", "perchpoint_phase2")
         print(f"upgrade_from={version} accounts={marker}")
-        _run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=ROOT / "backend", env=_env(None))
+        _run([sys.executable, "-m", "alembic", "upgrade", HEAD], cwd=ROOT / "backend", env=_env(HEAD))
         version = _psql("SELECT version_num FROM alembic_version", "perchpoint_phase2")
         kept = _psql("SELECT count(*) FROM accounts", "perchpoint_phase2")
         if version != HEAD or kept != marker:
