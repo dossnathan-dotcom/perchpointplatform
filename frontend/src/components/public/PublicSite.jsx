@@ -859,11 +859,12 @@ export function ResidentHub() {
             <p>{household.guidance}</p>
             <section id="lease" className="sr-only">Lease and account</section>
             <RequestForm requests={household.requests || []} />
+            <p className="mt-4"><Link className="underline" to="/portal/report">Report a problem</Link>. A missing photo does not block the report, and this page does not dispatch emergency help.</p>
           </section>
         </>
       ) : (
         <>
-          <p>This hub shows household access, the sample lease, and later destinations. It does not collect money, open a maintenance case, or send a message.</p>
+          <p>This hub shows household access and the sample lease. It does not collect money or dispatch emergency help. Report a problem after you sign in.</p>
           <p>SAMPLE — NOT A REAL LEASE — NOT FOR EXECUTION</p>
           <form aria-labelledby="portal-heading" onSubmit={(event) => { event.preventDefault(); setPortalNote("The portal request could not be accepted."); }}>
             <h2 id="portal-heading" className="font-heading text-2xl">Household reference</h2>

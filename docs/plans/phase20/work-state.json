@@ -1,0 +1,12 @@
+{
+  "phase": 20,
+  "parent": "ae062f2d68c7f20bbfba782b5049e7a14eb2010a",
+  "migration_head": "0066_phase20_maintenance",
+  "phase_19_record_untouched": true,
+  "real_values_activated": false,
+  "money_moved": false,
+  "source_conflict": "CONFLICT-028",
+  "live_telephony": false,
+  "native_app": false,
+  "procurement": false
+}

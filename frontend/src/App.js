@@ -41,6 +41,10 @@ const PayerHome = lazy(() => import("@/components/demo/PayerHome").then((module)
 const ResidentPayments = lazy(() => import("@/components/demo/ResidentPayments").then((module) => ({ default: module.ResidentPayments })));
 const AssistanceDesk = lazy(() => import("@/components/demo/AssistanceDesk").then((module) => ({ default: module.AssistanceDesk })));
 const ReconciliationDesk = lazy(() => import("@/components/demo/ReconciliationDesk").then((module) => ({ default: module.ReconciliationDesk })));
+const MaintenanceHome = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.MaintenanceHome })));
+const TechnicianJobs = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.TechnicianJobs })));
+const ResidentReport = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.ResidentReport })));
+const ResidentRequests = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.ResidentRequests })));
 const ApplyGuide = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ApplyGuide })));
 const ManagedPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ManagedPage })));
 const ContactPage = lazy(() => import("@/components/public/PublicSite").then((module) => ({ default: module.ContactPage })));
@@ -96,7 +100,7 @@ export function AppContent() {
         <Route path="/apply" element={<Suspense fallback={routePending}><ApplyGuide /></Suspense>} />
         <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
         <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
-        <Route path="/maintenance" element={<Suspense fallback={routePending}><ManagedPage slug="maintenance" testId="maintenance-page" /></Suspense>} />
+        <Route path="/maintenance" element={<Suspense fallback={routePending}><MaintenanceHome /></Suspense>} />
         <Route path="/about" element={<Suspense fallback={routePending}><ManagedPage slug="about" testId="about-page" /></Suspense>} />
         <Route path="/contact" element={<Suspense fallback={routePending}><ContactPage /></Suspense>} />
         <Route path="/privacy" element={<Suspense fallback={routePending}><ManagedPage slug="privacy" testId="privacy-page" /></Suspense>} />
@@ -119,6 +123,9 @@ export function AppContent() {
         <Route path="/payments" element={<Suspense fallback={routePending}><ResidentPayments /></Suspense>} />
         <Route path="/payments/assistance" element={<Suspense fallback={routePending}><AssistanceDesk /></Suspense>} />
         <Route path="/payments/reconciliation" element={<Suspense fallback={routePending}><ReconciliationDesk /></Suspense>} />
+        <Route path="/maintenance/jobs" element={<Suspense fallback={routePending}><TechnicianJobs /></Suspense>} />
+        <Route path="/portal/report" element={<Suspense fallback={routePending}><ResidentReport /></Suspense>} />
+        <Route path="/portal/requests" element={<Suspense fallback={routePending}><ResidentRequests /></Suspense>} />
         <Route path="/sign-in" element={<Suspense fallback={routePending}><Phase6SignIn /></Suspense>} />
         <Route path="/demo" element={<Suspense fallback={routePending}><DemoControl /></Suspense>} />
         <Route path="/owner" element={<Suspense fallback={routePending}><OwnerHome /></Suspense>} />

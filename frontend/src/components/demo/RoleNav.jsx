@@ -5,8 +5,8 @@ function csrfToken() {
   return item ? decodeURIComponent(item.split("=").slice(1).join("=")) : "";
 }
 
-export const staffLinks = [["Overview", "/owner"], ["Homes", "/rentals"], ["Work", "/leasing-desk"], ["Accounts", "/ledger"], ["Payments", "/ledger#payments"], ["Access", "/access/onboarding"]];
-export const residentLinks = [["Home", "/portal"], ["Lease and account", "/portal#lease"], ["Payments", "/portal#payments"], ["Requests", "/portal#requests"]];
+export const staffLinks = [["Overview", "/owner"], ["Homes", "/rentals"], ["Work", "/leasing-desk"], ["Maintenance", "/maintenance"], ["My jobs", "/maintenance/jobs"], ["Accounts", "/ledger"], ["Payments", "/ledger#payments"], ["Access", "/access/onboarding"]];
+export const residentLinks = [["Home", "/portal"], ["Lease and account", "/portal#lease"], ["Payments", "/portal#payments"], ["Report a problem", "/portal/report"], ["My requests", "/portal/requests"]];
 
 export function Workspace({ links, children }) {
   const navigate = useNavigate();

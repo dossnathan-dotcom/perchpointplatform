@@ -473,6 +473,16 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
                 "author": ann,
             },
         )
+        from .phase20_maintenance import seed_demo_stories
+
+        seed_demo_stories(
+            connection,
+            org,
+            sid("account-0"),
+            ann,
+            sid("account-phase6-technician"),
+            sid("account-phase6-faruk"),
+        )
     admin.dispose()
 
 
