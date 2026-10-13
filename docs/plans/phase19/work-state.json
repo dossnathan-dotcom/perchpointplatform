@@ -1,0 +1,15 @@
+{
+  "phase": 19,
+  "updated": "2026-10-13",
+  "phase_18_product_merge": "3a5af2db46b416852888c9442086e3d19ece2aab",
+  "phase_18_milestone_merge": "47019324a62cbc0d33ff3ab8e2a4ed734a67a457",
+  "phase_19_behavior_sha": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+  "phase_19_acceptance_granted": false,
+  "real_values_activated": false,
+  "money_moved": false,
+  "phase_20_started": false,
+  "branch": "cursor/phase-19-reconciliation",
+  "migration_head": "0065_phase19_reconciliation",
+  "migration_predecessor": "0064_phase18_return_completion",
+  "next_unresolved_item": "Phase 19 local evidence is recorded. The protected pull request and merged-main checks are still required."
+}

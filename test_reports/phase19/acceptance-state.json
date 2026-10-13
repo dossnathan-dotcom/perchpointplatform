@@ -1,0 +1,108 @@
+{
+  "phase": 19,
+  "behavior_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+  "real_values_activated": false,
+  "money_moved": false,
+  "phase_20_started": false,
+  "local_technical_acceptance": false,
+  "results": {
+    "pytest": "12 passed, 1 warning in 7.57s",
+    "scale": "queued_lines_p95_ms=108.705",
+    "browser": "12 passed (1.2m)"
+  },
+  "commands": [
+    "python scripts/phase19_clean_room.py --execute",
+    "corepack yarn playwright test --config=playwright.phase19.config.js",
+    "python -m foundation.export --check"
+  ],
+  "findings": [],
+  "gates": {
+    "P19-R0": {
+      "result": "passed",
+      "command": "recorded scope from docs/plans/phase19/ARCHITECTURE.md and CONFLICT-027",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "scope": "reconciliation",
+        "maintenance_phase": "deferred"
+      }
+    },
+    "P19-R1": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase19 -n 0 -q --tb=line",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "passed": 12,
+        "exit_code": 0,
+        "warning": "StarletteDeprecationWarning from starlette.testclient"
+      }
+    },
+    "P19-R2": {
+      "result": "passed",
+      "command": "python scripts/phase19_clean_room.py --execute",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "migration_head": "0065_phase19_reconciliation",
+        "upgrade_from": "0064_phase18_return_completion",
+        "accounts_preserved": 15,
+        "runtime": "false,false",
+        "forced_rls": "232/232",
+        "port": 54364,
+        "exit_code": 0
+      }
+    },
+    "P19-R3": {
+      "result": "passed",
+      "command": "python scripts/phase19_clean_room.py --execute",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "thresholds_declared_first": true,
+        "lines": 200,
+        "bound_ms": 300,
+        "p95_ms": 108.705
+      }
+    },
+    "P19-R4": {
+      "result": "passed",
+      "command": "corepack yarn playwright test --config=playwright.phase19.config.js",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "executed": true,
+        "passed": 12,
+        "exit_code": 0,
+        "engines": ["chromium", "firefox", "webkit"],
+        "viewports": [320, 768, 1024, 1440]
+      }
+    },
+    "P19-R5": {
+      "result": "passed",
+      "command": "python -m foundation.export --check",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "contracts": 107,
+        "result": "Verified 107 deterministic artifacts; no database writes."
+      }
+    },
+    "P19-R6": {
+      "result": "passed",
+      "command": "python -c \"from perchpoint.demo_catalog import LISTINGS, HOUSEHOLDS; print(len(LISTINGS), len(HOUSEHOLDS))\"",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "homes": 20,
+        "households": 20
+      }
+    },
+    "P19-R7": {
+      "result": "passed",
+      "command": "security-review of cursor/phase-19-reconciliation against cursor/phase-18-milestone",
+      "evidence": {
+        "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe",
+        "independent_review": true,
+        "reviewer": "cursor-security-review",
+        "review_ids": ["1769e37a-ec1f-4ba8-88cb-6ebf12bea993"],
+        "medium_or_higher": 0
+      }
+    },
+    "P19-R8": {"result": "not_run"},
+    "P19-R9": {"result": "not_run"}
+  }
+}

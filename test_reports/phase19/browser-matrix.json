@@ -1,0 +1,19 @@
+{
+  "command": "corepack yarn playwright test --config=playwright.phase19.config.js",
+  "working_directory": "frontend",
+  "base_url": "http://127.0.0.1:3000",
+  "workers": 1,
+  "engines": ["chromium", "firefox", "webkit"],
+  "viewports": [320, 768, 1024, 1440],
+  "projects": 12,
+  "passed": 12,
+  "failed": 0,
+  "duration": "1.2m",
+  "yarn": "Done in 72.25s",
+  "started": "2026-10-13T01:33:34.206Z",
+  "ended": "2026-10-13T01:34:48.646Z",
+  "exit_code": 0,
+  "warning": "NO_COLOR is ignored because FORCE_COLOR is set",
+  "journey": "the owner sees one October briefing and a resident is denied",
+  "tested_revision": "c4e21814c6a461d5a18b9ec01a635f83403dcfbe"
+}
