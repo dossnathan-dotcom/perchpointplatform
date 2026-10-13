@@ -1,0 +1,20 @@
+{
+  "behavior_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e",
+  "command": "python -m perchpoint.bootstrap && python -m perchpoint.seed && python scripts/phase6_auth_up.py && python -m pytest -q --tb=line",
+  "cwd": "backend",
+  "database": "disposable postgres:16 on 127.0.0.1:54362, container perchpoint-phase18-ci, removed after the run",
+  "auth": "http://127.0.0.1:9999",
+  "mailpit": "smtp 1025, http 8025",
+  "pytest_addopts": "-n 2 --dist loadscope",
+  "started_at": "2026-10-13T00:39:41.499Z",
+  "ended_at": "2026-10-13T00:42:44.889Z",
+  "pytest_elapsed_s": 170.23,
+  "exit_code": 0,
+  "passed": 281,
+  "failed": 0,
+  "skipped": 3,
+  "warnings": 27,
+  "skip_note": "3 skipped. Phase 5 live MinIO and ClamAV tests stay skipped unless PHASE5_LIVE_SERVICES=1. That is the CI default.",
+  "warning_note": "Starlette/httpx TestClient deprecation, FastAPI on_event deprecation, and Pydantic alias warnings in the refund contention tests.",
+  "acceptance_granted": false
+}

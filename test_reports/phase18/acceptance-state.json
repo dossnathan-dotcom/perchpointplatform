@@ -1,0 +1,215 @@
+{
+  "phase": 18,
+  "local_technical_acceptance": false,
+  "behavior_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e",
+  "real_values_activated": false,
+  "money_moved": false,
+  "phase_19_started": false,
+  "commands": [
+    "python -m perchpoint.bootstrap",
+    "python -m perchpoint.seed",
+    "python scripts/phase6_auth_up.py",
+    "python -m pytest -q --tb=line",
+    "python scripts/phase18_clean_room.py --execute tests",
+    "python scripts/phase18_benchmark.py --execute",
+    "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js",
+    "python -m foundation.export --check"
+  ],
+  "results": {
+    "pytest": "281 passed, 3 skipped, 27 warnings in 170.23s on 8f6312d. Fresh database on port 54362. Auth on port 9999. Exit 0.",
+    "browser_matrix": "48 passed, exit 0, on 9bc691c. The resident transfer journey was re-run after ResidentPayments.jsx and the one-pass worker change: 1 passed, exit 0, on 456a0a6."
+  },
+  "findings": [],
+  "gates": {
+    "P18-R0": {
+      "result": "passed",
+      "command": "git merge-base --is-ancestor a8c494dd479c7645da0b1d95ca3d6a53fb1a9561 HEAD",
+      "evidence": {
+        "phase17_merge": "a8c494dd479c7645da0b1d95ca3d6a53fb1a9561",
+        "scope": "digital",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R1": {
+      "result": "passed",
+      "command": "docs/plans/phase18/DECISIONS.md Q01-Q49",
+      "evidence": {
+        "decisions": 49,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R2": {
+      "result": "passed",
+      "command": "python -m perchpoint.bootstrap on the disposable database, then python -m pytest -q --tb=line",
+      "evidence": {
+        "migration_head": "0064_phase18_return_completion",
+        "runtime_role": "NOSUPERUSER",
+        "forced_rls": true,
+        "runtime_query": "false,false",
+        "forced_rls_count": "226/226",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R3": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "cross_organization": true,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R4": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "resident_minor": 40000,
+        "agency_minor": 110000,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R5": {
+      "result": "passed",
+      "command": "python -m pytest tests/phase17/test_stripe_contract.py -n 0",
+      "evidence": {
+        "cash_app": "injected",
+        "zelle": "unavailable",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R6": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "program": "hcv",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R7": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "remittance_net_minor": 260000,
+        "replay": "single",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R8": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "reservation": true,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R9": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "return_linked": true,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R10": {
+      "result": "passed",
+      "command": "python -m pytest -q --tb=line",
+      "evidence": {
+        "worker": "process",
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R11": {
+      "result": "passed",
+      "command": "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js",
+      "evidence": {
+        "personas": ["resident", "operations", "owner"],
+        "tested_revision": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+        "ancestor_revision": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+        "sensitive_paths": [
+          "frontend/e2e/phase18-assistance.spec.js",
+          "frontend/src/components/demo/AssistanceDesk.jsx",
+          "backend/perchpoint/phase18_assistance.py",
+          "backend/perchpoint/phase18_routes.py"
+        ]
+      }
+    },
+    "P18-R12": {
+      "result": "passed",
+      "command": "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js",
+      "evidence": {
+        "executed": true,
+        "engines": ["chromium", "firefox", "webkit"],
+        "viewports": [320, 768, 1024, 1440],
+        "passed": 48,
+        "exit_code": 0,
+        "resident_journey_reproof": {
+          "command": "corepack yarn playwright test e2e/phase18-assistance.spec.js --config=playwright.phase18.config.js --project=chromium-1024 -g \"resident transfer is matched once\"",
+          "tested_revision": "456a0a6c6185fca758f7903897dc0febf3e6354f",
+          "passed": 1,
+          "exit_code": 0
+        },
+        "tested_revision": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+        "ancestor_revision": "9bc691c77673f3f233b9bb3735ec971d0cd6db67",
+        "sensitive_paths": [
+          "frontend/e2e/phase18-assistance.spec.js",
+          "frontend/src/components/demo/AssistanceDesk.jsx",
+          "backend/perchpoint/phase18_assistance.py",
+          "backend/perchpoint/phase18_routes.py"
+        ]
+      }
+    },
+    "P18-R13": {
+      "result": "passed",
+      "command": "backend/perchpoint/demo_catalog.py roster length",
+      "evidence": {
+        "households": 20,
+        "homes": 20,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R14": {
+      "result": "passed",
+      "command": "python scripts/phase18_benchmark.py --execute",
+      "evidence": {
+        "clean_room_head": "0064_phase18_return_completion",
+        "scale": true,
+        "queued_receipts_p95_ms": 111.146,
+        "approved_determinations_p95_ms": 23.216,
+        "claims": 1,
+        "claim_attempts": 8,
+        "tested_revision": "83c47b6ed2a29611d2ddf530c09511d7efaf0511",
+        "ancestor_revision": "83c47b6ed2a29611d2ddf530c09511d7efaf0511",
+        "sensitive_paths": ["scripts/phase18_benchmark.py"]
+      }
+    },
+    "P18-R15": {
+      "result": "passed",
+      "command": "python -m foundation.export --check",
+      "evidence": {
+        "contracts": true,
+        "artifacts": 107,
+        "tested_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e"
+      }
+    },
+    "P18-R16": {
+      "result": "passed",
+      "command": "cursor-security-review backend bd9596a9-ebf6-4ea1-8ae9-38c6c386b1ac and frontend 43536cba-52de-4e4d-8ff0-e7653ca2ce72",
+      "evidence": {
+        "independent_review": true,
+        "reviewer": "cursor-security-review",
+        "reviews": [
+          "bd9596a9-ebf6-4ea1-8ae9-38c6c386b1ac",
+          "43536cba-52de-4e4d-8ff0-e7653ca2ce72"
+        ],
+        "tested_revision": "bae016fb7b0f06881714704f72df3564c9434e05",
+        "ancestor_revision": "bae016fb7b0f06881714704f72df3564c9434e05",
+        "sensitive_paths": [
+          "backend/perchpoint/phase18_assistance.py",
+          "frontend/src/components/demo/AssistanceDesk.jsx",
+          "frontend/e2e/phase18-assistance.spec.js"
+        ]
+      }
+    },
+    "P18-R17": {"result": "not_run"},
+    "P18-R18": {"result": "not_run"}
+  }
+}
