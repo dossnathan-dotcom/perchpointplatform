@@ -1595,6 +1595,13 @@ def _apply_one_provider_event(settings, principal, organization, event_id) -> bo
         if row is None:
             return False
         payload = row["payload"] if isinstance(row["payload"], dict) else json.loads(row["payload"] or "{}")
+        token = payload.get("synthetic_worker_token")
+        if (
+            token
+            and os.environ.get("PHASE3_ENVIRONMENT", "local") in {"local", "test"}
+            and token != os.environ.get("PHASE17_WORKER_TOKEN")
+        ):
+            return False
         if row["payload_kind"] == "payment.returned":
             return _callback_return(connection, row, payload)
         if row["payload_kind"] in {"payment.succeeded", "payment.failed", "payment.processing"}:
