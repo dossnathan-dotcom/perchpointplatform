@@ -15,6 +15,10 @@ def main() -> None:
     os.environ["PHASE17_RESTRICTED_WORKER"] = "1"
     settings = Settings.load()
     print("phase17-worker-ready", flush=True)
+    if os.environ.get("PHASE18_WORKER_ONCE") == "1":
+        assistance = apply_queued_receipts(settings)
+        print(f"phase18-worker-once {assistance['applied']}", flush=True)
+        return
     while True:
         dispatched = dispatch_due_autopay(settings)
         if dispatched["dispatched"]:
@@ -25,9 +29,6 @@ def main() -> None:
         assistance = apply_queued_receipts(settings)
         if assistance["applied"]:
             print(f"phase18-worker-applied {assistance['applied']}", flush=True)
-        if os.environ.get("PHASE18_WORKER_ONCE") == "1":
-            print(f"phase18-worker-once {assistance['applied']}", flush=True)
-            return
         time.sleep(0.25)
 
 

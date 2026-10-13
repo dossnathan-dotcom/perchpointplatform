@@ -32,7 +32,7 @@ The ordinary refund cap is unchanged for tenancies without an assistance determi
 
 Exact agency cash posts only when the source is confirmed, the household and period are unambiguous, the purpose is rent assistance, and the amount equals the remaining agency portion. The rule version is `phase18-exact-v1`. Anything else stays unmatched or in review.
 
-The Phase 17 worker applies queued receipts in the same process. `PHASE18_WORKER_ONCE=1` runs one pass for tests. Row-level batch application leaves unresolved lines unposted.
+The Phase 17 worker applies queued receipts in the same process. `PHASE18_WORKER_ONCE=1` applies queued receipts and returns, so that test pass does not dispatch autopay or apply provider events. Row-level batch application leaves unresolved lines unposted.
 
 ## Local boundary
 
