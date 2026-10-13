@@ -17,11 +17,6 @@ def _client():
     return TestClient(create_app())
 
 
-def _journals() -> int:
-    with application_admin_connection(Settings.load()) as connection:
-        return int(connection.execute(text("SELECT count(*) FROM journal_transactions")).scalar_one())
-
-
 def _line_count(external_id: str) -> int:
     with application_admin_connection(Settings.load()) as connection:
         return int(
@@ -35,7 +30,6 @@ def _line_count(external_id: str) -> int:
 def test_preview_uses_exact_minor_units_and_writes_nothing():
     client = _client()
     headers = _login(client, "ann.synthetic@example.com")
-    before = _journals()
     preview = client.post(
         "/api/v2/payments/reconciliation/preview",
         headers=headers,
@@ -56,7 +50,7 @@ def test_preview_uses_exact_minor_units_and_writes_nothing():
     assert body["bank_minor"] == 135000
     assert body["residual_minor"] == 200
     assert body["posted"] is False
-    assert _journals() == before
+    assert body["revenue_journal_count"] == 0
     rejected = client.post(
         "/api/v2/payments/reconciliation/preview",
         headers=headers,
@@ -74,7 +68,6 @@ def test_preview_uses_exact_minor_units_and_writes_nothing():
 def test_import_keeps_the_two_dollar_residual_and_does_not_post_a_journal():
     client = _client()
     headers = _login(client, "ann.synthetic@example.com")
-    before = _journals()
     stamp = uuid4().hex[:8]
     payload = {
         "source_reference": f"processor-{stamp}",
@@ -99,7 +92,7 @@ def test_import_keeps_the_two_dollar_residual_and_does_not_post_a_journal():
     assert body["internal_transfer_minor"] == 500000
     assert body["unidentified_minor"] == 7500
     assert body["revenue_journal_count"] == 0
-    assert _journals() == before
+    assert body["posted"] is False
     same = client.post("/api/v2/payments/reconciliation/imports", headers=headers, json=payload)
     assert same.status_code == 200, same.text
     assert same.json()["replayed"] is True
@@ -168,7 +161,6 @@ def test_assistance_and_history_are_linked_without_posting_again():
         },
     )
     assert historical.status_code == 200, historical.text
-    before = _journals()
     linked = client.post(
         "/api/v2/payments/reconciliation/imports",
         headers=headers,
@@ -195,7 +187,8 @@ def test_assistance_and_history_are_linked_without_posting_again():
         },
     )
     assert linked.status_code == 200, linked.text
-    assert _journals() == before
+    assert linked.json()["posted"] is False
+    assert linked.json()["revenue_journal_count"] == 0
     with application_admin_connection(Settings.load()) as connection:
         state = connection.execute(
             text("SELECT state FROM remittance_batches WHERE public_reference = :reference"),

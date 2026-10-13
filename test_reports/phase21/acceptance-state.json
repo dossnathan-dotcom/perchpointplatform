@@ -1,0 +1,97 @@
+{
+  "phase": 21,
+  "behavior_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92",
+  "real_values_activated": false,
+  "money_moved": false,
+  "results": {
+    "pytest": "11 passed on the clean room, including the separate worker and the before-commit fault",
+    "contracts": "Verified 107 deterministic artifacts; no database writes."
+  },
+  "commands": [
+    "python scripts/phase21_clean_room.py --execute",
+    "corepack yarn playwright test --config=playwright.phase21.config.js",
+    "python -m foundation.export --check"
+  ],
+  "gates": {
+    "P21-R0": {
+      "result": "passed",
+      "command": "docs/plans/phase21/WORKFLOWS.md",
+      "evidence": {"scope": "calls", "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"}
+    },
+    "P21-R1": {
+      "result": "passed",
+      "command": "python scripts/phase21_clean_room.py --execute",
+      "evidence": {
+        "passed": 11,
+        "exit_code": 0,
+        "separate_process_worker": true,
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R2": {
+      "result": "passed",
+      "command": "python scripts/phase21_clean_room.py --execute",
+      "evidence": {
+        "migration_head": "0067_phase21_calls",
+        "upgrade_from": "0066_phase20_maintenance",
+        "accounts_preserved": 15,
+        "runtime": "false,false",
+        "forced_rls": "260/260",
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R3": {
+      "result": "passed",
+      "command": "python scripts/phase21_clean_room.py --execute",
+      "evidence": {
+        "thresholds_declared_first": true,
+        "interactions": 200,
+        "events": 200,
+        "callbacks": 200,
+        "concurrent_workers": 2,
+        "bound_ms": 300,
+        "p95_ms": 111.685,
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R4": {
+      "result": "passed",
+      "command": "corepack yarn playwright test --config=playwright.phase21.config.js",
+      "evidence": {
+        "executed": true,
+        "passed": 12,
+        "exit_code": 0,
+        "engines": ["chromium", "firefox", "webkit"],
+        "viewports": [320, 768, 1024, 1440],
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R5": {
+      "result": "passed",
+      "command": "python -m foundation.export --check",
+      "evidence": {
+        "contracts": 107,
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R6": {
+      "result": "passed",
+      "command": "python scripts/phase21_clean_room.py --execute",
+      "evidence": {
+        "homes": 20,
+        "past_due_minor": 427500,
+        "journals_unchanged_on_presentation_upgrade": true,
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    },
+    "P21-R7": {
+      "result": "passed",
+      "command": "cursor-security-review",
+      "evidence": {
+        "independent_review": true,
+        "review_ids": ["4e3fd554-2537-464b-a27b-8b98c74d75ea"],
+        "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+      }
+    }
+  }
+}

@@ -42,6 +42,7 @@ const ResidentPayments = lazy(() => import("@/components/demo/ResidentPayments")
 const AssistanceDesk = lazy(() => import("@/components/demo/AssistanceDesk").then((module) => ({ default: module.AssistanceDesk })));
 const ReconciliationDesk = lazy(() => import("@/components/demo/ReconciliationDesk").then((module) => ({ default: module.ReconciliationDesk })));
 const MaintenanceHome = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.MaintenanceHome })));
+const CallDesk = lazy(() => import("@/components/demo/CallDesk").then((module) => ({ default: module.CallDesk })));
 const TechnicianJobs = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.TechnicianJobs })));
 const ResidentReport = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.ResidentReport })));
 const ResidentRequests = lazy(() => import("@/components/demo/MaintenanceDesk").then((module) => ({ default: module.ResidentRequests })));
@@ -101,6 +102,7 @@ export function AppContent() {
         <Route path="/resources" element={<Suspense fallback={routePending}><ManagedPage slug="resources" testId="resources-page" /></Suspense>} />
         <Route path="/faq" element={<Suspense fallback={routePending}><ManagedPage slug="faq" testId="faq-page" /></Suspense>} />
         <Route path="/maintenance" element={<Suspense fallback={routePending}><MaintenanceHome /></Suspense>} />
+        <Route path="/calls" element={<Suspense fallback={routePending}><CallDesk /></Suspense>} />
         <Route path="/about" element={<Suspense fallback={routePending}><ManagedPage slug="about" testId="about-page" /></Suspense>} />
         <Route path="/contact" element={<Suspense fallback={routePending}><ContactPage /></Suspense>} />
         <Route path="/privacy" element={<Suspense fallback={routePending}><ManagedPage slug="privacy" testId="privacy-page" /></Suspense>} />

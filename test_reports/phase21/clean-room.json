@@ -1,0 +1,17 @@
+{
+  "upgrade_from": "0066_phase20_maintenance",
+  "accounts": 15,
+  "migration_head": "0067_phase21_calls",
+  "runtime": "false,false",
+  "forced_rls": "260/260",
+  "accounts_preserved": 15,
+  "pytest_passed": 11,
+  "thresholds_declared_first": true,
+  "interactions": 200,
+  "events": 200,
+  "callbacks": 200,
+  "concurrent_workers": 2,
+  "queue_read_p95_ms": 111.685,
+  "worker_fault_before_commit": "rolled back",
+  "exit_code": 0
+}

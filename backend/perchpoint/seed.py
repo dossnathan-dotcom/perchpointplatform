@@ -483,6 +483,9 @@ def seed(settings: Settings | None = None, database: str = "perchpoint_phase2") 
             sid("account-phase6-technician"),
             sid("account-phase6-faruk"),
         )
+        from .phase21_calls import seed_demo_calls
+
+        seed_demo_calls(connection, org, ann)
     admin.dispose()
 
 

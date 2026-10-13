@@ -1,0 +1,28 @@
+{
+  "frozen": true,
+  "frozen_before_qualification": true,
+  "points_per_unit": 5,
+  "units": [
+    {"id": "S21-1", "phase": 21, "subcriteria": ["ann_first", "emergency_fallback", "connected_versus_accepted", "terminal_outcomes", "loop_prevention", "unintegrated"]},
+    {"id": "S21-2", "phase": 21, "subcriteria": ["parent_child", "duration_provenance", "retry_and_order", "caller_ambiguity", "no_double_count"]},
+    {"id": "S21-3", "phase": 21, "subcriteria": ["desk", "note_and_link", "owned_callback", "overdue_escalation", "repeat_history", "role_isolation"]},
+    {"id": "S21-4", "phase": 21, "subcriteria": ["recording_disabled", "no_audio_retained", "forbidden_fields", "no_recording_route"]},
+    {"id": "S22-1", "phase": 22, "subcriteria": ["appointments", "conflicts", "skills_and_readiness", "changed_commitment", "reassignment_acceptance", "restricted_access"]},
+    {"id": "S22-2", "phase": 22, "subcriteria": ["recommendation_chain", "substitution", "compatibility_rejection", "owned_mismatch"]},
+    {"id": "S22-3", "phase": 22, "subcriteria": ["time_recovery", "before_after", "narrow_exception", "review", "no_access", "resident_update"]},
+    {"id": "S22-4", "phase": 22, "subcriteria": ["eligibility", "vendor_workspace", "estimate_invoice", "no_self_approval", "warranty_reference", "no_money"]},
+    {"id": "S23-1", "phase": 23, "subcriteria": ["channels", "thread_linkage", "ownership", "search", "internal_external"]},
+    {"id": "S23-2", "phase": 23, "subcriteria": ["note_to_task", "deadlines", "handoff", "escalation", "independent_closure"]},
+    {"id": "S23-3", "phase": 23, "subcriteria": ["templates", "preferences", "quiet_hours", "revalidation", "truthful_status", "failure_replay"]},
+    {"id": "S23-4", "phase": 23, "subcriteria": ["collision", "attachments", "wrong_recipient", "worker_recovery", "scoped_audit"]},
+    {"id": "S24-1", "phase": 24, "subcriteria": ["decision_classes", "domain_caps", "aggregation", "reserved", "api_enforcement", "separation"]},
+    {"id": "S24-2", "phase": 24, "subcriteria": ["envelope", "in_scope_execution", "partial_consumption", "concurrent_reservation", "changes", "no_double_authorization"]},
+    {"id": "S24-3", "phase": 24, "subcriteria": ["grantor", "bounds", "revocation", "no_self_expansion", "absence", "visible_unresolved"]},
+    {"id": "S24-4", "phase": 24, "subcriteria": ["subject_version", "stale_rejection", "emergency_review", "unauthorized_exception", "execution_audit"]},
+    {"id": "S25-1", "phase": 25, "subcriteria": ["minor_units", "versioned_budgets", "states", "concurrency", "no_double_count"]},
+    {"id": "S25-2", "phase": 25, "subcriteria": ["estimates", "approved_order", "partial_delivery", "returns", "change_orders", "invoice_review", "unpaid_export"]},
+    {"id": "S25-3", "phase": 25, "subcriteria": ["dependencies", "work_and_cleaning", "quality_check", "availability_handoff", "project_demo"]},
+    {"id": "S25-4", "phase": 25, "subcriteria": ["private_versions", "verification", "validity_gap", "reminders", "insurance", "renewal_task", "legal_hold", "restore"]}
+  ],
+  "gates": ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10"]
+}

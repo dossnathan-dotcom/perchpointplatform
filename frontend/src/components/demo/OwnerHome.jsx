@@ -33,6 +33,38 @@ function OwnerMaintenance() {
   );
 }
 
+function OwnerCalls() {
+  const [desk, setDesk] = useState(null);
+  const [state, setState] = useState("loading");
+  useEffect(() => {
+    fetch("/api/v2/calls/desk", { credentials: "include" }).then(async (response) => {
+      if (response.ok) {
+        setDesk(await response.json());
+        setState("ready");
+      } else setState("unavailable");
+    }).catch(() => setState("unavailable"));
+  }, []);
+  return (
+    <section className="mt-8" aria-labelledby="calls-heading">
+      <h2 id="calls-heading" className="font-heading text-2xl font-bold">Calls needing follow-up</h2>
+      {state === "loading" ? <p role="status">Loading call follow-up.</p> : null}
+      {state === "unavailable" ? <p role="status">Call follow-up is unavailable. This is not zero calls.</p> : null}
+      {state === "ready" ? (
+        <ul className="mt-3 space-y-2">
+          {(desk.callbacks || []).map((item) => (
+            <li key={`${item.public_reference}-${item.state}`} className="bg-white p-3">
+              <Link className="underline" to="/calls">{item.public_reference}</Link>
+              <p>{item.state} · {item.reason}</p>
+            </li>
+          ))}
+          {(desk.callbacks || []).length === 0 ? <li>No callback is due.</li> : null}
+        </ul>
+      ) : null}
+      <p className="mt-2 text-sm">Budget, purchasing, and document sources are not available in this phase. They are not shown as zero.</p>
+    </section>
+  );
+}
+
 function OwnerExceptions() {
   const [rows, setRows] = useState([]);
   const [note, setNote] = useState("");
@@ -154,6 +186,7 @@ export function OwnerHome() {
             </section>
             <p className="mt-6"><Link className="underline" to="/payments/reconciliation">Open the financial briefing</Link></p>
             <OwnerMaintenance />
+            <OwnerCalls />
             <OwnerExceptions />
           </>
         )}

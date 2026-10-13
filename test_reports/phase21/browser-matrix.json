@@ -1,0 +1,7 @@
+{
+  "command": "corepack yarn playwright test --config=playwright.phase21.config.js",
+  "passed": 12,
+  "exit_code": 0,
+  "engines": ["chromium", "firefox", "webkit"],
+  "viewports": [320, 768, 1024, 1440]
+}

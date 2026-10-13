@@ -1,0 +1,22 @@
+{
+  "independent_review": true,
+  "reviewer": "cursor-security-review",
+  "review_ids": ["4e3fd554-2537-464b-a27b-8b98c74d75ea"],
+  "findings": [
+    {
+      "severity": "medium",
+      "location": "backend/perchpoint/phase21_calls.py",
+      "summary": "A provider account already bound to another organization was reported as accepted.",
+      "disposition": "CLOSED",
+      "repair": "A conflicting account SID returns 409 unless the same organization already owns it."
+    },
+    {
+      "severity": "medium",
+      "location": "backend/perchpoint/phase21_calls.py",
+      "summary": "The local webhook token was the fallback outside local and test.",
+      "disposition": "CLOSED",
+      "repair": "Outside local and test, a missing PHASE21_PROVIDER_TOKEN is unavailable instead of the local default."
+    }
+  ],
+  "tested_revision": "3e87cec398ae8bdb20006d5b24c26fabd630ca92"
+}
