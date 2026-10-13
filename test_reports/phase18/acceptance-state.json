@@ -1,10 +1,19 @@
 {
   "phase": 18,
-  "local_technical_acceptance": false,
+  "local_technical_acceptance": true,
   "behavior_revision": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e",
   "real_values_activated": false,
   "money_moved": false,
   "phase_19_started": false,
+  "pull_request": {
+    "number": 46,
+    "head": "3ad5e7fc2913f2e09458b4184fe2ed8aa305f53c"
+  },
+  "merge": {
+    "commit": "3a5af2db46b416852888c9442086e3d19ece2aab",
+    "ci_run": "38330042613",
+    "phase6_run": "38330042609"
+  },
   "commands": [
     "python -m perchpoint.bootstrap",
     "python -m perchpoint.seed",
@@ -209,7 +218,24 @@
         ]
       }
     },
-    "P18-R17": {"result": "not_run"},
-    "P18-R18": {"result": "not_run"}
+    "P18-R17": {
+      "result": "passed",
+      "command": "gh pr checks 46",
+      "evidence": {
+        "pr_head": "3ad5e7fc2913f2e09458b4184fe2ed8aa305f53c",
+        "tested_revision": "3ad5e7fc2913f2e09458b4184fe2ed8aa305f53c",
+        "pull_request": 46
+      }
+    },
+    "P18-R18": {
+      "result": "passed",
+      "command": "gh run view 38330042613",
+      "evidence": {
+        "merge_commit": "3a5af2db46b416852888c9442086e3d19ece2aab",
+        "ci_run": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/38330042613",
+        "phase6_run": "https://github.com/dossnathan-dotcom/perchpointplatform/actions/runs/38330042609",
+        "tested_revision": "3a5af2db46b416852888c9442086e3d19ece2aab"
+      }
+    }
   }
 }

@@ -8,8 +8,10 @@
   "phase_17_evidence_merge": "a8c494dd479c7645da0b1d95ca3d6a53fb1a9561",
   "phase_18_behavior_started": true,
   "phase_18_behavior_sha": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e",
-  "phase_18_head_sha": "8f6312d7250cdd554fcf12cc969a9bce757b1a8e",
-  "phase_18_acceptance_granted": false,
+  "phase_18_head_sha": "3a5af2db46b416852888c9442086e3d19ece2aab",
+  "phase_18_pull_request": 46,
+  "phase_18_pull_request_head": "3ad5e7fc2913f2e09458b4184fe2ed8aa305f53c",
+  "phase_18_acceptance_granted": true,
   "real_values_activated": false,
   "money_moved": false,
   "branch": "cursor/phase-18-digital",
@@ -24,6 +26,6 @@
   ],
   "targeted_suite_before_behavior_commit": "python -m pytest tests/phase18/test_assistance.py -n 0 --tb=line -q exited 0: 17 passed in 82.24s on 2026-10-12 against the dirty tree. This note is not a behavior SHA and does not grant acceptance.",
   "migration_proof": "0060 to 0064 preserved a 40000 succeeded payment and an invited grant. Empty database reached 0064 with runtime false,false and forced row security 226/226. The CI-equivalent suite on 8f6312d passed 281 tests, skipped 3, and exited 0. Phase 19 remains unopened.",
-  "next_unresolved_item": "Local Phase 18 evidence is recorded and the checker passes in local mode. The protected pull request and merge are still required. Phase 19 remains unopened.",
+  "next_unresolved_item": "Phase 18 is merged at 3a5af2d. Pull request 46 checks and the merged-main workflows passed. Phase 19 remains unopened.",
   "scope_change": "CONFLICT-027 replaces physical payment intake with digital receipts and housing assistance. Decisions are in docs/plans/phase18/DECISIONS.md."
 }
