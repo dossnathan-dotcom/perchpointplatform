@@ -1,6 +1,10 @@
 {
   "phase": 20,
   "behavior_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab",
+  "checked_head": "100518fccca5416977ef8987ff8432e794015229",
+  "pull_request": 50,
+  "product_merge": "fbdc71b20222614ee9dd788a9f75b2f92c0159d9",
+  "acceptance_granted": true,
   "parent": "ae062f2d68c7f20bbfba782b5049e7a14eb2010a",
   "migration_head": "0066_phase20_maintenance",
   "phase_19_record_untouched": true,

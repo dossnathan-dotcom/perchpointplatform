@@ -6,7 +6,9 @@
   "results": {
     "pytest": "13 passed on the clean room",
     "contracts": "Verified 107 deterministic artifacts; no database writes.",
-    "shared_database_suite": "274 passed, 32 failed. Identity and payer failures were provider_unavailable because the auth service was not pointed at that database. Two journal-count mismatches passed again with -n 0. Portfolio and discovery list checks missed a new row on a database that already holds more than one page."
+    "shared_database_suite": "274 passed, 32 failed. Identity and payer failures were provider_unavailable because the auth service was not pointed at that database. Two journal-count mismatches passed again with -n 0. Portfolio and discovery list checks missed a new row on a database that already holds more than one page.",
+    "merged_tree_recheck": "On the merged tree, the clean room passed 13 tests with queue_read_p95_ms=107.301 and forced_rls 251/251. The 12-project browser matrix passed.",
+    "combined_browser": "phase19 chromium-1024 1 passed; phase18 chromium-1024 4 passed; phase17 additional payer chromium-1024 1 passed; phase20 maintenance chromium-1024 1 passed; exit 0"
   },
   "commands": [
     "python scripts/phase20_clean_room.py --execute",
@@ -95,8 +97,35 @@
         "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
       }
     },
-    "P20-R8": {"result": "not_run"},
-    "P20-R9": {"result": "not_run"}
+    "P20-R8": {
+      "result": "passed",
+      "command": "gh pr checks 50",
+      "evidence": {
+        "tested_revision": "100518fccca5416977ef8987ff8432e794015229",
+        "pr_head": "100518fccca5416977ef8987ff8432e794015229",
+        "pull_request": 50,
+        "ci_run": 38349691271,
+        "phase6_run": 38349691368
+      }
+    },
+    "P20-R9": {
+      "result": "passed",
+      "command": "gh pr merge 50 --merge",
+      "evidence": {
+        "tested_revision": "100518fccca5416977ef8987ff8432e794015229",
+        "merge_commit": "fbdc71b20222614ee9dd788a9f75b2f92c0159d9",
+        "ci_run": 38352807492,
+        "phase6_run": 38352807495
+      }
+    }
+  },
+  "pull_request": {
+    "number": 50,
+    "head": "100518fccca5416977ef8987ff8432e794015229"
+  },
+  "merge": {
+    "commit": "fbdc71b20222614ee9dd788a9f75b2f92c0159d9",
+    "pull_request": 50
   },
   "findings": []
 }
