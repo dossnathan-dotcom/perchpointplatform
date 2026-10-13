@@ -105,10 +105,14 @@ class StripeAdapter:
         """Cash App Pay is a Stripe method type. It is not an off-session card confirm."""
         from .phase18_assistance import cash_app_payment_intent_params
 
-        params = cash_app_payment_intent_params(amount_minor)
-        params["currency"] = currency
+        shape = cash_app_payment_intent_params(amount_minor)
         intent = self.client.v1.payment_intents.create(
-            params=params,
+            params={
+                "amount": shape["amount"],
+                "currency": currency,
+                "payment_method_types": ["cashapp"],
+                "confirm": False,
+            },
             options={"idempotency_key": idempotency_key},
         )
         normalized = _normalize_intent(intent)
