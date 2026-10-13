@@ -1,0 +1,23 @@
+{
+  "command": "python scripts/phase20_clean_room.py --execute",
+  "container": "perchpoint-phase20-cleanroom",
+  "port": 54366,
+  "excluded_ports": [5432, 54339],
+  "image": "postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54",
+  "upgrade_from": "0065_phase19_reconciliation",
+  "migration_head": "0066_phase20_maintenance",
+  "accounts_before": 15,
+  "accounts_preserved": 15,
+  "runtime": "false,false",
+  "forced_rls": "251/251",
+  "pytest": "13 passed, 1 warning in 10.62s",
+  "warning": "StarletteDeprecationWarning: Using httpx with starlette.testclient is deprecated",
+  "thresholds_declared_first": "thresholds cases=200 events=200 needs=200 time_rows=200 concurrent_timer_starts=2 read_p95_ms<300",
+  "cases": 200,
+  "bound_ms": 300,
+  "p95_ms": 112.011,
+  "separate_process_worker": true,
+  "scale": "passed",
+  "exit_code": 0,
+  "tested_revision": "a61d0e6d872b3d13cb39a71be4a5cec1a2a8e1ab"
+}
